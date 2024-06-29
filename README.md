@@ -34,11 +34,11 @@ Go + Vue开发的小型 cms 解决方案, 主题丰富，开箱即用，企业�
 
 项目整体采用前后端分离。由管理端 API，业务端 API，管理后台UI 三部分组成，业务端 UI 可自行根据需求开发。也可使用我们的模版
 ### 项目
-| 项目 | 描述       |地址|
-| --- |----------| --- |
-| gotribe-admin | 后台管理 api | https://github.com/go-tribe/gotribe-admin.git |
-| gotribe | 业务端 api  | https://github.com/go-tribe/gotribe.git |
-| gotribe-ui | 管理后台 UI  | https://github.com/go-tribe/gotribe-admin-vue.git |
+| 项目                | 描述       |地址|
+|-------------------|----------| --- |
+| **gotribe-admin** | 后台管理 api | https://github.com/go-tribe/gotribe-admin.git |
+| gotribe           | 业务端 api  | https://github.com/go-tribe/gotribe.git |
+| gotribe-admin-vue | 管理后台 UI  | https://github.com/go-tribe/gotribe-admin-vue.git |
 
 ### 业务主题
 | 主题           | 描述        | 地址                                           |

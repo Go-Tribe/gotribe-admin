@@ -31,39 +31,19 @@ Go + Vue开发的小型Cms解决方案, 前后端分离。 由管理端 API，�
 
 ## 项目截图
 
-![登录](https://github.com/gnimli/go-web-mini-ui/blob/main/src/assets/GithubImages/login.PNG)
-![用户管理](https://github.com/gnimli/go-web-mini-ui/blob/main/src/assets/GithubImages/user.PNG)
-![角色管理](https://github.com/gnimli/go-web-mini-ui/blob/main/src/assets/GithubImages/role.PNG)
-![角色权限](https://github.com/gnimli/go-web-mini-ui/blob/main/src/assets/GithubImages/rolePermission.PNG)
-![菜单管理](https://github.com/gnimli/go-web-mini-ui/blob/main/src/assets/GithubImages/menu.PNG)
-![API管理](https://github.com/gnimli/go-web-mini-ui/blob/main/src/assets/GithubImages/api.PNG)
+![登录](https://github.com/go-tribe/gotribe-admin/docs/images/login.PNG)
+![后台首页](https://github.com/go-tribe/gotribe-admin/docs/images/index.PNG)
+![系统管理](https://github.com/go-tribe/gotribe-admin/docs/images/system.PNG)
+![日志管理](https://github.com/go-tribe/gotribe-admin/docs/images/log.PNG)
+![业务管理](https://github.com/go-tribe/gotribe-admin/docs/images/project.PNG)
+![内容管理](https://github.com/go-tribe/gotribe-admin/docs/images/content.PNG)
 
-## 项目结构概览
-
-```
-├─cmd # 启动项目
-├─config # viper读取配置
-├─internal # 项目目录
-├──gotribe-admin #项目的主要业务逻辑
-├───controller # controller层，响应路由请求的方法
-├───repository # 数据库操作
-├───routes # 所有路由
-├──pkg # 非公用包
-├───common # casbin mysql zap validator 等公共资源
-├───middleware # 中间件
-├───model # 结构体模型
-├─pkg # 公用包
-├──api # 接口相关
-├────dto # 返回给前端的数据结构
-├────response # 常用返回封装，如Success、Fai
-├────vo # 接收前端请求的数据结构
-├────known # 常量
-├──util # 工具包
-└─scripts # 脚本
-```
-## 前端Vue项目
-    gotribe-admin-vue
-<https://github.com/go-tribe/gotribe-admin-vue>
+## 项目合集
+| 项目 | 描述       |地址|
+| --- |----------| --- |
+| gotribe-admin | 后台管理 api | https://github.com/go-tribe/gotribe-admin.git |
+| gotribe | 业务端 api  | https://github.com/go-tribe/gotribe.git |
+| gotribe-ui | 前端管理后台   | https://github.com/go-tribe/gotribe-admin-vue.git |
 
 ## TODO
 

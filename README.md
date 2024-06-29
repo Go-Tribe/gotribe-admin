@@ -30,7 +30,7 @@ Go + Vue开发的小型 cms 解决方案, 适合个人、团队、中小企业�
 ![业务管理](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/project.png)
 ![内容管理](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/content.png)
 
-## 项目说明
+## 🌌 项目说明
 
 项目整体采用前后端分离。由管理端 API，业务端 API，管理后台UI 三部分组成，业务端 UI 可自行根据需求开发。也可使用我们的模版
 ### 项目
@@ -45,11 +45,12 @@ Go + Vue开发的小型 cms 解决方案, 适合个人、团队、中小企业�
 |-------------|-----------|----------------------------------------------| 
 | gotrbe-blog | 一个简单的博客主题 | https://github.com/go-tribe/gotribe-blog.git  |
 
-## TODO
+## 🍁 TODO
 
 - 增加支付配置
 - 增加商品管理
 
-## MIT License
+## 🌎 License
 
-    Copyright (c) 2024 gotribe
+[MIT](https://choosealicense.com/licenses/mit/)
+

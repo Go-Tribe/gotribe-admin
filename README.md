@@ -1,7 +1,7 @@
 <h1 align="center">gotribe-admin</h1>
 
 <div align="center">
-Go + Vue开发的小型 cms 解决方案, 适合个人、团队、中小企业等使用。
+Go + Vue开发的小型 cms 解决方案, 主题丰富，开箱即用，企业级架构。适合个人、团队、中小企业等使用。
 <p align="center">
 <img src="https://img.shields.io/github/go-mod/go-version/go-tribe/gotribe-admin" alt="Go version"/>
 <img src="https://img.shields.io/badge/Gin-1.9.1-brightgreen" alt="Gin version"/>

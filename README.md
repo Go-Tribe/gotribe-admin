@@ -1,7 +1,7 @@
 <h1 align="center">gotribe-admin</h1>
 
 <div align="center">
-Go + Vue开发的小型Cms解决方案, 前后端分离。 由管理端 API，用户端 API，管理后台。
+Go + Vue开发的小型 cms 解决方案, 前后端分离。由管理端 API，业务端 API，管理后台UI 三部分组成，业务端 UI 可自行根据需求开发。适合个人、团队、中小企业等使用。
 <p align="center">
 <img src="https://img.shields.io/github/go-mod/go-version/go-tribe/gotribe-admin" alt="Go version"/>
 <img src="https://img.shields.io/badge/Gin-1.9.1-brightgreen" alt="Gin version"/>
@@ -30,13 +30,12 @@ Go + Vue开发的小型Cms解决方案, 前后端分离。 由管理端 API，�
 - `CasbinMiddleware` 访问控制中间件 -- 基于Casbin RBAC, 精细控制接口访问
 
 ## 项目截图
-
-![登录](https://github.com/go-tribe/gotribe-admin/docs/images/login.PNG)
-![后台首页](https://github.com/go-tribe/gotribe-admin/docs/images/index.PNG)
-![系统管理](https://github.com/go-tribe/gotribe-admin/docs/images/system.PNG)
-![日志管理](https://github.com/go-tribe/gotribe-admin/docs/images/log.PNG)
-![业务管理](https://github.com/go-tribe/gotribe-admin/docs/images/project.PNG)
-![内容管理](https://github.com/go-tribe/gotribe-admin/docs/images/content.PNG)
+![登录](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/login.png)
+![后台首页](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/index.png)
+![系统管理](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/system.png)
+![日志管理](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/log.png)
+![业务管理](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/project.png)
+![内容管理](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/content.png)
 
 ## 项目合集
 | 项目 | 描述       |地址|

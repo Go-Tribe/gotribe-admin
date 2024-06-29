@@ -1,7 +1,7 @@
 <h1 align="center">gotribe-admin</h1>
 
 <div align="center">
-Go + Vue开发的小型 cms 解决方案, 前后端分离。由管理端 API，业务端 API，管理后台UI 三部分组成，业务端 UI 可自行根据需求开发。适合个人、团队、中小企业等使用。
+Go + Vue开发的小型 cms 解决方案, 适合个人、团队、中小企业等使用。
 <p align="center">
 <img src="https://img.shields.io/github/go-mod/go-version/go-tribe/gotribe-admin" alt="Go version"/>
 <img src="https://img.shields.io/badge/Gin-1.9.1-brightgreen" alt="Gin version"/>
@@ -10,26 +10,19 @@ Go + Vue开发的小型 cms 解决方案, 前后端分离。由管理端 API，�
 </p>
 </div>
 
-## 特性
+## 🚀 核心优势：
 
-- `Gin` 一个类似于martini但拥有更好性能的API框架, 由于使用了httprouter, 速度提高了近40倍
-- `MySQL` 采用的是MySql数据库
-- `Jwt` 使用JWT轻量级认证, 并提供活跃用户Token刷新功能
-- `Casbin` Casbin是一个强大的、高效的开源访问控制框架，其权限管理机制支持多种访问控制模型
-- `Gorm` 采用Gorm 2.0版本开发, 包含一对多、多对多、事务等操作
-- `Validator` 使用validator v10做参数校验, 严密校验前端传入参数
-- `Lumberjack` 设置日志文件大小、保存数量、保存时间和压缩等 ```
-- `Viper` Go应用程序的完整配置解决方案, 支持配置热更新
+性能卓越：基于 Golang 的高效并发处理能力，GoTribe 能够轻松应对高流量网站的需求。  
+易于使用：简洁直观的用户界面和文档，让即使是初学者也能快速上手。  
+高度可定制：提供丰富的API和插件支持，满足个性化的建站需求。  
+社区支持：活跃的开源社区，持续提供更新和技术支持。  
+安全稳定：遵循最佳安全实践，保障网站数据的安全和稳定运行。
 
-## 中间件
+## 💥 适用场景：
+无论是个人博客、团队，还是企业网站，GoTribe 都能提供强大的支持和灵活的定制选项。
 
-- `AuthMiddleware` 权限认证中间件 -- 处理登录、登出、无状态token校验
-- `RateLimitMiddleware` 基于令牌桶的限流中间件 -- 限制用户的请求次数
-- `OperationLogMiddleware` 操作日志中间件 -- 记录所有用户操作
-- `CORSMiddleware` -- 跨域中间件 -- 解决跨域问题
-- `CasbinMiddleware` 访问控制中间件 -- 基于Casbin RBAC, 精细控制接口访问
+## 🎨 效果展示
 
-## 项目截图
 ![登录](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/login.png)
 ![后台首页](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/index.png)
 ![系统管理](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/system.png)
@@ -37,12 +30,20 @@ Go + Vue开发的小型 cms 解决方案, 前后端分离。由管理端 API，�
 ![业务管理](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/project.png)
 ![内容管理](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/content.png)
 
-## 项目合集
+## 项目说明
+
+项目整体采用前后端分离。由管理端 API，业务端 API，管理后台UI 三部分组成，业务端 UI 可自行根据需求开发。也可使用我们的模版
+### 项目
 | 项目 | 描述       |地址|
 | --- |----------| --- |
 | gotribe-admin | 后台管理 api | https://github.com/go-tribe/gotribe-admin.git |
 | gotribe | 业务端 api  | https://github.com/go-tribe/gotribe.git |
 | gotribe-ui | 管理后台 UI  | https://github.com/go-tribe/gotribe-admin-vue.git |
+
+### 业务主题
+| 主题          | 描述        | 地址                                           |
+|-------------|-----------|----------------------------------------------| 
+| gotrbe-blog | 一个简单的博客主题 | https://github.com/go-tribe/gotribe-blog.git  |
 
 ## TODO
 

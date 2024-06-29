@@ -42,7 +42,7 @@ Go + Vue开发的小型 cms 解决方案, 前后端分离。由管理端 API，�
 | --- |----------| --- |
 | gotribe-admin | 后台管理 api | https://github.com/go-tribe/gotribe-admin.git |
 | gotribe | 业务端 api  | https://github.com/go-tribe/gotribe.git |
-| gotribe-ui | 前端管理后台   | https://github.com/go-tribe/gotribe-admin-vue.git |
+| gotribe-ui | 管理后台 UI  | https://github.com/go-tribe/gotribe-admin-vue.git |
 
 ## TODO
 

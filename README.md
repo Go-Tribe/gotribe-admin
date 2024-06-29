@@ -50,6 +50,8 @@ Go + Vue开发的小型 cms 解决方案, 主题丰富，开箱即用，企业�
 - 增加支付配置
 - 增加商品管理
 
+## 💥 在线应用
+[麻凡](https://www.dengmengmian.com)
 ## 🌎 License
 
 [MIT](https://choosealicense.com/licenses/mit/)

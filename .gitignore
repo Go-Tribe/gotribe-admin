@@ -19,9 +19,3 @@ _output
 config.yml
 public
 .Ds_Store
-package-lock.json
-yarn.lock
-.env.production
-.env.staging
-web/admin/dist
-web/admin/node_modules

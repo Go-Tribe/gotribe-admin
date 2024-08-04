@@ -33,7 +33,7 @@ run: tidy  format dev
 
 .PHONY: build
 build: tidy # 编译源码，依赖 tidy 目标自动添加/移除依赖包.
-	@go build -v -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/$(PROJECT_NAME) $(ROOT_DIR)/cmd/$(PROJECT_NAME).go
+	@go build -v -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/$(PROJECT_NAME) $(ROOT_DIR)/$(PROJECT_NAME).go
 
 .PHONY: format
 format: # 格式化 Go 源码.
@@ -54,4 +54,4 @@ clean: # 清理构建产物、临时文件等.
 
 .PHONY: dev
 dev: # 开发运行
-	@go run $(ROOT_DIR)/cmd/$(PROJECT_NAME).go
+	@go run $(ROOT_DIR)/$(PROJECT_NAME).go

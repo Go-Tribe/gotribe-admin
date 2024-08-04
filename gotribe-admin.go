@@ -7,6 +7,7 @@ package main
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"github.com/fatih/color"
 	config "gotribe-admin/config"
@@ -21,6 +22,9 @@ import (
 	"syscall"
 	"time"
 )
+
+//go:embed web/admin/dist/*
+var content embed.FS
 
 func main() {
 
@@ -55,7 +59,7 @@ func main() {
 	}
 
 	// 注册所有路由
-	r := routes.InitRoutes()
+	r := routes.InitRoutes(content)
 
 	host := "localhost"
 	port := config.Conf.System.Port

@@ -6,17 +6,20 @@
 package routes
 
 import (
+	"embed"
 	"fmt"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"gotribe-admin/config"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/middleware"
+	"net/http"
 
 	"time"
 )
 
 // 初始化
-func InitRoutes() *gin.Engine {
+func InitRoutes(fs embed.FS) *gin.Engine {
 	//设置模式
 	gin.SetMode(config.Conf.System.Mode)
 
@@ -45,6 +48,12 @@ func InitRoutes() *gin.Engine {
 		common.Log.Panicf("初始化JWT中间件失败：%v", err)
 		panic(fmt.Sprintf("初始化JWT中间件失败：%v", err))
 	}
+	r.Use(static.Serve("/", static.EmbedFolder(fs, "web/admin/dist")))
+	r.NoRoute(func(c *gin.Context) {
+		fmt.Printf("%s doesn't exists, redirect on /\n", c.Request.URL.Path)
+		c.Redirect(http.StatusMovedPermanently, "/")
+	})
+	// end
 
 	// 路由分组
 	apiGroup := r.Group("/" + config.Conf.System.UrlPathPrefix)

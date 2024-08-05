@@ -75,11 +75,13 @@ rate-limit:
   # 桶容量
   capacity: 200
 
+# 七牛CDN配置
 qiniu:
   access-key:
   secret-key:
   bucket:
   domain:
 
+# 百度推送配置
 baidu:
   push-token:

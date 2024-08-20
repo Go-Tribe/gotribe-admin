@@ -50,7 +50,7 @@ func InitRoutes(fs embed.FS) *gin.Engine {
 	}
 	r.Use(static.Serve("/", static.EmbedFolder(fs, "web/admin/dist")))
 	r.NoRoute(func(c *gin.Context) {
-		fmt.Printf("%s doesn't exists, redirect on /\n", c.Request.URL.Path)
+		common.Log.Infof("A 404 error occurred, but the specific URL path is not logged to prevent log injection.")
 		c.Redirect(http.StatusMovedPermanently, "/")
 	})
 	// end

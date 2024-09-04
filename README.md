@@ -1,7 +1,10 @@
+[English](README.md) | [中文](README_CN.md)
+
+---
 <h1 align="center">gotribe-admin</h1>
 
 <div align="center">
-Go + Vue开发的小型 cms 解决方案, 主题丰富，开箱即用，企业级架构。适合个人、团队、中小企业等使用。
+`gotribe-admin` is a small CMS solution developed with Go and Vue, featuring a rich set of themes, ready-to-use out of the box, and an enterprise-level architecture. It is suitable for individuals, teams, and small to medium-sized enterprises.
 <p align="center">
 <img src="https://img.shields.io/github/go-mod/go-version/go-tribe/gotribe-admin" alt="Go version"/>
 <img src="https://img.shields.io/badge/Gin-1.9.1-brightgreen" alt="Gin version"/>
@@ -10,106 +13,113 @@ Go + Vue开发的小型 cms 解决方案, 主题丰富，开箱即用，企业�
 </p>
 </div>
 
-## 🚀 核心优势：
+### Core Advantages
 
-性能卓越：基于 Golang 的高效并发处理能力，GoTribe 能够轻松应对高流量网站的需求。
-易于使用：简洁直观的用户界面和文档，让即使是初学者也能快速上手。
-高度可定制：提供丰富的API和插件支持，满足个性化的建站需求。
-社区支持：活跃的开源社区，持续提供更新和技术支持。
-安全稳定：遵循最佳安全实践，保障网站数据的安全和稳定运行。
+- **Performance**: Leveraging Golang's efficient concurrency capabilities, GoTribe can easily handle the demands of high-traffic websites.
+- **Ease of Use**: With a clean and intuitive user interface and documentation, even beginners can get started quickly.
+- **Highly Customizable**: Offers a wealth of APIs and plugin support to meet personalized website building needs.
+- **Community Support**: An active open-source community provides ongoing updates and technical support.
+- **Security and Stability**: Adheres to best security practices to ensure the safety and stable operation of website data.
 
-## 💥 适用场景：
-无论是个人博客、团队，还是企业网站，GoTribe 都能提供强大的支持和灵活的定制选项。
+### Applicable Scenarios
 
-## 🎨 效果展示
+GoTribe provides robust support and flexible customization options for everything from personal blogs and team projects to enterprise websites.
 
-![登录](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/login.png)
-![后台首页](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/index.png)
-![系统管理](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/system.png)
-![日志管理](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/log.png)
-![业务管理](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/project.png)
-![内容管理](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/content.png)
+### Demo
 
-## 🌌 项目说明
+![Login](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/login.png)
+![Dashboard](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/index.png)
+![System Management](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/system.png)
+![Log Management](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/log.png)
+![Project Management](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/project.png)
+![Content Management](https://github.com/Go-Tribe/gotribe-admin/blob/main/docs/images/content.png)
 
-项目整体采用前后端分离。由管理端 API，业务端 API，管理后台UI 三部分组成，业务端 UI 可自行根据需求开发。也可使用我们的模版
-### 项目
-| 项目                | 描述       |地址|
-|-------------------|----------| --- |
-| **gotribe-admin** | 后台管理 api | https://github.com/go-tribe/gotribe-admin.git |
-| gotribe           | 业务端 api  | https://github.com/go-tribe/gotribe.git |
-| gotribe-admin-vue | 管理后台 UI  | https://github.com/go-tribe/gotribe-admin-vue.git |
+### Project Description
 
-### 业务主题
-| 主题           | 描述        | 地址                                           |
-|--------------|-----------|----------------------------------------------|
-| gotribe-blog | 一个简单的博客主题 | https://github.com/go-tribe/gotribe-blog.git  |
+The project adopts a front-end and back-end separation architecture, consisting of three parts: the management API, the business API, and the management backend UI. The business front-end UI can be developed according to your needs or using our templates.
 
-### 关系图
+#### Projects
+
+| Project              | Description  | Address                             |
+|----------------------|--------------|--------------------------------------|
+| **gotribe-admin**    | Management API| [Link](https://github.com/go-tribe/gotribe-admin.git) |
+| **gotribe**          | Business API | [Link](https://github.com/go-tribe/gotribe.git)     |
+| **gotribe-admin-vue**| Management UI | [Link](https://github.com/go-tribe/gotribe-admin-vue.git) |
+
+#### Business Themes
+
+| Theme             | Description    | Address                                      |
+|-------------------|----------------|----------------------------------------------|
+| **gotribe-blog**  | A simple blog theme | [Link](https://github.com/go-tribe/gotribe-blog.git) |
+
+#### Relationship Diagram
+
 ```mermaid
-    graph LR
-    A[Go-Tribe 项目] --> B(gotribe-admin管理后台)
-    A --> C(gotribe业务端API)
-    A --> E(gotribe-blog 博客主题)
+graph LR
+    A[Go-Tribe Project] --> B(gotribe-admin Management Backend)
+    A --> C(gotribe Business API)
+    A --> E(gotribe-blog Blog Theme)
 
-    B --> F[数据库]
+    B --> F[Database]
     C --> F
 
-    E --> G[业务端 UI]
-    G -->|用户自定义| H[业务主题]
-    H --> I[gotribe-blog 博客主题]
+    E --> G[Business Frontend UI]
+    G -->|User Customized| H[Business Themes]
+    H --> I[gotribe-blog Blog Theme]
 ```
-上图清晰地描绘了Go-Tribe项目的结构和组件之间的交互：
 
-**Go-Tribe** 是整个系统框架的名称，它包括多个模块，每个模块负责不同的功能。  
+The diagram above clearly illustrates the structure of the Go-Tribe project and the interactions between its components:
 
-**gotribe-admin 管理后台**：这是系统的核心管理模块，用于处理后台管理任务。考虑到安全性，通常部署在内部网络并通过VPN访问。为了简化部署流程，我们将gotribe-admin-vue 管理后台 UI与管理后台 API集成在一起，实现一键部署。  
+- **Go-Tribe** is the name of the entire system framework, which includes multiple modules, each responsible for different functions.
+- **gotribe-admin Management Backend**: This is the core management module of the system, used for handling backend management tasks. For security reasons, it is usually deployed on an internal network and accessed via VPN. To simplify the deployment process, we have integrated the gotribe-admin-vue Management UI with the Management API for one-click deployment.
+- **gotribe Business API**: This module is responsible for handling business logic, with a particular focus on search engine optimization (SEO) and development efficiency. It is completely decoupled from the business frontend UI and supports Kubernetes deployment and horizontal scaling to accommodate the needs of businesses of different sizes.
+- **gotribe-blog Blog Theme**: Provides a pre-built blog theme as an example of a business theme, demonstrating how to quickly build specific business scenarios using the Go-Tribe framework.
+- **Database**: Serves as the data storage center of the system, responsible for saving all necessary data.
+- **Business Frontend UI**: Users can develop customized frontend interfaces according to their specific needs, using templates provided by Go-Tribe.
 
-**gotribe 业务端 API**：此模块负责处理业务逻辑，特别关注搜索引擎优化（SEO）和开发效率。它与业务端 UI 完全解耦，支持 Kubernetes 部署和水平扩展，以适应不同规模的业务需求。  
+The entire system is designed with a front-end and back-end separation architecture, which not only improves the system's flexibility but also allows each component to be developed and maintained independently, thereby enhancing the system's scalability and maintainability.
 
-**gotribe-blog 博客主题**：提供了一个预构建的博客主题，作为业务主题的一个示例，展示如何利用Go-Tribe框架快速搭建特定业务场景。  
+### Quick Start
 
-**数据库**：作为系统的数据存储中心，负责保存所有必要的数据信息。  
+> Prerequisites: `go1.20+` `node 18+`.
 
-**业务端 UI**：用户可以根据自己的具体需求，利用Go-Tribe提供的模板自行开发定制化的前端界面。  
+1. Download the project
 
-整个系统采用前后端分离的架构设计，这不仅提高了系统的灵活性，还使得各个组件能够独立开发和维护，从而增强了系统的可扩展性和维护性。  
-
-### 快速开始
-
-> 环境要求：`go1.20 +` `node 18 +`。
-
-1. 下载项目
-
-```
+```bash
 git clone --recursive https://github.com/go-tribe/gotribe-admin.git
 ```
-2. 修改配置文件,参数说明详见：`config.tmp.yml`。
+2. Modify the configuration file, parameter details are in: `config.tmp.yml`.
 
-```
+```bash
 cp config.tmp.yml config.yml
 ```
-3. 开发运行：
+3. Run for development:
 
-```
+```bash
 make run
 ```
-4. 编译打包:
+4. Compile and package:
 
-```
+```bash
 make
 ```
-编译完成后,可执行文件在`_output`目录下。
+After compilation, the executable files will be in the `_output` directory.
 
-启动后会自动迁移数据库，管理后台默认用户名：admin 密码：123456
+The database will be migrated automatically upon startup, and the default username for the management backend is: admin, with the password: 123456.
 
-## 🍁 TODO
+### TODO
 
-- 增加支付配置
-- 增加商品管理
+- Add payment configuration
+- Add product management
 
-## 💥 在线应用
-[麻凡](https://www.dengmengmian.com)
-## 🌎 License
+### Online Application
+
+[Mafan](https://www.dengmengmian.com)
+
+### License
 
 [MIT](https://choosealicense.com/licenses/mit/)
+
+---
+
+Please note that the image and link references in the documentation are placeholders and should be replaced with the actual URLs when the document is compiled.

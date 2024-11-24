@@ -27,7 +27,7 @@ GO_LDFLAGS += \
 all: add-copyright npm-install admin format build
 
 .PHONY: run
-run: admin tidy  format dev
+run: npm-install admin tidy  format dev
 
 .PHONY: web
 web: npm-install admin

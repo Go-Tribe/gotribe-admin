@@ -289,6 +289,18 @@ func InitData() {
 			Roles:     roles[:1],
 			Creator:   "系统",
 		},
+		{
+			Model:     model.Model{ID: 17},
+			Name:      "Column",
+			Title:     "专栏管理",
+			Icon:      &documentationStr,
+			Path:      "/content/column",
+			Component: "/content/column/index",
+			Sort:      34,
+			ParentID:  &uint8,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
 	}
 	for _, menu := range menus {
 		err := DB.First(&menu, menu.ID).Error

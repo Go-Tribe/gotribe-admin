@@ -297,7 +297,7 @@ func InitData() {
 			Path:      "/content/column",
 			Component: "/content/column/index",
 			Sort:      34,
-			ParentID:  &uint8,
+			ParentID:  &uint10,
 			Roles:     roles[:1],
 			Creator:   "系统",
 		},
@@ -930,6 +930,7 @@ func InitData() {
 	newCategory.ID = 1
 	newCategory.Title = "默认分类"
 	newCategory.Description = "默认分类"
+	newCategory.CategoryID = "24ejga"
 	if err := DB.Create(&newCategory).Error; err != nil {
 		Log.Errorf("写入默认分类数据失败：%v", err)
 	}
@@ -970,9 +971,24 @@ func InitData() {
 	user := model.User{}
 	user.UserID = gid.GenShortID()
 	user.Username = "author"
-	user.Nickname = "作者"
+	user.Nickname = "GoTribe"
 	user.ProjectID = "245eko"
 	if err := DB.Create(&user).Error; err != nil {
 		Log.Errorf("写入用户数据失败：%v", err)
+	}
+
+	post := model.Post{}
+	post.PostID = "243x9g"
+	post.Title = "欢迎使用GoTribe Cms"
+	post.Description = "这是一篇示例文章"
+	post.Content = "# 这是一篇示例文章"
+	post.Icon = "https://cdn.dengmengmian.com/20240528/1716909013037462047.jpg"
+	post.HtmlContent = "<h1>这是一篇示例文章</h1>"
+	post.UserID = "245eko"
+	post.CategoryID = "24ejga"
+	post.Author = "GoTribe"
+	post.ProjectID = "245eko"
+	if err := DB.Create(&post).Error; err != nil {
+		Log.Errorf("写入文章数据失败：%v", err)
 	}
 }

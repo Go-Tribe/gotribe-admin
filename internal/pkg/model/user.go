@@ -24,7 +24,7 @@ type User struct {
 	Sex       string     `gorm:"type:char(1);not null;default:M;comment:M:男 F:女" json:"sex"`
 	Status    uint8      `gorm:"type:tinyint(1);not null;default:1;comment:用户状态，1-正常；2-禁用" json:"status"`
 	Birthday  *time.Time `gorm:"type:date;comment:'用户生日，格式为YYYY-MM-DD'" json:"birthday"`
-	AvaterURL string     `gorm:"type:varchar(255);comment:头像地址" json:"avater_url"`
+	AvatarURL string     `gorm:"type:varchar(255);comment:头像地址" json:"avatar_url"`
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {

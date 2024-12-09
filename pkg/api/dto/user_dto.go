@@ -6,6 +6,8 @@
 package dto
 
 import (
+	"fmt"
+	"gotribe-admin/config"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/known"
 )
@@ -14,30 +16,35 @@ type UserDto struct {
 	UserID    string `json:"userID"`
 	Username  string `json:"username"`
 	Nickname  string `json:"nickname"`
+	Email     string `json:"email"`
+	AvatarURL string `json:"avatarURL"`
+	Sex       string `json:"sex"`
+	ProjectID string `json:"projectID"`
+	Status    uint8  `json:"status"`
 	CreatedAt string `json:"createdAt"`
 }
 
-func ToUserInfoDto(user model.User) UserDto {
+func toUserDto(user model.User) UserDto {
+	domain := config.Conf.System.CDNDomain
 	return UserDto{
 		UserID:    user.UserID,
 		Username:  user.Username,
 		Nickname:  user.Nickname,
+		Email:     fmt.Sprintf("%s:%s", domain, user.AvatarURL),
+		Sex:       user.Sex,
+		ProjectID: user.ProjectID,
 		CreatedAt: user.CreatedAt.Format(known.TimeFormat),
 	}
+}
+
+func ToUserInfoDto(user model.User) UserDto {
+	return toUserDto(user)
 }
 
 func ToUsersDto(userList []*model.User) []UserDto {
 	var users []UserDto
 	for _, user := range userList {
-		userDto := UserDto{
-			UserID:    user.UserID,
-			Username:  user.Username,
-			Nickname:  user.Nickname,
-			CreatedAt: user.CreatedAt.Format(known.TimeFormat),
-		}
-
-		users = append(users, userDto)
+		users = append(users, toUserDto(*user))
 	}
-
 	return users
 }

@@ -76,6 +76,7 @@ type SystemConfig struct {
 	RSAPrivateKey   string `mapstructure:"rsa-private-key" json:"rsaPrivateKey"`
 	RSAPublicBytes  []byte `mapstructure:"-" json:"-"`
 	RSAPrivateBytes []byte `mapstructure:"-" json:"-"`
+	CDNDomain       string `mapstructure:"cdn-domain" json:"CDNDomain"`
 }
 
 type LogsConfig struct {

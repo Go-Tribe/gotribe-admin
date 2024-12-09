@@ -38,7 +38,7 @@ mysql:
   # 密码
   password: HhwpKnf!YC4e
   # 数据库名
-  database: go-base
+  database: gotribe
   # 主机地址
   host: localhost
   # 端口

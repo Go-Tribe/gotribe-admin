@@ -7,6 +7,7 @@ package common
 
 import (
 	"fmt"
+	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -74,6 +75,8 @@ func InitMysql() {
 	// 全局DB赋值
 	DB = db
 	// 自动迁移表结构
-	migrate.DBAutoMigrate(DB)
-	Log.Infof("mysql数据库迁移完成! dsn: %s", showDsn)
+	if viper.GetBool("enable-migrate") {
+		migrate.DBAutoMigrate(DB)
+		Log.Infof("mysql数据库迁移完成! dsn: %s", showDsn)
+	}
 }

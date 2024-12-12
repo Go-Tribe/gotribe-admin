@@ -31,11 +31,16 @@ func toUserDto(user model.User) UserDto {
 		UserID:    user.UserID,
 		Username:  user.Username,
 		Nickname:  user.Nickname,
-		Email:     fmt.Sprintf("%s:%s", domain, user.AvatarURL),
+		Email:     user.Email,
 		Sex:       user.Sex,
 		ProjectID: user.ProjectID,
-		Birthday:  user.Birthday.Format(known.TimeFormat),
-		AvatarURL: user.AvatarURL,
+		Birthday: func() string {
+			if user.Birthday != nil {
+				return user.Birthday.Format(known.TimeFormat)
+			}
+			return ""
+		}(),
+		AvatarURL: fmt.Sprintf("%s:%s", domain, user.AvatarURL),
 		CreatedAt: user.CreatedAt.Format(known.TimeFormat),
 	}
 }

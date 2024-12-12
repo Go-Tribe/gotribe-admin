@@ -18,7 +18,7 @@ system:
   # rsa私钥文件路径(config.yml相对路径, 也可以填绝对路径)
   rsa-private-key: private.pem
   # cdn域名
-  cdn-domain: https://cdn.dengmengmian.com/
+  cdn-domain: https://cdn.gotribe.cn/
   # 是否启动数据迁移
   enable-migrate: false
 

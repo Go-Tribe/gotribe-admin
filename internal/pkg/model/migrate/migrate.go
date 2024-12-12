@@ -39,4 +39,6 @@ func DBAutoMigrate(db *gorm.DB) {
 	projectMigrate(db)
 	// 专栏表
 	columnMigrate(db)
+	// 推广场景
+	adSceneMigrate(db)
 }

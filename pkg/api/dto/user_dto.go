@@ -40,7 +40,7 @@ func toUserDto(user model.User) UserDto {
 			}
 			return ""
 		}(),
-		AvatarURL: fmt.Sprintf("%s:%s", domain, user.AvatarURL),
+		AvatarURL: fmt.Sprintf("%s%s", domain, user.AvatarURL),
 		CreatedAt: user.CreatedAt.Format(known.TimeFormat),
 	}
 }

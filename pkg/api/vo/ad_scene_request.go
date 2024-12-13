@@ -9,7 +9,7 @@ package vo
 type CreateAdSceneRequest struct {
 	ProjectID   string `form:"projectID" json:"projectID" validate:"required"`
 	Title       string `form:"title" json:"title" validate:"required,min=2,max=20"`
-	Description string `form:"description" json:"description" validate:"required,min=2,max=150"`
+	Description string `form:"description" json:"description" validate:"min=0,max=150"`
 }
 
 // 获取推广位列表结构体

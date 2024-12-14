@@ -11,7 +11,7 @@ type CommentListRequest struct {
 	ObjectID   string `form:"objectID" json:"objectID"`
 	ObjectType uint   `form:"objectType" json:"objectType"`
 	Status     uint   `form:"status" json:"status"`
-	Username   string `form:"username" json:"username"`
+	Nickname   string `form:"nickname" json:"nickname"`
 	PageNum    uint   `json:"pageNum" form:"pageNum"`
 	PageSize   uint   `json:"pageSize" form:"pageSize"`
 }

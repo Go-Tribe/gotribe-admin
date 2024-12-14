@@ -52,10 +52,10 @@ func (cr CommentRepository) GetComments(req *vo.CommentListRequest) ([]*model.Co
 	if !gconvert.IsEmpty(req.ProjectID) {
 		db = db.Where("project_id = ?", req.ProjectID)
 	}
-	if !gconvert.IsEmpty(req.Username) {
+	if !gconvert.IsEmpty(req.Nickname) {
 		// 查出用户 ID。再用用户 ID 去筛选
 		var user model.User
-		if result := common.DB.Model(&model.User{}).Where("nickname like ?", fmt.Sprintf("%%%s%%", req.Username)).First(&user); result.Error != nil {
+		if result := common.DB.Model(&model.User{}).Where("nickname like ?", fmt.Sprintf("%%%s%%", req.Nickname)).First(&user); result.Error != nil {
 			return nil, 0, result.Error
 		}
 		db = db.Where("user_id = ?", user.UserID)

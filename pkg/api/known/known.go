@@ -32,4 +32,8 @@ const (
 	FONT     = 6
 	APP      = 7
 	UNKNOWN  = 8
+
+	//审核状态
+	AuditStatusPending = 1
+	AuditStatusPass    = 2
 )

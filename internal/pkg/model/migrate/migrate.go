@@ -39,4 +39,6 @@ func DBAutoMigrate(db *gorm.DB) {
 	projectMigrate(db)
 	// 专栏表
 	columnMigrate(db)
+	// 评论表
+	commentMigrate(db)
 }

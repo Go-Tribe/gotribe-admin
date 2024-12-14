@@ -13,7 +13,7 @@ type Comment struct {
 	HtmlContent string `gorm:"not null;type:longtext;not null;comment:HTML内容" json:"htmlContent"`
 	Status      uint   `gorm:"type:tinyint;not null;index;default:1;comment:状态，1-待审核；2-审核通过" json:"status,omitempty"`
 	ObjectID    string `gorm:"type:char(10);not null;index;comment:评论对象ID" json:"objectID"`
-	ObjectType  uint   `gorm:"type:tinyint;not null;default:1;comment:评论对象类型，1-文章；2-商品" json:"objectType"`
+	ObjectType  uint   `gorm:"type:tinyint;not null;default:1;index;comment:评论对象类型，1-文章；2-商品" json:"objectType"`
 	Type        uint   `gorm:"type:tinyint;not null;default:1;comment:评论类型，1-评论；2-回复" json:"type"`
 	UserID      string `gorm:"type:char(10);not null;index;comment:用户ID" json:"userID"`
 	ToUserID    string `gorm:"type:char(10);not null;index;comment:被评论用户ID" json:"toUserID"`

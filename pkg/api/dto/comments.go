@@ -20,16 +20,16 @@ type CommentDto struct {
 	ObjectType  uint   `json:"objectType"`
 	Content     string `json:"comment"`
 	HtmlContent string `json:"htmlContent"`
-	Username    string `json:"username"`
+	Nickname    string `json:"nickname"`
 	CreatedAt   string `json:"createdAt"`
 	UpdatedAt   string `json:"updatedAt"`
 }
 
 // toCommentDto converts a model.Comment to an CommentDto.
 func toCommentDto(comment model.Comment) CommentDto {
-	var username string
+	var nickname string
 	if comment.User != nil {
-		username = comment.User.Username
+		nickname = comment.User.Nickname
 	}
 	return CommentDto{
 		ID:          comment.ID,
@@ -41,7 +41,7 @@ func toCommentDto(comment model.Comment) CommentDto {
 		Content:     comment.Content,
 		HtmlContent: comment.HtmlContent,
 		Status:      comment.Status,
-		Username:    username,
+		Nickname:    nickname,
 		CreatedAt:   comment.CreatedAt.Format(known.TimeFormat),
 		UpdatedAt:   comment.UpdatedAt.Format(known.TimeFormat),
 	}

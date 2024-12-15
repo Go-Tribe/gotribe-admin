@@ -77,6 +77,7 @@ type SystemConfig struct {
 	RSAPublicBytes  []byte `mapstructure:"-" json:"-"`
 	RSAPrivateBytes []byte `mapstructure:"-" json:"-"`
 	CDNDomain       string `mapstructure:"cdn-domain" json:"CDNDomain"`
+	EnableMigrate   bool   `mapstructure:"enable-migrate" json:"enableMigrate"`
 }
 
 type LogsConfig struct {

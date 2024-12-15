@@ -13,16 +13,17 @@ import (
 )
 
 type UserDto struct {
-	UserID    string `json:"userID"`
-	Username  string `json:"username"`
-	Nickname  string `json:"nickname"`
-	Email     string `json:"email"`
-	AvatarURL string `json:"avatarURL"`
-	Sex       string `json:"sex"`
-	ProjectID string `json:"projectID"`
-	Status    uint8  `json:"status"`
-	Birthday  string `json:"birthday"`
-	CreatedAt string `json:"createdAt"`
+	UserID    string  `json:"userID"`
+	Username  string  `json:"username"`
+	Nickname  string  `json:"nickname"`
+	Email     string  `json:"email"`
+	AvatarURL string  `json:"avatarURL"`
+	Sex       string  `json:"sex"`
+	ProjectID string  `json:"projectID"`
+	Status    uint8   `json:"status"`
+	Birthday  string  `json:"birthday"`
+	Point     float64 `json:"point"`
+	CreatedAt string  `json:"createdAt"`
 }
 
 func toUserDto(user model.User) UserDto {
@@ -42,6 +43,7 @@ func toUserDto(user model.User) UserDto {
 		}(),
 		AvatarURL: fmt.Sprintf("%s%s", domain, user.AvatarURL),
 		CreatedAt: user.CreatedAt.Format(known.TimeFormat),
+		Point:     user.Point,
 	}
 }
 

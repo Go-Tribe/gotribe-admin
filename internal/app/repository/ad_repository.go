@@ -51,7 +51,7 @@ func (cr AdRepository) GetAds(req *vo.AdListRequest) ([]*model.Ad, int64, error)
 		db = db.Where("title like ?", fmt.Sprintf("%%%s%%", req.Title))
 	}
 	if !gconvert.IsEmpty(req.Status) {
-		db = db.Where("staus = ?", req.Status)
+		db = db.Where("status = ?", fmt.Sprintf("%d", req.Status))
 	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数

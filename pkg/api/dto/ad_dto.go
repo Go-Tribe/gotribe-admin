@@ -14,13 +14,13 @@ type AdDto struct {
 	AdID        string `json:"adID"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
-	AdSceneID   string `json:"adSceneID"`
+	SceneID     string `json:"sceneID"`
 	SceneTitle  string `json:"SceneTitle"`
 	Status      uint   `json:"status"`
 	Image       string `json:"image"`
 	Sort        uint   `json:"sort"`
 	URL         string `json:"url"`
-	URLType     uint   `json:"URLType"`
+	URLType     uint   `json:"urlType"`
 	Ext         string `json:"ext"`
 	CreatedAt   string `json:"createdAt"`
 	UpdatedAt   string `json:"updatedAt"`
@@ -36,7 +36,7 @@ func toAdDto(ad model.Ad) AdDto {
 		AdID:        ad.AdID,
 		Title:       ad.Title,
 		Description: ad.Description,
-		AdSceneID:   ad.SceneID,
+		SceneID:     ad.SceneID,
 		Status:      ad.Status,
 		Image:       ad.Image,
 		Sort:        ad.Sort,

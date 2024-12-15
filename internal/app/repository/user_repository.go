@@ -6,8 +6,10 @@
 package repository
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
+	"gorm.io/gorm"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/vo"
@@ -69,7 +71,34 @@ func (ur UserRepository) GetUsers(req *vo.UserListRequest) ([]*model.User, int64
 	} else {
 		err = db.Find(&list).Error
 	}
-	return list, total, err
+	return GetUserOther(list), total, err
+}
+
+func GetUserOther(user []*model.User) []*model.User {
+	for _, m := range user {
+		userPoint := GetUserPoint(m.UserID)
+		m.Point = userPoint
+	}
+	return user
+}
+
+func GetUserPoint(userID string) float64 {
+	var sum sql.NullFloat64
+	var pointAvailable *model.PointAvailable
+	row := common.DB.Model(&pointAvailable).Select("SUM(points)").Where("user_id = ?", userID).Row()
+	err := row.Scan(&sum)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// 如果记录不存在，返回 0
+			return 0
+		}
+		return 0
+	}
+	// 如果 sum 是 NULL，则返回 0
+	if !sum.Valid {
+		return 0
+	}
+	return sum.Float64
 }
 
 // 创建用户

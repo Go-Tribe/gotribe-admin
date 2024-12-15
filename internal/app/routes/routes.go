@@ -76,6 +76,7 @@ func InitRoutes(fs embed.FS) *gin.Engine {
 	InitAdSceneRoutes(apiGroup, authMiddleware)      // 注册推广场景管理路由, jwt认证中间件,casbin鉴权中间件
 	InitAdRoutes(apiGroup, authMiddleware)           // 注册广告位管理路由, jwt认证中间件,casbin鉴权中间件
 	InitCommentRoutes(apiGroup, authMiddleware)      // 注册评论管理路由, jwt认证中间件,casbin鉴权中间件
+	InitPointRoutes(apiGroup, authMiddleware)        // 注册积分管理路由, jwt认证中间件,casbin鉴权中间件
 	common.Log.Info("初始化路由完成！")
 	return r
 }

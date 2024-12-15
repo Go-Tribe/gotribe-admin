@@ -48,7 +48,7 @@ func (cr AdRepository) GetAds(req *vo.AdListRequest) ([]*model.Ad, int64, error)
 		db = db.Where("scene_id = ?", fmt.Sprintf("%s", adSceneID))
 	}
 	if !gconvert.IsEmpty(req.Title) {
-		db = db.Where("title like ?", fmt.Sprintf("%%s%", req.Title))
+		db = db.Where("title like ?", fmt.Sprintf("%%%s%%", req.Title))
 	}
 	if !gconvert.IsEmpty(req.Status) {
 		db = db.Where("staus = ?", req.Status)

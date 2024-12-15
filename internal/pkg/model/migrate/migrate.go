@@ -45,4 +45,6 @@ func DBAutoMigrate(db *gorm.DB) {
 	adMigrate(db)
 	// 评论表
 	commentMigrate(db)
+	// 积分相关表
+	pointMigrate(db)
 }

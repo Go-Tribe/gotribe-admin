@@ -72,28 +72,91 @@ func (pr PostRepository) GetPosts(req *vo.PostListRequest) ([]*model.Post, int64
 	} else {
 		err = db.Find(&list).Error
 	}
-	return GetPostOther(list), total, err
+	// 调用 GetPostOther 并处理返回值
+	list, err = GetPostOther(list)
+	return list, total, err
 }
 
-func GetPostOther(posts []*model.Post) []*model.Post {
+func GetPostOther(posts []*model.Post) ([]*model.Post, error) {
+	// 收集所有需要查询的 CategoryID, Tag, ProjectID
+	categoryIDs := make([]string, 0, len(posts))
+	projectIDs := make([]string, 0, len(posts))
+	tagsMap := make(map[uint][]string)
+	allTagsSet := make(map[string]bool)
+
 	for _, m := range posts {
-		var category *model.Category
-		_ = common.DB.Where("category_id = ?", m.CategoryID).First(&category).Error
-		m.Category = category
-		var tags []*model.Tag
-		// 处理tag
-		strs := strings.Split(m.Tag, ",")
-		// 去除每个字符串首部和尾部的空白字符（如果有的话）
-		for i, str := range strs {
-			strs[i] = strings.TrimSpace(str)
+		if m.CategoryID != "" {
+			categoryIDs = append(categoryIDs, m.CategoryID)
 		}
-		_ = common.DB.Where("tag_id in (?)", strs).Find(&tags).Error
-		m.Tags = tags
-		var project *model.Project
-		_ = common.DB.Where("project_id = ?", m.ProjectID).First(&project).Error
-		m.Project = project
+		if m.ProjectID != "" {
+			projectIDs = append(projectIDs, m.ProjectID)
+		}
+		if m.Tag != "" {
+			strs := strings.Split(m.Tag, ",")
+			for _, str := range strs {
+				tag := strings.TrimSpace(str)
+				if tag != "" {
+					tagsMap[m.ID] = append(tagsMap[m.ID], tag)
+					allTagsSet[tag] = true
+				}
+			}
+		}
 	}
-	return posts
+
+	// 批量查询 Category
+	var categories []*model.Category
+	if err := common.DB.Where("category_id IN (?)", categoryIDs).Find(&categories).Error; err != nil {
+		return nil, err
+	}
+	// 批量查询 Tag
+	var allTags []*model.Tag
+	tagIDs := make([]string, 0, len(allTagsSet))
+	for tag := range allTagsSet {
+		tagIDs = append(tagIDs, tag)
+	}
+	if err := common.DB.Where("tag_id IN (?)", tagIDs).Find(&allTags).Error; err != nil {
+		return nil, err
+	}
+
+	// 批量查询 Project
+	var projects []*model.Project
+	if err := common.DB.Where("project_id IN (?)", projectIDs).Find(&projects).Error; err != nil {
+		return nil, err
+	}
+
+	// 将查询结果赋值给 posts
+	categoryMap := make(map[string]*model.Category)
+	for _, category := range categories {
+		common.Log.Info("category", "category", category.CategoryID)
+		categoryMap[category.CategoryID] = category
+	}
+
+	tagMap := make(map[string]*model.Tag)
+	for _, tag := range allTags {
+		tagMap[tag.TagID] = tag
+	}
+
+	projectMap := make(map[string]*model.Project)
+	for _, project := range projects {
+		projectMap[project.ProjectID] = project
+	}
+
+	for _, m := range posts {
+		if category, ok := categoryMap[m.CategoryID]; ok {
+			m.Category = category
+		}
+		var tags []*model.Tag
+		for _, tagID := range tagsMap[m.ID] {
+			if tag, ok := tagMap[tagID]; ok {
+				tags = append(tags, tag)
+			}
+		}
+		m.Tags = tags
+		if project, ok := projectMap[m.ProjectID]; ok {
+			m.Project = project
+		}
+	}
+	return posts, nil
 }
 
 // 创建内容

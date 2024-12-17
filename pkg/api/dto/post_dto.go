@@ -32,11 +32,13 @@ type PostsDto struct {
 	Tags        []*model.Tag    `json:"tags"`
 	Project     *model.Project  `json:"project"`
 	CreatedAt   string          `json:"createdAt"`
-	Password    string          `json:"password"`
 	Status      uint            `json:"status"`
 }
 
-func ToPostInfoDto(post model.Post) PostsDto {
+func ToPostInfoDto(post *model.Post) (PostsDto, error) {
+	if post == nil {
+		return PostsDto{}, nil
+	}
 	return PostsDto{
 		ColumnID:    post.ColumnID,
 		PostID:      post.PostID,
@@ -54,38 +56,21 @@ func ToPostInfoDto(post model.Post) PostsDto {
 		Type:        post.Type,
 		IsTop:       post.IsTop,
 		IsPasswd:    post.IsPasswd,
-		Password:    post.PassWord,
-		Status:      post.Status,
-		Project:     post.Project,
+		Category:    post.Category,
 		CreatedAt:   post.CreatedAt.Format(known.TimeFormat),
-	}
+		Tags:        post.Tags,
+		Project:     post.Project,
+		Status:      post.Status,
+	}, nil
 }
 
 func ToPostsDto(postList []*model.Post) []PostsDto {
 	var posts []PostsDto
 	for _, post := range postList {
-		postDto := PostsDto{
-			ColumnID:    post.ColumnID,
-			PostID:      post.PostID,
-			Title:       post.Title,
-			Description: post.Description,
-			CategoryID:  post.CategoryID,
-			ProjectID:   post.ProjectID,
-			UserID:      post.UserID,
-			Author:      post.Author,
-			Content:     post.Content,
-			HtmlContent: post.HtmlContent,
-			Ext:         post.Ext,
-			Icon:        post.Icon,
-			Type:        post.Type,
-			IsTop:       post.IsTop,
-			IsPasswd:    post.IsPasswd,
-			Category:    post.Category,
-			CreatedAt:   post.CreatedAt.Format(known.TimeFormat),
-			Tags:        post.Tags,
-			Project:     post.Project,
-			Status:      post.Status,
+		if post == nil {
+			continue
 		}
+		postDto, _ := ToPostInfoDto(post)
 		posts = append(posts, postDto)
 	}
 

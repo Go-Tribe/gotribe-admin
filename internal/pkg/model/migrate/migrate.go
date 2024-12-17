@@ -47,4 +47,6 @@ func DBAutoMigrate(db *gorm.DB) {
 	commentMigrate(db)
 	// 积分相关表
 	pointMigrate(db)
+	// 商品分类
+	productCategoryMigrate(db)
 }

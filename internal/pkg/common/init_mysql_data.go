@@ -969,6 +969,7 @@ func InitData() {
 
 	// 9.初始化 user
 	user := model.User{}
+	user.ID = 1
 	user.UserID = gid.GenShortID()
 	user.Username = "author"
 	user.Nickname = "GoTribe"
@@ -978,6 +979,7 @@ func InitData() {
 	}
 
 	post := model.Post{}
+	post.ID = 1
 	post.PostID = "243x9g"
 	post.Title = "欢迎使用GoTribe Cms"
 	post.Description = "这是一篇示例文章"

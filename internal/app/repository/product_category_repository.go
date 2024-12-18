@@ -80,7 +80,7 @@ func (cr ProductCategoryRepository) UpdateProductCategoryByID(productCategoryID 
 func (cr ProductCategoryRepository) BatchDeleteProductCategoryByIds(productCategoryIds []string) error {
 	var productCategorys []*model.ProductCategory
 
-	err := common.DB.Where("productCategory_id IN (?)", productCategoryIds).Find(&productCategorys).Error
+	err := common.DB.Where("product_category_id IN (?)", productCategoryIds).Find(&productCategorys).Error
 	if err != nil {
 		return err
 	}

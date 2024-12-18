@@ -34,7 +34,7 @@ func NewProductTypeRepository() IProductTypeRepository {
 // 获取单个商品类型
 func (tr ProductTypeRepository) GetProductTypeByProductTypeID(productTypeID string) (model.ProductType, error) {
 	var productType model.ProductType
-	err := common.DB.Where("productType_id = ?", productTypeID).First(&productType).Error
+	err := common.DB.Where("product_type_id = ?", productTypeID).First(&productType).Error
 	return productType, err
 }
 

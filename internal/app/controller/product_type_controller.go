@@ -27,15 +27,22 @@ type IProductTypeController interface {
 
 type ProductTypeController struct {
 	ProductTypeRepository repository.IProductTypeRepository
+	ProductSpecRepository repository.IProductSpecRepository
 }
 
 // 构造函数
 func NewProductTypeController() IProductTypeController {
 	productTypeRepository := repository.NewProductTypeRepository()
-	productTypeController := ProductTypeController{ProductTypeRepository: productTypeRepository}
+	productSpecRepository := repository.NewProductSpecRepository()
+	productTypeController := ProductTypeController{
+		ProductTypeRepository: productTypeRepository,
+		ProductSpecRepository: productSpecRepository,
+	}
+
 	return productTypeController
 }
 
+// 获取当前商品类型信息
 // 获取当前商品类型信息
 func (tc ProductTypeController) GetProductTypeInfo(c *gin.Context) {
 	productType, err := tc.ProductTypeRepository.GetProductTypeByProductTypeID(c.Param("productTypeID"))
@@ -44,6 +51,18 @@ func (tc ProductTypeController) GetProductTypeInfo(c *gin.Context) {
 		return
 	}
 	productTypeInfoDto := dto.ToProductTypeInfoDto(productType)
+
+	// 将 SpecIds 字符串转换为字符串切片
+	specIds := strings.Split(productType.SpecIds, ",")
+
+	// 获取关联的规格信息并追加进去
+	productSpecs, err := tc.ProductSpecRepository.GetProductSpecsByProductSpecIDs(specIds)
+	if err != nil {
+		response.Fail(c, nil, "获取商品规格信息失败: "+err.Error())
+		return
+	}
+	productTypeInfoDto.Spec = productSpecs
+
 	response.Success(c, gin.H{
 		"productType": productTypeInfoDto,
 	}, "获取当前商品类型信息成功")

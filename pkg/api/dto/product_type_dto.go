@@ -13,12 +13,13 @@ import (
 // ProductTypeDto 定义了产品类型信息传输的数据结构。
 // 包含产品类型ID、标题、备注、类别ID、规格ID和创建时间等基本信息。
 type ProductTypeDto struct {
-	ProductTypeID string `json:"productTypeID"`
-	Title         string `json:"title"`
-	Remark        string `json:"remark"`
-	CategoryID    string `json:"categoryID"`
-	SpecIds       string `json:"specIds"`
-	CreatedAt     string `json:"createdAt"`
+	ProductTypeID string               `json:"productTypeID"`
+	Title         string               `json:"title"`
+	Remark        string               `json:"remark"`
+	CategoryID    string               `json:"categoryID"`
+	Spec          []*model.ProductSpec `json:"spec"`
+	SpecIds       string               `json:"specIds"`
+	CreatedAt     string               `json:"createdAt"`
 }
 
 // toProductTypeDto 将产品类型模型转换为产品类型DTO。

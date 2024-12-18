@@ -51,4 +51,8 @@ func DBAutoMigrate(db *gorm.DB) {
 	productCategoryMigrate(db)
 	// 商品类型（规格组）
 	productTypeMigrate(db)
+	// 商品规格
+	productSpecMigrate(db)
+	// 商品规格属性
+	productSpecItemMigrate(db)
 }

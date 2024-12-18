@@ -33,6 +33,10 @@ func CasbinMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+		// 增加超级管理员账号
+		if admin.ID == 1 {
+			return
+		}
 		// 获得用户的全部角色
 		roles := admin.Roles
 		// 获得用户全部未被禁用的角色的Keyword

@@ -27,6 +27,7 @@ type UpdateProductCategoryRequest struct {
 	Status      uint   `json:"status" form:"status"`
 	Hidden      uint   `json:"hidden" form:"hidden" validate:"oneof=1 2"`
 	ParentID    *uint  `json:"parentID" form:"parentID" validate:"required"`
+	ProjectID   string `json:"projectID" form:"projectID" validate:"required"`
 	Description string `json:"description" form:"description"`
 }
 

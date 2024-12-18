@@ -135,6 +135,7 @@ func (cc ProductCategoryController) UpdateProductCategoryByID(c *gin.Context) {
 	productCategory.Hidden = req.Hidden
 	productCategory.ParentID = req.ParentID
 	productCategory.Description = req.Description
+	productCategory.ProjectID = req.ProjectID
 	err = cc.ProductCategoryRepository.UpdateProductCategoryByID(productCategoryID, &productCategory)
 	if err != nil {
 		response.Fail(c, nil, "更新分类失败: "+err.Error())

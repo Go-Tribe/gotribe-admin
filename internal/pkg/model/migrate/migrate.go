@@ -57,4 +57,6 @@ func DBAutoMigrate(db *gorm.DB) {
 	productSpecItemMigrate(db)
 	// SPU表
 	productMigrate(db)
+	// SKU表
+	productSKUMigrate(db)
 }

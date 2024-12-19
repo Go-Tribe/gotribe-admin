@@ -10,7 +10,7 @@ type PointLog struct {
 	Model
 	ProjectID string  `gorm:"type:char(10);not null;index;comment:项目ID;" json:"projectID"`
 	UserID    string  `gorm:"type:varchar(10);Index;comment:用户ID" json:"userID"`
-	Points    float32 `gorm:"type:float(20,2);NOT NULL;comment:积分数值"`
+	Points    float32 `gorm:"type:float(20,2);NOT NULL;comment:积分数值" json:"points"`
 	Reason    string  `gorm:"type:varchar(255);NOT NULL;comment:加减原因"json:"reason"`
 	Type      string  `gorm:"type:varchar(20);NOT NULL;comment:类型" json:"type"`
 	EventID   string  `gorm:"type:char(10);comment:事件ID" json:"eventID"`

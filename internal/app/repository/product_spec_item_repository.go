@@ -8,10 +8,12 @@ package repository
 import (
 	"errors"
 	"fmt"
+	"github.com/dengmengmian/ghelper/gconvert"
 	"gorm.io/gorm"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/vo"
+	"strings"
 )
 
 type IProductSpecItemRepository interface {
@@ -41,6 +43,11 @@ func (tr ProductSpecItemRepository) GetProductSpecItemByProductSpecItemID(produc
 func (tr ProductSpecItemRepository) GetProductSpecItems(req *vo.ProductSpecItemListRequest) ([]*model.ProductSpecItem, int64, error) {
 	var list []*model.ProductSpecItem
 	db := common.DB.Model(&model.ProductSpecItem{}).Order("created_at DESC")
+
+	specID := strings.TrimSpace(req.SpecID)
+	if !gconvert.IsEmpty(specID) {
+		db = db.Where("spec_id = ?", fmt.Sprintf("%s", specID))
+	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数
 	var total int64

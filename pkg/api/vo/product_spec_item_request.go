@@ -15,8 +15,9 @@ type CreateProductSpecItemRequest struct {
 
 // 获取商品规格值列表结构体
 type ProductSpecItemListRequest struct {
-	PageNum  uint `json:"pageNum" form:"pageNum"`
-	PageSize uint `json:"pageSize" form:"pageSize"`
+	SpecID   string `form:"specID" json:"specID"`
+	PageNum  uint   `json:"pageNum" form:"pageNum"`
+	PageSize uint   `json:"pageSize" form:"pageSize"`
 }
 
 // 批量删除商品规格值结构体

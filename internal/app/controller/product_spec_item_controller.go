@@ -89,7 +89,6 @@ func (tc ProductSpecItemController) CreateProductSpecItem(c *gin.Context) {
 	}
 
 	productSpecItem := model.ProductSpecItem{
-		Model:   model.Model{},
 		Title:   req.Title,
 		Sort:    req.Sort,
 		SpecID:  req.SpecID,

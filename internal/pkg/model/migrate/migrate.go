@@ -55,4 +55,6 @@ func DBAutoMigrate(db *gorm.DB) {
 	productSpecMigrate(db)
 	// 商品规格属性
 	productSpecItemMigrate(db)
+	// SPU表
+	productMigrate(db)
 }

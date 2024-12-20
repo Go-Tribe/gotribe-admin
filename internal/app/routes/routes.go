@@ -27,8 +27,6 @@ func InitRoutes(fs embed.FS) *gin.Engine {
 	// 日志与恢复中间件
 	r := gin.Default()
 	// 创建不带中间件的路由:
-	// r := gin.New()
-	// r.Use(gin.Recovery())
 
 	// 启用限流中间件
 	// 默认每50毫秒填充一个令牌，最多填充200个
@@ -81,6 +79,7 @@ func InitRoutes(fs embed.FS) *gin.Engine {
 	InitProductTypeRoutes(apiGroup, authMiddleware)     // 注册商品类型管理路由, jwt认证中间件,casbin鉴权中间件
 	InitProductSpecRoutes(apiGroup, authMiddleware)     // 注册商品规格管理路由, jwt认证中间件,casbin鉴权中间件
 	InitProductSpecItemRoutes(apiGroup, authMiddleware) // 注册商品规格项管理路由, jwt认证中间件,casbin鉴权中间件
+	InitProductRoutes(apiGroup, authMiddleware)         // 注册商品管理路由, jwt认证中间件,casbin鉴权中间件
 	common.Log.Info("初始化路由完成！")
 	return r
 }

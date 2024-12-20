@@ -316,8 +316,8 @@ func InitData() {
 	}
 
 	// 3.写入管理员
-	newUsers := make([]model.Admin, 0)
-	users := []model.Admin{
+	newAdmins := make([]model.Admin, 0)
+	admins := []model.Admin{
 		{
 			Model:        model.Model{ID: 1},
 			Username:     "admin",
@@ -332,15 +332,15 @@ func InitData() {
 		},
 	}
 
-	for _, user := range users {
-		err := DB.First(&user, user.ID).Error
+	for _, admin := range admins {
+		err := DB.First(&admin, admin.ID).Error
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			newUsers = append(newUsers, user)
+			newAdmins = append(newAdmins, admin)
 		}
 	}
 
-	if len(newUsers) > 0 {
-		err := DB.Create(&newUsers).Error
+	if len(newAdmins) > 0 {
+		err := DB.Create(&newAdmins).Error
 		if err != nil {
 			Log.Errorf("写入管理员数据失败：%v", err)
 		}
@@ -924,73 +924,165 @@ func InitData() {
 			Log.Errorf("写入casbin数据失败：%v", err)
 		}
 	}
+	// 3.写入分类
+	newCategory := make([]model.Category, 0)
+	categorys := []model.Category{
+		{
+			Model:       model.Model{ID: 1},
+			Title:       "默认分类",
+			Description: "默认分类",
+			CategoryID:  "24ejga",
+			Status:      1,
+		},
+	}
 
-	// 5.写入分类数据
-	newCategory := model.Category{}
-	newCategory.ID = 1
-	newCategory.Title = "默认分类"
-	newCategory.Description = "默认分类"
-	newCategory.CategoryID = "24ejga"
-	if err := DB.Create(&newCategory).Error; err != nil {
-		Log.Errorf("写入默认分类数据失败：%v", err)
+	for _, category := range categorys {
+		err := DB.First(&category, category.ID).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			newCategory = append(newCategory, category)
+		}
+	}
+
+	if len(newCategory) > 0 {
+		err := DB.Create(&newCategory).Error
+		if err != nil {
+			Log.Errorf("写入分类数据失败：%v", err)
+		}
 	}
 
 	// 6.写入TAG数据
-	newTag := model.Tag{}
-	newTag.ID = 1
-	newTag.TagID = gid.GenShortID()
-	newTag.Title = "默认标签"
-	newTag.Description = "默认标签"
-	if err := DB.Create(&newTag).Error; err != nil {
-		Log.Errorf("写入默认tag数据失败：%v", err)
+	newTags := make([]model.Tag, 0)
+	tags := []model.Tag{
+		{
+			Model:       model.Model{ID: 1},
+			TagID:       gid.GenShortID(),
+			Title:       "默认标签",
+			Description: "默认标签",
+		},
+	}
+
+	for _, tag := range tags {
+		err := DB.First(&tag, tag.ID).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			newTags = append(newTags, tag)
+		}
+	}
+
+	if len(newTags) > 0 {
+		err := DB.Create(&newTags).Error
+		if err != nil {
+			Log.Errorf("写入tag数据失败：%v", err)
+		}
 	}
 
 	// 7.写入项目数据
-	newProject := model.Project{}
-	newProject.ID = 1
-	newProject.Title = "默认项目"
-	newProject.ProjectID = "245eko"
-	newProject.Description = "默认项目"
-	if err := DB.Create(&newProject).Error; err != nil {
-		Log.Errorf("写入项目数据失败：%v", err)
+	newProjects := make([]model.Project, 0)
+	projects := []model.Project{
+		{
+			Model:       model.Model{ID: 1},
+			Title:       "默认项目",
+			ProjectID:   "245eko",
+			Description: "默认项目",
+		},
 	}
 
+	for _, project := range projects {
+		err := DB.First(&project, project.ID).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			newProjects = append(newProjects, project)
+		}
+	}
+
+	if len(newProjects) > 0 {
+		err := DB.Create(&newProjects).Error
+		if err != nil {
+			Log.Errorf("写入项目数据失败：%v", err)
+		}
+	}
 	// 8.初始化nav
-	nav := model.Config{}
-	nav.Type = 2
-	nav.ProjectID = "245eko"
-	nav.Alias = "nav"
-	nav.Description = "导航配置"
-	nav.Title = "博客导航"
-	nav.Info = `[{"name":"首页","url":"/","child":[]},{"name":"精选栏目","url":"/series","child":[]},{"name":"示例页面","url":"/p/24g1i6","child":[]}]`
-	if err := DB.Create(&nav).Error; err != nil {
-		Log.Errorf("写入nav数据失败：%v", err)
+	newNavs := make([]model.Config, 0)
+	navs := []model.Config{
+		{
+			Model:       model.Model{ID: 1},
+			Type:        2,
+			ProjectID:   "245eko",
+			Alias:       "nav",
+			Description: "导航配置",
+			Title:       "默认导航",
+			Info:        `[{"name":"首页","url":"/","child":[]},{"name":"精选栏目","url":"/series","child":[]},{"name":"示例页面","url":"/p/24g1i6","child":[]}]`,
+		},
+	}
+
+	for _, nav := range navs {
+		err := DB.First(&nav, nav.ID).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			newNavs = append(newNavs, nav)
+		}
+	}
+
+	if len(newNavs) > 0 {
+		err := DB.Create(&newNavs).Error
+		if err != nil {
+			Log.Errorf("写入nav数据失败：%v", err)
+		}
 	}
 
 	// 9.初始化 user
-	user := model.User{}
-	user.ID = 1
-	user.UserID = gid.GenShortID()
-	user.Username = "author"
-	user.Nickname = "GoTribe"
-	user.ProjectID = "245eko"
-	if err := DB.Create(&user).Error; err != nil {
-		Log.Errorf("写入用户数据失败：%v", err)
+	newUsers := make([]model.User, 0)
+	users := []model.User{
+		{
+			Model:     model.Model{ID: 1},
+			UserID:    gid.GenShortID(),
+			Username:  "gotribe",
+			Nickname:  "gotribe",
+			ProjectID: "245eko",
+		},
 	}
 
-	post := model.Post{}
-	post.ID = 1
-	post.PostID = "243x9g"
-	post.Title = "欢迎使用GoTribe Cms"
-	post.Description = "这是一篇示例文章"
-	post.Content = "# 这是一篇示例文章"
-	post.Icon = "https://cdn.dengmengmian.com/20240528/1716909013037462047.jpg"
-	post.HtmlContent = "<h1>这是一篇示例文章</h1>"
-	post.UserID = "245eko"
-	post.CategoryID = "24ejga"
-	post.Author = "GoTribe"
-	post.ProjectID = "245eko"
-	if err := DB.Create(&post).Error; err != nil {
-		Log.Errorf("写入文章数据失败：%v", err)
+	for _, user := range users {
+		err := DB.First(&user, user.ID).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			newUsers = append(newUsers, user)
+		}
 	}
+
+	if len(newUsers) > 0 {
+		err := DB.Create(&newUsers).Error
+		if err != nil {
+			Log.Errorf("写入用户数据失败：%v", err)
+		}
+	}
+
+	// 10.写入文章数据
+	newPosts := make([]model.Post, 0)
+	posts := []model.Post{
+		{
+			Model:       model.Model{ID: 1},
+			PostID:      "243x9g",
+			Title:       "欢迎使用GoTribe",
+			Description: "这是一篇示例文章",
+			Content:     "# 这是一篇示例文章",
+			Icon:        "https://cdn.dengmengmian.com/20240528/1716909013037462047.jpg",
+			HtmlContent: "<h1>这是一篇示例文章</h1>",
+			UserID:      "245eko",
+			CategoryID:  "24ejga",
+			Author:      "GoTribe",
+			ProjectID:   "245eko",
+		},
+	}
+
+	for _, post := range posts {
+		err := DB.First(&post, post.ID).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			newPosts = append(newPosts, post)
+		}
+	}
+
+	if len(newPosts) > 0 {
+		err := DB.Create(&newPosts).Error
+		if err != nil {
+			Log.Errorf("写入文章数据失败：%v", err)
+		}
+	}
+
 }

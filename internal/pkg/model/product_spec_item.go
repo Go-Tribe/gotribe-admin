@@ -13,7 +13,7 @@ import (
 type ProductSpecItem struct {
 	Model
 	ProductSpecItemID string `gorm:"type:char(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"productSpecItemID"`
-	SpecID            string `gorm:"type:char(10);Index;comment:唯一字符ID/分布式ID" json:"specID"`
+	SpecID            string `gorm:"type:char(10);comment:唯一字符ID/分布式ID" json:"specID"`
 	Title             string `gorm:"type:varchar(255);not null;comment:标题" json:"title"`
 	Sort              uint   `gorm:"type:tinyint(4);not null;default:1;comment:排序" json:"sort"`
 	Enabled           uint   `form:"enabled" json:"enabled" validate:"oneof=1 2"`

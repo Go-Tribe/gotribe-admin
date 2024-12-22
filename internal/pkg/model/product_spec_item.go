@@ -12,14 +12,14 @@ import (
 
 type ProductSpecItem struct {
 	Model
-	ProductSpecItemID string `gorm:"type:char(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"productSpecItemID"`
-	SpecID            string `gorm:"type:char(10);comment:唯一字符ID/分布式ID" json:"specID"`
-	Title             string `gorm:"type:varchar(255);not null;comment:标题" json:"title"`
-	Sort              uint   `gorm:"type:tinyint(4);not null;default:1;comment:排序" json:"sort"`
-	Enabled           uint   `form:"enabled" json:"enabled" validate:"oneof=1 2"`
+	ItemID  string `gorm:"type:char(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"itemID"`
+	SpecID  string `gorm:"type:char(10);comment:唯一字符ID/分布式ID" json:"specID"`
+	Title   string `gorm:"type:varchar(255);not null;comment:标题" json:"title"`
+	Sort    uint   `gorm:"type:tinyint(4);not null;default:1;comment:排序" json:"sort"`
+	Enabled uint   `form:"enabled" json:"enabled" validate:"oneof=1 2"`
 }
 
-func (e *ProductSpecItem) BeforeCreateItem(tx *gorm.DB) error {
-	e.ProductSpecItemID = gid.GenShortID()
+func (e *ProductSpecItem) BeforeCreate(tx *gorm.DB) error {
+	e.ItemID = gid.GenShortID()
 	return nil
 }

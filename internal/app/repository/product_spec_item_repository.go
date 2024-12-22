@@ -18,7 +18,7 @@ import (
 
 type IProductSpecItemRepository interface {
 	CreateProductSpecItem(productSpecItem *model.ProductSpecItem) (*model.ProductSpecItem, error)    // 创建商品规格值
-	GetProductSpecItemByProductSpecItemID(productSpecItemID string) (model.ProductSpecItem, error)   // 获取单个商品规格值
+	GetProductSpecItemByItemID(productSpecItemID string) (model.ProductSpecItem, error)              // 获取单个商品规格值
 	GetProductSpecItems(req *vo.ProductSpecItemListRequest) ([]*model.ProductSpecItem, int64, error) // 获取商品规格值列表
 	UpdateProductSpecItem(productSpecItem *model.ProductSpecItem) error                              // 更新商品规格值
 	BatchDeleteProductSpecItemByIds(ids []string) error                                              // 批量删除
@@ -33,9 +33,9 @@ func NewProductSpecItemRepository() IProductSpecItemRepository {
 }
 
 // 获取单个商品规格值
-func (tr ProductSpecItemRepository) GetProductSpecItemByProductSpecItemID(productSpecItemID string) (model.ProductSpecItem, error) {
+func (tr ProductSpecItemRepository) GetProductSpecItemByItemID(productSpecItemID string) (model.ProductSpecItem, error) {
 	var productSpecItem model.ProductSpecItem
-	err := common.DB.Where("product_spec_id = ?", productSpecItemID).First(&productSpecItem).Error
+	err := common.DB.Where("item_id = ?", productSpecItemID).First(&productSpecItem).Error
 	return productSpecItem, err
 }
 
@@ -92,7 +92,7 @@ func (tr ProductSpecItemRepository) BatchDeleteProductSpecItemByIds(ids []string
 	var productSpecItems []model.ProductSpecItem
 	for _, id := range ids {
 		// 根据ID获取商品规格值
-		productSpecItem, err := tr.GetProductSpecItemByProductSpecItemID(id)
+		productSpecItem, err := tr.GetProductSpecItemByItemID(id)
 		if err != nil {
 			return errors.New(fmt.Sprintf("未获取到ID为%s的商品规格值", id))
 		}

@@ -38,7 +38,7 @@ func NewProductSpecItemController() IProductSpecItemController {
 
 // 获取当前商品规格信息
 func (tc ProductSpecItemController) GetProductSpecItemInfo(c *gin.Context) {
-	productSpecItem, err := tc.ProductSpecItemRepository.GetProductSpecItemByProductSpecItemID(c.Param("productSpecItemID"))
+	productSpecItem, err := tc.ProductSpecItemRepository.GetProductSpecItemByItemID(c.Param("productSpecItemID"))
 	if err != nil {
 		response.Fail(c, nil, "获取当前商品规格信息失败: "+err.Error())
 		return
@@ -119,7 +119,7 @@ func (tc ProductSpecItemController) UpdateProductSpecItemByID(c *gin.Context) {
 	}
 
 	// 根据path中的ProductSpecItemID获取商品规格信息
-	oldProductSpecItem, err := tc.ProductSpecItemRepository.GetProductSpecItemByProductSpecItemID(c.Param("productSpecItemID"))
+	oldProductSpecItem, err := tc.ProductSpecItemRepository.GetProductSpecItemByItemID(c.Param("productSpecItemID"))
 	if err != nil {
 		response.Fail(c, nil, "获取需要更新的商品规格信息失败: "+err.Error())
 		return

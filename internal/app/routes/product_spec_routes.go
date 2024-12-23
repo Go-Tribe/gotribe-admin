@@ -26,6 +26,7 @@ func InitProductSpecRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddlew
 		router.POST("", productSpecController.CreateProductSpec)
 		router.PATCH(":productSpecID", productSpecController.UpdateProductSpecByID)
 		router.DELETE("", productSpecController.BatchDeleteProductSpecByIds)
+		router.GET("/info/:categoryID", productSpecController.GetProductSpecAndItem)
 	}
 	return r
 }

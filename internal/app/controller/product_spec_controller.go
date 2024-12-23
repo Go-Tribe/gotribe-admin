@@ -23,6 +23,7 @@ type IProductSpecController interface {
 	CreateProductSpec(c *gin.Context)           // 创建商品规格
 	UpdateProductSpecByID(c *gin.Context)       // 更新商品规格
 	BatchDeleteProductSpecByIds(c *gin.Context) // 批量删除商品规格
+	GetProductSpecAndItem(c *gin.Context)       // 获取商品规格和规格项
 }
 
 type ProductSpecController struct {
@@ -165,4 +166,15 @@ func (tc ProductSpecController) BatchDeleteProductSpecByIds(c *gin.Context) {
 
 	response.Success(c, nil, "删除商品规格成功")
 
+}
+
+// 通过分类商品分类 ID 获取规格和规格项
+func (tc ProductSpecController) GetProductSpecAndItem(c *gin.Context) {
+	categoryID := c.Param("categoryID")
+	productSpecAndItem, err := tc.ProductSpecRepository.GetProductSpecAndItem(categoryID)
+	if err != nil {
+		response.Fail(c, nil, "获取商品规格失败: "+err.Error())
+		return
+	}
+	response.Success(c, gin.H{"productSpecAndItem": dto.ToProductSpecsDto(productSpecAndItem)}, "获取商品规格成功")
 }

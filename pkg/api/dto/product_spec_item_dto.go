@@ -47,8 +47,8 @@ func toProductSpecItemDto(productSpecItem *model.ProductSpecItem) ProductSpecIte
 // ToProductSpecItemInfoDto 将产品类型模型转换为产品类型信息DTO。
 // 参数 productSpecItem: 产品类型模型。
 // 返回值: 返回一个产品类型DTO。
-func ToProductSpecItemInfoDto(productSpecItem model.ProductSpecItem) ProductSpecItemDto {
-	return toProductSpecItemDto(&productSpecItem)
+func ToProductSpecItemInfoDto(productSpecItem *model.ProductSpecItem) ProductSpecItemDto {
+	return toProductSpecItemDto(productSpecItem)
 }
 
 // ToProductSpecItemsDto 将产品类型模型列表转换为产品类型DTO列表。

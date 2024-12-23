@@ -13,13 +13,14 @@ import (
 // ProductSpecDto 定义了产品类型信息传输的数据结构。
 // 包含产品类型ID、标题、备注、类别ID、规格ID和创建时间等基本信息。
 type ProductSpecDto struct {
-	ProductSpecID string `json:"productSpecID"`
-	Title         string `json:"title"`
-	Remark        string `json:"remark"`
-	Format        uint   `json:"format"`
-	Image         string `json:"image"`
-	Sort          uint   `json:"sort"`
-	CreatedAt     string `json:"createdAt"`
+	ProductSpecID string               `json:"productSpecID"`
+	Title         string               `json:"title"`
+	Remark        string               `json:"remark"`
+	Format        uint                 `json:"format"`
+	Image         string               `json:"image"`
+	Sort          uint                 `json:"sort"`
+	CreatedAt     string               `json:"createdAt"`
+	Items         []ProductSpecItemDto `json:"item"`
 }
 
 // toProductSpecDto 将产品类型模型转换为产品类型DTO。
@@ -34,6 +35,10 @@ func toProductSpecDto(productSpec *model.ProductSpec) ProductSpecDto {
 	if !productSpec.CreatedAt.IsZero() {
 		createdAt = productSpec.CreatedAt.Format(known.TimeFormat)
 	}
+	items := make([]ProductSpecItemDto, 0, len(productSpec.Items))
+	for _, item := range productSpec.Items {
+		items = append(items, ToProductSpecItemInfoDto(item))
+	}
 
 	return ProductSpecDto{
 		ProductSpecID: productSpec.ProductSpecID,
@@ -43,6 +48,7 @@ func toProductSpecDto(productSpec *model.ProductSpec) ProductSpecDto {
 		Image:         productSpec.Image,
 		Sort:          productSpec.Sort,
 		CreatedAt:     createdAt,
+		Items:         items,
 	}
 }
 

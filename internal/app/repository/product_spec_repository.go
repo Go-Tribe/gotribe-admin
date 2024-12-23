@@ -22,6 +22,7 @@ type IProductSpecRepository interface {
 	UpdateProductSpec(productSpec *model.ProductSpec) error                                // 更新商品规格
 	BatchDeleteProductSpecByIds(ids []string) error                                        // 批量删除
 	GetProductSpecsByProductSpecIDs(productSpecIDs []string) ([]*model.ProductSpec, error) // 获取多个商品规格
+	GetProductSpecAndItem(categoryID string) ([]*model.ProductSpec, error)                 // 通过商品分类获取商品规格和规格项
 }
 
 type ProductSpecRepository struct {
@@ -118,4 +119,59 @@ func (tr ProductSpecRepository) GetProductSpecsByProductSpecIDs(productSpecIDs [
 	var productSpecs []*model.ProductSpec
 	err := common.DB.Where("product_spec_id IN (?)", productSpecIDs).Find(&productSpecs).Error
 	return productSpecs, err
+}
+
+func (tr ProductSpecRepository) GetProductSpecAndItem(categoryID string) ([]*model.ProductSpec, error) {
+	// 通过分类获取商品类型里的spec_ids
+	var productType model.ProductType
+	err := common.DB.Where("product_category_id = ?", categoryID).First(&productType).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil // 或者根据业务需求返回适当的错误信息
+		}
+		return nil, err
+	}
+
+	// 拿到的spec_ids去查所有规格信息
+	specIDs := strings.Split(productType.SpecIds, ",")
+	if len(specIDs) == 0 {
+		return nil, nil // 或者根据业务需求返回适当的错误信息
+	}
+
+	var productSpecList []*model.ProductSpec
+	err = common.DB.Where("product_spec_id in (?)", specIDs).Find(&productSpecList).Error
+	if err != nil {
+		return nil, err
+	}
+
+	// 获取所有规格项信息
+	specIDsForItems := make([]string, 0, len(productSpecList))
+	for _, productSpec := range productSpecList {
+		specIDsForItems = append(specIDsForItems, productSpec.ProductSpecID)
+	}
+
+	var productSpecItemList []model.ProductSpecItem
+	if len(specIDsForItems) > 0 {
+		err = common.DB.Where("spec_id IN (?)", specIDsForItems).Find(&productSpecItemList).Error
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// 组合返回规格和规格项信息
+	for i := range productSpecList {
+		productSpecList[i].Items = filterItemsBySpecID(productSpecItemList, productSpecList[i].ProductSpecID)
+	}
+
+	return productSpecList, nil
+}
+
+func filterItemsBySpecID(items []model.ProductSpecItem, specID string) []*model.ProductSpecItem {
+	result := make([]*model.ProductSpecItem, 0)
+	for i := range items {
+		if items[i].SpecID == specID {
+			result = append(result, &items[i])
+		}
+	}
+	return result
 }

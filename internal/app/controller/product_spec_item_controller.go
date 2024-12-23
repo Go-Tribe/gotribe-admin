@@ -43,7 +43,7 @@ func (tc ProductSpecItemController) GetProductSpecItemInfo(c *gin.Context) {
 		response.Fail(c, nil, "获取当前商品规格信息失败: "+err.Error())
 		return
 	}
-	productSpecItemInfoDto := dto.ToProductSpecItemInfoDto(productSpecItem)
+	productSpecItemInfoDto := dto.ToProductSpecItemInfoDto(&productSpecItem)
 	response.Success(c, gin.H{
 		"productSpecItem": productSpecItemInfoDto,
 	}, "获取当前商品规格信息成功")
@@ -100,7 +100,7 @@ func (tc ProductSpecItemController) CreateProductSpecItem(c *gin.Context) {
 		response.Fail(c, nil, "创建商品规格失败: "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"productSpecItem": dto.ToProductSpecItemInfoDto(*productSpecItemInfo)}, "创建商品规格成功")
+	response.Success(c, gin.H{"productSpecItem": dto.ToProductSpecItemInfoDto(productSpecItemInfo)}, "创建商品规格成功")
 }
 
 // 更新商品规格

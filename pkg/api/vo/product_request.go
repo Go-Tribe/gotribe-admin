@@ -18,6 +18,7 @@ type CreateProductRequest struct {
 	ProductSpec   string `form:"productSpec" json:"productSpec"`
 	Content       string `form:"content" json:"content"`
 	Enable        uint   `form:"enable" json:"enable" validate:"oneof=1 2"`
+	SKU           string `form:"sku" json:"sku" validate:"required"`
 }
 
 // 获取产品列表结构体

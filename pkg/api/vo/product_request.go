@@ -18,7 +18,7 @@ type CreateProductRequest struct {
 	ProductSpec   string `form:"productSpec" json:"productSpec"`
 	Content       string `form:"content" json:"content"`
 	Enable        uint   `form:"enable" json:"enable" validate:"oneof=1 2"`
-	SKU           string `form:"sku" json:"sku" validate:"required"`
+	SKU           []Sku  `form:"sku" json:"sku" validate:"required"`
 }
 
 // 获取产品列表结构体
@@ -33,4 +33,12 @@ type ProductListRequest struct {
 // 批量删除产品结构体
 type DeleteProductsRequest struct {
 	ProductIds string `json:"productIds" form:"productIds"`
+}
+
+type Sku struct {
+	CostPrice   float64 `json:"cost_price"`
+	MarketPrice float64 `json:"market_price"`
+	UnitPrice   float64 `json:"unit_price"`
+	UnitPoint   int     `json:"unit_point"`
+	Quantity    int     `json:"quantity"`
 }

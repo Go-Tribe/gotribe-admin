@@ -13,13 +13,20 @@ import (
 // ProductDto 定义了产品类型信息传输的数据结构。
 // 包含产品类型ID、标题、备注、类别ID、规格ID和创建时间等基本信息。
 type ProductDto struct {
-	ProductID  string               `json:"productID"`
-	Title      string               `json:"title"`
-	Remark     string               `json:"remark"`
-	CategoryID string               `json:"categoryID"`
-	Spec       []*model.ProductSpec `json:"spec"`
-	SpecIds    string               `json:"specIds"`
-	CreatedAt  string               `json:"createdAt"`
+	ProductID     string               `json:"productID"`
+	Title         string               `json:"title"`
+	ProductNumber string               `json:"productNumber"`
+	ProjectID     string               `json:"projectID"`
+	Description   string               `json:"description"`
+	Image         string               `json:"image"`
+	Video         string               `json:"video"`
+	BuyLimit      uint                 `json:"buyLimit"`
+	CategoryID    string               `json:"categoryID"`
+	Spec          []*model.ProductSpec `json:"spec"`
+	SpecIds       string               `json:"specIds"`
+	Content       string               `json:"content"`
+	Enable        uint                 `json:"enable"`
+	CreatedAt     string               `json:"createdAt"`
 }
 
 // toProductDto 将产品类型模型转换为产品类型DTO。
@@ -36,9 +43,19 @@ func toProductDto(product *model.Product) ProductDto {
 	}
 
 	return ProductDto{
-		ProductID: product.ProductID,
-		Title:     product.Title,
-		CreatedAt: createdAt,
+		ProductID:     product.ProductID,
+		Title:         product.Title,
+		CreatedAt:     createdAt,
+		Content:       product.Content,
+		Enable:        product.Enable,
+		Image:         product.Image,
+		Video:         product.Video,
+		SpecIds:       product.ProductSpec,
+		ProjectID:     product.ProjectID,
+		CategoryID:    product.CategoryID,
+		ProductNumber: product.ProductNumber,
+		Description:   product.Description,
+		BuyLimit:      product.BuyLimit,
 	}
 }
 

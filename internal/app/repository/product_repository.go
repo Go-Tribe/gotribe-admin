@@ -47,10 +47,6 @@ func (tr ProductRepository) GetProducts(req *vo.ProductListRequest) ([]*model.Pr
 	if title != "" {
 		db = db.Where("title LIKE ?", fmt.Sprintf("%%%s%%", title))
 	}
-	productID := strings.TrimSpace(req.ProductID)
-	if req.ProductID != "" {
-		db = db.Where("product_id = ?", fmt.Sprintf("%s", productID))
-	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数
 	var total int64

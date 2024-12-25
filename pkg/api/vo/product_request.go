@@ -22,8 +22,8 @@ type CreateProductRequest struct {
 
 // 获取产品列表结构体
 type ProductListRequest struct {
-	ProductID  string `form:"productID" json:"productID"`
 	CategoryID string `form:"categoryID" json:"categoryID"`
+	ProjectID  string `form:"projectID" json:"projectID"`
 	Title      string `form:"title" json:"title"`
 	PageNum    uint   `json:"pageNum" form:"pageNum"`
 	PageSize   uint   `json:"pageSize" form:"pageSize"`

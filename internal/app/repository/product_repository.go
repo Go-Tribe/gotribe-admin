@@ -21,8 +21,10 @@ type IProductRepository interface {
 	CreateProductSku(tx *gorm.DB, productSku *model.ProductSku) (*model.ProductSku, error)
 	GetProductByProductID(productID string) (model.Product, error)           // 获取单个产品
 	GetProducts(req *vo.ProductListRequest) ([]*model.Product, int64, error) // 获取产品列表
-	UpdateProduct(product *model.Product) error                              // 更新产品
+	UpdateProduct(tx *gorm.DB, product *model.Product) error                 // 更新产品
 	BatchDeleteProductByIds(ids []string) error                              // 批量删除
+	GetProductSkuByProductSkuID(tx *gorm.DB, productSkuID string) (*model.ProductSku, error)
+	UpdateProductSku(tx *gorm.DB, product *model.ProductSku) error
 }
 
 type ProductRepository struct {
@@ -72,8 +74,8 @@ func (tr ProductRepository) GetProducts(req *vo.ProductListRequest) ([]*model.Pr
 }
 
 // 更新产品
-func (tr ProductRepository) UpdateProduct(product *model.Product) error {
-	err := common.DB.Model(product).Updates(product).Error
+func (tr ProductRepository) UpdateProduct(tx *gorm.DB, product *model.Product) error {
+	err := tx.Model(product).Updates(product).Error
 	if err != nil {
 		return err
 	}
@@ -112,4 +114,14 @@ func (pr *ProductRepository) CreateProductSku(tx *gorm.DB, productSku *model.Pro
 		return nil, result.Error
 	}
 	return productSku, nil
+}
+
+func (pr *ProductRepository) GetProductSkuByProductSkuID(tx *gorm.DB, productSkuID string) (*model.ProductSku, error) {
+	var productSku model.ProductSku
+	err := tx.Where("sku_id = ?", productSkuID).First(&productSku).Error
+	return &productSku, err
+}
+
+func (pr *ProductRepository) UpdateProductSku(tx *gorm.DB, product *model.ProductSku) error {
+	return tx.Model(product).Updates(product).Error
 }

@@ -6,6 +6,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/dengmengmian/ghelper/gconvert"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -246,6 +247,19 @@ func (tc ProductController) UpdateProductByID(c *gin.Context) {
 		response.Fail(c, nil, "获取需要更新的产品信息失败: "+err.Error())
 		return
 	}
+
+	tx, err := tc.ProductRepository.BeginTx()
+	if err != nil {
+		response.Fail(c, nil, "开始事务失败: "+err.Error())
+		return
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			response.Fail(c, nil, "更新产品过程中发生错误: "+fmt.Sprintf("%v", r))
+		}
+	}()
+
 	oldProduct.Title = req.Title
 	oldProduct.Content = req.Content
 	oldProduct.Description = req.Description
@@ -258,12 +272,44 @@ func (tc ProductController) UpdateProductByID(c *gin.Context) {
 	oldProduct.Enable = req.Enable
 	oldProduct.ProductSpec = req.ProductSpec
 	// 更新产品
-	err = tc.ProductRepository.UpdateProduct(&oldProduct)
+	err = tc.ProductRepository.UpdateProduct(tx, &oldProduct)
 	if err != nil {
+		tx.Rollback()
 		response.Fail(c, nil, "更新产品失败: "+err.Error())
 		return
 	}
+
 	// 更新商品SKU
+	if len(req.SKU) > 0 {
+		for _, sku := range req.SKU {
+			productSku, err := tc.ProductRepository.GetProductSkuByProductSkuID(tx, sku.SKUID)
+			if err != nil {
+				tx.Rollback()
+				response.Fail(c, nil, "获取需要更新的产品SKU信息失败: "+err.Error())
+				return
+			}
+			productSku.CostPrice = uint(sku.CostPrice * 100)
+			productSku.EnableDefault = uint(sku.EnableDefault * 100)
+			productSku.Image = sku.Image
+			productSku.MarketPrice = uint(sku.MarketPrice * 100)
+			productSku.Quantity = uint(sku.Quantity * 100)
+			productSku.Title = sku.Title
+
+			err = tc.ProductRepository.UpdateProductSku(tx, productSku)
+			if err != nil {
+				tx.Rollback()
+				response.Fail(c, nil, "更新产品SKU失败: "+err.Error())
+				return
+			}
+		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		response.Fail(c, nil, "提交事务失败: "+err.Error())
+		return
+	}
+
 	response.Success(c, nil, "更新产品成功")
 }
 

@@ -13,6 +13,7 @@ import (
 // ProductSkuDto 定义了产品类型信息传输的数据结构。
 // 包含产品类型ID、标题、备注、类别ID、规格ID和创建时间等基本信息。
 type ProductSkuDto struct {
+	SKUID         string  `json:"skuID"`
 	Title         string  `form:"skuTitle" json:"skuTitle" validate:"required"`
 	Image         string  `form:"image" json:"image" validate:"required"`
 	CostPrice     float64 `json:"cost_price" validate:"required"`
@@ -38,6 +39,7 @@ func toProductSkuDto(productSku *model.ProductSku) ProductSkuDto {
 	}
 
 	return ProductSkuDto{
+		SKUID:         productSku.SKUID,
 		Title:         productSku.Title,
 		Image:         productSku.Image,
 		CostPrice:     float64(productSku.CostPrice / 100),

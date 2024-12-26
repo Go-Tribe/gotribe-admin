@@ -36,6 +36,7 @@ type DeleteProductsRequest struct {
 }
 
 type Sku struct {
+	SKUID         string  `form:"skuID" json:"skuID"`
 	Title         string  `form:"skuTitle" json:"skuTitle" validate:"required"`
 	Image         string  `form:"image" json:"image" validate:"required"`
 	CostPrice     float64 `json:"cost_price" validate:"required"`

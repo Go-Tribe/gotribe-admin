@@ -6,7 +6,7 @@ require (
 	github.com/appleboy/gin-jwt/v2 v2.9.2
 	github.com/casbin/casbin/v2 v2.85.0
 	github.com/casbin/gorm-adapter/v3 v3.21.0
-	github.com/dengmengmian/ghelper v1.0.0-beta
+	github.com/dengmengmian/ghelper v1.0.1
 	github.com/douyacun/gositemap v0.0.4
 	github.com/fatih/color v1.14.1
 	github.com/fsnotify/fsnotify v1.7.0

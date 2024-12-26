@@ -162,6 +162,7 @@ func (tc ProductController) CreateProduct(c *gin.Context) {
 		BuyLimit:      req.BuyLimit,
 		Enable:        req.Enable,
 		ProductSpec:   req.ProductSpec,
+		HtmlContent:   req.HtmlContent,
 	}
 
 	productInfo, err := tc.ProductRepository.CreateProduct(tx, &product)
@@ -262,6 +263,7 @@ func (tc ProductController) UpdateProductByID(c *gin.Context) {
 
 	oldProduct.Title = req.Title
 	oldProduct.Content = req.Content
+	oldProduct.HtmlContent = req.HtmlContent
 	oldProduct.Description = req.Description
 	oldProduct.Image = imageStr
 	oldProduct.Video = req.Video

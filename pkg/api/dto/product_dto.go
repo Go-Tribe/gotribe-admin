@@ -25,6 +25,7 @@ type ProductDto struct {
 	CategoryID    string          `json:"categoryID"`
 	SpecIds       string          `json:"specIds"`
 	Content       string          `json:"content"`
+	HtmlContent   string          `json:"Htmlcontent"`
 	Enable        uint            `json:"enable"`
 	CreatedAt     string          `json:"createdAt"`
 	SKU           []ProductSkuDto `json:"sku"`
@@ -52,6 +53,7 @@ func toProductDto(product *model.Product) ProductDto {
 		Title:         product.Title,
 		CreatedAt:     createdAt,
 		Content:       product.Content,
+		HtmlContent:   product.HtmlContent,
 		Enable:        product.Enable,
 		Image:         imageList,
 		Video:         product.Video,

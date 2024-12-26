@@ -17,6 +17,7 @@ type CreateProductRequest struct {
 	BuyLimit      uint     `form:"buyLimit" json:"buyLimit" validate:"required,min=1,max=100"`
 	ProductSpec   string   `form:"productSpec" json:"productSpec"`
 	Content       string   `form:"content" json:"content"`
+	HtmlContent   string   `form:"Htmlcontent" json:"Htmlcontent"`
 	Enable        uint     `form:"enable" json:"enable" validate:"oneof=1 2"`
 	SKU           []Sku    `form:"sku" json:"sku" validate:"required"`
 }

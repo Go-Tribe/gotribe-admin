@@ -17,6 +17,7 @@ type IProductSkuRepository interface {
 	GetProductSkuByProductSkuID(productSkuID string) (model.ProductSku, error) // 获取单个sku
 	UpdateProductSku(productSku *model.ProductSku) error                       // 更新sku
 	BatchDeleteProductSkuByIds(ids []string) error                             // 批量删除
+	GetProductSkuByProductID(productID string) ([]*model.ProductSku, error)
 }
 
 type ProductSkuRepository struct {
@@ -30,8 +31,15 @@ func NewProductSkuRepository() IProductSkuRepository {
 // 获取单个sku
 func (tr ProductSkuRepository) GetProductSkuByProductSkuID(productSkuID string) (model.ProductSku, error) {
 	var productSku model.ProductSku
-	err := common.DB.Where("productSku_type_id = ?", productSkuID).First(&productSku).Error
+	err := common.DB.Where("sku_id = ?", productSkuID).First(&productSku).Error
 	return productSku, err
+}
+
+// 通过商品ID获取sku
+func (tr ProductSkuRepository) GetProductSkuByProductID(productID string) ([]*model.ProductSku, error) {
+	var productSkus []*model.ProductSku
+	err := common.DB.Where("product_id = ?", productID).Find(&productSkus).Error
+	return productSkus, err
 }
 
 // 创建sku

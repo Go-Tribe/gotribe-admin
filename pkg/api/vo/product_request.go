@@ -7,18 +7,18 @@ package vo
 
 // 创建产品结构体
 type CreateProductRequest struct {
-	Title         string `form:"title" json:"title" validate:"required,min=2,max=60"`
-	CategoryID    string `form:"categoryID" json:"categoryID" validate:"required"`
-	ProductNumber string `form:"productNumber" json:"productNumber"`
-	ProjectID     string `form:"projectID" json:"projectID"  validate:"required"`
-	Description   string `form:"description" json:"description"`
-	Image         string `form:"images" json:"images"`
-	Video         string `form:"video" json:"video"`
-	BuyLimit      uint   `form:"buyLimit" json:"buyLimit" validate:"required,min=1,max=100"`
-	ProductSpec   string `form:"productSpec" json:"productSpec"`
-	Content       string `form:"content" json:"content"`
-	Enable        uint   `form:"enable" json:"enable" validate:"oneof=1 2"`
-	SKU           []Sku  `form:"sku" json:"sku" validate:"required"`
+	Title         string   `form:"title" json:"title" validate:"required,min=2,max=60"`
+	CategoryID    string   `form:"categoryID" json:"categoryID" validate:"required"`
+	ProductNumber string   `form:"productNumber" json:"productNumber"`
+	ProjectID     string   `form:"projectID" json:"projectID"  validate:"required"`
+	Description   string   `form:"description" json:"description"`
+	Image         []string `form:"images" json:"images"`
+	Video         string   `form:"video" json:"video"`
+	BuyLimit      uint     `form:"buyLimit" json:"buyLimit" validate:"required,min=1,max=100"`
+	ProductSpec   string   `form:"productSpec" json:"productSpec"`
+	Content       string   `form:"content" json:"content"`
+	Enable        uint     `form:"enable" json:"enable" validate:"oneof=1 2"`
+	SKU           []Sku    `form:"sku" json:"sku" validate:"required"`
 }
 
 // 获取产品列表结构体

@@ -36,11 +36,11 @@ type ProductController struct {
 func NewProductController() IProductController {
 	productRepository := repository.NewProductRepository(common.DB)
 	productSpecRepository := repository.NewProductSpecRepository()
-	//productSku := repository.NewProductSkuRepository()
+	productSku := repository.NewProductSkuRepository()
 	productController := ProductController{
 		ProductRepository:     productRepository,
 		ProductSpecRepository: productSpecRepository,
-		//ProductSkuRepository:  productSku,
+		ProductSkuRepository:  productSku,
 	}
 
 	return productController
@@ -54,19 +54,15 @@ func (tc ProductController) GetProductInfo(c *gin.Context) {
 		response.Fail(c, nil, "获取当前产品信息失败: "+err.Error())
 		return
 	}
+
 	productInfoDto := dto.ToProductInfoDto(product)
-
-	//// 将 SpecIds 字符串转换为字符串切片
-	//specIds := strings.Split(product.SpecIds, ",")
-	//
-	//// 获取关联的规格信息并追加进去
-	//productSpecs, err := tc.ProductSpecRepository.GetProductSpecsByProductSpecIDs(specIds)
-	//if err != nil {
-	//	response.Fail(c, nil, "获取商品规格信息失败: "+err.Error())
-	//	return
-	//}
-	//productInfoDto.Spec = productSpecs
-
+	// 通过 productID 获取 sku 信息,并追加进去
+	sku, err := tc.ProductSkuRepository.GetProductSkuByProductID(product.ProductID)
+	if err != nil {
+		response.Fail(c, nil, "获取SKU信息失败: "+err.Error())
+		return
+	}
+	productInfoDto.SKU = dto.ToProductSkusDto(sku)
 	response.Success(c, gin.H{
 		"product": productInfoDto,
 	}, "获取当前产品信息成功")
@@ -152,11 +148,12 @@ func (tc ProductController) CreateProduct(c *gin.Context) {
 		}
 	}()
 
+	imageStr := strings.Join(req.Image, ",")
 	product := model.Product{
 		Title:         req.Title,
 		Content:       req.Content,
 		Description:   req.Description,
-		Image:         req.Image,
+		Image:         imageStr,
 		Video:         req.Video,
 		ProductNumber: req.ProductNumber,
 		CategoryID:    req.CategoryID,
@@ -242,6 +239,7 @@ func (tc ProductController) UpdateProductByID(c *gin.Context) {
 			}
 		}
 	}
+	imageStr := strings.Join(req.Image, ",")
 	// 根据path中的ProductID获取产品信息
 	oldProduct, err := tc.ProductRepository.GetProductByProductID(c.Param("productID"))
 	if err != nil {
@@ -251,7 +249,7 @@ func (tc ProductController) UpdateProductByID(c *gin.Context) {
 	oldProduct.Title = req.Title
 	oldProduct.Content = req.Content
 	oldProduct.Description = req.Description
-	oldProduct.Image = req.Image
+	oldProduct.Image = imageStr
 	oldProduct.Video = req.Video
 	oldProduct.ProductNumber = req.ProductNumber
 	oldProduct.CategoryID = req.CategoryID

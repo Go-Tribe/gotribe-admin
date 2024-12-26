@@ -8,25 +8,26 @@ package dto
 import (
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/known"
+	"strings"
 )
 
 // ProductDto 定义了产品类型信息传输的数据结构。
 // 包含产品类型ID、标题、备注、类别ID、规格ID和创建时间等基本信息。
 type ProductDto struct {
-	ProductID     string               `json:"productID"`
-	Title         string               `json:"title"`
-	ProductNumber string               `json:"productNumber"`
-	ProjectID     string               `json:"projectID"`
-	Description   string               `json:"description"`
-	Image         string               `json:"image"`
-	Video         string               `json:"video"`
-	BuyLimit      uint                 `json:"buyLimit"`
-	CategoryID    string               `json:"categoryID"`
-	Spec          []*model.ProductSpec `json:"spec"`
-	SpecIds       string               `json:"specIds"`
-	Content       string               `json:"content"`
-	Enable        uint                 `json:"enable"`
-	CreatedAt     string               `json:"createdAt"`
+	ProductID     string          `json:"productID"`
+	Title         string          `json:"title"`
+	ProductNumber string          `json:"productNumber"`
+	ProjectID     string          `json:"projectID"`
+	Description   string          `json:"description"`
+	Image         []string        `json:"image"`
+	Video         string          `json:"video"`
+	BuyLimit      uint            `json:"buyLimit"`
+	CategoryID    string          `json:"categoryID"`
+	SpecIds       string          `json:"specIds"`
+	Content       string          `json:"content"`
+	Enable        uint            `json:"enable"`
+	CreatedAt     string          `json:"createdAt"`
+	SKU           []ProductSkuDto `json:"sku"`
 }
 
 // toProductDto 将产品类型模型转换为产品类型DTO。
@@ -41,14 +42,18 @@ func toProductDto(product *model.Product) ProductDto {
 	if !product.CreatedAt.IsZero() {
 		createdAt = product.CreatedAt.Format(known.TimeFormat)
 	}
-
+	var imageList []string
+	if len(product.Image) > 0 {
+		// 用,分割成数组
+		imageList = strings.Split(product.Image, ",")
+	}
 	return ProductDto{
 		ProductID:     product.ProductID,
 		Title:         product.Title,
 		CreatedAt:     createdAt,
 		Content:       product.Content,
 		Enable:        product.Enable,
-		Image:         product.Image,
+		Image:         imageList,
 		Video:         product.Video,
 		SpecIds:       product.ProductSpec,
 		ProjectID:     product.ProjectID,

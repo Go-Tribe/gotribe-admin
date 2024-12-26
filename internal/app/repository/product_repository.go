@@ -41,7 +41,7 @@ func (pr *ProductRepository) BeginTx() (*gorm.DB, error) {
 // 获取单个产品
 func (tr ProductRepository) GetProductByProductID(productID string) (model.Product, error) {
 	var product model.Product
-	err := common.DB.Where("product_type_id = ?", productID).First(&product).Error
+	err := common.DB.Where("product_id = ?", productID).First(&product).Error
 	return product, err
 }
 

@@ -18,7 +18,6 @@ type ProductSku struct {
 	ProductID     string  `gorm:"type:varchar(10);Index;comment:产品ID" json:"productID"`
 	Image         string  `gorm:"type:varchar(255);not null;comment:产品主图" json:"image"`
 	Video         string  `gorm:"type:varchar(255);not null;comment:产品视频" json:"video"`
-	ImageList     string  `gorm:"type:longtext;comment:图片列表" json:"imageList"`
 	CostPrice     uint    `gorm:"type:int(10);not null;comment:成本价" json:"costPrice"`
 	UnitPrice     uint    `gorm:"type:int(10);not null;comment:商品价格" json:"unitPrice"`
 	MarketPrice   uint    `gorm:"type:int(10);not null;comment:市场价格" json:"marketPrice"`

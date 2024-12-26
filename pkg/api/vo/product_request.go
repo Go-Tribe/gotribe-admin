@@ -36,7 +36,7 @@ type DeleteProductsRequest struct {
 }
 
 type Sku struct {
-	Title         string  `form:"title" json:"title" validate:"required"`
+	Title         string  `form:"skuTitle" json:"skuTitle" validate:"required"`
 	Image         string  `form:"image" json:"image" validate:"required"`
 	CostPrice     float64 `json:"cost_price" validate:"required"`
 	MarketPrice   float64 `json:"market_price" validate:"required"`

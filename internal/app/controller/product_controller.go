@@ -213,7 +213,35 @@ func (tc ProductController) UpdateProductByID(c *gin.Context) {
 		response.Fail(c, nil, errStr)
 		return
 	}
-
+	// 校验参数req.sku
+	if len(req.SKU) > 0 {
+		for _, sku := range req.SKU {
+			if sku.CostPrice <= 0 {
+				response.Fail(c, nil, "成本价必填")
+				return
+			}
+			if sku.UnitPrice <= 0 {
+				response.Fail(c, nil, "市场价必填")
+				return
+			}
+			if sku.MarketPrice <= 0 {
+				response.Fail(c, nil, "市场价必填")
+				return
+			}
+			if sku.Quantity <= 0 {
+				response.Fail(c, nil, "库存必填")
+				return
+			}
+			if sku.UnitPoint <= 0 {
+				response.Fail(c, nil, "积分数必填")
+				return
+			}
+			if gconvert.IsEmpty(sku.Title) {
+				response.Fail(c, nil, "商品名必填")
+				return
+			}
+		}
+	}
 	// 根据path中的ProductID获取产品信息
 	oldProduct, err := tc.ProductRepository.GetProductByProductID(c.Param("productID"))
 	if err != nil {
@@ -221,12 +249,23 @@ func (tc ProductController) UpdateProductByID(c *gin.Context) {
 		return
 	}
 	oldProduct.Title = req.Title
+	oldProduct.Content = req.Content
+	oldProduct.Description = req.Description
+	oldProduct.Image = req.Image
+	oldProduct.Video = req.Video
+	oldProduct.ProductNumber = req.ProductNumber
+	oldProduct.CategoryID = req.CategoryID
+	oldProduct.ProjectID = req.ProjectID
+	oldProduct.BuyLimit = req.BuyLimit
+	oldProduct.Enable = req.Enable
+	oldProduct.ProductSpec = req.ProductSpec
 	// 更新产品
 	err = tc.ProductRepository.UpdateProduct(&oldProduct)
 	if err != nil {
 		response.Fail(c, nil, "更新产品失败: "+err.Error())
 		return
 	}
+	// 更新商品SKU
 	response.Success(c, nil, "更新产品成功")
 }
 

@@ -7,14 +7,14 @@ package vo
 
 // 创建产品结构体
 type CreateProductRequest struct {
-	Title         string `form:"title" json:"title" validate:"required,min=2,max=20"`
+	Title         string `form:"title" json:"title" validate:"required,min=2,max=60"`
 	CategoryID    string `form:"categoryID" json:"categoryID" validate:"required"`
 	ProductNumber string `form:"productNumber" json:"productNumber"`
 	ProjectID     string `form:"projectID" json:"projectID"  validate:"required"`
 	Description   string `form:"description" json:"description"`
 	Image         string `form:"image" json:"image"`
 	Video         string `form:"video" json:"video"`
-	BuyLimit      uint   `form:"buyLimit" json:"buyLimit" validate:"required,min=1,max=20"`
+	BuyLimit      uint   `form:"buyLimit" json:"buyLimit" validate:"required,min=1,max=100"`
 	ProductSpec   string `form:"productSpec" json:"productSpec"`
 	Content       string `form:"content" json:"content"`
 	Enable        uint   `form:"enable" json:"enable" validate:"oneof=1 2"`
@@ -36,9 +36,12 @@ type DeleteProductsRequest struct {
 }
 
 type Sku struct {
-	CostPrice   float64 `json:"cost_price"`
-	MarketPrice float64 `json:"market_price"`
-	UnitPrice   float64 `json:"unit_price"`
-	UnitPoint   int     `json:"unit_point"`
-	Quantity    int     `json:"quantity"`
+	Title         string  `form:"title" json:"title" validate:"required"`
+	Image         string  `form:"image" json:"image" validate:"required"`
+	CostPrice     float64 `json:"cost_price" validate:"required"`
+	MarketPrice   float64 `json:"market_price" validate:"required"`
+	UnitPrice     float64 `json:"unit_price" validate:"required"`
+	UnitPoint     int     `json:"unit_point" validate:"required"`
+	Quantity      int     `json:"quantity" validate:"required"`
+	EnableDefault int     `json:"enable_default"`
 }

@@ -8,7 +8,6 @@ package repository
 import (
 	"errors"
 	"fmt"
-	"gorm.io/gorm"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/vo"
@@ -66,9 +65,6 @@ func (tr ProductRepository) GetProducts(req *vo.ProductListRequest) ([]*model.Pr
 
 // 创建产品
 func (tr ProductRepository) CreateProduct(product *model.Product) (*model.Product, error) {
-	if isProductExist(product.Title) {
-		return nil, errors.New(fmt.Sprintf("%s产品已存在", product.Title))
-	}
 	result := common.DB.Create(product)
 	if result.Error != nil {
 		return nil, result.Error
@@ -101,13 +97,4 @@ func (tr ProductRepository) BatchDeleteProductByIds(ids []string) error {
 	err := common.DB.Unscoped().Delete(&products).Error
 
 	return err
-}
-
-func isProductExist(title string) bool {
-	var product model.Product
-	result := common.DB.Where("title = ?", title).First(&product)
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return false
-	}
-	return true
 }

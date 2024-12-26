@@ -6,6 +6,7 @@
 package controller
 
 import (
+	"github.com/dengmengmian/ghelper/gconvert"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"gotribe-admin/internal/app/repository"
@@ -28,15 +29,18 @@ type IProductController interface {
 type ProductController struct {
 	ProductRepository     repository.IProductRepository
 	ProductSpecRepository repository.IProductSpecRepository
+	ProductSkuRepository  repository.IProductSkuRepository
 }
 
 // 构造函数
 func NewProductController() IProductController {
 	productRepository := repository.NewProductRepository()
 	productSpecRepository := repository.NewProductSpecRepository()
+	productSku := repository.NewProductSkuRepository()
 	productController := ProductController{
 		ProductRepository:     productRepository,
 		ProductSpecRepository: productSpecRepository,
+		ProductSkuRepository:  productSku,
 	}
 
 	return productController
@@ -106,16 +110,71 @@ func (tc ProductController) CreateProduct(c *gin.Context) {
 		response.Fail(c, nil, errStr)
 		return
 	}
+	// 校验参数req.sku
+	if len(req.SKU) > 0 {
+		for _, sku := range req.SKU {
+			if sku.CostPrice <= 0 {
+				response.Fail(c, nil, "成本价必填")
+				return
+			}
+			if sku.UnitPrice <= 0 {
+				response.Fail(c, nil, "成本价必填")
+				return
+			}
+			if sku.MarketPrice <= 0 {
+				response.Fail(c, nil, "市场价必填")
+			}
+			if sku.Quantity <= 0 {
+				response.Fail(c, nil, "库存必填")
+				return
+			}
+			if sku.UnitPoint <= 0 {
+				response.Fail(c, nil, "积分数必填")
+				return
+			}
+			if gconvert.IsEmpty(sku.Title) {
+				response.Fail(c, nil, "商品名必填")
+				return
+			}
+		}
+	}
 
 	product := model.Product{
-		Model: model.Model{},
-		Title: req.Title,
+		Title:         req.Title,
+		Content:       req.Content,
+		Description:   req.Description,
+		Image:         req.Image,
+		Video:         req.Video,
+		ProductNumber: req.ProductNumber,
+		CategoryID:    req.CategoryID,
+		ProjectID:     req.ProjectID,
+		BuyLimit:      req.BuyLimit,
+		Enable:        req.Enable,
+		ProductSpec:   req.ProductSpec,
 	}
 
 	productInfo, err := tc.ProductRepository.CreateProduct(&product)
 	if err != nil {
 		response.Fail(c, nil, "创建产品失败: "+err.Error())
 		return
+	}
+	// 创建产品成功后创建 SKU
+	if len(req.SKU) > 0 {
+		for _, sku := range req.SKU {
+			productSku := model.ProductSku{
+				ProductID:     productInfo.ProductID,
+				CostPrice:     uint(sku.CostPrice * 100),
+				EnableDefault: uint(sku.EnableDefault * 100),
+				Image:         sku.Image,
+				MarketPrice:   uint(sku.MarketPrice * 100),
+				Quantity:      uint(sku.Quantity * 100),
+				Title:         sku.Title,
+			}
+			if _, err := tc.ProductSkuRepository.CreateProductSku(&productSku); err != nil {
+				response.Fail(c, nil, "创建产品SKU失败: "+err.Error())
+				return
+			}
+		}
 	}
 	response.Success(c, gin.H{"product": dto.ToProductInfoDto(*productInfo)}, "创建产品成功")
 }

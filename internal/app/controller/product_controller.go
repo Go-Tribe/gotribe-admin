@@ -34,13 +34,13 @@ type ProductController struct {
 
 // 构造函数
 func NewProductController() IProductController {
-	productRepository := repository.NewProductRepository()
+	productRepository := repository.NewProductRepository(common.DB)
 	productSpecRepository := repository.NewProductSpecRepository()
-	productSku := repository.NewProductSkuRepository()
+	//productSku := repository.NewProductSkuRepository()
 	productController := ProductController{
 		ProductRepository:     productRepository,
 		ProductSpecRepository: productSpecRepository,
-		ProductSkuRepository:  productSku,
+		//ProductSkuRepository:  productSku,
 	}
 
 	return productController
@@ -97,6 +97,7 @@ func (tc ProductController) GetProducts(c *gin.Context) {
 }
 
 // 创建产品
+// internal/app/controller/product_controller.go#L141-L178
 func (tc ProductController) CreateProduct(c *gin.Context) {
 	var req vo.CreateProductRequest
 	// 参数绑定
@@ -118,11 +119,12 @@ func (tc ProductController) CreateProduct(c *gin.Context) {
 				return
 			}
 			if sku.UnitPrice <= 0 {
-				response.Fail(c, nil, "成本价必填")
+				response.Fail(c, nil, "市场价必填")
 				return
 			}
 			if sku.MarketPrice <= 0 {
 				response.Fail(c, nil, "市场价必填")
+				return
 			}
 			if sku.Quantity <= 0 {
 				response.Fail(c, nil, "库存必填")
@@ -139,6 +141,17 @@ func (tc ProductController) CreateProduct(c *gin.Context) {
 		}
 	}
 
+	tx, err := tc.ProductRepository.BeginTx()
+	if err != nil {
+		response.Fail(c, nil, "开始事务失败: "+err.Error())
+		return
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
 	product := model.Product{
 		Title:         req.Title,
 		Content:       req.Content,
@@ -153,8 +166,9 @@ func (tc ProductController) CreateProduct(c *gin.Context) {
 		ProductSpec:   req.ProductSpec,
 	}
 
-	productInfo, err := tc.ProductRepository.CreateProduct(&product)
+	productInfo, err := tc.ProductRepository.CreateProduct(tx, &product)
 	if err != nil {
+		tx.Rollback()
 		response.Fail(c, nil, "创建产品失败: "+err.Error())
 		return
 	}
@@ -170,11 +184,17 @@ func (tc ProductController) CreateProduct(c *gin.Context) {
 				Quantity:      uint(sku.Quantity * 100),
 				Title:         sku.Title,
 			}
-			if _, err := tc.ProductSkuRepository.CreateProductSku(&productSku); err != nil {
+			if _, err := tc.ProductRepository.CreateProductSku(tx, &productSku); err != nil {
+				tx.Rollback()
 				response.Fail(c, nil, "创建产品SKU失败: "+err.Error())
 				return
 			}
 		}
+	}
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		response.Fail(c, nil, "提交事务失败: "+err.Error())
+		return
 	}
 	response.Success(c, gin.H{"product": dto.ToProductInfoDto(*productInfo)}, "创建产品成功")
 }

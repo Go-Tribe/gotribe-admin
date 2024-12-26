@@ -8,6 +8,7 @@ package repository
 import (
 	"errors"
 	"fmt"
+	"gorm.io/gorm"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/vo"
@@ -15,7 +16,9 @@ import (
 )
 
 type IProductRepository interface {
-	CreateProduct(product *model.Product) (*model.Product, error)            // 创建产品
+	BeginTx() (*gorm.DB, error)
+	CreateProduct(tx *gorm.DB, product *model.Product) (*model.Product, error)
+	CreateProductSku(tx *gorm.DB, productSku *model.ProductSku) (*model.ProductSku, error)
 	GetProductByProductID(productID string) (model.Product, error)           // 获取单个产品
 	GetProducts(req *vo.ProductListRequest) ([]*model.Product, int64, error) // 获取产品列表
 	UpdateProduct(product *model.Product) error                              // 更新产品
@@ -23,11 +26,16 @@ type IProductRepository interface {
 }
 
 type ProductRepository struct {
+	db *gorm.DB
 }
 
 // ProductRepository构造函数
-func NewProductRepository() IProductRepository {
-	return ProductRepository{}
+func NewProductRepository(db *gorm.DB) IProductRepository {
+	return &ProductRepository{db: db}
+}
+
+func (pr *ProductRepository) BeginTx() (*gorm.DB, error) {
+	return pr.db.Begin(), nil
 }
 
 // 获取单个产品
@@ -63,15 +71,6 @@ func (tr ProductRepository) GetProducts(req *vo.ProductListRequest) ([]*model.Pr
 	return list, total, err
 }
 
-// 创建产品
-func (tr ProductRepository) CreateProduct(product *model.Product) (*model.Product, error) {
-	result := common.DB.Create(product)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return product, nil
-}
-
 // 更新产品
 func (tr ProductRepository) UpdateProduct(product *model.Product) error {
 	err := common.DB.Model(product).Updates(product).Error
@@ -97,4 +96,20 @@ func (tr ProductRepository) BatchDeleteProductByIds(ids []string) error {
 	err := common.DB.Unscoped().Delete(&products).Error
 
 	return err
+}
+
+func (pr *ProductRepository) CreateProduct(tx *gorm.DB, product *model.Product) (*model.Product, error) {
+	result := tx.Create(product)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return product, nil
+}
+
+func (pr *ProductRepository) CreateProductSku(tx *gorm.DB, productSku *model.ProductSku) (*model.ProductSku, error) {
+	result := tx.Create(productSku)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return productSku, nil
 }

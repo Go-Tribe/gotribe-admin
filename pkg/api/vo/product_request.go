@@ -12,7 +12,7 @@ type CreateProductRequest struct {
 	ProductNumber string `form:"productNumber" json:"productNumber"`
 	ProjectID     string `form:"projectID" json:"projectID"  validate:"required"`
 	Description   string `form:"description" json:"description"`
-	Image         string `form:"image" json:"image"`
+	Image         string `form:"images" json:"images"`
 	Video         string `form:"video" json:"video"`
 	BuyLimit      uint   `form:"buyLimit" json:"buyLimit" validate:"required,min=1,max=100"`
 	ProductSpec   string `form:"productSpec" json:"productSpec"`

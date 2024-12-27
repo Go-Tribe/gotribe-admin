@@ -59,4 +59,8 @@ func DBAutoMigrate(db *gorm.DB) {
 	productMigrate(db)
 	// SKU表
 	productSKUMigrate(db)
+	// 订单表
+	orderMigrate(db)
+	// 订单日志表
+	orderLogMigrate(db)
 }

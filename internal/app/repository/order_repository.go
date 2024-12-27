@@ -1,0 +1,89 @@
+// Copyright 2023 Innkeeper gotribe <info@gotribe.cn>. All rights reserved.
+// Use of this source code is governed by a Apache style
+// license that can be found in the LICENSE file. The original repo for
+// this file is https://www.gotribe.cn
+
+package repository
+
+import (
+	"errors"
+	"fmt"
+	"gotribe-admin/internal/pkg/common"
+	"gotribe-admin/internal/pkg/model"
+	"gotribe-admin/pkg/api/vo"
+	"strings"
+)
+
+type IOrderRepository interface {
+	GetOrderByOrderID(orderID string) (model.Order, error)             // 获取单个订单
+	GetOrders(req *vo.OrderListRequest) ([]*model.Order, int64, error) // 获取订单列表
+	UpdateOrder(order *model.Order) error                              // 更新订单
+	BatchDeleteOrderByIds(ids []string) error                          // 批量删除
+}
+
+type OrderRepository struct {
+}
+
+// OrderRepository构造函数
+func NewOrderRepository() IOrderRepository {
+	return OrderRepository{}
+}
+
+// 获取单个订单
+func (tr OrderRepository) GetOrderByOrderID(orderID string) (model.Order, error) {
+	var order model.Order
+	err := common.DB.Where("order_id = ?", orderID).First(&order).Error
+	return order, err
+}
+
+// 获取订单列表
+func (tr OrderRepository) GetOrders(req *vo.OrderListRequest) ([]*model.Order, int64, error) {
+	var list []*model.Order
+	db := common.DB.Model(&model.Order{}).Order("created_at DESC")
+
+	orderID := strings.TrimSpace(req.OrderNumber)
+	if req.OrderNumber != "" {
+		db = db.Where("order_number = ?", fmt.Sprintf("%s", orderID))
+	}
+	// 当pageNum > 0 且 pageSize > 0 才分页
+	//记录总条数
+	var total int64
+	err := db.Count(&total).Error
+	if err != nil {
+		return list, total, err
+	}
+	pageNum := int(req.PageNum)
+	pageSize := int(req.PageSize)
+	if pageNum > 0 && pageSize > 0 {
+		err = db.Offset((pageNum - 1) * pageSize).Limit(pageSize).Find(&list).Error
+	} else {
+		err = db.Find(&list).Error
+	}
+	return list, total, err
+}
+
+// 更新订单
+func (tr OrderRepository) UpdateOrder(order *model.Order) error {
+	err := common.DB.Model(order).Updates(order).Error
+	if err != nil {
+		return err
+	}
+	return err
+}
+
+// 批量删除
+func (tr OrderRepository) BatchDeleteOrderByIds(ids []string) error {
+	var orders []model.Order
+	for _, id := range ids {
+		// 根据ID获取订单
+		order, err := tr.GetOrderByOrderID(id)
+		if err != nil {
+			return errors.New(fmt.Sprintf("未获取到ID为%s的订单", id))
+		}
+		orders = append(orders, order)
+	}
+
+	err := common.DB.Unscoped().Delete(&orders).Error
+
+	return err
+}

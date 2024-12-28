@@ -176,6 +176,7 @@ func (tc ProductController) CreateProduct(c *gin.Context) {
 	if len(req.SKU) > 0 {
 		for _, sku := range req.SKU {
 			productSku := model.ProductSku{
+				//SKUID:         gid.GenShortID(),
 				ProductID:     productInfo.ProductID,
 				CostPrice:     util.YuanToFen(sku.CostPrice),
 				EnableDefault: uint(sku.EnableDefault),

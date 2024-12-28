@@ -12,7 +12,7 @@ import (
 
 type ProductSku struct {
 	Model
-	SKUID         string `gorm:"type:char(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"skuID"`
+	SkuID         string `gorm:"type:char(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"skuID"`
 	Title         string `gorm:"type:varchar(255);not null;comment:标题" json:"title"`
 	ProjectID     string `gorm:"type:varchar(10);Index;comment:项目 ID" json:"projectID"`
 	ProductID     string `gorm:"type:varchar(10);Index;comment:产品ID" json:"productID"`
@@ -27,6 +27,6 @@ type ProductSku struct {
 }
 
 func (e *ProductSku) BeforeCreate(tx *gorm.DB) error {
-	e.SKUID = gid.GenShortID()
+	e.SkuID = gid.GenShortID()
 	return nil
 }

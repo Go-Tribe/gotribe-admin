@@ -40,7 +40,7 @@ func toProductSkuDto(productSku *model.ProductSku) ProductSkuDto {
 	}
 
 	return ProductSkuDto{
-		SKUID:         productSku.SKUID,
+		SKUID:         productSku.SkuID,
 		Title:         productSku.Title,
 		Image:         productSku.Image,
 		CostPrice:     util.FenToYuan(int(productSku.CostPrice)),

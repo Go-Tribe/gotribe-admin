@@ -8,6 +8,7 @@ package dto
 import (
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/known"
+	"gotribe-admin/pkg/util"
 )
 
 // ProductSkuDto 定义了产品类型信息传输的数据结构。
@@ -42,10 +43,10 @@ func toProductSkuDto(productSku *model.ProductSku) ProductSkuDto {
 		SKUID:         productSku.SKUID,
 		Title:         productSku.Title,
 		Image:         productSku.Image,
-		CostPrice:     float64(productSku.CostPrice / 100),
-		MarketPrice:   float64(productSku.MarketPrice / 100),
-		UnitPrice:     float64(productSku.UnitPrice / 100),
-		UnitPoint:     float64(productSku.UnitPoint / 100),
+		CostPrice:     util.FenToYuan(int(productSku.CostPrice)),
+		MarketPrice:   util.FenToYuan(int(productSku.MarketPrice)),
+		UnitPrice:     util.FenToYuan(int(productSku.UnitPrice)),
+		UnitPoint:     util.FenToYuan(int(productSku.UnitPoint)),
 		Quantity:      productSku.Quantity,
 		EnableDefault: productSku.EnableDefault,
 		CreatedAt:     createdAt,

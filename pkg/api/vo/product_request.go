@@ -43,7 +43,7 @@ type Sku struct {
 	CostPrice     float64 `json:"costPrice" validate:"required"`
 	MarketPrice   float64 `json:"marketPrice" validate:"required"`
 	UnitPrice     float64 `json:"unitPrice" validate:"required"`
-	UnitPoint     int     `json:"unitPoint" validate:"required"`
-	Quantity      int     `json:"quantity" validate:"required"`
-	EnableDefault int     `json:"enableDefault"`
+	UnitPoint     float64 `json:"unitPoint" validate:"required"`
+	Quantity      uint    `json:"quantity" validate:"required"`
+	EnableDefault uint    `json:"enableDefault"`
 }

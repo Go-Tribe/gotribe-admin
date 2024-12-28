@@ -16,6 +16,7 @@ import (
 	"gotribe-admin/pkg/api/dto"
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
+	"gotribe-admin/pkg/util"
 	"strings"
 )
 
@@ -176,12 +177,15 @@ func (tc ProductController) CreateProduct(c *gin.Context) {
 		for _, sku := range req.SKU {
 			productSku := model.ProductSku{
 				ProductID:     productInfo.ProductID,
-				CostPrice:     uint(sku.CostPrice * 100),
-				EnableDefault: uint(sku.EnableDefault * 100),
+				CostPrice:     util.YuanToFen(sku.CostPrice),
+				EnableDefault: uint(sku.EnableDefault),
 				Image:         sku.Image,
-				MarketPrice:   uint(sku.MarketPrice * 100),
-				Quantity:      uint(sku.Quantity * 100),
+				MarketPrice:   util.YuanToFen(sku.MarketPrice),
+				Quantity:      uint(sku.Quantity),
 				Title:         sku.Title,
+				UnitPrice:     util.YuanToFen(sku.UnitPrice),
+				UnitPoint:     util.YuanToFen(sku.UnitPoint),
+				ProjectID:     productInfo.ProjectID,
 			}
 			if _, err := tc.ProductRepository.CreateProductSku(tx, &productSku); err != nil {
 				tx.Rollback()
@@ -290,12 +294,15 @@ func (tc ProductController) UpdateProductByID(c *gin.Context) {
 				response.Fail(c, nil, "获取需要更新的产品SKU信息失败: "+err.Error())
 				return
 			}
-			productSku.CostPrice = uint(sku.CostPrice * 100)
-			productSku.EnableDefault = uint(sku.EnableDefault * 100)
+			productSku.CostPrice = util.YuanToFen(sku.CostPrice)
+			productSku.EnableDefault = sku.EnableDefault
 			productSku.Image = sku.Image
-			productSku.MarketPrice = uint(sku.MarketPrice * 100)
-			productSku.Quantity = uint(sku.Quantity * 100)
+			productSku.MarketPrice = util.YuanToFen(sku.MarketPrice)
+			productSku.Quantity = sku.Quantity
 			productSku.Title = sku.Title
+			productSku.UnitPrice = util.YuanToFen(sku.UnitPrice)
+			productSku.UnitPoint = util.YuanToFen(sku.UnitPoint)
+			productSku.ProductID = oldProduct.ProductID
 
 			err = tc.ProductRepository.UpdateProductSku(tx, productSku)
 			if err != nil {

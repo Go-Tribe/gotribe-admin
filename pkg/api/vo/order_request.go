@@ -17,6 +17,7 @@ type DeleteOrdersRequest struct {
 	OrderIds string `json:"orderIds" form:"orderIds"`
 }
 
+// 创建订单结构体
 type CreateOrderRequest struct {
 	AmountPay   float64 `json:"amountPay" form:"amountPay" validate:"required,gte=1"`
 	RemarkAdmin string  `json:"remarkAdmin" form:"remarkAdmin"`

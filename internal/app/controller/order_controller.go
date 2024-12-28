@@ -98,7 +98,7 @@ func (tc OrderController) UpdateOrderByID(c *gin.Context) {
 		response.Fail(c, nil, "获取需要更新的订单信息失败: "+err.Error())
 		return
 	}
-	oldOrder.AmountPay = req.AmountPay
+	oldOrder.AmountPay = uint(req.AmountPay / 100)
 	oldOrder.Status = req.Status
 	oldOrder.Remark = req.RemarkAdmin
 	// 更新订单
@@ -134,7 +134,6 @@ func (tc OrderController) BatchDeleteOrderByIds(c *gin.Context) {
 	}
 
 	response.Success(c, nil, "删除订单成功")
-
 }
 
 // 获取订单记录

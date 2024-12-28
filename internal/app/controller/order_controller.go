@@ -13,6 +13,7 @@ import (
 	"gotribe-admin/pkg/api/dto"
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
+	"gotribe-admin/pkg/util"
 	"strings"
 )
 
@@ -98,9 +99,9 @@ func (tc OrderController) UpdateOrderByID(c *gin.Context) {
 		response.Fail(c, nil, "获取需要更新的订单信息失败: "+err.Error())
 		return
 	}
-	oldOrder.AmountPay = uint(req.AmountPay / 100)
+	oldOrder.AmountPay = uint(util.YuanToFen(req.AmountPay))
 	oldOrder.Status = req.Status
-	oldOrder.Remark = req.RemarkAdmin
+	oldOrder.RemarkAdmin = req.RemarkAdmin
 	// 更新订单
 	err = tc.OrderRepository.UpdateOrder(&oldOrder)
 	if err != nil {

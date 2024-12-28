@@ -16,12 +16,12 @@ type ProductSkuDto struct {
 	SKUID         string  `json:"skuID"`
 	Title         string  `form:"skuTitle" json:"skuTitle" validate:"required"`
 	Image         string  `form:"image" json:"image" validate:"required"`
-	CostPrice     float64 `json:"cost_price" validate:"required"`
-	MarketPrice   float64 `json:"market_price" validate:"required"`
-	UnitPrice     float64 `json:"unit_price" validate:"required"`
-	UnitPoint     float64 `json:"unit_point" validate:"required"`
+	CostPrice     float64 `json:"costPrice" validate:"required"`
+	MarketPrice   float64 `json:"marketPrice" validate:"required"`
+	UnitPrice     float64 `json:"unitPrice" validate:"required"`
+	UnitPoint     float64 `json:"unitPoint" validate:"required"`
 	Quantity      uint    `json:"quantity" validate:"required"`
-	EnableDefault uint    `json:"enable_default"`
+	EnableDefault uint    `json:"enableDefault"`
 	CreatedAt     string  `json:"createdAt"`
 }
 

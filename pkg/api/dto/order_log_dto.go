@@ -24,6 +24,7 @@ func ToOrderLogInfoDto(orderLog *model.OrderLog) OrderLogDto {
 
 	return OrderLogDto{
 		OrderLogID: orderLog.OrderLogID,
+		OrderID:    orderLog.OrderID,
 		Remark:     orderLog.Remark,
 		CreatedAt:  util.FormatTime(orderLog.CreatedAt),
 	}

@@ -26,7 +26,10 @@ type UserDto struct {
 	CreatedAt string  `json:"createdAt"`
 }
 
-func toUserDto(user model.User) UserDto {
+func toUserDto(user *model.User) UserDto {
+	if user == nil {
+		return UserDto{}
+	}
 	domain := config.Conf.System.CDNDomain
 	return UserDto{
 		UserID:    user.UserID,
@@ -47,14 +50,14 @@ func toUserDto(user model.User) UserDto {
 	}
 }
 
-func ToUserInfoDto(user model.User) UserDto {
+func ToUserInfoDto(user *model.User) UserDto {
 	return toUserDto(user)
 }
 
 func ToUsersDto(userList []*model.User) []UserDto {
 	var users []UserDto
 	for _, user := range userList {
-		users = append(users, toUserDto(*user))
+		users = append(users, toUserDto(user))
 	}
 	return users
 }

@@ -8,6 +8,11 @@ package vo
 // 获取订单列表结构体
 type OrderListRequest struct {
 	OrderNumber string `form:"orderID" json:"orderID"`
+	Title       string `form:"title" json:"title"`
+	UserID      string `form:"userID" json:"userID"`
+	StartTime   string `form:"startTime" json:"startTime"`
+	EndTime     string `form:"endTime" json:"endTime"`
+	Status      uint   `json:"status" form:"status"`
 	PageNum     uint   `json:"pageNum" form:"pageNum"`
 	PageSize    uint   `json:"pageSize" form:"pageSize"`
 }

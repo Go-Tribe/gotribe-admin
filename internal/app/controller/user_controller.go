@@ -45,7 +45,7 @@ func (pc UserController) GetUserInfo(c *gin.Context) {
 		response.Fail(c, nil, "获取当前用户信息失败: "+err.Error())
 		return
 	}
-	userInfoDto := dto.ToUserInfoDto(user)
+	userInfoDto := dto.ToUserInfoDto(&user)
 	response.Success(c, gin.H{
 		"user": userInfoDto,
 	}, "获取当前用户信息成功")

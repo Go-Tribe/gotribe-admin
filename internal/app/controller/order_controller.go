@@ -48,7 +48,7 @@ func (tc OrderController) GetOrderInfo(c *gin.Context) {
 		response.Fail(c, nil, "获取当前订单信息失败: "+err.Error())
 		return
 	}
-	orderInfoDto := dto.ToOrderInfoDto(&order)
+	orderInfoDto := dto.ToOrderInfoDto(order)
 	response.Success(c, gin.H{
 		"order": orderInfoDto,
 	}, "获取当前订单信息成功")
@@ -103,7 +103,7 @@ func (tc OrderController) UpdateOrderByID(c *gin.Context) {
 	oldOrder.Status = req.Status
 	oldOrder.RemarkAdmin = req.RemarkAdmin
 	// 更新订单
-	err = tc.OrderRepository.UpdateOrder(&oldOrder)
+	err = tc.OrderRepository.UpdateOrder(oldOrder)
 	if err != nil {
 		response.Fail(c, nil, "更新订单失败: "+err.Error())
 		return

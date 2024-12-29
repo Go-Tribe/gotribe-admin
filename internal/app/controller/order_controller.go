@@ -99,7 +99,7 @@ func (tc OrderController) UpdateOrderByID(c *gin.Context) {
 		response.Fail(c, nil, "获取需要更新的订单信息失败: "+err.Error())
 		return
 	}
-	oldOrder.AmountPay = uint(util.YuanToFen(req.AmountPay))
+	oldOrder.AmountPay = util.YuanToFen(req.AmountPay)
 	oldOrder.Status = req.Status
 	oldOrder.RemarkAdmin = req.RemarkAdmin
 	// 更新订单
@@ -108,6 +108,8 @@ func (tc OrderController) UpdateOrderByID(c *gin.Context) {
 		response.Fail(c, nil, "更新订单失败: "+err.Error())
 		return
 	}
+	// 增加修改记录
+	err = tc.OrderLogRepository.CreateOrderLog(c.Param("orderID"), "后台编辑")
 	response.Success(c, nil, "更新订单成功")
 }
 

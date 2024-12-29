@@ -11,36 +11,36 @@ import (
 )
 
 type OrderDto struct {
-	OrderID           string `json:"orderID"`
-	OrderNumber       string `json:"orderNumber"`
-	OrderType         uint   `json:"orderType"`
-	PayMethod         uint   `json:"payMethod"`
-	PayStatus         uint   `json:"payStatus"`
-	PayTime           string `json:"payTime"`
-	ProductID         string `json:"productID"`
-	ProductName       string `json:"productName"`
-	ProductSku        string `json:"productSku"`
-	ProjectID         string `json:"projectID"`
-	Quantity          uint   `json:"quantity"`
-	RefundStatus      uint   `json:"refundStatus"`
-	RefundTime        string `json:"refundTime"`
-	Remark            string `json:"remark"`
-	RemarkAdmin       string `json:"remarkAdmin"`
-	Status            uint   `json:"status"`
-	UnitPrice         uint   `json:"unitPrice"`
-	UserID            string `json:"userID"`
-	Username          string `json:"username"`
-	Amount            uint   `json:"amount"`
-	AmountPay         uint   `json:"amountPay"`
-	ConsigneeName     string `json:"consigneeName"`
-	ConsigneePhone    string `json:"consigneePhone"`
-	ConsigneeAddress  string `json:"consigneeAddress"`
-	ConsigneeProvince string `json:"consigneeProvince"`
-	ProductImage      string `json:"productImage"`
-	ConsigneeStreet   string `json:"consigneeStreet"`
-	ConsigneeDistrict string `json:"consigneeDistrict"`
-	ConsigneeCity     string `json:"consigneeCity"`
-	CreatedAt         string `json:"createdAt"`
+	OrderID           string  `json:"orderID"`
+	OrderNumber       string  `json:"orderNumber"`
+	OrderType         uint    `json:"orderType"`
+	PayMethod         uint    `json:"payMethod"`
+	PayStatus         uint    `json:"payStatus"`
+	PayTime           string  `json:"payTime"`
+	ProductID         string  `json:"productID"`
+	ProductName       string  `json:"productName"`
+	ProductSku        string  `json:"productSku"`
+	ProjectID         string  `json:"projectID"`
+	Quantity          uint    `json:"quantity"`
+	RefundStatus      uint    `json:"refundStatus"`
+	RefundTime        string  `json:"refundTime"`
+	Remark            string  `json:"remark"`
+	RemarkAdmin       string  `json:"remarkAdmin"`
+	Status            uint    `json:"status"`
+	UnitPrice         float64 `json:"unitPrice"`
+	UserID            string  `json:"userID"`
+	Username          string  `json:"username"`
+	Amount            float64 `json:"amount"`
+	AmountPay         float64 `json:"amountPay"`
+	ConsigneeName     string  `json:"consigneeName"`
+	ConsigneePhone    string  `json:"consigneePhone"`
+	ConsigneeAddress  string  `json:"consigneeAddress"`
+	ConsigneeProvince string  `json:"consigneeProvince"`
+	ProductImage      string  `json:"productImage"`
+	ConsigneeStreet   string  `json:"consigneeStreet"`
+	ConsigneeDistrict string  `json:"consigneeDistrict"`
+	ConsigneeCity     string  `json:"consigneeCity"`
+	CreatedAt         string  `json:"createdAt"`
 }
 
 func ToOrderInfoDto(order *model.Order) OrderDto {
@@ -65,11 +65,11 @@ func ToOrderInfoDto(order *model.Order) OrderDto {
 		Remark:            order.Remark,
 		RemarkAdmin:       order.RemarkAdmin,
 		Status:            order.Status,
-		UnitPrice:         order.UnitPrice,
+		UnitPrice:         util.FenToYuan(order.UnitPrice),
 		UserID:            order.UserID,
 		Username:          order.Username,
-		Amount:            order.Amount,
-		AmountPay:         order.AmountPay,
+		Amount:            util.FenToYuan(order.Amount),
+		AmountPay:         util.FenToYuan(order.AmountPay),
 		ConsigneeName:     order.ConsigneeName,
 		ConsigneePhone:    order.ConsigneePhone,
 		ConsigneeAddress:  order.ConsigneeAddress,

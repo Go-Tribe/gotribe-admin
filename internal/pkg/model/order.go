@@ -30,11 +30,11 @@ type Order struct {
 	RefundStatus uint      `gorm:"type:tinyint(4);not null;comment:退款状态：1-待退款；2-已退款" json:"refundStatus"`
 	ProjectID    string    `gorm:"type:varchar(10);Index;comment:项目 ID" json:"projectID"`
 	ProductImage string    `gorm:"type:varchar(255);not null;comment:产品主图" json:"productImage"`
-	Amount       uint      `gorm:"type:int(10);not null;comment:总金额" json:"amount"`
-	AmountPay    uint      `gorm:"type:int(10);not null;comment:实际支付金额" json:"amountPay"`
+	Amount       int       `gorm:"type:int(10);not null;comment:总金额" json:"amount"`
+	AmountPay    int       `gorm:"type:int(10);not null;comment:实际支付金额" json:"amountPay"`
 	Quantity     uint      `gorm:"type:int(10);not null;comment:购买数量" json:"quantity"`
-	UnitPrice    uint      `gorm:"type:int(10);not null;comment:商品价格" json:"unitPrice"`
-	UnitPoint    float32   `gorm:"type:float(20,2);NOT NULL;comment:积分数值" json:"unitPoint"`
+	UnitPrice    int       `gorm:"type:int(10);not null;comment:商品价格" json:"unitPrice"`
+	UnitPoint    int       `gorm:"type:float(20,2);NOT NULL;comment:积分数值" json:"unitPoint"`
 	// 收货人信息
 	ConsigneeName     string `gorm:"type:varchar(255);not null;comment:收货人姓名" json:"consigneeName"`
 	ConsigneePhone    string `gorm:"type:varchar(20);not null;comment:收货人电话" json:"consigneePhone"`

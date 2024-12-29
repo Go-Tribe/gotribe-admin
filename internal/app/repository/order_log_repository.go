@@ -15,6 +15,7 @@ import (
 
 type IOrderLogRepository interface {
 	GetOrderLogs(req *vo.OrderLogListRequest) ([]*model.OrderLog, int64, error) // 获取订单记录列表
+	CreateOrderLog(orderID, remark string) error
 }
 
 type OrderLogRepository struct {
@@ -50,4 +51,11 @@ func (tr OrderLogRepository) GetOrderLogs(req *vo.OrderLogListRequest) ([]*model
 	}
 	err = db.Find(&list).Error
 	return list, total, err
+}
+
+func (tr OrderLogRepository) CreateOrderLog(orderID, remark string) error {
+	return common.DB.Create(&model.OrderLog{
+		OrderID: orderID,
+		Remark:  remark,
+	}).Error
 }

@@ -17,7 +17,7 @@ import (
 )
 
 type IPointLogRepository interface {
-	CreatePoint(userID, types, reason, eventID, ProjectID string, points float32) error // 新增积分
+	CreatePoint(userID, types, reason, eventID, ProjectID string, points float64) error // 新增积分
 	GetPointLogs(req *vo.PointLogListRequest) ([]*model.PointLog, int64, error)         // 获取积分列表
 }
 
@@ -77,7 +77,7 @@ func GetPointLogOther(pointLogs []*model.PointLog) []*model.PointLog {
 }
 
 // 创建推广场景
-func (cr PointLogRepository) CreatePoint(userID, types, reason, eventID, ProjectID string, points float32) error {
+func (cr PointLogRepository) CreatePoint(userID, types, reason, eventID, ProjectID string, points float64) error {
 	pointLog := &model.PointLog{
 		UserID:    userID,
 		Type:      types,

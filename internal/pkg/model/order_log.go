@@ -18,6 +18,6 @@ type OrderLog struct {
 }
 
 func (t *OrderLog) BeforeCreate(tx *gorm.DB) error {
-	t.OrderID = gid.GenShortID()
+	t.OrderLogID = gid.GenShortID()
 	return nil
 }

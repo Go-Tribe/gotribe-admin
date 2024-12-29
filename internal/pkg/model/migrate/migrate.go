@@ -63,4 +63,6 @@ func DBAutoMigrate(db *gorm.DB) {
 	orderMigrate(db)
 	// 订单日志表
 	orderLogMigrate(db)
+	// 系统设置
+	systemConfigMigrate(db)
 }

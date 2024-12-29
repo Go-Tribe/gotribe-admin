@@ -9,19 +9,17 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"gotribe-admin/internal/app/controller"
+	"gotribe-admin/internal/pkg/middleware"
 )
 
-// 注册基础路由
-func InitBaseRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) gin.IRoutes {
+// 注册系统配置管理路由
+func InitSystemConfigRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) gin.IRoutes {
 	systemConfigController := controller.NewSystemConfigController()
-	router := r.Group("/base")
+	router := r.Group("/system")
+	// 开启casbin鉴权中间件
+	router.Use(middleware.CasbinMiddleware())
 	{
-		// 登录登出刷新token无需鉴权
-		router.POST("/login", authMiddleware.LoginHandler)
-		router.POST("/logout", authMiddleware.LogoutHandler)
-		router.POST("/refreshToken", authMiddleware.RefreshHandler)
-		router.GET("/config", systemConfigController.GetSystemConfigInfo)
-
+		router.PATCH(":systemConfigID", systemConfigController.UpdateSystemConfigByID).Use(authMiddleware.MiddlewareFunc())
 	}
 	return r
 }

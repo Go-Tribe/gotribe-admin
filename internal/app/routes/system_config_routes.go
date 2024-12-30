@@ -16,10 +16,11 @@ import (
 func InitSystemConfigRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) gin.IRoutes {
 	systemConfigController := controller.NewSystemConfigController()
 	router := r.Group("/system")
+	router.Use(authMiddleware.MiddlewareFunc())
 	// 开启casbin鉴权中间件
 	router.Use(middleware.CasbinMiddleware())
 	{
-		router.PATCH(":systemConfigID", systemConfigController.UpdateSystemConfigByID).Use(authMiddleware.MiddlewareFunc())
+		router.PATCH("", systemConfigController.UpdateSystemConfigByID)
 	}
 	return r
 }

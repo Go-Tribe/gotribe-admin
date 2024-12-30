@@ -32,7 +32,7 @@ func toProductTypeDto(productType *model.ProductType) ProductTypeDto {
 
 	createdAt := ""
 	if !productType.CreatedAt.IsZero() {
-		createdAt = productType.CreatedAt.Format(known.TimeFormat)
+		createdAt = productType.CreatedAt.Format(known.TIME_FORMAT)
 	}
 
 	return ProductTypeDto{

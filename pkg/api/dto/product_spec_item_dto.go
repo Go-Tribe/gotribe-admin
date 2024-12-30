@@ -31,7 +31,7 @@ func toProductSpecItemDto(productSpecItem *model.ProductSpecItem) ProductSpecIte
 
 	createdAt := ""
 	if !productSpecItem.CreatedAt.IsZero() {
-		createdAt = productSpecItem.CreatedAt.Format(known.TimeFormat)
+		createdAt = productSpecItem.CreatedAt.Format(known.TIME_FORMAT)
 	}
 
 	return ProductSpecItemDto{

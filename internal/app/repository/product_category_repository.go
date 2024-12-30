@@ -86,7 +86,7 @@ func (cr ProductCategoryRepository) BatchDeleteProductCategoryByIds(productCateg
 	}
 	j := 0
 	for _, productCategory := range productCategorys {
-		if productCategory.ID != known.DefulatID && !isProductCategoryPID(int64((productCategory.ID))) {
+		if productCategory.ID != known.DEFAULT_ID && !isProductCategoryPID(int64((productCategory.ID))) {
 			productCategorys[j] = productCategory
 			j++
 		}

@@ -41,7 +41,7 @@ func toProductDto(product *model.Product) ProductDto {
 
 	createdAt := ""
 	if !product.CreatedAt.IsZero() {
-		createdAt = product.CreatedAt.Format(known.TimeFormat)
+		createdAt = product.CreatedAt.Format(known.TIME_FORMAT)
 	}
 	var imageList []string
 	if len(product.Image) > 0 {

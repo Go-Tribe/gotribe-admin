@@ -40,12 +40,12 @@ func toUserDto(user *model.User) UserDto {
 		ProjectID: user.ProjectID,
 		Birthday: func() string {
 			if user.Birthday != nil {
-				return user.Birthday.Format(known.TimeFormat)
+				return user.Birthday.Format(known.TIME_FORMAT)
 			}
 			return ""
 		}(),
 		AvatarURL: fmt.Sprintf("%s%s", domain, user.AvatarURL),
-		CreatedAt: user.CreatedAt.Format(known.TimeFormat),
+		CreatedAt: user.CreatedAt.Format(known.TIME_FORMAT),
 		Point:     user.Point,
 	}
 }

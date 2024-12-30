@@ -33,7 +33,7 @@ func ToResourceInfoDto(resource model.Resource) ResourceDto {
 		FileType:      resource.FileType,
 		FileExtension: resource.FileExtension,
 		Size:          resource.Size,
-		CreatedAt:     resource.CreatedAt.Format(known.TimeFormat),
+		CreatedAt:     resource.CreatedAt.Format(known.TIME_FORMAT),
 	}
 }
 
@@ -49,7 +49,7 @@ func ToResourcesDto(resourceList []*model.Resource) []ResourceDto {
 			FileType:      resource.FileType,
 			FileExtension: resource.FileExtension,
 			Size:          resource.Size,
-			CreatedAt:     resource.CreatedAt.Format(known.TimeFormat),
+			CreatedAt:     resource.CreatedAt.Format(known.TIME_FORMAT),
 		}
 
 		resources = append(resources, resourceDto)

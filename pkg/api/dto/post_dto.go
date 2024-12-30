@@ -57,7 +57,7 @@ func ToPostInfoDto(post *model.Post) PostsDto {
 		IsTop:       post.IsTop,
 		IsPasswd:    post.IsPasswd,
 		Category:    post.Category,
-		CreatedAt:   post.CreatedAt.Format(known.TimeFormat),
+		CreatedAt:   post.CreatedAt.Format(known.TIME_FORMAT),
 		Tags:        post.Tags,
 		Project:     post.Project,
 		Status:      post.Status,

@@ -32,8 +32,8 @@ func toPointDto(point model.PointLog) PointDto {
 		UserID:    point.UserID,
 		Nickname:  nickname,
 		Reason:    point.Reason,
-		CreatedAt: point.CreatedAt.Format(known.TimeFormat),
-		UpdatedAt: point.UpdatedAt.Format(known.TimeFormat),
+		CreatedAt: point.CreatedAt.Format(known.TIME_FORMAT),
+		UpdatedAt: point.UpdatedAt.Format(known.TIME_FORMAT),
 	}
 }
 

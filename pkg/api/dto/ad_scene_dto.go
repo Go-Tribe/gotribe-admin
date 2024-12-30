@@ -31,8 +31,8 @@ func toAdSceneDto(adScene model.AdScene) AdSceneDto {
 		Title:        adScene.Title,
 		Description:  adScene.Description,
 		ProjectID:    adScene.ProjectID,
-		CreatedAt:    adScene.CreatedAt.Format(known.TimeFormat),
-		UpdatedAt:    adScene.UpdatedAt.Format(known.TimeFormat),
+		CreatedAt:    adScene.CreatedAt.Format(known.TIME_FORMAT),
+		UpdatedAt:    adScene.UpdatedAt.Format(known.TIME_FORMAT),
 		ProjectTitle: projectTitle,
 	}
 }

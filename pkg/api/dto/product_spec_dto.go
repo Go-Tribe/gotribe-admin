@@ -33,7 +33,7 @@ func toProductSpecDto(productSpec *model.ProductSpec) ProductSpecDto {
 
 	createdAt := ""
 	if !productSpec.CreatedAt.IsZero() {
-		createdAt = productSpec.CreatedAt.Format(known.TimeFormat)
+		createdAt = productSpec.CreatedAt.Format(known.TIME_FORMAT)
 	}
 	items := make([]ProductSpecItemDto, 0, len(productSpec.Items))
 	for _, item := range productSpec.Items {

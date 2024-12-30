@@ -116,7 +116,7 @@ func (pc ResourceController) UploadResources(c *gin.Context) {
 		response.Fail(c, nil, "上传资源失败: "+err.Error())
 		return
 	}
-	if fileHeader.Size > known.DefUploadSize {
+	if fileHeader.Size > known.DEFAULT_UPLOAD_SIZE {
 		response.Fail(c, nil, "上传资源过大")
 		return
 	}

@@ -11,8 +11,10 @@ import (
 	"github.com/thoas/go-funk"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
+	"gotribe-admin/pkg/api/known"
 	"gotribe-admin/pkg/api/vo"
 	"strings"
+	"time"
 )
 
 type IOrderRepository interface {
@@ -62,10 +64,12 @@ func (tr OrderRepository) GetOrders(req *vo.OrderListRequest) ([]*model.Order, i
 		db = db.Where("product_name LIKE ?", fmt.Sprintf("%%%s%%", req.Title))
 	}
 	if len(req.StartTime) > 0 {
-		db = db.Where("date(created_at) >= ?", req.StartTime)
+		t, _ := time.Parse(known.TIME_FORMAT_SHORT, req.StartTime)
+		db = db.Where("date(created_at) >= ?", t)
 	}
 	if len(req.EndTime) > 0 {
-		db = db.Where("date(created_at) >= ?", req.EndTime)
+		t, _ := time.Parse(known.TIME_FORMAT_SHORT, req.StartTime)
+		db = db.Where("date(created_at) >= ?", t)
 	}
 	if req.UserID != "" {
 		db = db.Where("user_id = ?", fmt.Sprintf("%s", req.UserID))

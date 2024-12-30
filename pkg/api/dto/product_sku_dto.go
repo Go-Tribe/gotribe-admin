@@ -36,7 +36,7 @@ func toProductSkuDto(productSku *model.ProductSku) ProductSkuDto {
 
 	createdAt := ""
 	if !productSku.CreatedAt.IsZero() {
-		createdAt = productSku.CreatedAt.Format(known.TimeFormat)
+		createdAt = productSku.CreatedAt.Format(known.TIME_FORMAT)
 	}
 
 	return ProductSkuDto{

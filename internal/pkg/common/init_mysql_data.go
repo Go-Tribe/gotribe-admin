@@ -75,24 +75,39 @@ func InitData() {
 	var uint6 uint = 6
 	var uint8 uint = 8
 	var uint10 uint = 10
+	var uint18 uint = 18
+	var uint22 uint = 22
+	var uint27 uint = 27
 	componentStr := "component"
 	systemUserStr := "/system/user"
 	userStr := "user"
 	peoplesStr := "peoples"
 	treeTableStr := "tree-table"
 	treeStr := "tree"
-	exampleStr := "example"
 	logOperationStr := "/log/operation-log"
 	documentationStr := "documentation"
-	excel := "excel"
-	//tab := "tab"
-	documentation := "documentation"
 	education := "education"
-	bug := "bug"
-	form := "form"
+	tags := "24gf-tags2"
 	language := "language"
-	password := "password"
-	chart := "chart"
+	xitongrizhi := "xitongrizhi"
+	skill := "skill"
+	yewu := "yewu"
+	xiangmu := "xiangmu"
+	nested := "nested"
+	shuju := "shuju"
+	ziyuan := "ziyuan"
+	yunyingzhongxin := "yunyingzhongxin"
+	eye := "eye"
+	message := "message"
+	jifen := "jifen"
+	shopping := "shopping"
+	list := "list"
+	theme := "theme"
+	guige := "guige"
+	shangpinliebiao := "shangpinliebiao"
+	shangpin := "shangpin-"
+	dingdanliebiao := "dingdanliebiao"
+	peizhishezhi := "peizhishezhi"
 
 	menus := []model.Menu{
 		{
@@ -160,7 +175,7 @@ func InitData() {
 			Model:     model.Model{ID: 6},
 			Name:      "Log",
 			Title:     "日志管理",
-			Icon:      &exampleStr,
+			Icon:      &xitongrizhi,
 			Path:      "/log",
 			Component: "Layout",
 			Redirect:  &logOperationStr,
@@ -173,7 +188,7 @@ func InitData() {
 			Model:     model.Model{ID: 7},
 			Name:      "OperationLog",
 			Title:     "操作日志",
-			Icon:      &documentationStr,
+			Icon:      &skill,
 			Path:      "operation-log",
 			Component: "/log/operation-log/index",
 			Sort:      21,
@@ -185,7 +200,7 @@ func InitData() {
 			Model:     model.Model{ID: 8},
 			Name:      "Business",
 			Title:     "业务管理",
-			Icon:      &excel,
+			Icon:      &yewu,
 			Path:      "/business",
 			Component: "Layout",
 			Sort:      1,
@@ -197,7 +212,7 @@ func InitData() {
 			Model:     model.Model{ID: 9},
 			Name:      "Project",
 			Title:     "项目管理",
-			Icon:      &documentation,
+			Icon:      &xiangmu,
 			Path:      "/business/project",
 			Component: "/business/project/index",
 			Sort:      33,
@@ -221,7 +236,7 @@ func InitData() {
 			Model:     model.Model{ID: 11},
 			Name:      "Tag",
 			Title:     "标签管理",
-			Icon:      &bug,
+			Icon:      &tags,
 			Path:      "/content/tag",
 			Component: "/content/tag/index",
 			Sort:      33,
@@ -233,7 +248,7 @@ func InitData() {
 			Model:     model.Model{ID: 12},
 			Name:      "Category",
 			Title:     "分类管理",
-			Icon:      &form,
+			Icon:      &nested,
 			Path:      "/content/category",
 			Component: "/content/category/index",
 			Sort:      33,
@@ -257,7 +272,7 @@ func InitData() {
 			Model:     model.Model{ID: 14},
 			Name:      "Config",
 			Title:     "数据管理",
-			Icon:      &password,
+			Icon:      &shuju,
 			Path:      "/content/config",
 			Component: "/content/config/index",
 			Sort:      33,
@@ -269,7 +284,7 @@ func InitData() {
 			Model:     model.Model{ID: 15},
 			Name:      "Resource",
 			Title:     "资源管理",
-			Icon:      &chart,
+			Icon:      &ziyuan,
 			Path:      "/content/resource",
 			Component: "/content/resource/index",
 			Sort:      33,
@@ -298,6 +313,150 @@ func InitData() {
 			Component: "/content/column/index",
 			Sort:      34,
 			ParentID:  &uint10,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 18},
+			Name:      "Operations",
+			Title:     "运营管理",
+			Icon:      &yunyingzhongxin,
+			Path:      "/operations",
+			Component: "Layout",
+			Sort:      999,
+			ParentID:  &uint0,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 19},
+			Name:      "promotion",
+			Title:     "广告位管理",
+			Icon:      &eye,
+			Path:      "/operation/promotion",
+			Component: "/operation/promotion/index",
+			Sort:      35,
+			ParentID:  &uint18,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 20},
+			Name:      "comment",
+			Title:     "评论管理",
+			Icon:      &message,
+			Path:      "/operation/comment",
+			Component: "/operation/comment/index",
+			Sort:      999,
+			ParentID:  &uint18,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 21},
+			Name:      "point",
+			Title:     "积分管理",
+			Icon:      &jifen,
+			Path:      "/operation/point",
+			Component: "/operation/point/index",
+			Sort:      999,
+			ParentID:  &uint18,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 22},
+			Name:      "Store",
+			Title:     "商城管理",
+			Icon:      &shopping,
+			Path:      "/store",
+			Component: "Layout",
+			Sort:      999,
+			ParentID:  &uint0,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 23},
+			Name:      "ProductCategory",
+			Title:     "商品分类",
+			Icon:      &list,
+			Path:      "/store/product-category",
+			Component: "/store/product-category/index",
+			Sort:      999,
+			ParentID:  &uint22,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 24},
+			Name:      "ProductType",
+			Title:     "商品类型",
+			Icon:      &theme,
+			Path:      "/store/product-type",
+			Component: "/store/product-type/index",
+			Sort:      1,
+			ParentID:  &uint22,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 25},
+			Name:      "Spec",
+			Title:     "规格管理",
+			Icon:      &guige,
+			Path:      "/store/product-spec",
+			Component: "/store/product-spec/index",
+			Sort:      1,
+			ParentID:  &uint22,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 26},
+			Name:      "Product",
+			Title:     "商品列表",
+			Icon:      &shangpinliebiao,
+			Path:      "/store/product",
+			Component: "/store/product/index",
+			Sort:      1,
+			ParentID:  &uint22,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 27},
+			Name:      "Order",
+			Title:     "订单管理",
+			Icon:      &shangpin,
+			Path:      "/order",
+			Component: "Layout",
+			Sort:      1,
+			ParentID:  &uint0,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 28},
+			Name:      "OrderList",
+			Title:     "订单列表",
+			Icon:      &dingdanliebiao,
+			Path:      "/store/order",
+			Component: "/store/order/index",
+			Sort:      999,
+			ParentID:  &uint27,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 29},
+			Name:      "AdminConfig",
+			Title:     "后台配置",
+			Icon:      &peizhishezhi,
+			Path:      "/system/config",
+			Component: "/system/config/index",
+			Sort:      1,
+			ParentID:  &uint1,
 			Roles:     roles[:1],
 			Creator:   "系统",
 		},

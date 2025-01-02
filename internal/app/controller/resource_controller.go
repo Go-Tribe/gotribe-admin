@@ -120,14 +120,22 @@ func (pc ResourceController) UploadResources(c *gin.Context) {
 		response.Fail(c, nil, "上传资源过大")
 		return
 	}
-	qiniuUpload := upload.NewQiniu(config.Conf.QiniuConfig.Accesskey, config.Conf.QiniuConfig.Secretkey, config.Conf.QiniuConfig.Bucket)
-	fileRes, err := qiniuUpload.UploadFile(fileHeader)
+	//qiniuUpload := upload.NewQiniu(config.Conf.QiniuConfig.Accesskey, config.Conf.QiniuConfig.Secretkey, config.Conf.QiniuConfig.Bucket)
+	//fileRes, err := qiniuUpload.UploadFile(fileHeader)
+	upload, err := upload.NewUploadFile(
+		config.Conf.UploadFile.Endpoint,
+		config.Conf.UploadFile.Accesskey,
+		config.Conf.UploadFile.Secretkey,
+		config.Conf.UploadFile.Bucket,
+		config.Conf.System.EnableOss,
+	)
+	fileRes, err := upload.UploadFile(fileHeader)
 	if err != nil {
 		response.Fail(c, nil, "上传 CDN 失败："+err.Error())
 		return
 	}
-	uploadRes := dto.ToUploadResourceDto(fileRes)
-	uploadRes.Domain = config.Conf.QiniuConfig.Domain
+	uploadRes := dto.ToUploadResourceDto(&fileRes)
+	uploadRes.Domain = config.Conf.System.CDNDomain
 	uploadRes.FileType = util.GetFileType(fileHeader)
 
 	// 资源入库

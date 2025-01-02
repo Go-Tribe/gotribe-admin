@@ -1,8 +1,3 @@
-// Copyright 2023 Innkeeper gotribe <info@gotribe.cn>. All rights reserved.
-// Use of this source code is governed by a Apache style
-// license that can be found in the LICENSE file. The original repo for
-// this file is https://github.com/dengmengmian/solocms
-
 package upload
 
 import (
@@ -16,18 +11,14 @@ import (
 	"github.com/qiniu/go-sdk/v7/storage"
 )
 
+// QiniuUploader 结构体
 type QiniuUploader struct {
 	AccessKey string
 	SecretKey string
 	Bucket    string
 }
 
-type FileRet struct {
-	FileExt string `json:"fileExt"`
-	Key     string `json:"key"`
-}
-
-// 构造函数
+// NewQiniu 构造函数
 func NewQiniu(ak, sk, bucket string) QiniuUploader {
 	return QiniuUploader{
 		AccessKey: ak,
@@ -37,10 +28,10 @@ func NewQiniu(ak, sk, bucket string) QiniuUploader {
 }
 
 // UploadFile 七牛上传文件
-func (q *QiniuUploader) UploadFile(file *multipart.FileHeader) (*FileRet, error) {
+func (q QiniuUploader) UploadFile(file *multipart.FileHeader) (UploadResource, error) {
 	src, err := file.Open()
 	if err != nil {
-		return nil, err
+		return UploadResource{}, err
 	}
 	defer src.Close()
 
@@ -66,18 +57,18 @@ func (q *QiniuUploader) UploadFile(file *multipart.FileHeader) (*FileRet, error)
 
 	err = formUploader.Put(context.Background(), &ret, upToken, key, src, file.Size, &putExtra)
 	if err != nil {
-		return nil, err
+		return UploadResource{}, err
 	}
-
-	return &FileRet{
+	//增加返回文件后缀以及名字，通过结构体
+	fileRet := UploadResource{
 		FileExt: fileExt,
 		Key:     key,
-	}, err
+	}
+	return fileRet, nil
 }
 
-// DeletdFile 删除文件
-// https://developer.qiniu.com/kodo/1238/go
-func (q *QiniuUploader) DeletdFile(key string) error {
+// DeleteFile 删除文件
+func (q QiniuUploader) DeleteFile(key string) error {
 	mac := qbox.NewMac(q.AccessKey, q.SecretKey)
 	cfg := storage.Config{
 		// 是否使用https域名进行资源管理

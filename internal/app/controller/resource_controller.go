@@ -120,8 +120,6 @@ func (pc ResourceController) UploadResources(c *gin.Context) {
 		response.Fail(c, nil, "上传资源过大")
 		return
 	}
-	//qiniuUpload := upload.NewQiniu(config.Conf.QiniuConfig.Accesskey, config.Conf.QiniuConfig.Secretkey, config.Conf.QiniuConfig.Bucket)
-	//fileRes, err := qiniuUpload.UploadFile(fileHeader)
 	upload, err := upload.NewUploadFile(
 		config.Conf.UploadFile.Endpoint,
 		config.Conf.UploadFile.Accesskey,

@@ -103,7 +103,5 @@ func (rr ResourceRepository) DeleteResourceByID(id string) error {
 		config.Conf.System.EnableOss,
 	)
 
-	//qiniuUpload := upload.NewQiniu(config.Conf.QiniuConfig.Accesskey, config.Conf.QiniuConfig.Secretkey, config.Conf.QiniuConfig.Bucket)
-	//qiniuUpload.DeletdFile(project.Path)
 	return upload.DeleteFile(project.Path)
 }

@@ -87,7 +87,7 @@ func InitData() {
 	logOperationStr := "/log/operation-log"
 	documentationStr := "documentation"
 	education := "education"
-	tags := "24gf-tags2"
+	tagIcon := "24gf-tags2"
 	language := "language"
 	xitongrizhi := "xitongrizhi"
 	skill := "skill"
@@ -236,7 +236,7 @@ func InitData() {
 			Model:     model.Model{ID: 11},
 			Name:      "Tag",
 			Title:     "标签管理",
-			Icon:      &tags,
+			Icon:      &tagIcon,
 			Path:      "/content/tag",
 			Component: "/content/tag/index",
 			Sort:      33,

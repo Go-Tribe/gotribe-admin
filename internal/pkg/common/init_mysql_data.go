@@ -1476,6 +1476,7 @@ func InitData() {
 	projects := []model.Project{
 		{
 			Model:       model.Model{ID: 1},
+			Name:        "default",
 			Title:       "默认项目",
 			ProjectID:   "245eko",
 			Description: "默认项目",
@@ -1554,7 +1555,7 @@ func InitData() {
 	posts := []model.Post{
 		{
 			Model:       model.Model{ID: 1},
-			PostID:      "243x9g",
+			PostID:      "243x9",
 			Title:       "欢迎使用GoTribe",
 			Description: "这是一篇示例文章",
 			Content:     "# 这是一篇示例文章",

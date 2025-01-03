@@ -10,6 +10,7 @@ import (
 	"gotribe-admin/config"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
+	"gotribe-admin/pkg/api/known"
 	"gotribe-admin/pkg/api/response"
 
 	"strings"
@@ -33,12 +34,16 @@ func CasbinMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+		// 增加超级管理员账号
+		if admin.ID == known.DEFAULT_ID {
+			return
+		}
 		// 获得用户的全部角色
 		roles := admin.Roles
 		// 获得用户全部未被禁用的角色的Keyword
 		var subs []string
 		for _, role := range roles {
-			if role.Status == 1 {
+			if role.Status == known.DEFAULT_ID {
 				subs = append(subs, role.Keyword)
 			}
 		}

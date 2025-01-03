@@ -47,4 +47,22 @@ func DBAutoMigrate(db *gorm.DB) {
 	commentMigrate(db)
 	// 积分相关表
 	pointMigrate(db)
+	// 商品分类
+	productCategoryMigrate(db)
+	// 商品类型（规格组）
+	productTypeMigrate(db)
+	// 商品规格
+	productSpecMigrate(db)
+	// 商品规格属性
+	productSpecItemMigrate(db)
+	// SPU表
+	productMigrate(db)
+	// SKU表
+	productSKUMigrate(db)
+	// 订单表
+	orderMigrate(db)
+	// 订单日志表
+	orderLogMigrate(db)
+	// 系统设置
+	systemConfigMigrate(db)
 }

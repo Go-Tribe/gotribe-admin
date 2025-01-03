@@ -2,7 +2,6 @@
 // Use of this source code is governed by a Apache style
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://www.gotribe.cn
-
 package main
 
 import (
@@ -10,7 +9,7 @@ import (
 	"embed"
 	"fmt"
 	"github.com/fatih/color"
-	config "gotribe-admin/config"
+	"gotribe-admin/config"
 	"gotribe-admin/internal/app/jobs"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/app/routes"

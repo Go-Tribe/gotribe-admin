@@ -44,8 +44,8 @@ func toAdDto(ad model.Ad) AdDto {
 		URLType:     ad.URLType,
 		Ext:         ad.Ext,
 		SceneTitle:  sceneTitle,
-		CreatedAt:   ad.CreatedAt.Format(known.TimeFormat),
-		UpdatedAt:   ad.UpdatedAt.Format(known.TimeFormat),
+		CreatedAt:   ad.CreatedAt.Format(known.TIME_FORMAT),
+		UpdatedAt:   ad.UpdatedAt.Format(known.TIME_FORMAT),
 	}
 }
 

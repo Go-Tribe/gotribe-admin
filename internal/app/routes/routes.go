@@ -27,8 +27,6 @@ func InitRoutes(fs embed.FS) *gin.Engine {
 	// 日志与恢复中间件
 	r := gin.Default()
 	// 创建不带中间件的路由:
-	// r := gin.New()
-	// r.Use(gin.Recovery())
 
 	// 启用限流中间件
 	// 默认每50毫秒填充一个令牌，最多填充200个
@@ -59,24 +57,31 @@ func InitRoutes(fs embed.FS) *gin.Engine {
 	apiGroup := r.Group("/" + config.Conf.System.UrlPathPrefix)
 
 	// 注册路由
-	InitBaseRoutes(apiGroup, authMiddleware)         // 注册基础路由, 不需要jwt认证中间件,不需要casbin中间件
-	InitAdminRoutes(apiGroup, authMiddleware)        // 注册用户路由, jwt认证中间件,casbin鉴权中间件
-	InitRoleRoutes(apiGroup, authMiddleware)         // 注册角色路由, jwt认证中间件,casbin鉴权中间件
-	InitMenuRoutes(apiGroup, authMiddleware)         // 注册菜单路由, jwt认证中间件,casbin鉴权中间件
-	InitApiRoutes(apiGroup, authMiddleware)          // 注册接口路由, jwt认证中间件,casbin鉴权中间件
-	InitOperationLogRoutes(apiGroup, authMiddleware) // 注册操作日志路由, jwt认证中间件,casbin鉴权中间件
-	InitProjectRoutes(apiGroup, authMiddleware)      // 注册项目管理路由, jwt认证中间件,casbin鉴权中间件
-	InitConfigRoutes(apiGroup, authMiddleware)       // 注册配置管理路由, jwt认证中间件,casbin鉴权中间件
-	InitTagRoutes(apiGroup, authMiddleware)          // 注册标签管理路由, jwt认证中间件,casbin鉴权中间件
-	InitCategoryRoutes(apiGroup, authMiddleware)     // 注册分类管理路由, jwt认证中间件,casbin鉴权中间件
-	InitPostRoutes(apiGroup, authMiddleware)         // 注册内容管理路由, jwt认证中间件,casbin鉴权中间件
-	InitUserRoutes(apiGroup, authMiddleware)         // 注册用户管理路由, jwt认证中间件,casbin鉴权中间件
-	InitResourceRoutes(apiGroup, authMiddleware)     // 注册资源管理路由, jwt认证中间件,casbin鉴权中间件
-	InitColumnRoutes(apiGroup, authMiddleware)       // 注册专栏管理路由, jwt认证中间件,casbin鉴权中间件
-	InitAdSceneRoutes(apiGroup, authMiddleware)      // 注册推广场景管理路由, jwt认证中间件,casbin鉴权中间件
-	InitAdRoutes(apiGroup, authMiddleware)           // 注册广告位管理路由, jwt认证中间件,casbin鉴权中间件
-	InitCommentRoutes(apiGroup, authMiddleware)      // 注册评论管理路由, jwt认证中间件,casbin鉴权中间件
-	InitPointRoutes(apiGroup, authMiddleware)        // 注册积分管理路由, jwt认证中间件,casbin鉴权中间件
+	InitBaseRoutes(apiGroup, authMiddleware)            // 注册基础路由, 不需要jwt认证中间件,不需要casbin中间件
+	InitAdminRoutes(apiGroup, authMiddleware)           // 注册用户路由, jwt认证中间件,casbin鉴权中间件
+	InitRoleRoutes(apiGroup, authMiddleware)            // 注册角色路由, jwt认证中间件,casbin鉴权中间件
+	InitMenuRoutes(apiGroup, authMiddleware)            // 注册菜单路由, jwt认证中间件,casbin鉴权中间件
+	InitApiRoutes(apiGroup, authMiddleware)             // 注册接口路由, jwt认证中间件,casbin鉴权中间件
+	InitOperationLogRoutes(apiGroup, authMiddleware)    // 注册操作日志路由, jwt认证中间件,casbin鉴权中间件
+	InitProjectRoutes(apiGroup, authMiddleware)         // 注册项目管理路由, jwt认证中间件,casbin鉴权中间件
+	InitConfigRoutes(apiGroup, authMiddleware)          // 注册配置管理路由, jwt认证中间件,casbin鉴权中间件
+	InitTagRoutes(apiGroup, authMiddleware)             // 注册标签管理路由, jwt认证中间件,casbin鉴权中间件
+	InitCategoryRoutes(apiGroup, authMiddleware)        // 注册分类管理路由, jwt认证中间件,casbin鉴权中间件
+	InitPostRoutes(apiGroup, authMiddleware)            // 注册内容管理路由, jwt认证中间件,casbin鉴权中间件
+	InitUserRoutes(apiGroup, authMiddleware)            // 注册用户管理路由, jwt认证中间件,casbin鉴权中间件
+	InitResourceRoutes(apiGroup, authMiddleware)        // 注册资源管理路由, jwt认证中间件,casbin鉴权中间件
+	InitColumnRoutes(apiGroup, authMiddleware)          // 注册专栏管理路由, jwt认证中间件,casbin鉴权中间件
+	InitAdSceneRoutes(apiGroup, authMiddleware)         // 注册推广场景管理路由, jwt认证中间件,casbin鉴权中间件
+	InitAdRoutes(apiGroup, authMiddleware)              // 注册广告位管理路由, jwt认证中间件,casbin鉴权中间件
+	InitCommentRoutes(apiGroup, authMiddleware)         // 注册评论管理路由, jwt认证中间件,casbin鉴权中间件
+	InitPointRoutes(apiGroup, authMiddleware)           // 注册积分管理路由, jwt认证中间件,casbin鉴权中间件
+	InitProductCategoryRoutes(apiGroup, authMiddleware) // 注册商品分类管理路由, jwt认证中间件,casbin鉴权中间件
+	InitProductTypeRoutes(apiGroup, authMiddleware)     // 注册商品类型管理路由, jwt认证中间件,casbin鉴权中间件
+	InitProductSpecRoutes(apiGroup, authMiddleware)     // 注册商品规格管理路由, jwt认证中间件,casbin鉴权中间件
+	InitProductSpecItemRoutes(apiGroup, authMiddleware) // 注册商品规格项管理路由, jwt认证中间件,casbin鉴权中间件
+	InitProductRoutes(apiGroup, authMiddleware)         // 注册商品管理路由, jwt认证中间件,casbin鉴权中间件
+	InitOrderRoutes(apiGroup, authMiddleware)           // 注册订单管理路由, jwt认证中间件,casbin鉴权中间件
+	InitSystemConfigRoutes(apiGroup, authMiddleware)
 	common.Log.Info("初始化路由完成！")
 	return r
 }

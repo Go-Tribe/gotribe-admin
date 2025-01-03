@@ -122,7 +122,7 @@ func loginResponse(c *gin.Context, code int, token string, expires time.Time) {
 	response.Response(c, code, code,
 		gin.H{
 			"token":   token,
-			"expires": expires.Format(known.TimeFormat),
+			"expires": expires.Format(known.TIME_FORMAT),
 		},
 		"登录成功")
 }

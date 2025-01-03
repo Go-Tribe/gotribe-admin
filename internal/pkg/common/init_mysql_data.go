@@ -75,24 +75,39 @@ func InitData() {
 	var uint6 uint = 6
 	var uint8 uint = 8
 	var uint10 uint = 10
+	var uint18 uint = 18
+	var uint22 uint = 22
+	var uint27 uint = 27
 	componentStr := "component"
 	systemUserStr := "/system/user"
 	userStr := "user"
 	peoplesStr := "peoples"
 	treeTableStr := "tree-table"
 	treeStr := "tree"
-	exampleStr := "example"
 	logOperationStr := "/log/operation-log"
 	documentationStr := "documentation"
-	excel := "excel"
-	//tab := "tab"
-	documentation := "documentation"
 	education := "education"
-	bug := "bug"
-	form := "form"
+	tagIcon := "24gf-tags2"
 	language := "language"
-	password := "password"
-	chart := "chart"
+	xitongrizhi := "xitongrizhi"
+	skill := "skill"
+	yewu := "yewu"
+	xiangmu := "xiangmu"
+	nested := "nested"
+	shuju := "shuju"
+	ziyuan := "ziyuan"
+	yunyingzhongxin := "yunyingzhongxin"
+	eye := "eye"
+	message := "message"
+	jifen := "jifen"
+	shopping := "shopping"
+	list := "list"
+	theme := "theme"
+	guige := "guige"
+	shangpinliebiao := "shangpinliebiao"
+	shangpin := "shangpin-"
+	dingdanliebiao := "dingdanliebiao"
+	peizhishezhi := "peizhishezhi"
 
 	menus := []model.Menu{
 		{
@@ -160,7 +175,7 @@ func InitData() {
 			Model:     model.Model{ID: 6},
 			Name:      "Log",
 			Title:     "日志管理",
-			Icon:      &exampleStr,
+			Icon:      &xitongrizhi,
 			Path:      "/log",
 			Component: "Layout",
 			Redirect:  &logOperationStr,
@@ -173,7 +188,7 @@ func InitData() {
 			Model:     model.Model{ID: 7},
 			Name:      "OperationLog",
 			Title:     "操作日志",
-			Icon:      &documentationStr,
+			Icon:      &skill,
 			Path:      "operation-log",
 			Component: "/log/operation-log/index",
 			Sort:      21,
@@ -185,7 +200,7 @@ func InitData() {
 			Model:     model.Model{ID: 8},
 			Name:      "Business",
 			Title:     "业务管理",
-			Icon:      &excel,
+			Icon:      &yewu,
 			Path:      "/business",
 			Component: "Layout",
 			Sort:      1,
@@ -197,7 +212,7 @@ func InitData() {
 			Model:     model.Model{ID: 9},
 			Name:      "Project",
 			Title:     "项目管理",
-			Icon:      &documentation,
+			Icon:      &xiangmu,
 			Path:      "/business/project",
 			Component: "/business/project/index",
 			Sort:      33,
@@ -221,7 +236,7 @@ func InitData() {
 			Model:     model.Model{ID: 11},
 			Name:      "Tag",
 			Title:     "标签管理",
-			Icon:      &bug,
+			Icon:      &tagIcon,
 			Path:      "/content/tag",
 			Component: "/content/tag/index",
 			Sort:      33,
@@ -233,7 +248,7 @@ func InitData() {
 			Model:     model.Model{ID: 12},
 			Name:      "Category",
 			Title:     "分类管理",
-			Icon:      &form,
+			Icon:      &nested,
 			Path:      "/content/category",
 			Component: "/content/category/index",
 			Sort:      33,
@@ -257,7 +272,7 @@ func InitData() {
 			Model:     model.Model{ID: 14},
 			Name:      "Config",
 			Title:     "数据管理",
-			Icon:      &password,
+			Icon:      &shuju,
 			Path:      "/content/config",
 			Component: "/content/config/index",
 			Sort:      33,
@@ -269,7 +284,7 @@ func InitData() {
 			Model:     model.Model{ID: 15},
 			Name:      "Resource",
 			Title:     "资源管理",
-			Icon:      &chart,
+			Icon:      &ziyuan,
 			Path:      "/content/resource",
 			Component: "/content/resource/index",
 			Sort:      33,
@@ -301,6 +316,150 @@ func InitData() {
 			Roles:     roles[:1],
 			Creator:   "系统",
 		},
+		{
+			Model:     model.Model{ID: 18},
+			Name:      "Operations",
+			Title:     "运营管理",
+			Icon:      &yunyingzhongxin,
+			Path:      "/operations",
+			Component: "Layout",
+			Sort:      999,
+			ParentID:  &uint0,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 19},
+			Name:      "promotion",
+			Title:     "广告位管理",
+			Icon:      &eye,
+			Path:      "/operation/promotion",
+			Component: "/operation/promotion/index",
+			Sort:      35,
+			ParentID:  &uint18,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 20},
+			Name:      "comment",
+			Title:     "评论管理",
+			Icon:      &message,
+			Path:      "/operation/comment",
+			Component: "/operation/comment/index",
+			Sort:      999,
+			ParentID:  &uint18,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 21},
+			Name:      "point",
+			Title:     "积分管理",
+			Icon:      &jifen,
+			Path:      "/operation/point",
+			Component: "/operation/point/index",
+			Sort:      999,
+			ParentID:  &uint18,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 22},
+			Name:      "Store",
+			Title:     "商城管理",
+			Icon:      &shopping,
+			Path:      "/store",
+			Component: "Layout",
+			Sort:      999,
+			ParentID:  &uint0,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 23},
+			Name:      "ProductCategory",
+			Title:     "商品分类",
+			Icon:      &list,
+			Path:      "/store/product-category",
+			Component: "/store/product-category/index",
+			Sort:      999,
+			ParentID:  &uint22,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 24},
+			Name:      "ProductType",
+			Title:     "商品类型",
+			Icon:      &theme,
+			Path:      "/store/product-type",
+			Component: "/store/product-type/index",
+			Sort:      1,
+			ParentID:  &uint22,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 25},
+			Name:      "Spec",
+			Title:     "规格管理",
+			Icon:      &guige,
+			Path:      "/store/product-spec",
+			Component: "/store/product-spec/index",
+			Sort:      1,
+			ParentID:  &uint22,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 26},
+			Name:      "Product",
+			Title:     "商品列表",
+			Icon:      &shangpinliebiao,
+			Path:      "/store/product",
+			Component: "/store/product/index",
+			Sort:      1,
+			ParentID:  &uint22,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 27},
+			Name:      "Order",
+			Title:     "订单管理",
+			Icon:      &shangpin,
+			Path:      "/order",
+			Component: "Layout",
+			Sort:      1,
+			ParentID:  &uint0,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 28},
+			Name:      "OrderList",
+			Title:     "订单列表",
+			Icon:      &dingdanliebiao,
+			Path:      "/store/order",
+			Component: "/store/order/index",
+			Sort:      999,
+			ParentID:  &uint27,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 29},
+			Name:      "AdminConfig",
+			Title:     "后台配置",
+			Icon:      &peizhishezhi,
+			Path:      "/system/config",
+			Component: "/system/config/index",
+			Sort:      1,
+			ParentID:  &uint1,
+			Roles:     roles[:1],
+			Creator:   "系统",
+		},
 	}
 	for _, menu := range menus {
 		err := DB.First(&menu, menu.ID).Error
@@ -316,8 +475,8 @@ func InitData() {
 	}
 
 	// 3.写入管理员
-	newUsers := make([]model.Admin, 0)
-	users := []model.Admin{
+	newAdmins := make([]model.Admin, 0)
+	admins := []model.Admin{
 		{
 			Model:        model.Model{ID: 1},
 			Username:     "admin",
@@ -332,15 +491,15 @@ func InitData() {
 		},
 	}
 
-	for _, user := range users {
-		err := DB.First(&user, user.ID).Error
+	for _, admin := range admins {
+		err := DB.First(&admin, admin.ID).Error
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			newUsers = append(newUsers, user)
+			newAdmins = append(newAdmins, admin)
 		}
 	}
 
-	if len(newUsers) > 0 {
-		err := DB.Create(&newUsers).Error
+	if len(newAdmins) > 0 {
+		err := DB.Create(&newAdmins).Error
 		if err != nil {
 			Log.Errorf("写入管理员数据失败：%v", err)
 		}
@@ -866,6 +1025,342 @@ func InitData() {
 			Desc:     "删除专栏",
 			Creator:  "系统",
 		},
+		{
+			Method:   "GET",
+			Path:     "/ad/scene/:adSceneID",
+			Category: "ad_scene",
+			Desc:     "获取单条推广场景",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/ad/scene",
+			Category: "ad_scene",
+			Desc:     "获取所有推广场景",
+			Creator:  "系统",
+		},
+		{
+			Method:   "POST",
+			Path:     "/ad/scene",
+			Category: "ad_scene",
+			Desc:     "创建推广场景",
+			Creator:  "系统",
+		},
+		{
+			Method:   "DELETE",
+			Path:     "/ad/scene",
+			Category: "ad_scene",
+			Desc:     "删除推广场景",
+			Creator:  "系统",
+		},
+		{
+			Method:   "PATCH",
+			Path:     "/ad/scene/:adSceneID",
+			Category: "ad_scene",
+			Desc:     "更新推广场景信息",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/ad/:adID",
+			Category: "ad",
+			Desc:     "获取单个广告位",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/ad",
+			Category: "ad",
+			Desc:     "获取广告列表",
+			Creator:  "系统",
+		},
+		{
+			Method:   "POST",
+			Path:     "/ad",
+			Category: "ad",
+			Desc:     "创建广告",
+			Creator:  "系统",
+		},
+		{
+			Method:   "PATCH",
+			Path:     "/ad/:adID",
+			Category: "ad",
+			Desc:     "更新广告",
+			Creator:  "系统",
+		},
+		{
+			Method:   "DELETE",
+			Path:     "/ad",
+			Category: "ad",
+			Desc:     "删除广告",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/comment",
+			Category: "comment",
+			Desc:     "获取评论列表",
+			Creator:  "系统",
+		},
+		{
+			Method:   "PATCH",
+			Path:     "/comment/:commentID",
+			Category: "comment",
+			Desc:     "审核评论",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/point",
+			Category: "point",
+			Desc:     "获取评论列表",
+			Creator:  "系统",
+		},
+		{
+			Method:   "POST",
+			Path:     "/point",
+			Category: "point",
+			Desc:     "后台增加积分",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/product/category/tree",
+			Category: "product_category",
+			Desc:     "获取分类树",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/product/category",
+			Category: "product_category",
+			Desc:     "获取分类列表",
+			Creator:  "系统",
+		},
+		{
+			Method:   "POST",
+			Path:     "/product/category",
+			Category: "product_category",
+			Desc:     "创建分类",
+			Creator:  "系统",
+		},
+		{
+			Method:   "PATCH",
+			Path:     "/product/category/:productCategoryID",
+			Category: "product_category",
+			Desc:     "更新分类信息",
+			Creator:  "系统",
+		},
+		{
+			Method:   "DELETE",
+			Path:     "/product/category",
+			Category: "product_category",
+			Desc:     "删除分类",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/product/category/:productCategoryID",
+			Category: "product_category",
+			Desc:     "获取分类详情",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/product/type/:productTypeID",
+			Category: "product_type",
+			Desc:     "获取商品类型详情",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/product/type",
+			Category: "product_type",
+			Desc:     "获取商品类型列表",
+			Creator:  "系统",
+		},
+		{
+			Method:   "POST",
+			Path:     "/product/type",
+			Category: "product_type",
+			Desc:     "创建商品类型",
+			Creator:  "系统",
+		},
+		{
+			Method:   "PATCH",
+			Path:     "/product/type/:productTypeID",
+			Category: "product_type",
+			Desc:     "更新商品类型信息",
+			Creator:  "系统",
+		},
+		{
+			Method:   "DELETE",
+			Path:     "/product/type",
+			Category: "product_type",
+			Desc:     "删除商品类型",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/product/spec/:productSpecID",
+			Category: "product_spec",
+			Desc:     "获取商品规格",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/product/spec",
+			Category: "product_spec",
+			Desc:     "获取商品规格列表",
+			Creator:  "系统",
+		},
+		{
+			Method:   "POST",
+			Path:     "/product/spec",
+			Category: "product_spec",
+			Desc:     "创建商品规格",
+			Creator:  "系统",
+		},
+		{
+			Method:   "PATCH",
+			Path:     "/product/spec/:productSpecID",
+			Category: "product_spec",
+			Desc:     "更新商品规格",
+			Creator:  "系统",
+		},
+		{
+			Method:   "DELETE",
+			Path:     "/product/spec",
+			Category: "product_spec",
+			Desc:     "删除商品规格",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/product/spec/item/:productSpecItemID",
+			Category: "product_spec_item",
+			Desc:     "获取商品规格值",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/api/product/spec/item",
+			Category: "product_spec_item",
+			Desc:     "获取商品规格值列表",
+			Creator:  "系统",
+		},
+		{
+			Method:   "POST",
+			Path:     "/product/spec/item",
+			Category: "product_spec_item",
+			Desc:     "创建商品规格值",
+			Creator:  "系统",
+		},
+		{
+			Method:   "PATCH",
+			Path:     "/product/spec/item/:productSpecItemID",
+			Category: "product_spec_item",
+			Desc:     "更新商品规格值",
+			Creator:  "系统",
+		},
+		{
+			Method:   "DELETE",
+			Path:     "/product/spec/item",
+			Category: "product_spec_item",
+			Desc:     "删除商品规格值",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/product/:productID",
+			Category: "product",
+			Desc:     "获取商品信息",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/product",
+			Category: "product",
+			Desc:     "获取商品列表",
+			Creator:  "系统",
+		},
+		{
+			Method:   "POST",
+			Path:     "/product",
+			Category: "product",
+			Desc:     "创建商品",
+			Creator:  "系统",
+		},
+		{
+			Method:   "PATCH",
+			Path:     "/product/:productID",
+			Category: "product",
+			Desc:     "更新商品",
+			Creator:  "系统",
+		},
+		{
+			Method:   "DELETE",
+			Path:     "/product",
+			Category: "product",
+			Desc:     "删除商品",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/product/spec/info/:categoryID",
+			Category: "product_spec",
+			Desc:     "获取规格和规格项信息",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/order/:orderID",
+			Category: "order",
+			Desc:     "获取订单详情",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/order/log/:orderID",
+			Category: "order",
+			Desc:     "获取订单记录",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/order",
+			Category: "order",
+			Desc:     "获取订单列表",
+			Creator:  "系统",
+		},
+		{
+			Method:   "PATCH",
+			Path:     "/order/:orderID",
+			Category: "order",
+			Desc:     "修改订单信息",
+			Creator:  "系统",
+		},
+		{
+			Method:   "DELETE",
+			Path:     "/order",
+			Category: "order",
+			Desc:     "删除订单",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/base/config",
+			Category: "base",
+			Desc:     "获取后台配置",
+			Creator:  "系统",
+		},
+		{
+			Method:   "PATCH",
+			Path:     "/system",
+			Category: "system",
+			Desc:     "更新配置",
+			Creator:  "系统",
+		},
 	}
 	newApi := make([]model.Api, 0)
 	newRoleCasbin := make([]model.RoleCasbin, 0)
@@ -888,6 +1383,7 @@ func InitData() {
 				"/base/logout",
 				"/base/refreshToken",
 				"/user/info",
+				"/base/config",
 				"/menu/access/tree/:userID",
 			}
 
@@ -924,73 +1420,165 @@ func InitData() {
 			Log.Errorf("写入casbin数据失败：%v", err)
 		}
 	}
+	// 3.写入分类
+	newCategory := make([]model.Category, 0)
+	categorys := []model.Category{
+		{
+			Model:       model.Model{ID: 1},
+			Title:       "默认分类",
+			Description: "默认分类",
+			CategoryID:  "24ejga",
+			Status:      1,
+		},
+	}
 
-	// 5.写入分类数据
-	newCategory := model.Category{}
-	newCategory.ID = 1
-	newCategory.Title = "默认分类"
-	newCategory.Description = "默认分类"
-	newCategory.CategoryID = "24ejga"
-	if err := DB.Create(&newCategory).Error; err != nil {
-		Log.Errorf("写入默认分类数据失败：%v", err)
+	for _, category := range categorys {
+		err := DB.First(&category, category.ID).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			newCategory = append(newCategory, category)
+		}
+	}
+
+	if len(newCategory) > 0 {
+		err := DB.Create(&newCategory).Error
+		if err != nil {
+			Log.Errorf("写入分类数据失败：%v", err)
+		}
 	}
 
 	// 6.写入TAG数据
-	newTag := model.Tag{}
-	newTag.ID = 1
-	newTag.TagID = gid.GenShortID()
-	newTag.Title = "默认标签"
-	newTag.Description = "默认标签"
-	if err := DB.Create(&newTag).Error; err != nil {
-		Log.Errorf("写入默认tag数据失败：%v", err)
+	newTags := make([]model.Tag, 0)
+	tags := []model.Tag{
+		{
+			Model:       model.Model{ID: 1},
+			TagID:       gid.GenShortID(),
+			Title:       "默认标签",
+			Description: "默认标签",
+		},
+	}
+
+	for _, tag := range tags {
+		err := DB.First(&tag, tag.ID).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			newTags = append(newTags, tag)
+		}
+	}
+
+	if len(newTags) > 0 {
+		err := DB.Create(&newTags).Error
+		if err != nil {
+			Log.Errorf("写入tag数据失败：%v", err)
+		}
 	}
 
 	// 7.写入项目数据
-	newProject := model.Project{}
-	newProject.ID = 1
-	newProject.Title = "默认项目"
-	newProject.ProjectID = "245eko"
-	newProject.Description = "默认项目"
-	if err := DB.Create(&newProject).Error; err != nil {
-		Log.Errorf("写入项目数据失败：%v", err)
+	newProjects := make([]model.Project, 0)
+	projects := []model.Project{
+		{
+			Model:       model.Model{ID: 1},
+			Title:       "默认项目",
+			ProjectID:   "245eko",
+			Description: "默认项目",
+		},
 	}
 
+	for _, project := range projects {
+		err := DB.First(&project, project.ID).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			newProjects = append(newProjects, project)
+		}
+	}
+
+	if len(newProjects) > 0 {
+		err := DB.Create(&newProjects).Error
+		if err != nil {
+			Log.Errorf("写入项目数据失败：%v", err)
+		}
+	}
 	// 8.初始化nav
-	nav := model.Config{}
-	nav.Type = 2
-	nav.ProjectID = "245eko"
-	nav.Alias = "nav"
-	nav.Description = "导航配置"
-	nav.Title = "博客导航"
-	nav.Info = `[{"name":"首页","url":"/","child":[]},{"name":"精选栏目","url":"/series","child":[]},{"name":"示例页面","url":"/p/24g1i6","child":[]}]`
-	if err := DB.Create(&nav).Error; err != nil {
-		Log.Errorf("写入nav数据失败：%v", err)
+	newNavs := make([]model.Config, 0)
+	navs := []model.Config{
+		{
+			Model:       model.Model{ID: 1},
+			Type:        2,
+			ProjectID:   "245eko",
+			Alias:       "nav",
+			Description: "导航配置",
+			Title:       "默认导航",
+			Info:        `[{"name":"首页","url":"/","child":[]},{"name":"精选栏目","url":"/series","child":[]},{"name":"示例页面","url":"/p/24g1i6","child":[]}]`,
+		},
+	}
+
+	for _, nav := range navs {
+		err := DB.First(&nav, nav.ID).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			newNavs = append(newNavs, nav)
+		}
+	}
+
+	if len(newNavs) > 0 {
+		err := DB.Create(&newNavs).Error
+		if err != nil {
+			Log.Errorf("写入nav数据失败：%v", err)
+		}
 	}
 
 	// 9.初始化 user
-	user := model.User{}
-	user.ID = 1
-	user.UserID = gid.GenShortID()
-	user.Username = "author"
-	user.Nickname = "GoTribe"
-	user.ProjectID = "245eko"
-	if err := DB.Create(&user).Error; err != nil {
-		Log.Errorf("写入用户数据失败：%v", err)
+	newUsers := make([]model.User, 0)
+	users := []model.User{
+		{
+			Model:     model.Model{ID: 1},
+			UserID:    gid.GenShortID(),
+			Username:  "gotribe",
+			Nickname:  "gotribe",
+			ProjectID: "245eko",
+		},
 	}
 
-	post := model.Post{}
-	post.ID = 1
-	post.PostID = "243x9g"
-	post.Title = "欢迎使用GoTribe Cms"
-	post.Description = "这是一篇示例文章"
-	post.Content = "# 这是一篇示例文章"
-	post.Icon = "https://cdn.dengmengmian.com/20240528/1716909013037462047.jpg"
-	post.HtmlContent = "<h1>这是一篇示例文章</h1>"
-	post.UserID = "245eko"
-	post.CategoryID = "24ejga"
-	post.Author = "GoTribe"
-	post.ProjectID = "245eko"
-	if err := DB.Create(&post).Error; err != nil {
-		Log.Errorf("写入文章数据失败：%v", err)
+	for _, user := range users {
+		err := DB.First(&user, user.ID).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			newUsers = append(newUsers, user)
+		}
 	}
+
+	if len(newUsers) > 0 {
+		err := DB.Create(&newUsers).Error
+		if err != nil {
+			Log.Errorf("写入用户数据失败：%v", err)
+		}
+	}
+
+	// 10.写入文章数据
+	newPosts := make([]model.Post, 0)
+	posts := []model.Post{
+		{
+			Model:       model.Model{ID: 1},
+			PostID:      "243x9g",
+			Title:       "欢迎使用GoTribe",
+			Description: "这是一篇示例文章",
+			Content:     "# 这是一篇示例文章",
+			Icon:        "https://cdn.dengmengmian.com/20240528/1716909013037462047.jpg",
+			HtmlContent: "<h1>这是一篇示例文章</h1>",
+			UserID:      "245eko",
+			CategoryID:  "24ejga",
+			Author:      "GoTribe",
+			ProjectID:   "245eko",
+		},
+	}
+
+	for _, post := range posts {
+		err := DB.First(&post, post.ID).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			newPosts = append(newPosts, post)
+		}
+	}
+
+	if len(newPosts) > 0 {
+		err := DB.Create(&newPosts).Error
+		if err != nil {
+			Log.Errorf("写入文章数据失败：%v", err)
+		}
+	}
+
 }

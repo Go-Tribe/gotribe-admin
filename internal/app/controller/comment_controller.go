@@ -65,10 +65,10 @@ func (pc CommentController) UpdateCommentByID(c *gin.Context) {
 		return
 	}
 	var reqStatus uint
-	if oldComment.Status == known.AuditStatusPending {
-		reqStatus = known.AuditStatusPass
+	if oldComment.Status == known.AUDIT_STATUS_PENDING {
+		reqStatus = known.AUDIT_STATUS_PASS
 	} else {
-		reqStatus = known.AuditStatusPending
+		reqStatus = known.AUDIT_STATUS_PENDING
 	}
 	oldComment.Status = reqStatus
 	// 更新评论

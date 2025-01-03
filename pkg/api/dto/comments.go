@@ -42,8 +42,8 @@ func toCommentDto(comment model.Comment) CommentDto {
 		HtmlContent: comment.HtmlContent,
 		Status:      comment.Status,
 		Nickname:    nickname,
-		CreatedAt:   comment.CreatedAt.Format(known.TimeFormat),
-		UpdatedAt:   comment.UpdatedAt.Format(known.TimeFormat),
+		CreatedAt:   comment.CreatedAt.Format(known.TIME_FORMAT),
+		UpdatedAt:   comment.UpdatedAt.Format(known.TIME_FORMAT),
 	}
 }
 

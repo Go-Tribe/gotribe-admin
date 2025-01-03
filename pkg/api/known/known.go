@@ -6,34 +6,34 @@
 package known
 
 const (
-	// XRequestIDKey 用来定义 Gin 上下文中的键，代表请求的 uuid.
-	XRequestIDKey = "X-Request-ID"
+	// XRequestIDKey 用来定义 Gin 上下文中的键，代表请求的 UUID.
+	X_REQUEST_ID_KEY = "X-Request-ID"
 
 	// XUsernameKey 用来定义 Gin 上下文的键，代表请求的所有者.
-	XUsernameKey = "X-Username"
+	X_USERNAME_KEY = "X-Username"
 
 	// 日期格式化
-	TimeFormatDay = "20060102"
-	TimeFormat    = "2006-01-02 15:04:05"
+	TIME_FORMAT_DAY   = "20060102"
+	TIME_FORMAT       = "2006-01-02 15:04:05"
+	TIME_FORMAT_SHORT = "2006-01-02"
 
-	// 上传资源大小
-	DefUploadSize int64 = 10 * 1024 * 1024
-
-	StatusOK = 1
-	StatusNO = 2
 	// 默认数据 ID
-	DefulatID = 1
-	// 文件类型
-	IMAGE    = 1
-	VIDEO    = 2
-	AUDIO    = 3
-	ARCHIVE  = 4
-	DOCUMENT = 5
-	FONT     = 6
-	APP      = 7
-	UNKNOWN  = 8
+	DEFAULT_ID = 1
 
-	//审核状态
-	AuditStatusPending = 1
-	AuditStatusPass    = 2
+	// 文件类型
+	FILE_TYPE_IMAGE    = 1
+	FILE_TYPE_VIDEO    = 2
+	FILE_TYPE_AUDIO    = 3
+	FILE_TYPE_ARCHIVE  = 4
+	FILE_TYPE_DOCUMENT = 5
+	FILE_TYPE_FONT     = 6
+	FILE_TYPE_APP      = 7
+	FILE_TYPE_UNKNOWN  = 8
+
+	// 审核状态
+	AUDIT_STATUS_PENDING = 1
+	AUDIT_STATUS_PASS    = 2
+
+	// 上传资源大小 (默认 10MB)
+	DEFAULT_UPLOAD_SIZE int64 = 10 * 1024 * 1024
 )

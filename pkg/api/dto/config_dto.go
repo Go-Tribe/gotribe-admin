@@ -33,8 +33,8 @@ func ToConfigInfoDto(config model.Config) ConfigDto {
 		ProjectID:   config.ProjectID,
 		Description: config.Description,
 		MDContent:   config.MDContent,
-		CreatedAt:   config.CreatedAt.Format(known.TimeFormat),
-		UpdatedAt:   config.UpdatedAt.Format(known.TimeFormat),
+		CreatedAt:   config.CreatedAt.Format(known.TIME_FORMAT),
+		UpdatedAt:   config.UpdatedAt.Format(known.TIME_FORMAT),
 	}
 }
 
@@ -49,8 +49,8 @@ func ToConfigsDto(configList []*model.Config) []ConfigDto {
 			Description: config.Description,
 			ProjectID:   config.ProjectID,
 			MDContent:   config.MDContent,
-			CreatedAt:   config.CreatedAt.Format(known.TimeFormat),
-			UpdatedAt:   config.UpdatedAt.Format(known.TimeFormat),
+			CreatedAt:   config.CreatedAt.Format(known.TIME_FORMAT),
+			UpdatedAt:   config.UpdatedAt.Format(known.TIME_FORMAT),
 		}
 
 		configs = append(configs, configDto)

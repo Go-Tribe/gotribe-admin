@@ -95,7 +95,13 @@ func (rr ResourceRepository) DeleteResourceByID(id string) error {
 	// 硬删除
 	err = common.DB.Unscoped().Delete(&project).Error
 	// 删除 cdn 文件
-	qiniuUpload := upload.NewQiniu(config.Conf.QiniuConfig.Accesskey, config.Conf.QiniuConfig.Secretkey, config.Conf.QiniuConfig.Bucket)
-	qiniuUpload.DeletdFile(project.Path)
-	return err
+	upload, err := upload.NewUploadFile(
+		config.Conf.UploadFile.Endpoint,
+		config.Conf.UploadFile.Accesskey,
+		config.Conf.UploadFile.Secretkey,
+		config.Conf.UploadFile.Bucket,
+		config.Conf.System.EnableOss,
+	)
+
+	return upload.DeleteFile(project.Path)
 }

@@ -22,7 +22,7 @@ func ToTagInfoDto(tag model.Tag) TagDto {
 		TagID:       tag.TagID,
 		Title:       tag.Title,
 		Description: tag.Description,
-		CreatedAt:   tag.CreatedAt.Format(known.TimeFormat),
+		CreatedAt:   tag.CreatedAt.Format(known.TIME_FORMAT),
 	}
 }
 
@@ -33,7 +33,7 @@ func ToTagsDto(tagList []*model.Tag) []TagDto {
 			TagID:       tag.TagID,
 			Title:       tag.Title,
 			Description: tag.Description,
-			CreatedAt:   tag.CreatedAt.Format(known.TimeFormat),
+			CreatedAt:   tag.CreatedAt.Format(known.TIME_FORMAT),
 		}
 
 		tags = append(tags, tagDto)

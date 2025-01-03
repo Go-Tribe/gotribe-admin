@@ -10,7 +10,7 @@ type PointDeduction struct {
 	Model
 	ProjectID         string  `gorm:"type:char(10);not null;index;comment:项目ID;" json:"projectID"`
 	UserID            string  `gorm:"type:varchar(10);Index;comment:用户ID" json:"userID"`
-	Points            float32 `gorm:"type:float(20,2);NOT NULL;comment:积分数值"`
+	Points            float64 `gorm:"type:float(20,2);NOT NULL;comment:积分数值"`
 	PointsDetailID    int     `gorm:"type:int(10);comment:'积分明细ID'"`
 	AvailablePointsID int     `gorm:"type:int(10);NOT NULL;comment:'可用积分表ID'"`
 }

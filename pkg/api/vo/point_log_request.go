@@ -9,7 +9,7 @@ package vo
 type CreatePointLogRequest struct {
 	ProjectID string  `form:"projectID" json:"projectID" validate:"required"`
 	UserID    string  `form:"userID" json:"userID" validate:"required"`
-	Point     float32 `form:"point" json:"point" validate:"required"`
+	Point     float64 `form:"point" json:"point" validate:"required"`
 }
 
 // 获取积分列表结构体

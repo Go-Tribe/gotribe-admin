@@ -21,13 +21,13 @@ import (
 var Conf = new(config)
 
 type config struct {
-	System      *SystemConfig    `mapstructure:"system" json:"system"`
-	Logs        *LogsConfig      `mapstructure:"logs" json:"logs"`
-	Mysql       *MysqlConfig     `mapstructure:"mysql" json:"mysql"`
-	Casbin      *CasbinConfig    `mapstructure:"casbin" json:"casbin"`
-	Jwt         *JwtConfig       `mapstructure:"jwt" json:"jwt"`
-	RateLimit   *RateLimitConfig `mapstructure:"rate-limit" json:"rateLimit"`
-	QiniuConfig *QiniuConfig     `mapstructure:"qiniu" json:"qiniu"`
+	System     *SystemConfig    `mapstructure:"system" json:"system"`
+	Logs       *LogsConfig      `mapstructure:"logs" json:"logs"`
+	Mysql      *MysqlConfig     `mapstructure:"mysql" json:"mysql"`
+	Casbin     *CasbinConfig    `mapstructure:"casbin" json:"casbin"`
+	Jwt        *JwtConfig       `mapstructure:"jwt" json:"jwt"`
+	RateLimit  *RateLimitConfig `mapstructure:"rate-limit" json:"rateLimit"`
+	UploadFile *UploadFile      `mapstructure:"upload-file" json:"uploadFile"`
 }
 
 // 设置读取配置信息
@@ -78,6 +78,7 @@ type SystemConfig struct {
 	RSAPrivateBytes []byte `mapstructure:"-" json:"-"`
 	CDNDomain       string `mapstructure:"cdn-domain" json:"CDNDomain"`
 	EnableMigrate   bool   `mapstructure:"enable-migrate" json:"enableMigrate"`
+	EnableOss       bool   `mapstructure:"enable-oss" json:"enableOss"`
 }
 
 type LogsConfig struct {
@@ -117,9 +118,9 @@ type RateLimitConfig struct {
 	Capacity     int64 `mapstructure:"capacity" json:"capacity"`
 }
 
-type QiniuConfig struct {
+type UploadFile struct {
 	Accesskey string `mapstructure:"access-key" json:"accesskey"`
 	Secretkey string `mapstructure:"secret-key" json:"secretkey"`
 	Bucket    string `mapstructure:"bucket" json:"bucket"`
-	Domain    string `mapstructure:"domain" json:"domain"`
+	Endpoint  string `mapstructure:"endpoint" json:"endpoint"`
 }

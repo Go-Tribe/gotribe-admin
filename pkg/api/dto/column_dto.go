@@ -27,7 +27,7 @@ func ToColumnInfoDto(column model.Column) ColumnDto {
 		Description: column.Description,
 		Info:        column.Info,
 		Icon:        column.Icon,
-		CreatedAt:   column.CreatedAt.Format(known.TimeFormat),
+		CreatedAt:   column.CreatedAt.Format(known.TIME_FORMAT),
 	}
 }
 
@@ -41,7 +41,7 @@ func ToColumnsDto(columnList []*model.Column) []ColumnDto {
 			Description: column.Description,
 			Info:        column.Info,
 			Icon:        column.Icon,
-			CreatedAt:   column.CreatedAt.Format(known.TimeFormat),
+			CreatedAt:   column.CreatedAt.Format(known.TIME_FORMAT),
 		}
 
 		columns = append(columns, columnDto)

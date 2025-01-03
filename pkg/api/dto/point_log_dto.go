@@ -12,7 +12,7 @@ import (
 
 type PointDto struct {
 	ID        int64   `json:"id"`
-	Point     float32 `json:"point"`
+	Point     float64 `json:"point"`
 	UserID    string  `json:"userID"`
 	Reason    string  `json:"reason"`
 	Nickname  string  `json:"nickname"`
@@ -32,8 +32,8 @@ func toPointDto(point model.PointLog) PointDto {
 		UserID:    point.UserID,
 		Nickname:  nickname,
 		Reason:    point.Reason,
-		CreatedAt: point.CreatedAt.Format(known.TimeFormat),
-		UpdatedAt: point.UpdatedAt.Format(known.TimeFormat),
+		CreatedAt: point.CreatedAt.Format(known.TIME_FORMAT),
+		UpdatedAt: point.UpdatedAt.Format(known.TIME_FORMAT),
 	}
 }
 

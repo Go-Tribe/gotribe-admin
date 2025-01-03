@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
+	"gotribe-admin/pkg/api/known"
 	"gotribe-admin/pkg/api/vo"
 	"gotribe-admin/pkg/util"
 	"strings"
@@ -73,7 +74,7 @@ func (ar AdminRepository) Login(admin *model.Admin) (*model.Admin, error) {
 	isValidate := false
 	for _, role := range roles {
 		// 有一个正常状态的角色就可以登录
-		if role.Status == 1 {
+		if role.Status == known.DEFAULT_ID {
 			isValidate = true
 			break
 		}

@@ -35,9 +35,9 @@ type PostsDto struct {
 	Status      uint            `json:"status"`
 }
 
-func ToPostInfoDto(post *model.Post) (PostsDto, error) {
+func ToPostInfoDto(post *model.Post) PostsDto {
 	if post == nil {
-		return PostsDto{}, nil
+		return PostsDto{}
 	}
 	return PostsDto{
 		ColumnID:    post.ColumnID,
@@ -57,11 +57,11 @@ func ToPostInfoDto(post *model.Post) (PostsDto, error) {
 		IsTop:       post.IsTop,
 		IsPasswd:    post.IsPasswd,
 		Category:    post.Category,
-		CreatedAt:   post.CreatedAt.Format(known.TimeFormat),
+		CreatedAt:   post.CreatedAt.Format(known.TIME_FORMAT),
 		Tags:        post.Tags,
 		Project:     post.Project,
 		Status:      post.Status,
-	}, nil
+	}
 }
 
 func ToPostsDto(postList []*model.Post) []PostsDto {
@@ -70,7 +70,7 @@ func ToPostsDto(postList []*model.Post) []PostsDto {
 		if post == nil {
 			continue
 		}
-		postDto, _ := ToPostInfoDto(post)
+		postDto := ToPostInfoDto(post)
 		posts = append(posts, postDto)
 	}
 

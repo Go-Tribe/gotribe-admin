@@ -9,6 +9,7 @@ import (
 	"github.com/thoas/go-funk"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
+	"gotribe-admin/pkg/api/known"
 )
 
 type IMenuRepository interface {
@@ -122,7 +123,7 @@ func (m MenuRepository) GetUserMenusByUserID(userID uint) ([]*model.Menu, error)
 	// 获取状态status为1的菜单
 	accessMenus := make([]*model.Menu, 0)
 	for _, menu := range allRoleMenusUniq {
-		if menu.Status == 1 {
+		if menu.Status == known.DEFAULT_ID {
 			accessMenus = append(accessMenus, menu)
 		}
 	}

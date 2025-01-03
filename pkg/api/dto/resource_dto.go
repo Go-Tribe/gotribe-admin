@@ -33,7 +33,7 @@ func ToResourceInfoDto(resource model.Resource) ResourceDto {
 		FileType:      resource.FileType,
 		FileExtension: resource.FileExtension,
 		Size:          resource.Size,
-		CreatedAt:     resource.CreatedAt.Format(known.TimeFormat),
+		CreatedAt:     resource.CreatedAt.Format(known.TIME_FORMAT),
 	}
 }
 
@@ -49,7 +49,7 @@ func ToResourcesDto(resourceList []*model.Resource) []ResourceDto {
 			FileType:      resource.FileType,
 			FileExtension: resource.FileExtension,
 			Size:          resource.Size,
-			CreatedAt:     resource.CreatedAt.Format(known.TimeFormat),
+			CreatedAt:     resource.CreatedAt.Format(known.TIME_FORMAT),
 		}
 
 		resources = append(resources, resourceDto)
@@ -65,7 +65,7 @@ type UploadResourceDto struct {
 	FileType int    `json:"fileType"`
 }
 
-func ToUploadResourceDto(resource *upload.FileRet) UploadResourceDto {
+func ToUploadResourceDto(resource *upload.UploadResource) UploadResourceDto {
 	return UploadResourceDto{
 		FileExt:  resource.FileExt,
 		Key:      resource.Key,

@@ -49,7 +49,7 @@ func (pc PostController) GetPostInfo(c *gin.Context) {
 		response.Fail(c, nil, "获取当前内容信息失败: "+err.Error())
 		return
 	}
-	postInfoDto := dto.ToPostInfoDto(post)
+	postInfoDto := dto.ToPostInfoDto(&post)
 	response.Success(c, gin.H{
 		"post": postInfoDto,
 	}, "获取当前内容信息成功")

@@ -86,7 +86,7 @@ func (cr CategoryRepository) BatchDeleteCategoryByIds(categoryIds []string) erro
 	}
 	j := 0
 	for _, category := range categorys {
-		if category.ID != known.DefulatID && !isPID(int64((category.ID))) {
+		if category.ID != known.DEFAULT_ID && !isPID(int64((category.ID))) {
 			categorys[j] = category
 			j++
 		}

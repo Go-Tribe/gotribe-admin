@@ -19,8 +19,8 @@ type User struct {
 	ProjectID string     `gorm:"type:char(10);not null;index;comment:项目ID;" json:"project_id"`
 	Password  string     `gorm:"type:varchar(255);not null;comment:密码" json:"-"`
 	Nickname  string     `gorm:"type:varchar(30);not null;comment:昵称" json:"nickname"`
-	Email     string     `gorm:"type:varchar(30);not null;uniqueIndex;comment:邮箱" json:"email"`
-	Phone     string     `gorm:"type:varchar(21);not null;uniqueIndex;comment:电话" json:"phone"`
+	Email     string     `gorm:"type:varchar(30);not null;comment:邮箱" json:"email"`
+	Phone     string     `gorm:"type:varchar(21);not null;comment:电话" json:"phone"`
 	Sex       string     `gorm:"type:char(1);not null;default:M;comment:M:男 F:女" json:"sex"`
 	Point     float64    `gorm:"-" json:"point"`
 	Status    uint8      `gorm:"type:tinyint(1);not null;default:1;comment:用户状态，1-正常；2-禁用" json:"status"`

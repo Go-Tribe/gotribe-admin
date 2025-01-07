@@ -111,6 +111,12 @@ func (pc PostController) CreatePost(c *gin.Context) {
 		IsPasswd:    req.IsPasswd,
 		ColumnID:    req.ColumnID,
 		PassWord:    req.Password,
+		Time:        req.Time,
+		UnitPrice:   req.UnitPrice,
+		People:      req.People,
+		Location:    req.Location,
+		Images:      req.Images,
+		Video:       req.Video,
 	}
 
 	err := pc.PostRepository.CreatePost(&post)
@@ -160,6 +166,12 @@ func (pc PostController) UpdatePostByID(c *gin.Context) {
 	oldPost.Status = req.Status
 	oldPost.Tag = req.Tag
 	oldPost.ColumnID = req.ColumnID
+	oldPost.Time = req.Time
+	oldPost.UnitPrice = req.UnitPrice
+	oldPost.People = req.People
+	oldPost.Location = req.Location
+	oldPost.Images = req.Images
+	oldPost.Video = req.Video
 	// 更新内容
 	err = pc.PostRepository.UpdatePost(&oldPost)
 	if err != nil {

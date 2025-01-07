@@ -23,6 +23,12 @@ type CreatePostRequest struct {
 	IsTop       uint   ` form:"isTop"json:"isTop"`
 	IsPasswd    uint   `form:"isPasswd"json:"isPasswd"`
 	Password    string `form:"password"json:"password"`
+	Location    string `form:"location" json:"location"`
+	People      string `form:"people" json:"people"`
+	Time        string `form:"time" json:"time"`
+	Images      string `form:"images" json:"images"`
+	UnitPrice   uint   `form:"unitPrice" json:"unitPrice"`
+	Video       string `form:"video" json:"video"`
 }
 
 // 更新内容结构体
@@ -44,6 +50,12 @@ type UpdatePostRequest struct {
 	IsPasswd    uint   `form:"isPasswd"json:"isPasswd"`
 	Password    string `form:"password"json:"password"`
 	Status      uint   `form:"status" json:"status"`
+	Location    string `form:"location" json:"location"`
+	People      string `form:"people" json:"people"`
+	Time        string `form:"time" json:"time"`
+	Images      string `form:"images" json:"images"`
+	UnitPrice   uint   `form:"unitPrice" json:"unitPrice"`
+	Video       string `form:"video" json:"video"`
 }
 
 // 获取内容列表结构体

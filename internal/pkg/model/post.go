@@ -31,6 +31,12 @@ type Post struct {
 	IsPasswd    uint      `gorm:"type:tinyint;default:2;comment:是否加密：1-启用;2-禁用" json:"isPasswd"`
 	PassWord    string    `gorm:"type:varchar(255);not null;comment:密码" json:"password"`
 	Status      uint      `gorm:"type:tinyint(1);not null;default:1;comment:状态，1-草稿；2-发布" json:"status"`
+	UnitPrice   uint      `gorm:"type:int(10);not null;comment:商品价格" json:"unitPrice"`
+	Location    string    `gorm:"type:varchar(255);comment:地点" json:"location"`
+	People      string    `gorm:"type:varchar(255);comment:人物" json:"people"`
+	Time        string    `gorm:"type:varchar(255);comment:时间" json:"time"`
+	Images      string    `gorm:"type:varchar(1000);comment:图片" json:"images"`
+	Video       string    `gorm:"type:varchar(255);not null;comment:产品视频" json:"video"`
 	Category    *Category `gorm:"-" json:"category"`
 	Tags        []*Tag    `gorm:"-" json:"tags"`
 	Project     *Project  `gorm:"-" json:"project"`

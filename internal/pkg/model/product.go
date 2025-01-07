@@ -24,6 +24,8 @@ type Product struct {
 	ProductSpec   string `gorm:"type:varchar(2048);not null;comment:产品规格" json:"productSpec"`
 	Content       string `gorm:"type:longtext;comment:内容" json:"content"`
 	HtmlContent   string `gorm:"type:longtext;comment:html内容" json:"Htmlcontent"`
+	Tag           string `gorm:"type:varchar(300);not null;comment:标签" json:"tag"`
+	Tags          []*Tag `gorm:"-" json:"tags"`
 	Enable        uint   `gorm:"type:tinyint(4);not null;default:1;comment:是否启用：1-下架；2-上架" json:"enable"`
 }
 

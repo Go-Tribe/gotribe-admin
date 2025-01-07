@@ -29,6 +29,7 @@ type ProductDto struct {
 	Enable        uint            `json:"enable"`
 	CreatedAt     string          `json:"createdAt"`
 	SKU           []ProductSkuDto `json:"sku"`
+	Tag           string          `json:"tag"`
 }
 
 // toProductDto 将产品类型模型转换为产品类型DTO。
@@ -63,6 +64,7 @@ func toProductDto(product *model.Product) ProductDto {
 		ProductNumber: product.ProductNumber,
 		Description:   product.Description,
 		BuyLimit:      product.BuyLimit,
+		Tag:           product.Tag,
 	}
 }
 

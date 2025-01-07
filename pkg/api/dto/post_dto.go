@@ -33,6 +33,12 @@ type PostsDto struct {
 	Project     *model.Project  `json:"project"`
 	CreatedAt   string          `json:"createdAt"`
 	Status      uint            `json:"status"`
+	Location    string          `json:"location"`
+	People      string          `json:"people"`
+	Time        string          `json:"time"`
+	Images      string          `json:"images"`
+	UnitPrice   uint            `json:"unitPrice"`
+	Video       string          `json:"video"`
 }
 
 func ToPostInfoDto(post *model.Post) PostsDto {
@@ -61,6 +67,12 @@ func ToPostInfoDto(post *model.Post) PostsDto {
 		Tags:        post.Tags,
 		Project:     post.Project,
 		Status:      post.Status,
+		Location:    post.Location,
+		People:      post.People,
+		Time:        post.Time,
+		Images:      post.Images,
+		UnitPrice:   post.UnitPrice,
+		Video:       post.Video,
 	}
 }
 

@@ -91,6 +91,7 @@ func (tc TagController) CreateTag(c *gin.Context) {
 	tag := model.Tag{
 		Title:       req.Title,
 		Description: req.Description,
+		Color:       req.Color,
 	}
 
 	tagInfo, err := tc.TagRepository.CreateTag(&tag)
@@ -124,6 +125,7 @@ func (tc TagController) UpdateTagByID(c *gin.Context) {
 	}
 	oldTag.Title = req.Title
 	oldTag.Description = req.Description
+	oldTag.Color = req.Color
 	// 更新标签
 	err = tc.TagRepository.UpdateTag(&oldTag)
 	if err != nil {

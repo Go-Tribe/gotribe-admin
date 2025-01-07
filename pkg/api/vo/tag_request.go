@@ -9,6 +9,7 @@ package vo
 type CreateTagRequest struct {
 	Title       string `form:"title" json:"title" validate:"required,min=2,max=20"`
 	Description string `form:"description" json:"description"`
+	Color       string `form:"color" json:"color"`
 }
 
 // 获取标签列表结构体

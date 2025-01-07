@@ -164,6 +164,7 @@ func (tc ProductController) CreateProduct(c *gin.Context) {
 		Enable:        req.Enable,
 		ProductSpec:   req.ProductSpec,
 		HtmlContent:   req.HtmlContent,
+		Tag:           req.Tag,
 	}
 
 	productInfo, err := tc.ProductRepository.CreateProduct(tx, &product)
@@ -278,6 +279,7 @@ func (tc ProductController) UpdateProductByID(c *gin.Context) {
 	oldProduct.BuyLimit = req.BuyLimit
 	oldProduct.Enable = req.Enable
 	oldProduct.ProductSpec = req.ProductSpec
+	oldProduct.Tag = req.Tag
 	// 更新产品
 	err = tc.ProductRepository.UpdateProduct(tx, &oldProduct)
 	if err != nil {

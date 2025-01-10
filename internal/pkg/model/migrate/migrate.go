@@ -67,4 +67,6 @@ func DBAutoMigrate(db *gorm.DB) {
 	systemConfigMigrate(db)
 	// 第三方帐号表
 	thirdPartyAccountsMigrate(db)
+	// 反馈表
+	feedbackMigrate(db)
 }

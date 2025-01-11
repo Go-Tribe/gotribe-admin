@@ -66,7 +66,7 @@ func (cr PointLogRepository) GetPointLogs(req *vo.PointLogListRequest) ([]*model
 	return GetPointLogOther(list), total, err
 }
 
-// 获取推广场景其他信息
+// 获取其他信息
 func GetPointLogOther(pointLogs []*model.PointLog) []*model.PointLog {
 	for _, m := range pointLogs {
 		var user *model.User

@@ -32,7 +32,7 @@ func (tr FeedbackRepository) GetFeedbacks(req *vo.FeedbackListRequest) ([]*model
 
 	projectID := strings.TrimSpace(req.ProjectID)
 	if req.ProjectID != "" {
-		db = db.Where("prject_id = ?", fmt.Sprintf("%s", projectID))
+		db = db.Where("project_id = ?", fmt.Sprintf("%s", projectID))
 	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数

@@ -27,8 +27,8 @@ type Post struct {
 	Tag         string    `gorm:"type:varchar(30);comment:tag" json:"tag"`
 	View        uint      `gorm:"default:1;comment:'阅读量'" json:"view"`
 	Type        uint      `gorm:"type:tinyint;default:1;comment:类型，1.文章 2.page 3.短文" json:"type"`
-	IsTop       uint      `gorm:"type:tinyint;default:2;comment:是否置顶：1-启用;2-禁用" json:"isTop"`
-	IsPasswd    uint      `gorm:"type:tinyint;default:2;comment:是否加密：1-启用;2-禁用" json:"isPasswd"`
+	IsTop       uint      `gorm:"type:tinyint;default:1;comment:是否置顶：1-禁用;2-启用" json:"isTop"`
+	IsPasswd    uint      `gorm:"type:tinyint;default:1;comment:是否加密：1-禁用;2-启用" json:"isPasswd"`
 	PassWord    string    `gorm:"type:varchar(255);not null;comment:密码" json:"password"`
 	Status      uint      `gorm:"type:tinyint(1);not null;default:1;comment:状态，1-草稿；2-发布" json:"status"`
 	UnitPrice   uint      `gorm:"type:int(10);not null;comment:商品价格" json:"unitPrice"`

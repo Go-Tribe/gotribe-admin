@@ -93,7 +93,7 @@ func (pc PostController) CreatePost(c *gin.Context) {
 		response.Fail(c, nil, errStr)
 		return
 	}
-
+	imageStr := strings.Join(req.Images, ",")
 	post := model.Post{
 		CategoryID:  req.CategoryID,
 		ProjectID:   req.ProjectID,
@@ -115,7 +115,7 @@ func (pc PostController) CreatePost(c *gin.Context) {
 		UnitPrice:   req.UnitPrice,
 		People:      req.People,
 		Location:    req.Location,
-		Images:      req.Images,
+		Images:      imageStr,
 		Video:       req.Video,
 	}
 
@@ -149,6 +149,7 @@ func (pc PostController) UpdatePostByID(c *gin.Context) {
 		response.Fail(c, nil, "获取需要更新的内容信息失败: "+err.Error())
 		return
 	}
+	imageStr := strings.Join(req.Images, ",")
 	oldPost.Title = req.Title
 	oldPost.Description = req.Description
 	oldPost.IsTop = req.IsTop
@@ -170,7 +171,7 @@ func (pc PostController) UpdatePostByID(c *gin.Context) {
 	oldPost.UnitPrice = req.UnitPrice
 	oldPost.People = req.People
 	oldPost.Location = req.Location
-	oldPost.Images = req.Images
+	oldPost.Images = imageStr
 	oldPost.Video = req.Video
 	// 更新内容
 	err = pc.PostRepository.UpdatePost(&oldPost)

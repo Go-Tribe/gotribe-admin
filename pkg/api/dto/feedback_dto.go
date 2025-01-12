@@ -33,7 +33,7 @@ func toFeedbackDto(feedback model.Feedback) FeedbackDto {
 		dto.User = ToUserInfoDto(feedback.User)
 	}
 	if feedback.Project != nil {
-		dto.Project = ToProjectInfoDto(feedBack.Project)
+		dto.Project = ToProjectInfoDto(feedback.Project)
 	}
 	return dto
 }

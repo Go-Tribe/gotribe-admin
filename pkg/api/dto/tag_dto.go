@@ -13,30 +13,36 @@ import (
 type TagDto struct {
 	TagID       string `json:"tagID"`
 	Title       string `json:"title"`
+	Color       string `json:"color"`
 	Description string `json:"description"`
 	CreatedAt   string `json:"createdAt"`
 }
 
-func ToTagInfoDto(tag model.Tag) TagDto {
+func toTagDto(tag *model.Tag) TagDto {
+	if tag == nil {
+		return TagDto{}
+	}
 	return TagDto{
 		TagID:       tag.TagID,
 		Title:       tag.Title,
+		Color:       tag.Color,
 		Description: tag.Description,
 		CreatedAt:   tag.CreatedAt.Format(known.TIME_FORMAT),
 	}
 }
 
-func ToTagsDto(tagList []*model.Tag) []TagDto {
-	var tags []TagDto
-	for _, tag := range tagList {
-		tagDto := TagDto{
-			TagID:       tag.TagID,
-			Title:       tag.Title,
-			Description: tag.Description,
-			CreatedAt:   tag.CreatedAt.Format(known.TIME_FORMAT),
-		}
+func ToTagInfoDto(tag model.Tag) TagDto {
+	return toTagDto(&tag)
+}
 
-		tags = append(tags, tagDto)
+func ToTagsDto(tagList []*model.Tag) []TagDto {
+	if tagList == nil {
+		return []TagDto{}
+	}
+
+	tags := make([]TagDto, 0, len(tagList))
+	for _, tag := range tagList {
+		tags = append(tags, toTagDto(tag))
 	}
 
 	return tags

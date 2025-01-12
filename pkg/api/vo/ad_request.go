@@ -12,6 +12,7 @@ type CreateAdRequest struct {
 	URL         string `form:"url" json:"url" validate:"required,min=2,max=255"`
 	URLType     uint   `form:"urlType" json:"urlType" validate:"required"`
 	Image       string `form:"image" json:"image" validate:"required,min=2,max=255"`
+	Video       string `form:"video" json:"video" validate:"required,min=2,max=255"`
 	Sort        uint   `form:"sort" json:"sort" validate:"required"`
 	Status      uint   `form:"status" json:"status" validate:"oneof=1 2"`
 	SceneID     string `form:"sceneID" json:"sceneID" validate:"required"`
@@ -34,6 +35,7 @@ type UpdateAdRequest struct {
 	URL         string `form:"url" json:"url" validate:"required,min=2,max=255"`
 	URLType     uint   `form:"urlType" json:"urlType" validate:"required"`
 	Image       string `form:"image" json:"image" validate:"required,min=2,max=255"`
+	Video       string `form:"video" json:"video" validate:"required,min=2,max=255"`
 	Sort        uint   `form:"sort" json:"sort" validate:"required"`
 	Status      uint   `form:"status" json:"status" validate:"oneof=1 2"`
 	SceneID     string `form:"sceneID" json:"sceneID" validate:"required"`

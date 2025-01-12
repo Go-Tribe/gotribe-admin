@@ -22,6 +22,7 @@ type Ad struct {
 	SceneID     string   `gorm:"type:char(10);Index;comment:场景 ID" json:"sceneID"`
 	Ext         string   `gorm:"type:text;comment:扩展字段" json:"ext"`
 	Image       string   `gorm:"type:varchar(255);comment:图片地址" json:"image"`
+	Video       string   `gorm:"type:varchar(255);comment:视频地址" json:"video"`
 	Scene       *AdScene `gorm:"-" json:"scene"`
 }
 

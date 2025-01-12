@@ -96,6 +96,7 @@ func (pc AdController) CreateAd(c *gin.Context) {
 		Sort:        req.Sort,
 		Status:      req.Status,
 		Title:       req.Title,
+		Video:       req.Video,
 		Ext:         req.Ext,
 		Description: req.Description,
 	}
@@ -138,6 +139,7 @@ func (pc AdController) UpdateAdByID(c *gin.Context) {
 	oldAd.URL = req.URL
 	oldAd.URLType = req.URLType
 	oldAd.Status = req.Status
+	oldAd.Video = req.Video
 	oldAd.SceneID = req.SceneID
 	// 更新广告
 	err = pc.AdRepository.UpdateAd(&oldAd)

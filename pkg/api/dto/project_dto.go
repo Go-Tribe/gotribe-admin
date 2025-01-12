@@ -29,7 +29,7 @@ type ProjectDto struct {
 	PushToken      string `json:"pushToken"`
 }
 
-func ToProjectInfoDto(project model.Project) ProjectDto {
+func ToProjectInfoDto(project *model.Project) ProjectDto {
 	return ProjectDto{
 		ProjectID:      project.ProjectID,
 		Title:          project.Title,

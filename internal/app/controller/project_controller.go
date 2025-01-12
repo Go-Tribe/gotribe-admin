@@ -43,7 +43,7 @@ func (pc ProjectController) GetProjectInfo(c *gin.Context) {
 		response.Fail(c, nil, "获取当前项目信息失败: "+err.Error())
 		return
 	}
-	projectInfoDto := dto.ToProjectInfoDto(project)
+	projectInfoDto := dto.ToProjectInfoDto(&project)
 	response.Success(c, gin.H{
 		"project": projectInfoDto,
 	}, "获取当前项目信息成功")

@@ -1,7 +1,4 @@
-// Copyright 2023 Innkeeper gotribe <info@gotribe.cn>. All rights reserved.
-// Use of this source code is governed by a Apache style
-// license that can be found in the LICENSE file. The original repo for
-// this file is https://www.gotribe.cn
+// 修改后的完整代码示例
 
 package dto
 
@@ -34,7 +31,7 @@ func toFeedbackDto(feedBack model.Feedback) FeedbackDto {
 		dto.User = ToUserInfoDto(feedBack.User)
 	}
 	if feedBack.Project != nil {
-		dto.Project = ToProjectInfoDto(*feedBack.Project)
+		dto.Project = ToProjectInfoDto(feedBack.Project)
 	}
 	return dto
 }

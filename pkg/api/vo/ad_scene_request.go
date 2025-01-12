@@ -8,7 +8,7 @@ package vo
 // 创建推广位结构体
 type CreateAdSceneRequest struct {
 	ProjectID   string `form:"projectID" json:"projectID" validate:"required"`
-	Title       string `form:"title" json:"title" validate:"required,min=2,max=20"`
+	Title       string `form:"title" json:"title" validate:"required,min=2,max=50"`
 	Description string `form:"description" json:"description" validate:"min=0,max=150"`
 }
 
@@ -21,7 +21,7 @@ type AdSceneListRequest struct {
 
 // 更新推广位内容
 type UpdateAdSceneRequest struct {
-	Title       string `form:"title" json:"title" validate:"required,min=2,max=20"`
+	Title       string `form:"title" json:"title" validate:"required,min=2,max=50"`
 	Description string `form:"description" json:"description" validate:"required,min=2,max=150"`
 }
 

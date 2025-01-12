@@ -19,20 +19,20 @@ type FeedbackDto struct {
 	CreatedAt string     `json:"createdAt"`
 }
 
-func toFeedbackDto(feedBack model.Feedback) FeedbackDto {
+func toFeedbackDto(feedback model.Feedback) FeedbackDto {
 	dto := FeedbackDto{
-		ID:        int(feedBack.ID),
-		ProjectID: feedBack.ProjectID,
-		Content:   feedBack.Content,
-		Title:     feedBack.Title,
-		UserID:    feedBack.UserID,
-		Phone:     feedBack.Phone,
-		CreatedAt: feedBack.CreatedAt.Format(known.TIME_FORMAT),
+		ID:        int(feedback.ID),
+		ProjectID: feedback.ProjectID,
+		Content:   feedback.Content,
+		Title:     feedback.Title,
+		UserID:    feedback.UserID,
+		Phone:     feedback.Phone,
+		CreatedAt: feedback.CreatedAt.Format(known.TIME_FORMAT),
 	}
-	if feedBack.User != nil {
-		dto.User = ToUserInfoDto(feedBack.User)
+	if feedback.User != nil {
+		dto.User = ToUserInfoDto(feedback.User)
 	}
-	if feedBack.Project != nil {
+	if feedback.Project != nil {
 		dto.Project = ToProjectInfoDto(feedBack.Project)
 	}
 	return dto

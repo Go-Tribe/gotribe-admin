@@ -8,6 +8,7 @@ package dto
 import (
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/known"
+	"strings"
 )
 
 // 返回给前端的内容列表
@@ -36,7 +37,7 @@ type PostsDto struct {
 	Location    string          `json:"location"`
 	People      string          `json:"people"`
 	Time        string          `json:"time"`
-	Images      string          `json:"images"`
+	Images      []string        `json:"images"`
 	UnitPrice   uint            `json:"unitPrice"`
 	Video       string          `json:"video"`
 }
@@ -44,6 +45,11 @@ type PostsDto struct {
 func ToPostInfoDto(post *model.Post) PostsDto {
 	if post == nil {
 		return PostsDto{}
+	}
+	var imageList []string
+	if len(post.Images) > 0 {
+		// 用,分割成数组
+		imageList = strings.Split(post.Images, ",")
 	}
 	return PostsDto{
 		ColumnID:    post.ColumnID,
@@ -70,7 +76,7 @@ func ToPostInfoDto(post *model.Post) PostsDto {
 		Location:    post.Location,
 		People:      post.People,
 		Time:        post.Time,
-		Images:      post.Images,
+		Images:      imageList,
 		UnitPrice:   post.UnitPrice,
 		Video:       post.Video,
 	}

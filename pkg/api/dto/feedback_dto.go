@@ -8,7 +8,7 @@ import (
 )
 
 type FeedbackDto struct {
-	ID        string     `json:"id"`
+	ID        int        `json:"id"`
 	ProjectID string     `json:"projectID"`
 	Title     string     `json:"title"`
 	Content   string     `json:"content"`
@@ -21,6 +21,7 @@ type FeedbackDto struct {
 
 func toFeedbackDto(feedBack model.Feedback) FeedbackDto {
 	dto := FeedbackDto{
+		ID:        int(feedBack.ID),
 		ProjectID: feedBack.ProjectID,
 		Content:   feedBack.Content,
 		Title:     feedBack.Title,

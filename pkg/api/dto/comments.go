@@ -21,6 +21,10 @@ type CommentDto struct {
 	Content     string `json:"comment"`
 	HtmlContent string `json:"htmlContent"`
 	Nickname    string `json:"nickname"`
+	IP          string `json:"ip"`
+	Country     string `json:"country"`
+	RegionName  string `json:"regionName"`
+	City        string `json:"city"`
 	CreatedAt   string `json:"createdAt"`
 	UpdatedAt   string `json:"updatedAt"`
 }
@@ -41,6 +45,10 @@ func toCommentDto(comment model.Comment) CommentDto {
 		Content:     comment.Content,
 		HtmlContent: comment.HtmlContent,
 		Status:      comment.Status,
+		IP:          comment.IP,
+		Country:     comment.Country,
+		RegionName:  comment.RegionName,
+		City:        comment.City,
 		Nickname:    nickname,
 		CreatedAt:   comment.CreatedAt.Format(known.TIME_FORMAT),
 		UpdatedAt:   comment.UpdatedAt.Format(known.TIME_FORMAT),

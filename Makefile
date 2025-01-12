@@ -24,13 +24,11 @@ GO_LDFLAGS += \
 # ==============================================================================
 # 定义 Makefile all 伪目标，执行 `make` 时，会默认会执行 all 伪目标
 .PHONY: all
-all: add-copyright npm-install admin format build
+all: add-copyright  format build
 
 .PHONY: run
 run: admin tidy  format dev
 
-.PHONY: web
-web: npm-install admin
 # ==============================================================================
 # 定义其他需要的伪目标
 
@@ -58,11 +56,3 @@ clean: # 清理构建产物、临时文件等.
 .PHONY: dev
 dev: # 开发运行
 	@go run $(ROOT_DIR)/$(PROJECT_NAME).go
-
-.PHONY: npm-install
-npm-install: # npm
-	@cd $(ROOT_DIR)/web/admin && npm install
-
-.PHONY: admin
-admin: # admin
-	@cd $(ROOT_DIR)/web/admin && npm run build:prod

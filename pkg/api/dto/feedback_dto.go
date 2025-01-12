@@ -10,18 +10,19 @@ import (
 	"gotribe-admin/pkg/api/known"
 )
 
-type FeedBackDto struct {
-	ProjectID string  `json:"projectID"`
-	Title     string  `json:"title"`
-	Content   string  `json:"content"`
-	UserID    string  `json:"userID"`
-	User      UserDto `json:"user"`
-	Phone     string  `json:"phone"`
-	CreatedAt string  `json:"createdAt"`
+type FeedbackDto struct {
+	ProjectID string     `json:"projectID"`
+	Title     string     `json:"title"`
+	Content   string     `json:"content"`
+	UserID    string     `json:"userID"`
+	User      UserDto    `json:"user"`
+	Phone     string     `json:"phone"`
+	Project   ProjectDto `json:"project"`
+	CreatedAt string     `json:"createdAt"`
 }
 
-func toFeedBackDto(feedBack model.Feedback) FeedBackDto {
-	dto := FeedBackDto{
+func toFeedbackDto(feedBack model.Feedback) FeedbackDto {
+	dto := FeedbackDto{
 		ProjectID: feedBack.ProjectID,
 		Content:   feedBack.Content,
 		Title:     feedBack.Title,
@@ -29,22 +30,25 @@ func toFeedBackDto(feedBack model.Feedback) FeedBackDto {
 		Phone:     feedBack.Phone,
 		CreatedAt: feedBack.CreatedAt.Format(known.TIME_FORMAT),
 	}
-	//if feedBack.User != nil {
-	//	dto.User = ToUserInfoDto(feedBack.User)
-	//}
+	if feedBack.User != nil {
+		dto.User = ToUserInfoDto(feedBack.User)
+	}
+	if feedBack.Project != nil {
+		dto.Project = ToProjectInfoDto(*feedBack.Project)
+	}
 	return dto
 }
 
-// 将单个 Feedback 转换为 FeedBackDto
-func ToFeedBackInfoDto(feedBack model.Feedback) FeedBackDto {
-	return toFeedBackDto(feedBack)
+// 将单个 Feedback 转换为 FeedbackDto
+func ToFeedbackInfoDto(feedBack model.Feedback) FeedbackDto {
+	return toFeedbackDto(feedBack)
 }
 
-// 将多个 Feedback 转换为 []FeedBackDto
-func ToFeedBacksDto(feedBackList []*model.Feedback) []FeedBackDto {
-	var feedBacks = make([]FeedBackDto, len(feedBackList))
+// 将多个 Feedback 转换为 []FeedbackDto
+func ToFeedbacksDto(feedBackList []*model.Feedback) []FeedbackDto {
+	var feedBacks = make([]FeedbackDto, len(feedBackList))
 	for i, feedBack := range feedBackList {
-		feedBacks[i] = toFeedBackDto(*feedBack)
+		feedBacks[i] = toFeedbackDto(*feedBack)
 	}
 	return feedBacks
 }

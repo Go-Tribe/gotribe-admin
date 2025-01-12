@@ -7,6 +7,7 @@ import (
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
+	"gotribe-admin/pkg/api/dto"
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
 )
@@ -54,8 +55,7 @@ func (tc FeedbackController) GetFeedbacks(c *gin.Context) {
 		response.Fail(c, nil, "获取用户或项目信息失败: "+err.Error())
 		return
 	}
-
-	response.Success(c, gin.H{"feedbacks": feedbacks, "total": total}, "获取列表成功")
+	response.Success(c, gin.H{"feedbacks": dto.ToFeedbacksDto(feedbacks), "total": total}, "获取列表成功")
 }
 
 func getFeedbackOther(feedbacks []*model.Feedback) ([]*model.Feedback, error) {

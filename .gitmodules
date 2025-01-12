@@ -1,3 +1,0 @@
-[submodule "web/admin"]
-	path = web/admin
-	url = https://github.com/go-tribe/gotribe-admin-vue.git

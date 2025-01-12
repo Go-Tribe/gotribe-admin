@@ -8,6 +8,7 @@ import (
 )
 
 type FeedbackDto struct {
+	ID        string     `json:"id"`
 	ProjectID string     `json:"projectID"`
 	Title     string     `json:"title"`
 	Content   string     `json:"content"`

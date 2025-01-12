@@ -35,5 +35,5 @@ const (
 	AUDIT_STATUS_PASS    = 2
 
 	// 上传资源大小 (默认 10MB)
-	DEFAULT_UPLOAD_SIZE int64 = 10 * 1024 * 1024
+	DEFAULT_UPLOAD_SIZE int64 = 100 * 1024 * 1024
 )

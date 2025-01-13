@@ -23,9 +23,9 @@ type Order struct {
 	ProductName  string    `gorm:"type:varchar(255);not null;comment:产品名称" json:"productName"`
 	Status       uint      `gorm:"type:tinyint(4);not null;Index;comment:状态1-待支付；2-已支付；3-已发货；4-已收货；5-已取消；6-待退款；7.已退款" json:"status"`
 	PayNumber    string    `gorm:"type:varchar(255);not null;comment:支付单号" json:"payNumber"`
-	PayTime      time.Time `gorm:"type:datetime;not null;comment:支付时间" json:"payTime"`
+	PayTime      time.Time `gorm:"type:datetime;default:null;comment:支付时间" json:"payTime"`
 	PayMethod    uint      `gorm:"type:tinyint(4);not null;comment:支付方式：1-微信支付；2-支付宝支付；3-积分支付；4-余额支付" json:"payMethod"`
-	RefundTime   time.Time `gorm:"type:datetime;comment:退款时间" json:"refundTime"`
+	RefundTime   time.Time `gorm:"type:datetime;default:null;comment:退款时间" json:"refundTime"`
 	PayStatus    uint      `gorm:"type:tinyint(4);not null;comment:支付状态：1-待支付；2-已支付；3-已退款" json:"payStatus"`
 	RefundStatus uint      `gorm:"type:tinyint(4);not null;comment:退款状态：1-待退款；2-已退款" json:"refundStatus"`
 	ProjectID    string    `gorm:"type:varchar(10);Index;comment:项目 ID" json:"projectID"`

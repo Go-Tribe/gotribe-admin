@@ -27,7 +27,7 @@ type CreatePostRequest struct {
 	People      string   `form:"people" json:"people"`
 	Time        string   `form:"time" json:"time"`
 	Images      []string `form:"images" json:"images"`
-	UnitPrice   uint     `form:"unitPrice" json:"unitPrice"`
+	UnitPrice   float64  `form:"unitPrice" json:"unitPrice"`
 	Video       string   `form:"video" json:"video"`
 }
 
@@ -54,7 +54,7 @@ type UpdatePostRequest struct {
 	People      string   `form:"people" json:"people"`
 	Time        string   `form:"time" json:"time"`
 	Images      []string `form:"images" json:"images"`
-	UnitPrice   uint     `form:"unitPrice" json:"unitPrice"`
+	UnitPrice   float64  `form:"unitPrice" json:"unitPrice"`
 	Video       string   `form:"video" json:"video"`
 }
 

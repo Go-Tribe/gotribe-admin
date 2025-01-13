@@ -112,7 +112,7 @@ func (pc PostController) CreatePost(c *gin.Context) {
 		ColumnID:    req.ColumnID,
 		PassWord:    req.Password,
 		Time:        req.Time,
-		UnitPrice:   req.UnitPrice,
+		UnitPrice:   uint(util.YuanToFen(req.UnitPrice)),
 		People:      req.People,
 		Location:    req.Location,
 		Images:      imageStr,
@@ -168,7 +168,7 @@ func (pc PostController) UpdatePostByID(c *gin.Context) {
 	oldPost.Tag = req.Tag
 	oldPost.ColumnID = req.ColumnID
 	oldPost.Time = req.Time
-	oldPost.UnitPrice = req.UnitPrice
+	oldPost.UnitPrice = uint(util.YuanToFen(req.UnitPrice))
 	oldPost.People = req.People
 	oldPost.Location = req.Location
 	oldPost.Images = imageStr

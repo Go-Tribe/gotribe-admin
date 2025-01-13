@@ -48,21 +48,28 @@ func ToOrderInfoDto(order *model.Order) OrderDto {
 	if order == nil {
 		return OrderDto{}
 	}
-
+	var payTimeStr string
+	if order.PayTime != nil {
+		payTimeStr = util.FormatTime(*order.PayTime)
+	}
+	var refundTimeStr string
+	if order.RefundTime != nil {
+		refundTimeStr = util.FormatTime(*order.RefundTime)
+	}
 	return OrderDto{
 		OrderID:           order.OrderID,
 		OrderNumber:       order.OrderNumber,
 		OrderType:         order.OrderType,
 		PayMethod:         order.PayMethod,
 		PayStatus:         order.PayStatus,
-		PayTime:           util.FormatTime(order.PayTime),
+		PayTime:           payTimeStr,
 		ProductID:         order.ProductID,
 		ProductName:       order.ProductName,
 		ProductSku:        order.ProductSku,
 		ProjectID:         order.ProjectID,
 		Quantity:          order.Quantity,
 		RefundStatus:      order.RefundStatus,
-		RefundTime:        util.FormatTime(order.RefundTime),
+		RefundTime:        refundTimeStr,
 		Remark:            order.Remark,
 		RemarkAdmin:       order.RemarkAdmin,
 		Status:            order.Status,

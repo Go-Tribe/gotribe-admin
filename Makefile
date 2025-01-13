@@ -27,7 +27,7 @@ GO_LDFLAGS += \
 all: add-copyright  format build
 
 .PHONY: run
-run: admin tidy  format dev
+run: tidy  format dev
 
 # ==============================================================================
 # 定义其他需要的伪目标

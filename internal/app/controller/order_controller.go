@@ -11,6 +11,7 @@ import (
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/pkg/api/dto"
+	"gotribe-admin/pkg/api/known"
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
 	"gotribe-admin/pkg/util"
@@ -23,6 +24,7 @@ type IOrderController interface {
 	UpdateOrderByID(c *gin.Context)       // 更新订单
 	BatchDeleteOrderByIds(c *gin.Context) // 批量删除订单
 	GetOrderLogs(c *gin.Context)          //获取订单记录
+	UpdateLogistics(c *gin.Context)
 }
 
 type OrderController struct {
@@ -160,4 +162,38 @@ func (tc OrderController) GetOrderLogs(c *gin.Context) {
 		"orderLogs": dto.ToOrderLogsDto(orderLogs),
 		"total":     total,
 	}, "获取订单记录成功")
+}
+
+func (tc OrderController) UpdateLogistics(c *gin.Context) {
+	var req vo.CreateOrderLogisticsRequest
+	// 参数绑定
+	if err := c.ShouldBind(&req); err != nil {
+		response.Fail(c, nil, err.Error())
+		return
+	}
+	// 参数校验
+	if err := common.Validate.Struct(&req); err != nil {
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		response.Fail(c, nil, errStr)
+		return
+	}
+
+	// 根据path中的OrderID获取订单信息
+	oldOrder, err := tc.OrderRepository.GetOrderByOrderID(c.Param("orderID"))
+	if err != nil {
+		response.Fail(c, nil, "获取需要更新的订单信息失败: "+err.Error())
+		return
+	}
+	oldOrder.LogisticsNumber = req.Number
+	oldOrder.LogisticsCompany = req.Company
+	oldOrder.Status = known.OrderStatusShipped
+	// 更新物流信息
+	err = tc.OrderRepository.UpdateOrder(oldOrder)
+	if err != nil {
+		response.Fail(c, nil, "更新订单失败: "+err.Error())
+		return
+	}
+	// 增加修改记录
+	err = tc.OrderLogRepository.CreateOrderLog(c.Param("orderID"), "更新物流")
+	response.Success(c, nil, "更新订单成功")
 }

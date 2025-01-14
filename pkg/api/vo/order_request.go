@@ -28,3 +28,10 @@ type CreateOrderRequest struct {
 	RemarkAdmin string  `json:"remarkAdmin" form:"remarkAdmin"`
 	Status      uint    `json:"status" form:"status" validate:"required"`
 }
+
+type CreateOrderLogisticsRequest struct {
+	// 物流公司
+	Company string `json:"company" form:"company" validate:"required"`
+	// 物流单号
+	Number string `json:"number" form:"number" validate:"required"`
+}

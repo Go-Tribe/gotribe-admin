@@ -25,6 +25,7 @@ func InitOrderRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) g
 		router.GET("", orderController.GetOrders)
 		router.GET("log/:orderID", orderController.GetOrderLogs)
 		router.PATCH(":orderID", orderController.UpdateOrderByID)
+		router.PATCH("logistics/:orderID", orderController.UpdateLogistics)
 		router.DELETE("", orderController.BatchDeleteOrderByIds)
 	}
 	return r

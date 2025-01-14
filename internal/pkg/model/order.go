@@ -45,7 +45,10 @@ type Order struct {
 	ConsigneeAddress  string `gorm:"type:varchar(255);not null;comment:详细地址" json:"consigneeAddress"`
 	Remark            string `gorm:"type:varchar(255);not null;comment:买家留言" json:"remark"`
 	RemarkAdmin       string `gorm:"type:varchar(255);not null;comment:订单备注" json:"remarkAdmin"`
-	User              *User  `gorm:"-" json:"user"`
+	// 物流
+	LogisticsNumber  string `gorm:"type:varchar(255);not null;comment:物流单号" json:"logisticsNumber"`
+	LogisticsCompany string `gorm:"type:varchar(255);not null;comment:物流公司" json:"logisticsCompany"`
+	User             *User  `gorm:"-" json:"user"`
 }
 
 func (t *Order) BeforeCreate(tx *gorm.DB) error {

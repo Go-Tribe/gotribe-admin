@@ -9,12 +9,10 @@ import (
 	"fmt"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
-	"gotribe-admin/pkg/api/vo"
-	"strings"
 )
 
 type IOrderLogRepository interface {
-	GetOrderLogs(req *vo.OrderLogListRequest) ([]*model.OrderLog, int64, error) // 获取订单记录列表
+	GetOrderLogs(orderID string) ([]*model.OrderLog, int64, error) // 获取订单记录列表
 	CreateOrderLog(orderID, remark string) error
 }
 
@@ -34,12 +32,11 @@ func (tr OrderLogRepository) GetOrderLogByOrderLogID(orderLogID string) (model.O
 }
 
 // 获取订单记录列表
-func (tr OrderLogRepository) GetOrderLogs(req *vo.OrderLogListRequest) ([]*model.OrderLog, int64, error) {
+func (tr OrderLogRepository) GetOrderLogs(orderID string) ([]*model.OrderLog, int64, error) {
 	var list []*model.OrderLog
 	db := common.DB.Model(&model.OrderLog{}).Order("created_at DESC")
 
-	orderID := strings.TrimSpace(req.OrderID)
-	if req.OrderID != "" {
+	if orderID != "" {
 		db = db.Where("order_id = ?", fmt.Sprintf("%s", orderID))
 	}
 	// 当pageNum > 0 且 pageSize > 0 才分页

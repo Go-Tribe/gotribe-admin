@@ -94,26 +94,32 @@ func (tr OrderRepository) GetOrders(req *vo.OrderListRequest) ([]*model.Order, i
 	return getOrdertOther(list), total, err
 }
 
-func getOrdertOther(order []*model.Order) []*model.Order {
+func getOrdertOther(orders []*model.Order) []*model.Order {
 	// 拿出所有用户ID，去重后去 user表查出用户信息
 	var userIDs []string
-	for _, order := range order {
+	for _, order := range orders {
 		userIDs = append(userIDs, order.UserID)
 	}
 	userIDs = funk.UniqString(userIDs)
 	var users []model.User
 	err := common.DB.Where("user_id in (?)", userIDs).Find(&users).Error
 	if err != nil {
-		return order
+		return orders
 	}
+
+	// 使用映射存储用户信息
+	userMap := make(map[string]model.User)
 	for _, user := range users {
-		for _, order := range order {
-			if order.UserID == user.UserID {
-				order.User = &user
-			}
+		userMap[user.UserID] = user
+	}
+
+	// 分配用户信息
+	for _, order := range orders {
+		if user, exists := userMap[order.UserID]; exists {
+			order.User = &user
 		}
 	}
-	return order
+	return orders
 }
 
 // 更新订单

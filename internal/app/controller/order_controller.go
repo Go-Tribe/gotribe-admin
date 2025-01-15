@@ -143,17 +143,7 @@ func (tc OrderController) BatchDeleteOrderByIds(c *gin.Context) {
 
 // 获取订单记录
 func (tc OrderController) GetOrderLogs(c *gin.Context) {
-	var req vo.OrderLogListRequest
-	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
-		return
-	}
-	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
-		response.Fail(c, nil, errStr)
-		return
-	}
-	orderLogs, total, err := tc.OrderLogRepository.GetOrderLogs(&req)
+	orderLogs, total, err := tc.OrderLogRepository.GetOrderLogs(c.Param("orderID"))
 	if err != nil {
 		response.Fail(c, nil, "获取订单记录失败: "+err.Error())
 		return

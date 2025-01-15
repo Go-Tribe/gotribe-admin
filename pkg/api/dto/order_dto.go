@@ -40,6 +40,8 @@ type OrderDto struct {
 	ConsigneeStreet   string  `json:"consigneeStreet"`
 	ConsigneeDistrict string  `json:"consigneeDistrict"`
 	ConsigneeCity     string  `json:"consigneeCity"`
+	LogisticsCompany  string  `json:"logisticsCompany"`
+	LogisticsNumber   string  `json:"logisticsNumber"`
 	CreatedAt         string  `json:"createdAt"`
 	User              UserDto `json:"user"`
 }
@@ -86,6 +88,8 @@ func ToOrderInfoDto(order *model.Order) OrderDto {
 		ConsigneeStreet:   order.ConsigneeStreet,
 		ConsigneeDistrict: order.ConsigneeDistrict,
 		ConsigneeCity:     order.ConsigneeCity,
+		LogisticsCompany:  order.LogisticsCompany,
+		LogisticsNumber:   order.LogisticsNumber,
 		CreatedAt:         util.FormatTime(order.CreatedAt),
 		User:              ToUserInfoDto(order.User),
 	}

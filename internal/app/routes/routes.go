@@ -83,6 +83,7 @@ func InitRoutes(fs embed.FS) *gin.Engine {
 	InitOrderRoutes(apiGroup, authMiddleware)           // 注册订单管理路由, jwt认证中间件,casbin鉴权中间件
 	InitSystemConfigRoutes(apiGroup, authMiddleware)    // 注册系统配置管理路由, jwt认证中间件,casbin鉴权中间件
 	InitFeedbackRoutes(apiGroup, authMiddleware)        // 注册反馈管理路由, jwt认证中间件,casbin鉴权中间件
+	InitIndexRoutes(apiGroup, authMiddleware)           // 注册首页数据路由, jwt认证中间件,casbin鉴权中间件
 	common.Log.Info("初始化路由完成！")
 	return r
 }

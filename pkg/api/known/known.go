@@ -35,7 +35,7 @@ const (
 	AUDIT_STATUS_PASS    = 2
 
 	// 上传资源大小 (默认 10MB)
-	DEFAULT_UPLOAD_SIZE int64 = 100 * 1024 * 1024
+	DEFAULT_UPLOAD_SIZE int64 = 200 * 1024 * 1024
 
 	// 状态1-待支付；2-已支付；3-已发货；4-已收货；5-已取消；6-待退款；7-已退款；8-退款失败
 	OrderStatusPendingPayment = 1 // 待支付

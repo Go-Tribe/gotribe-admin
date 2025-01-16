@@ -69,4 +69,6 @@ func DBAutoMigrate(db *gorm.DB) {
 	thirdPartyAccountsMigrate(db)
 	// 反馈表
 	feedbackMigrate(db)
+	// 用户事件表
+	userEventMigrate(db)
 }

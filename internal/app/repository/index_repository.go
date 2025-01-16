@@ -53,7 +53,12 @@ func (r IndexRepository) GetIndexData(projectID string) (map[string]interface{},
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch user data: %v", err)
 	}
-
+	// 获取浏览数据
+	var visitCount int64
+	err = common.DB.Table("user_event").
+		Select("COUNT(*)").
+		Where("event_type = 1 AND created_at >= ? AND project_id = ?", startOfDay, projectID).
+		Count(&visitCount).Error
 	// 返回结果
 	data := map[string]interface{}{
 		"sales":      util.FenToYuan(int(result.TotalSales)),

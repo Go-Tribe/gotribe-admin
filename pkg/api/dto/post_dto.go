@@ -8,6 +8,7 @@ package dto
 import (
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/known"
+	"gotribe-admin/pkg/util"
 	"strings"
 )
 
@@ -38,7 +39,7 @@ type PostsDto struct {
 	People      string          `json:"people"`
 	Time        string          `json:"time"`
 	Images      []string        `json:"images"`
-	UnitPrice   uint            `json:"unitPrice"`
+	UnitPrice   float64         `json:"unitPrice"`
 	Video       string          `json:"video"`
 }
 
@@ -77,7 +78,7 @@ func ToPostInfoDto(post *model.Post) PostsDto {
 		People:      post.People,
 		Time:        post.Time,
 		Images:      imageList,
-		UnitPrice:   post.UnitPrice,
+		UnitPrice:   util.FenToYuan(int(post.UnitPrice)),
 		Video:       post.Video,
 	}
 }

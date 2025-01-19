@@ -1361,6 +1361,34 @@ func InitData() {
 			Desc:     "更新配置",
 			Creator:  "系统",
 		},
+		{
+			Method:   "GET",
+			Path:     "/feedback",
+			Category: "feedback",
+			Desc:     "获取反馈列表",
+			Creator:  "系统",
+		},
+		{
+			Method:   "PATCH",
+			Path:     "/order/logistics/:orderID",
+			Category: "order",
+			Desc:     "设置物流信息",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/index",
+			Category: "Index",
+			Desc:     "获取首页当日数据",
+			Creator:  "系统",
+		},
+		{
+			Method:   "GET",
+			Path:     "/index/data",
+			Category: "Index",
+			Desc:     "获取首页时间数据",
+			Creator:  "系统",
+		},
 	}
 	newApi := make([]model.Api, 0)
 	newRoleCasbin := make([]model.RoleCasbin, 0)

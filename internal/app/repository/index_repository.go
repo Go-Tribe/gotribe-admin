@@ -75,11 +75,11 @@ func (r IndexRepository) GetTimeRangeData(timeRange string, projectID string) (m
 	today := time.Now()
 
 	switch timeRange {
-	case "30days":
-		startDate = today.AddDate(0, 0, -30)
-	case "1month":
+	case "week":
+		startDate = today.AddDate(0, 0, -7)
+	case "month":
 		startDate = today.AddDate(0, -1, 0)
-	case "1year":
+	case "year":
 		startDate = today.AddDate(-1, 0, 0)
 	default:
 		return nil, fmt.Errorf("invalid time range: %s", timeRange)

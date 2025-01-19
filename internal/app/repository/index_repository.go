@@ -70,10 +70,22 @@ func (r IndexRepository) GetIndexData(projectID string) (map[string]interface{},
 	return data, nil
 }
 
+// GetTimeRangeData retrieves the time range data for the index page based on the specified time range and project ID.
+// It calculates the start date based on the time range ("week", "month", "year") and fetches order and user statistics from the database.
+// The function returns a map containing the order and user data for each relevant date.
+//
+// Parameters:
+// - projectID: The ID of the project for which to fetch the data.
+// - timeRange: The time range for which to fetch the data. Valid values are "week", "month", and "year".
+//
+// Returns:
+// - A map with keys "orders" and "users", each containing a slice of maps with date and corresponding statistics.
+// - An error if the time range is invalid or if there is a failure in fetching data from the database.
 func (r IndexRepository) GetTimeRangeData(projectID, timeRange string) (map[string][]map[string]interface{}, error) {
 	var startDate time.Time
 	today := time.Now()
 
+	// Determine the start date based on the specified time range
 	switch timeRange {
 	case "week":
 		startDate = today.AddDate(0, 0, -7)
@@ -85,53 +97,61 @@ func (r IndexRepository) GetTimeRangeData(projectID, timeRange string) (map[stri
 		return nil, fmt.Errorf("invalid time range: %s", timeRange)
 	}
 
-	// 获取订单统计数据
+	// Fetch order statistics from the database
 	var orderResults []struct {
-		Date        time.Time `gorm:"column:date"`
-		TotalSales  int64     `gorm:"column:total_sales"`
-		TotalOrders int64     `gorm:"column:total_orders"`
+		Date        string `gorm:"column:date"`
+		TotalSales  int64  `gorm:"column:total_sales"`
+		TotalOrders int64  `gorm:"column:total_orders"`
+	}
+	var groupByField string
+	if timeRange == "year" {
+		groupByField = "DATE_FORMAT(created_at, '%Y-%m')"
+	} else {
+		groupByField = "DATE(created_at)"
 	}
 	err := common.DB.Table("order").
-		Select("DATE(created_at) as date, SUM(amount_pay) as total_sales, COUNT(*) as total_orders").
-		Where("created_at >= ? AND pay_status = 2 AND project_id = ?", startDate, projectID).
-		Group("DATE(created_at)").
+		Select(fmt.Sprintf("%s as date, SUM(amount_pay) as total_sales, COUNT(*) as total_orders", groupByField)).
+		Where("created_at >= ? AND status = 2 AND project_id = ?", startDate, projectID).
+		Group(groupByField).
 		Scan(&orderResults).Error
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch order data: %v", err)
 	}
 
-	// 获取用户统计数据
+	// Fetch user statistics from the database
 	var userResults []struct {
-		Date       time.Time `gorm:"column:date"`
-		TotalUsers int64     `gorm:"column:total_users"`
+		Date       string `gorm:"column:date"`
+		TotalUsers int64  `gorm:"column:total_users"`
 	}
 	err = common.DB.Table("user").
-		Select("DATE(created_at) as date, COUNT(*) as total_users").
+		Select(fmt.Sprintf("%s as date, COUNT(*) as total_users", groupByField)).
 		Where("created_at >= ? AND project_id = ?", startDate, projectID).
-		Group("DATE(created_at)").
+		Group(groupByField).
 		Scan(&userResults).Error
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch user data: %v", err)
 	}
 
-	// 构建结果
+	// Construct the result map for order data
 	orderData := make([]map[string]interface{}, len(orderResults))
 	for i, res := range orderResults {
 		orderData[i] = map[string]interface{}{
-			"date":        res.Date.Format("2006-01-02"),
+			"date":        res.Date,
 			"totalSales":  util.FenToYuan(int(res.TotalSales)),
 			"totalOrders": res.TotalOrders,
 		}
 	}
 
+	// Construct the result map for user data
 	userData := make([]map[string]interface{}, len(userResults))
 	for i, res := range userResults {
 		userData[i] = map[string]interface{}{
-			"date":       res.Date.Format("2006-01-02"),
+			"date":       res.Date,
 			"totalUsers": res.TotalUsers,
 		}
 	}
 
+	// Return the combined order and user data
 	return map[string][]map[string]interface{}{
 		"orders": orderData,
 		"users":  userData,

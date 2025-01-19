@@ -38,7 +38,7 @@ func (r IndexRepository) GetIndexData(projectID string) (map[string]interface{},
 	}
 	err := common.DB.Table("order").
 		Select("SUM(amount_pay) as total_sales, COUNT(*) as total_orders").
-		Where("created_at >= ? AND pay_status = 2 AND project_id = ?", startOfDay, projectID).
+		Where("created_at >= ? AND status = 2 AND project_id = ?", startOfDay, projectID).
 		Scan(&result).Error
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch order data: %v", err)
@@ -64,7 +64,7 @@ func (r IndexRepository) GetIndexData(projectID string) (map[string]interface{},
 		"sales":      util.FenToYuan(int(result.TotalSales)),
 		"orders":     result.TotalOrders,
 		"newUsers":   totalUsers,
-		"visitCount": 0,
+		"visitCount": visitCount,
 	}
 
 	return data, nil
@@ -135,8 +135,19 @@ func (r IndexRepository) GetTimeRangeData(projectID, timeRange string) (map[stri
 	// Construct the result map for order data
 	orderData := make([]map[string]interface{}, len(orderResults))
 	for i, res := range orderResults {
+		dateStr := res.Date
+		if timeRange == "year" {
+			// For year, the date is already in the format "2006-01"
+		} else {
+			// For week and month, parse the date and format it to "2006-01-02"
+			parsedDate, err := time.Parse("2006-01-02T15:04:05Z07:00", res.Date)
+			if err != nil {
+				return nil, fmt.Errorf("failed to parse date: %v", err)
+			}
+			dateStr = parsedDate.Format("2006-01-02")
+		}
 		orderData[i] = map[string]interface{}{
-			"date":        res.Date,
+			"date":        dateStr,
 			"totalSales":  util.FenToYuan(int(res.TotalSales)),
 			"totalOrders": res.TotalOrders,
 		}
@@ -145,8 +156,19 @@ func (r IndexRepository) GetTimeRangeData(projectID, timeRange string) (map[stri
 	// Construct the result map for user data
 	userData := make([]map[string]interface{}, len(userResults))
 	for i, res := range userResults {
+		dateStr := res.Date
+		if timeRange == "year" {
+			// For year, the date is already in the format "2006-01"
+		} else {
+			// For week and month, parse the date and format it to "2006-01-02"
+			parsedDate, err := time.Parse("2006-01-02T15:04:05Z07:00", res.Date)
+			if err != nil {
+				return nil, fmt.Errorf("failed to parse date: %v", err)
+			}
+			dateStr = parsedDate.Format("2006-01-02")
+		}
 		userData[i] = map[string]interface{}{
-			"date":       res.Date,
+			"date":       dateStr,
 			"totalUsers": res.TotalUsers,
 		}
 	}

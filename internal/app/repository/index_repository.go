@@ -36,7 +36,7 @@ func (r IndexRepository) GetIndexData(projectID string) (map[string]interface{},
 		TotalSales  int64
 		TotalOrders int64
 	}
-	err := common.DB.Table("orders").
+	err := common.DB.Table("order").
 		Select("SUM(amount_pay) as total_sales, COUNT(*) as total_orders").
 		Where("created_at >= ? AND pay_status = 2 AND project_id = ?", startOfDay, projectID).
 		Scan(&result).Error
@@ -46,7 +46,7 @@ func (r IndexRepository) GetIndexData(projectID string) (map[string]interface{},
 
 	// 获取新增用户数
 	var totalUsers int64
-	err = common.DB.Table("users").
+	err = common.DB.Table("user").
 		Select("COUNT(*)").
 		Where("created_at >= ? AND project_id = ?", startOfDay, projectID).
 		Count(&totalUsers).Error

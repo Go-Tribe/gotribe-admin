@@ -35,7 +35,7 @@ func NewIndexController() IIndexController {
 // GetIndexInfo retrieves the index page information based on the project ID.
 // It calls the repository to get data and returns a success or fail response.
 func (pc IndexController) GetIndexInfo(c *gin.Context) {
-	indexInfo, err := pc.IndexRepository.GetIndexData(c.Param("projectID"))
+	indexInfo, err := pc.IndexRepository.GetIndexData(c.Query("projectID"))
 	if err != nil {
 		response.Fail(c, nil, "获取首页头部数据失败: "+err.Error())
 		return
@@ -48,7 +48,7 @@ func (pc IndexController) GetIndexInfo(c *gin.Context) {
 // GetTimeRangeData retrieves the time range data for the index page based on the specified time range and project ID.
 // It calls the repository to get data and returns a success or fail response.
 func (pc IndexController) GetTimeRangeData(c *gin.Context) {
-	timeRangeData, err := pc.IndexRepository.GetTimeRangeData(c.Param("timeRange"), c.Param("projectID"))
+	timeRangeData, err := pc.IndexRepository.GetTimeRangeData(c.Query("projectID"), c.Query("timeRange"))
 	if err != nil {
 		response.Fail(c, nil, "获取首页折线数据失败: "+err.Error())
 		return

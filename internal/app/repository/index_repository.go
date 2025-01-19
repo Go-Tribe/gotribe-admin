@@ -13,8 +13,8 @@ import (
 )
 
 type IIndexRepository interface {
-	GetIndexData(projectID string) (map[string]interface{}, error)                                    // 获取首页数据
-	GetTimeRangeData(timeRange string, projectID string) (map[string][]map[string]interface{}, error) // 获取时间范围数据
+	GetIndexData(projectID string) (map[string]interface{}, error)                             // 获取首页数据
+	GetTimeRangeData(projectID, timeRange string) (map[string][]map[string]interface{}, error) // 获取时间范围数据
 }
 
 type IndexRepository struct {
@@ -70,7 +70,7 @@ func (r IndexRepository) GetIndexData(projectID string) (map[string]interface{},
 	return data, nil
 }
 
-func (r IndexRepository) GetTimeRangeData(timeRange string, projectID string) (map[string][]map[string]interface{}, error) {
+func (r IndexRepository) GetTimeRangeData(projectID, timeRange string) (map[string][]map[string]interface{}, error) {
 	var startDate time.Time
 	today := time.Now()
 
@@ -91,7 +91,7 @@ func (r IndexRepository) GetTimeRangeData(timeRange string, projectID string) (m
 		TotalSales  int64     `gorm:"column:total_sales"`
 		TotalOrders int64     `gorm:"column:total_orders"`
 	}
-	err := common.DB.Table("orders").
+	err := common.DB.Table("order").
 		Select("DATE(created_at) as date, SUM(amount_pay) as total_sales, COUNT(*) as total_orders").
 		Where("created_at >= ? AND pay_status = 2 AND project_id = ?", startDate, projectID).
 		Group("DATE(created_at)").
@@ -105,7 +105,7 @@ func (r IndexRepository) GetTimeRangeData(timeRange string, projectID string) (m
 		Date       time.Time `gorm:"column:date"`
 		TotalUsers int64     `gorm:"column:total_users"`
 	}
-	err = common.DB.Table("users").
+	err = common.DB.Table("user").
 		Select("DATE(created_at) as date, COUNT(*) as total_users").
 		Where("created_at >= ? AND project_id = ?", startDate, projectID).
 		Group("DATE(created_at)").

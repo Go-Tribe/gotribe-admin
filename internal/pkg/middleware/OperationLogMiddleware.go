@@ -6,10 +6,11 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
 	"gotribe-admin/config"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/model"
+
+	"github.com/gin-gonic/gin"
 
 	"strings"
 	"time"
@@ -46,6 +47,14 @@ func OperationLogMiddleware() gin.HandlerFunc {
 
 		// 获取访问路径
 		path := strings.TrimPrefix(c.FullPath(), "/"+config.Conf.System.UrlPathPrefix)
+		// 检查是否为静态资源路径
+		if strings.HasPrefix(path, "/static/") ||
+			strings.HasPrefix(path, "/assets/") ||
+			strings.HasPrefix(path, "/images/") ||
+			path == "/favicon.ico" ||
+			len(path) == 0 {
+			return
+		}
 		// 请求方式
 		method := c.Request.Method
 

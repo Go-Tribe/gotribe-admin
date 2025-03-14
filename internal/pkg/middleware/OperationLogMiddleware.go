@@ -19,64 +19,93 @@ import (
 // 操作日志channel
 var OperationLogChan = make(chan *model.OperationLog, 30)
 
+// 定义静态资源路径前缀
+var skipPaths = []string{
+	"/static/",
+	"/assets/",
+	"/images/",
+	"/favicon.ico",
+}
+
 func OperationLogMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 开始时间
-		startTime := time.Now()
-
-		// 处理请求
-		c.Next()
-
-		// 结束时间
-		endTime := time.Now()
-
-		// 执行耗时
-		timeCost := endTime.Sub(startTime).Milliseconds()
-
-		// 获取当前登录用户
-		var username string
-		ctxUser, exists := c.Get("user")
-		if !exists {
-			username = "未登录"
-		}
-		user, ok := ctxUser.(model.Admin)
-		if !ok {
-			username = "未登录"
-		}
-		username = user.Username
-
 		// 获取访问路径
 		path := strings.TrimPrefix(c.FullPath(), "/"+config.Conf.System.UrlPathPrefix)
-		// 检查是否为静态资源路径
-		if strings.HasPrefix(path, "/static/") ||
-			strings.HasPrefix(path, "/assets/") ||
-			strings.HasPrefix(path, "/images/") ||
-			path == "/favicon.ico" ||
-			len(path) == 0 {
+
+		// 如果是空路径或静态资源，直接返回
+		if shouldSkipLog(path) {
+			c.Next()
 			return
 		}
-		// 请求方式
+
+		startTime := time.Now()
+		c.Next()
+		timeCost := time.Since(startTime).Milliseconds()
+
+		username := getUsername(c)
 		method := c.Request.Method
 
 		// 获取接口描述
-		apiRepository := repository.NewApiRepository()
-		apiDesc, _ := apiRepository.GetApiDescByPath(path, method)
+		apiDesc := getApiDescription(path, method)
 
-		operationLog := model.OperationLog{
-			Username:   username,
-			Ip:         c.ClientIP(),
-			IpLocation: "",
-			Method:     method,
-			Path:       path,
-			Desc:       apiDesc,
-			Status:     c.Writer.Status(),
-			StartTime:  startTime,
-			TimeCost:   timeCost,
-			//UserAgent:  c.Request.UserAgent(),
+		log := &model.OperationLog{
+			Username:  username,
+			Ip:        c.ClientIP(),
+			Method:    method,
+			Path:      path,
+			Desc:      apiDesc,
+			Status:    c.Writer.Status(),
+			StartTime: startTime,
+			TimeCost:  timeCost,
 		}
 
-		// 最好是将日志发送到rabbitmq或者kafka中
-		// 这里是发送到channel中，开启3个goroutine处理
-		OperationLogChan <- &operationLog
+		// 异步写入日志
+		select {
+		case OperationLogChan <- log:
+		default:
+			// 如果channel已满，可以选择记录错误或使用非阻塞方式处理
+			go func() {
+				OperationLogChan <- log
+			}()
+		}
 	}
+}
+
+// 判断是否需要跳过日志记录
+func shouldSkipLog(path string) bool {
+	if path == "" {
+		return true
+	}
+
+	for _, prefix := range skipPaths {
+		if strings.HasPrefix(path, prefix) || prefix == path {
+			return true
+		}
+	}
+	return false
+}
+
+// 获取用户名
+func getUsername(c *gin.Context) string {
+	ctxUser, exists := c.Get("user")
+	if !exists {
+		return "未登录"
+	}
+
+	user, ok := ctxUser.(model.Admin)
+	if !ok {
+		return "未登录"
+	}
+
+	return user.Username
+}
+
+// 获取API描述
+func getApiDescription(path, method string) string {
+	apiRepository := repository.NewApiRepository()
+	apiDesc, err := apiRepository.GetApiDescByPath(path, method)
+	if err != nil {
+		return ""
+	}
+	return apiDesc
 }

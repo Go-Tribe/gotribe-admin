@@ -7,12 +7,13 @@ package common
 
 import (
 	"errors"
-	"github.com/dengmengmian/ghelper/gid"
-	"github.com/thoas/go-funk"
-	"gorm.io/gorm"
 	"gotribe-admin/config"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/util"
+
+	"github.com/dengmengmian/ghelper/gid"
+	"github.com/thoas/go-funk"
+	"gorm.io/gorm"
 )
 
 // 初始化mysql数据
@@ -1609,5 +1610,29 @@ func InitData() {
 			Log.Errorf("写入文章数据失败：%v", err)
 		}
 	}
+	// 11.后台配置数据
+	newConfig := make([]model.SystemConfig, 0)
+	configs := []model.SystemConfig{
+		{
+			Model:          model.Model{ID: 1},
+			SystemConfigID: "245eko",
+			Title:          "GoTribe",
+			Logo:           "https://raw.gitcode.com/Go-Tribe/gotribe/raw/5ae01df24c556094f74a9b23086f35c3929fe0f3/106083123.png",
+			Icon:           "https://raw.gitcode.com/Go-Tribe/gotribe/raw/5ae01df24c556094f74a9b23086f35c3929fe0f3/106083123.png",
+		},
+	}
 
+	for _, config := range configs {
+		err := DB.First(&config, config.ID).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			newConfig = append(newConfig, config)
+		}
+	}
+
+	if len(newConfig) > 0 {
+		err := DB.Create(&newConfig).Error
+		if err != nil {
+			Log.Errorf("写入后台配置数据失败：%v", err)
+		}
+	}
 }

@@ -8,12 +8,13 @@ package repository
 import (
 	"errors"
 	"fmt"
-	"github.com/thoas/go-funk"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/dto"
 	"gotribe-admin/pkg/api/vo"
 	"strings"
+
+	"github.com/thoas/go-funk"
 )
 
 type IApiRepository interface {
@@ -196,6 +197,7 @@ func (a ApiRepository) BatchDeleteApiByIds(apiIds []uint) error {
 // 根据接口路径和请求方式获取接口描述
 func (a ApiRepository) GetApiDescByPath(path string, method string) (string, error) {
 	var api model.Api
+
 	err := common.DB.Where("path = ?", path).Where("method = ?", method).First(&api).Error
 	return api.Desc, err
 }

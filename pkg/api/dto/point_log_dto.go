@@ -28,7 +28,7 @@ func toPointDto(point model.PointLog) PointDto {
 	}
 	return PointDto{
 		ID:        int64(point.ID),
-		Point:     point.Points,
+		Point:     float64(point.Points),
 		UserID:    point.UserID,
 		Nickname:  nickname,
 		Reason:    point.Reason,

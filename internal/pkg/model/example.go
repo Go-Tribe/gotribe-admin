@@ -16,9 +16,9 @@ type Example struct {
 	ProjectID   string `gorm:"type:char(10);not null;index;comment:项目ID;" json:"projectID"`
 	Username    string `gorm:"type:varchar(30);not null;index:idx_username;comment:用户名" json:"username"`
 	Title       string `gorm:"type:varchar(255);not null;comment:标题" json:"title"`
-	Content     string `gorm:"not null;type:longtext;not null;comment:内容" json:"content"`
+	Content     string `gorm:"not null;type:text;not null;comment:内容" json:"content"`
 	Description string `gorm:"not null;size:300;not null;comment:描述" json:"description"`
-	Status      uint8  `gorm:"type:tinyint;not null;default:1;comment:状态，1-正常；2-禁用" json:"status,omitempty"`
+	Status      uint8  `gorm:"type:smallint;not null;default:1;comment:状态，1-正常；2-禁用" json:"status,omitempty"`
 }
 
 func (e *Example) BeforeCreate(tx *gorm.DB) error {

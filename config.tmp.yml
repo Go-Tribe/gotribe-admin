@@ -3,7 +3,8 @@
 # license that can be found in the LICENSE file. The original repo for
 # this file is https://www.gotribe.cn
 
-# delelopment
+# 开发环境配置模板
+# 请复制此文件为 config.yml 并修改相应配置
 system:
   # 设定模式(debug/release/test,正式版改为release)
   mode: debug
@@ -18,11 +19,11 @@ system:
   # rsa私钥文件路径(config.yml相对路径, 也可以填绝对路径)
   rsa-private-key: private.pem
   # cdn域名
-  cdn-domain: https://cdn.gotribe.cn/
+  cdn-domain: https://cdn.example.com/
   # 是否启动数据迁移
-  enable-migrate: false
-  # 文件上传默认使用oss.
-  enable-oss: true
+  enable-migrate: true
+  # 文件上传默认使用oss
+  enable-oss: false
 
 logs:
   # 日志等级(-1:Debug, 0:Info, 1:Warn, 2:Error, 3:DPanic, 4:Panic, 5:Fatal, -1<=level<=5, 参照zap.level源码)
@@ -38,11 +39,13 @@ logs:
   # 是否压缩
   compress: false
 
-mysql:
+database:
+  # 数据库类型 (mysql/postgres)
+  type: mysql
   # 用户名
   username: root
   # 密码
-  password: HhwpKnf!YC4e
+  password: your_password_here
   # 数据库名
   database: gotribe
   # 主机地址
@@ -53,10 +56,12 @@ mysql:
   query: parseTime=True&loc=Local&timeout=10000ms
   # 是否打印日志
   log-mode: true
-  # 编码方式
+  # 编码方式 (仅MySQL使用)
   charset: utf8mb4
-  # 字符集(utf8mb4_general_ci速度比utf8mb4_unicode_ci快些)
+  # 字符集 (仅MySQL使用)
   collation: utf8mb4_general_ci
+  # SSL模式 (仅PostgreSQL使用)
+  sslmode: disable
 
 # casbin配置
 casbin:
@@ -67,8 +72,8 @@ casbin:
 jwt:
   # jwt标识
   realm: gotribe-admin
-  # 服务端密钥
-  key: Rtg8BPKNEf2mB4mgvKONGPZZQSaJWNLijxR42qRgq0iBb5
+  # 服务端密钥 (请修改为随机字符串)
+  key: your_jwt_secret_key_here
   # token过期时间, 小时
   timeout: 12
   # 刷新token最大过期时间, 小时
@@ -83,12 +88,16 @@ rate-limit:
 
 # 上传文件配置
 upload-file:
-  access-key:
-  secret-key:
-  # 七牛云不用填写
-  endpoint:
-  bucket:
+  # 访问密钥 (请填写您的OSS访问密钥)
+  access-key: your_access_key_here
+  # 秘密密钥 (请填写您的OSS秘密密钥)
+  secret-key: your_secret_key_here
+  # 端点 (七牛云不用填写)
+  endpoint: your_endpoint_here
+  # 存储桶名称
+  bucket: your_bucket_name_here
 
 # 百度推送配置
 baidu:
-  push-token:
+  # 百度推送Token (请填写您的百度推送Token)
+  push-token: your_baidu_push_token_here

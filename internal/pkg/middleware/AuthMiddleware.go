@@ -7,8 +7,6 @@ package middleware
 
 import (
 	"fmt"
-	jwt "github.com/appleboy/gin-jwt/v2"
-	"github.com/gin-gonic/gin"
 	"gotribe-admin/config"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
@@ -18,6 +16,9 @@ import (
 	"gotribe-admin/pkg/api/vo"
 	"gotribe-admin/pkg/util"
 	"time"
+
+	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
 )
 
 // 初始化jwt中间件
@@ -47,7 +48,7 @@ func payloadFunc(data interface{}) jwt.MapClaims {
 	if v, ok := data.(map[string]interface{}); ok {
 		var user model.Admin
 		// 将用户json转为结构体
-		util.JsonI2Struct(v["user"], &user)
+		util.JSONUtil.JsonI2Struct(v["user"], &user)
 		return jwt.MapClaims{
 			jwt.IdentityKey: user.ID,
 			"user":          v["user"],
@@ -75,7 +76,7 @@ func login(c *gin.Context) (interface{}, error) {
 	}
 
 	// 密码通过RSA解密
-	decodeData, err := util.RSADecrypt([]byte(req.Password), config.Conf.System.RSAPrivateBytes)
+	decodeData, err := util.RSAUtil.Decrypt([]byte(req.Password), config.Conf.System.RSAPrivateBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -92,8 +93,12 @@ func login(c *gin.Context) (interface{}, error) {
 		return nil, err
 	}
 	// 将用户以json格式写入, payloadFunc/authorizator会使用到
+	userJson, err := util.JSONUtil.Struct2Json(user)
+	if err != nil {
+		return nil, fmt.Errorf("用户信息序列化失败: %v", err)
+	}
 	return map[string]interface{}{
-		"user": util.Struct2Json(user),
+		"user": userJson,
 	}, nil
 }
 
@@ -103,7 +108,7 @@ func authorizator(data interface{}, c *gin.Context) bool {
 		userStr := v["user"].(string)
 		var user model.Admin
 		// 将用户json转为结构体
-		util.Json2Struct(userStr, &user)
+		util.JSONUtil.Json2Struct(userStr, &user)
 		// 将用户保存到context, api调用时取数据方便
 		c.Set("user", user)
 		return true

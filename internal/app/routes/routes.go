@@ -8,12 +8,13 @@ package routes
 import (
 	"embed"
 	"fmt"
-	"github.com/gin-contrib/static"
-	"github.com/gin-gonic/gin"
 	"gotribe-admin/config"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/middleware"
 	"net/http"
+
+	"github.com/gin-contrib/static"
+	"github.com/gin-gonic/gin"
 
 	"time"
 )
@@ -74,6 +75,7 @@ func InitRoutes(fs embed.FS) *gin.Engine {
 	InitAdSceneRoutes(apiGroup, authMiddleware)         // 注册推广场景管理路由, jwt认证中间件,casbin鉴权中间件
 	InitAdRoutes(apiGroup, authMiddleware)              // 注册广告位管理路由, jwt认证中间件,casbin鉴权中间件
 	InitCommentRoutes(apiGroup, authMiddleware)         // 注册评论管理路由, jwt认证中间件,casbin鉴权中间件
+	JobRoutes(r, authMiddleware)                        // 注册任务管理路由
 	InitPointRoutes(apiGroup, authMiddleware)           // 注册积分管理路由, jwt认证中间件,casbin鉴权中间件
 	InitProductCategoryRoutes(apiGroup, authMiddleware) // 注册商品分类管理路由, jwt认证中间件,casbin鉴权中间件
 	InitProductTypeRoutes(apiGroup, authMiddleware)     // 注册商品类型管理路由, jwt认证中间件,casbin鉴权中间件

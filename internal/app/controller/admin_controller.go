@@ -6,9 +6,6 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
-	"github.com/thoas/go-funk"
 	"gotribe-admin/config"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
@@ -17,6 +14,10 @@ import (
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
 	"gotribe-admin/pkg/util"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+	"github.com/thoas/go-funk"
 
 	"strconv"
 )
@@ -96,12 +97,12 @@ func (uc AdminController) ChangePwd(c *gin.Context) {
 
 	// 前端传来的密码是rsa加密的,先解密
 	// 密码通过RSA解密
-	decodeOldPassword, err := util.RSADecrypt([]byte(req.OldPassword), config.Conf.System.RSAPrivateBytes)
+	decodeOldPassword, err := util.RSAUtil.Decrypt([]byte(req.OldPassword), config.Conf.System.RSAPrivateBytes)
 	if err != nil {
 		response.Fail(c, nil, err.Error())
 		return
 	}
-	decodeNewPassword, err := util.RSADecrypt([]byte(req.NewPassword), config.Conf.System.RSAPrivateBytes)
+	decodeNewPassword, err := util.RSAUtil.Decrypt([]byte(req.NewPassword), config.Conf.System.RSAPrivateBytes)
 	if err != nil {
 		response.Fail(c, nil, err.Error())
 		return
@@ -118,13 +119,18 @@ func (uc AdminController) ChangePwd(c *gin.Context) {
 	// 获取用户的真实正确密码
 	correctPasswd := user.Password
 	// 判断前端请求的密码是否等于真实密码
-	err = util.ComparePasswd(correctPasswd, req.OldPassword)
+	err = util.PasswordUtil.ComparePasswd(correctPasswd, req.OldPassword)
 	if err != nil {
 		response.Fail(c, nil, "原密码有误")
 		return
 	}
 	// 更新密码
-	err = uc.AdminRepository.ChangePwd(user.Username, util.GenPasswd(req.NewPassword))
+	hashedPassword, err := util.PasswordUtil.GenPasswd(req.NewPassword)
+	if err != nil {
+		response.Fail(c, nil, "密码加密失败: "+err.Error())
+		return
+	}
+	err = uc.AdminRepository.ChangePwd(user.Username, hashedPassword)
 	if err != nil {
 		response.Fail(c, nil, "更新密码失败: "+err.Error())
 		return
@@ -150,7 +156,7 @@ func (uc AdminController) CreateAdmin(c *gin.Context) {
 	// 密码通过RSA解密
 	// 密码不为空就解密
 	if req.Password != "" {
-		decodeData, err := util.RSADecrypt([]byte(req.Password), config.Conf.System.RSAPrivateBytes)
+		decodeData, err := util.RSAUtil.Decrypt([]byte(req.Password), config.Conf.System.RSAPrivateBytes)
 		if err != nil {
 			response.Fail(c, nil, err.Error())
 			return
@@ -199,9 +205,14 @@ func (uc AdminController) CreateAdmin(c *gin.Context) {
 	if req.Password == "" {
 		req.Password = "123456"
 	}
+	hashedPassword, err := util.PasswordUtil.GenPasswd(req.Password)
+	if err != nil {
+		response.Fail(c, nil, "密码加密失败: "+err.Error())
+		return
+	}
 	user := model.Admin{
 		Username:     req.Username,
-		Password:     util.GenPasswd(req.Password),
+		Password:     hashedPassword,
 		Mobile:       req.Mobile,
 		Avatar:       req.Avatar,
 		Nickname:     &req.Nickname,
@@ -347,13 +358,18 @@ func (uc AdminController) UpdateAdminByID(c *gin.Context) {
 		// 密码赋值
 		if req.Password != "" {
 			// 密码通过RSA解密
-			decodeData, err := util.RSADecrypt([]byte(req.Password), config.Conf.System.RSAPrivateBytes)
+			decodeData, err := util.RSAUtil.Decrypt([]byte(req.Password), config.Conf.System.RSAPrivateBytes)
 			if err != nil {
 				response.Fail(c, nil, err.Error())
 				return
 			}
 			req.Password = string(decodeData)
-			user.Password = util.GenPasswd(req.Password)
+			hashedPassword, err := util.PasswordUtil.GenPasswd(req.Password)
+			if err != nil {
+				response.Fail(c, nil, "密码加密失败: "+err.Error())
+				return
+			}
+			user.Password = hashedPassword
 		}
 
 	}

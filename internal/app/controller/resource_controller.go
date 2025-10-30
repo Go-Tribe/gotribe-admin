@@ -6,9 +6,6 @@
 package controller
 
 import (
-	"github.com/dengmengmian/ghelper/gconvert"
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"gotribe-admin/config"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
@@ -19,6 +16,10 @@ import (
 	"gotribe-admin/pkg/api/vo"
 	"gotribe-admin/pkg/util"
 	"gotribe-admin/pkg/util/upload"
+
+	"github.com/dengmengmian/ghelper/gconvert"
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type IResourceController interface {
@@ -134,7 +135,12 @@ func (pc ResourceController) UploadResources(c *gin.Context) {
 	}
 	uploadRes := dto.ToUploadResourceDto(&fileRes)
 	uploadRes.Domain = config.Conf.System.CDNDomain
-	uploadRes.FileType = util.GetFileType(fileHeader)
+	fileType, err := util.FileUtil.GetFileType(fileHeader)
+	if err != nil {
+		response.Fail(c, nil, "获取文件类型失败: "+err.Error())
+		return
+	}
+	uploadRes.FileType = fileType
 
 	// 资源入库
 	resource := model.Resource{

@@ -22,12 +22,12 @@ type Project struct {
 	ICP            string `gorm:"type:varchar(255);comment:icp备案信息" json:"icp,omitempty"`
 	PublicSecurity string `gorm:"type:varchar(255);comment:公安备案" json:"publicSecurity,omitempty"`
 	Author         string `gorm:"type:varchar(30);comment:网站版权" json:"author,omitempty"`
-	Info           string `gorm:"type:longtext;comment:内容" json:"info,omitempty"`
+	Info           string `gorm:"type:text;comment:内容" json:"info,omitempty"`
 	BaiduAnalytics string `gorm:"type:varchar(255);comment:百度统计" json:"baiduAnalytics,omitempty"`
 	Favicon        string `gorm:"type:varchar(255);comment:favicon" json:"favicon,omitempty"`
 	NavImage       string `gorm:"type:varchar(255);comment:导航图片" json:"navImage,omitempty"`
 	PushToken      string `gorm:"type:varchar(255);comment:百度推送 API token" json:"pushToken,omitempty"`
-	Status         int8   `gorm:"type:tinyint;not null;default:1;comment:状态，1-正常；2-禁用" json:"status,omitempty"`
+	Status         int8   `gorm:"type:smallint;not null;default:1;comment:状态，1-正常；2-禁用" json:"status,omitempty"`
 }
 
 func (p *Project) BeforeCreate(tx *gorm.DB) error {

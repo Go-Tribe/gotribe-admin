@@ -6,9 +6,6 @@
 package controller
 
 import (
-	"github.com/dengmengmian/ghelper/gconvert"
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -18,6 +15,10 @@ import (
 	"gotribe-admin/pkg/api/vo"
 	"gotribe-admin/pkg/util"
 	"strings"
+
+	"github.com/dengmengmian/ghelper/gconvert"
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type IPostController interface {
@@ -112,7 +113,7 @@ func (pc PostController) CreatePost(c *gin.Context) {
 		ColumnID:    req.ColumnID,
 		PassWord:    req.Password,
 		Time:        req.Time,
-		UnitPrice:   uint(util.YuanToFen(req.UnitPrice)),
+		UnitPrice:   uint(util.MoneyUtil.YuanToCents(req.UnitPrice)),
 		People:      req.People,
 		Location:    req.Location,
 		Images:      imageStr,
@@ -168,7 +169,7 @@ func (pc PostController) UpdatePostByID(c *gin.Context) {
 	oldPost.Tag = req.Tag
 	oldPost.ColumnID = req.ColumnID
 	oldPost.Time = req.Time
-	oldPost.UnitPrice = uint(util.YuanToFen(req.UnitPrice))
+	oldPost.UnitPrice = uint(util.MoneyUtil.YuanToCents(req.UnitPrice))
 	oldPost.People = req.People
 	oldPost.Location = req.Location
 	oldPost.Images = imageStr
@@ -230,7 +231,7 @@ func (pc PostController) PushPostByID(c *gin.Context) {
 	if !gconvert.IsEmpty(projectInfo.PushToken) {
 		// 处理 url
 		postURLWithID := projectInfo.PostURL + oldPost.PostID
-		go util.PushBaidu(projectInfo.Domain, projectInfo.PushToken, postURLWithID)
+		go util.SEOUtil.PushBaidu(projectInfo.Domain, projectInfo.PushToken, postURLWithID)
 	}
 
 	response.Success(c, nil, "更新内容成功")

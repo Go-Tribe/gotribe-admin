@@ -7,11 +7,12 @@ package config
 
 import (
 	"fmt"
+	"gotribe-admin/pkg/util"
+	"os"
+
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 	"go.uber.org/zap/zapcore"
-	"gotribe-admin/pkg/util"
-	"os"
 )
 
 // 系统配置，对应yml
@@ -23,7 +24,7 @@ var Conf = new(config)
 type config struct {
 	System     *SystemConfig    `mapstructure:"system" json:"system"`
 	Logs       *LogsConfig      `mapstructure:"logs" json:"logs"`
-	Mysql      *MysqlConfig     `mapstructure:"mysql" json:"mysql"`
+	Database   *DatabaseConfig  `mapstructure:"database" json:"database"`
 	Casbin     *CasbinConfig    `mapstructure:"casbin" json:"casbin"`
 	Jwt        *JwtConfig       `mapstructure:"jwt" json:"jwt"`
 	RateLimit  *RateLimitConfig `mapstructure:"rate-limit" json:"rateLimit"`
@@ -50,8 +51,16 @@ func InitConfig() {
 			panic(fmt.Errorf("初始化配置文件失败:%s \n", err))
 		}
 		// 读取rsa key
-		Conf.System.RSAPublicBytes = util.RSAReadKeyFromFile(Conf.System.RSAPublicKey)
-		Conf.System.RSAPrivateBytes = util.RSAReadKeyFromFile(Conf.System.RSAPrivateKey)
+		publicBytes, err := util.RSAUtil.ReadKeyFromFile(Conf.System.RSAPublicKey)
+		if err != nil {
+			panic(fmt.Errorf("读取RSA公钥失败: %v", err))
+		}
+		privateBytes, err := util.RSAUtil.ReadKeyFromFile(Conf.System.RSAPrivateKey)
+		if err != nil {
+			panic(fmt.Errorf("读取RSA私钥失败: %v", err))
+		}
+		Conf.System.RSAPublicBytes = publicBytes
+		Conf.System.RSAPrivateBytes = privateBytes
 	})
 
 	if err != nil {
@@ -62,8 +71,16 @@ func InitConfig() {
 		panic(fmt.Errorf("初始化配置文件失败:%s \n", err))
 	}
 	// 读取rsa key
-	Conf.System.RSAPublicBytes = util.RSAReadKeyFromFile(Conf.System.RSAPublicKey)
-	Conf.System.RSAPrivateBytes = util.RSAReadKeyFromFile(Conf.System.RSAPrivateKey)
+	publicBytes, err := util.RSAUtil.ReadKeyFromFile(Conf.System.RSAPublicKey)
+	if err != nil {
+		panic(fmt.Errorf("读取RSA公钥失败: %v", err))
+	}
+	privateBytes, err := util.RSAUtil.ReadKeyFromFile(Conf.System.RSAPrivateKey)
+	if err != nil {
+		panic(fmt.Errorf("读取RSA私钥失败: %v", err))
+	}
+	Conf.System.RSAPublicBytes = publicBytes
+	Conf.System.RSAPrivateBytes = privateBytes
 
 }
 
@@ -90,7 +107,8 @@ type LogsConfig struct {
 	Compress   bool          `mapstructure:"compress" json:"compress"`
 }
 
-type MysqlConfig struct {
+type DatabaseConfig struct {
+	Type      string `mapstructure:"type" json:"type"`
 	Username  string `mapstructure:"username" json:"username"`
 	Password  string `mapstructure:"password" json:"password"`
 	Database  string `mapstructure:"database" json:"database"`
@@ -100,6 +118,7 @@ type MysqlConfig struct {
 	LogMode   bool   `mapstructure:"log-mode" json:"logMode"`
 	Charset   string `mapstructure:"charset" json:"charset"`
 	Collation string `mapstructure:"collation" json:"collation"`
+	SSLMode   string `mapstructure:"sslmode" json:"sslmode"`
 }
 
 type CasbinConfig struct {

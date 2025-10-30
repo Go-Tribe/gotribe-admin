@@ -8,7 +8,6 @@ import (
 	"context"
 	"embed"
 	"fmt"
-	"github.com/fatih/color"
 	"gotribe-admin/config"
 	"gotribe-admin/internal/app/jobs"
 	"gotribe-admin/internal/app/repository"
@@ -20,6 +19,8 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/fatih/color"
 )
 
 //go:embed web/admin/dist/*
@@ -33,8 +34,8 @@ func main() {
 	// 初始化日志
 	common.InitLogger()
 
-	// 初始化数据库(mysql)
-	common.InitMysql()
+	// 初始化数据库
+	common.InitDatabase()
 
 	// 初始化casbin策略管理器
 	common.InitCasbinEnforcer()
@@ -42,13 +43,20 @@ func main() {
 	// 初始化Validator数据校验
 	common.InitValidate()
 
-	// 初始化mysql数据
+	// 初始化数据库数据
 	common.InitData()
 
 	// 初始化定时任务
-	jobs.InitCron()
-	jobs.Cron.Start()
-	defer jobs.Cron.Stop()
+	if err := jobs.InitJobs(); err != nil {
+		common.Log.Errorf("Failed to initialize jobs: %v", err)
+		return
+	}
+
+	if err := jobs.StartAllJobs(); err != nil {
+		common.Log.Errorf("Failed to start jobs: %v", err)
+		return
+	}
+	defer jobs.StopAllJobs()
 
 	// 操作日志中间件处理日志时没有将日志发送到rabbitmq或者kafka中, 而是发送到了channel中
 	// 这里开启3个goroutine处理channel将日志记录到数据库

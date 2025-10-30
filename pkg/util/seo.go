@@ -6,11 +6,17 @@
 package util
 
 import (
-	"github.com/dengmengmian/ghelper/ghttp"
+	"fmt"
 	"log"
+
+	"github.com/dengmengmian/ghelper/ghttp"
 )
 
-func PushBaidu(site, token string, urls string) bool {
+// SEO SEO工具类，用于处理SEO相关操作
+type SEO struct{}
+
+// PushBaidu 推送URL到百度
+func (s *SEO) PushBaidu(site, token string, urls string) (bool, error) {
 	api := "http://data.zz.baidu.com/urls?site=" + site + "&token=" + token
 	req := &ghttp.Request{
 		Method:      "POST",
@@ -20,10 +26,18 @@ func PushBaidu(site, token string, urls string) bool {
 	}
 	response, err := req.Do()
 	if err != nil {
-		log.Printf("推送失败：", response)
+		return false, fmt.Errorf("推送失败: %v", err)
 	}
 	defer response.Body.Close()
+
 	result, err := response.Body.FromToString()
-	log.Printf("推送记录：", result)
-	return true
+	if err != nil {
+		return false, fmt.Errorf("解析响应失败: %v", err)
+	}
+
+	log.Printf("推送记录: %s", result)
+	return true, nil
 }
+
+// 全局实例
+var SEOUtil = &SEO{}

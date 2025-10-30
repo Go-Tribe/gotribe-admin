@@ -9,6 +9,6 @@ type ThirdPartyAccounts struct {
 	Model
 	UserID   string `gorm:"type:char(10);Index;comment:用户ID" json:"userID"`
 	Platform string `gorm:"type:varchar(50);not null;comment:平台" json:"platform"`
-	BindFlag uint   `gorm:"type:tinyint;default:1;comment:是否绑定,2绑定" json:"bindFlag"`
+	BindFlag uint   `gorm:"type:smallint;default:1;comment:是否绑定,2绑定" json:"bindFlag"`
 	OpenID   string `gorm:"type:varchar(255);uniqueIndex;not null;comment:openID" json:"openID"`
 }

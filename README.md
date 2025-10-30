@@ -81,44 +81,152 @@ The entire system is designed with a front-end and back-end separation architect
 
 ### Quick Start
 
-> Prerequisites: `go1.20+` `node 18+`.
+> Prerequisites: `go1.21+` `node 18+` `mysql 8.0+` or `postgresql 13+` `redis 6.0+`
 
-1. Download the project
+1. **Clone the project**
 
 ```bash
-git clone --recursive https://github.com/go-tribe/gotribe-admin.git
+git clone https://github.com/go-tribe/gotribe-admin.git
+cd gotribe-admin
 ```
-2. Modify the configuration file, parameter details are in: `config.tmp.yml`.
+
+2. **Install dependencies**
 
 ```bash
+# Install Go dependencies
+go mod tidy
+
+# Install frontend dependencies (if needed)
+cd web/admin
+npm install
+cd ../..
+```
+
+3. **Configure the environment**
+
+```bash
+# Copy configuration template
 cp config.tmp.yml config.yml
+
+# Edit configuration file
+vim config.yml
 ```
-3. Run for development:
+
+4. **Start services**
 
 ```bash
+# Using Docker Compose (recommended)
+docker-compose up -d
+
+# Or start manually
+# Start MySQL/PostgreSQL and Redis
+# Then run the application
 make run
 ```
-4. Compile and package:
+
+5. **Access the application**
+
+- Management Backend: http://localhost:8088
+- Default username: `admin`
+- Default password: `123456`
+
+### Development
 
 ```bash
-make
+# Run in development mode
+make run
+
+# Run tests
+make test
+
+# Run tests with coverage
+make test-coverage
+
+# Format code
+make fmt
+
+# Lint code
+make lint
+
+# Build
+make build
+
+# Clean
+make clean
 ```
-After compilation, the executable files will be in the `_output` directory.
 
-The database will be migrated automatically upon startup, and the default username for the management backend is: admin, with the password: 123456.
+### Docker
 
-### TODO
+```bash
+# Build Docker image
+make docker
 
-- Add payment configuration
-- Add product management
+# Run with Docker Compose
+make docker-run
 
-### Online Application
+# Stop containers
+make docker-stop
 
-[Mafan](https://www.dengmengmian.com)
+# Clean up
+make docker-clean
+```
+
+### Features
+
+- **User Management**: Complete user registration, login, and profile management
+- **Content Management**: Articles, categories, tags, columns, and comments
+- **Project Management**: Multi-project support with independent configurations
+- **Product Management**: Product catalog, SKU management, and order processing
+- **Point System**: Integrated points and rewards system
+- **System Management**: Menu, role, API, and configuration management
+- **Resource Management**: File upload with support for local, OSS, and Qiniu storage
+- **Permission Control**: RBAC-based permission system using Casbin
+- **Operation Logs**: Comprehensive audit trail
+- **Rate Limiting**: Built-in request rate limiting
+- **Multi-Database Support**: MySQL and PostgreSQL support
+- **Docker Support**: Complete containerization
+- **RESTful API**: Well-documented API endpoints
+- **Admin UI**: Modern Vue.js-based management interface
+
+### Documentation
+
+- [API Documentation](API.md) - Complete API reference
+- [Architecture Guide](ARCHITECTURE.md) - System architecture and design
+- [Contributing Guide](CONTRIBUTING.md) - How to contribute to the project
+- [Security Guide](SECURITY.md) - Security best practices
+- [Changelog](CHANGELOG.md) - Version history and changes
+
+### Community
+
+- [Issues](https://github.com/go-tribe/gotribe-admin/issues) - Bug reports and feature requests
+- [Discussions](https://github.com/go-tribe/gotribe-admin/discussions) - Community discussions
+- [Releases](https://github.com/go-tribe/gotribe-admin/releases) - Latest releases
+
+### Roadmap
+
+- [ ] Payment system integration
+- [ ] Multi-language support
+- [ ] Theme system
+- [ ] Plugin system
+- [ ] Multi-tenant support
+- [ ] Microservices architecture
+- [ ] Performance optimization
+- [ ] Security enhancements
+
+### Online Demo
+
+[Mafan](https://www.dengmengmian.com) - Live demo of the system
 
 ### License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+[MIT](https://choosealicense.com/licenses/mit/) - See [LICENSE](LICENSE) file for details
+
+### Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### Support
+
+If you find this project helpful, please give it a ⭐️ on GitHub!
 
 ---
-

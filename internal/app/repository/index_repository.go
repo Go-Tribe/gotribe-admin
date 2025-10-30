@@ -61,7 +61,7 @@ func (r IndexRepository) GetIndexData(projectID string) (map[string]interface{},
 		Count(&visitCount).Error
 	// 返回结果
 	data := map[string]interface{}{
-		"sales":      util.FenToYuan(int(result.TotalSales)),
+		"sales":      util.MoneyUtil.CentsToYuan(result.TotalSales),
 		"orders":     result.TotalOrders,
 		"newUsers":   totalUsers,
 		"visitCount": visitCount,
@@ -148,7 +148,7 @@ func (r IndexRepository) GetTimeRangeData(projectID, timeRange string) (map[stri
 		}
 		orderData[i] = map[string]interface{}{
 			"date":        dateStr,
-			"totalSales":  util.FenToYuan(int(res.TotalSales)),
+			"totalSales":  util.MoneyUtil.CentsToYuan(res.TotalSales),
 			"totalOrders": res.TotalOrders,
 		}
 	}

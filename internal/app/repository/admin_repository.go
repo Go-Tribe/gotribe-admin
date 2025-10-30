@@ -85,7 +85,7 @@ func (ar AdminRepository) Login(admin *model.Admin) (*model.Admin, error) {
 	}
 
 	// 校验密码
-	err = util.ComparePasswd(firstAdmin.Password, admin.Password)
+	err = util.PasswordUtil.ComparePasswd(firstAdmin.Password, admin.Password)
 	if err != nil {
 		return &firstAdmin, errors.New("密码错误")
 	}

@@ -7,9 +7,6 @@ package controller
 
 import (
 	"fmt"
-	"github.com/dengmengmian/ghelper/gconvert"
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -18,6 +15,10 @@ import (
 	"gotribe-admin/pkg/api/vo"
 	"gotribe-admin/pkg/util"
 	"strings"
+
+	"github.com/dengmengmian/ghelper/gconvert"
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type IProductController interface {
@@ -179,14 +180,14 @@ func (tc ProductController) CreateProduct(c *gin.Context) {
 			productSku := model.ProductSku{
 				//SKUID:         gid.GenShortID(),
 				ProductID:     productInfo.ProductID,
-				CostPrice:     util.YuanToFen(sku.CostPrice),
+				CostPrice:     util.MoneyUtil.YuanToCents(sku.CostPrice),
 				EnableDefault: uint(sku.EnableDefault),
 				Image:         sku.Image,
-				MarketPrice:   util.YuanToFen(sku.MarketPrice),
+				MarketPrice:   util.MoneyUtil.YuanToCents(sku.MarketPrice),
 				Quantity:      uint(sku.Quantity),
 				Title:         sku.Title,
-				UnitPrice:     util.YuanToFen(sku.UnitPrice),
-				UnitPoint:     util.YuanToFen(sku.UnitPoint),
+				UnitPrice:     util.MoneyUtil.YuanToCents(sku.UnitPrice),
+				UnitPoint:     util.MoneyUtil.YuanToCents(sku.UnitPoint),
 				ProjectID:     productInfo.ProjectID,
 			}
 			if _, err := tc.ProductRepository.CreateProductSku(tx, &productSku); err != nil {
@@ -297,14 +298,14 @@ func (tc ProductController) UpdateProductByID(c *gin.Context) {
 				response.Fail(c, nil, "获取需要更新的产品SKU信息失败: "+err.Error())
 				return
 			}
-			productSku.CostPrice = util.YuanToFen(sku.CostPrice)
+			productSku.CostPrice = util.MoneyUtil.YuanToCents(sku.CostPrice)
 			productSku.EnableDefault = sku.EnableDefault
 			productSku.Image = sku.Image
-			productSku.MarketPrice = util.YuanToFen(sku.MarketPrice)
+			productSku.MarketPrice = util.MoneyUtil.YuanToCents(sku.MarketPrice)
 			productSku.Quantity = sku.Quantity
 			productSku.Title = sku.Title
-			productSku.UnitPrice = util.YuanToFen(sku.UnitPrice)
-			productSku.UnitPoint = util.YuanToFen(sku.UnitPoint)
+			productSku.UnitPrice = util.MoneyUtil.YuanToCents(sku.UnitPrice)
+			productSku.UnitPoint = util.MoneyUtil.YuanToCents(sku.UnitPoint)
 			productSku.ProductID = oldProduct.ProductID
 
 			err = tc.ProductRepository.UpdateProductSku(tx, productSku)

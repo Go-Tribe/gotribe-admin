@@ -6,8 +6,6 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -16,6 +14,9 @@ import (
 	"gotribe-admin/pkg/api/vo"
 	"gotribe-admin/pkg/util"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type IUserController interface {
@@ -132,7 +133,7 @@ func (pc UserController) UpdateUserByID(c *gin.Context) {
 	oldUser.Phone = req.Phone
 	oldUser.Email = req.Email
 	if len(req.Password) > 0 {
-		newPassword, _ := util.Encrypt(req.Password)
+		newPassword, _ := util.PasswordUtil.Encrypt(req.Password)
 		oldUser.Password = newPassword
 	}
 

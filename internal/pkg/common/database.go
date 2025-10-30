@@ -7,59 +7,98 @@ package common
 
 import (
 	"fmt"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
-	"gorm.io/gorm/schema"
 	"gotribe-admin/config"
 	"gotribe-admin/internal/pkg/model/migrate"
 	"log"
 	"os"
 	"time"
+
+	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+	"gorm.io/gorm/schema"
 )
 
-// 全局mysql数据库变量
+// 全局数据库变量
 var DB *gorm.DB
 
-// 初始化mysql数据库
-func InitMysql() {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&collation=%s&%s",
-		config.Conf.Mysql.Username,
-		config.Conf.Mysql.Password,
-		config.Conf.Mysql.Host,
-		config.Conf.Mysql.Port,
-		config.Conf.Mysql.Database,
-		config.Conf.Mysql.Charset,
-		config.Conf.Mysql.Collation,
-		config.Conf.Mysql.Query,
-	)
-	// 隐藏密码
-	showDsn := fmt.Sprintf(
-		"%s:******@tcp(%s:%d)/%s?charset=%s&collation=%s&%s",
-		config.Conf.Mysql.Username,
-		config.Conf.Mysql.Host,
-		config.Conf.Mysql.Port,
-		config.Conf.Mysql.Database,
-		config.Conf.Mysql.Charset,
-		config.Conf.Mysql.Collation,
-		config.Conf.Mysql.Query,
-	)
+// 初始化数据库
+func InitDatabase() {
+	var dsn string
+	var showDsn string
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		// 禁用外键(指定外键时不会在mysql创建真实的外键约束)
-		DisableForeignKeyConstraintWhenMigrating: true,
-		// 使用单数表名
-		NamingStrategy: schema.NamingStrategy{
-			SingularTable: true,
-		},
-	})
-	if err != nil {
-		Log.Panicf("初始化mysql数据库异常: %v", err)
-		panic(fmt.Errorf("初始化mysql数据库异常: %v", err))
+	if config.Conf.Database.Type == "postgres" {
+		dsn = fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s %s",
+			config.Conf.Database.Host,
+			config.Conf.Database.Username,
+			config.Conf.Database.Password,
+			config.Conf.Database.Database,
+			config.Conf.Database.Port,
+			config.Conf.Database.SSLMode,
+			config.Conf.Database.Query,
+		)
+		showDsn = fmt.Sprintf("host=%s user=%s password=****** dbname=%s port=%d sslmode=%s %s",
+			config.Conf.Database.Host,
+			config.Conf.Database.Username,
+			config.Conf.Database.Database,
+			config.Conf.Database.Port,
+			config.Conf.Database.SSLMode,
+			config.Conf.Database.Query,
+		)
+	} else {
+		// MySQL 连接字符串
+		dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&collation=%s&%s",
+			config.Conf.Database.Username,
+			config.Conf.Database.Password,
+			config.Conf.Database.Host,
+			config.Conf.Database.Port,
+			config.Conf.Database.Database,
+			config.Conf.Database.Charset,
+			config.Conf.Database.Collation,
+			config.Conf.Database.Query,
+		)
+		showDsn = fmt.Sprintf(
+			"%s:******@tcp(%s:%d)/%s?charset=%s&collation=%s&%s",
+			config.Conf.Database.Username,
+			config.Conf.Database.Host,
+			config.Conf.Database.Port,
+			config.Conf.Database.Database,
+			config.Conf.Database.Charset,
+			config.Conf.Database.Collation,
+			config.Conf.Database.Query,
+		)
 	}
 
-	// 开启mysql日志
-	if config.Conf.Mysql.LogMode {
+	var db *gorm.DB
+	var err error
+
+	if config.Conf.Database.Type == "postgres" {
+		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+			// 禁用外键(指定外键时不会在数据库创建真实的外键约束)
+			DisableForeignKeyConstraintWhenMigrating: true,
+			// 使用单数表名
+			NamingStrategy: schema.NamingStrategy{
+				SingularTable: true,
+			},
+		})
+	} else {
+		db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+			// 禁用外键(指定外键时不会在数据库创建真实的外键约束)
+			DisableForeignKeyConstraintWhenMigrating: true,
+			// 使用单数表名
+			NamingStrategy: schema.NamingStrategy{
+				SingularTable: true,
+			},
+		})
+	}
+	if err != nil {
+		Log.Panicf("初始化数据库异常: %v", err)
+		panic(fmt.Errorf("初始化数据库异常: %v", err))
+	}
+
+	// 开启数据库日志
+	if config.Conf.Database.LogMode {
 		newLogger := logger.New(
 			log.New(os.Stdout, "\r\n", log.LstdFlags),
 			logger.Config{
@@ -76,6 +115,6 @@ func InitMysql() {
 	// 自动迁移表结构
 	if config.Conf.System.EnableMigrate {
 		migrate.DBAutoMigrate(DB)
-		Log.Infof("mysql数据库迁移完成! dsn: %s", showDsn)
+		Log.Infof("数据库迁移完成! dsn: %s", showDsn)
 	}
 }

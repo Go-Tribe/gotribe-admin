@@ -1,0 +1,118 @@
+# This is an example goreleaser.yml file with some sane defaults.
+# Make sure to check the documentation at http://goreleaser.com
+before:
+  hooks:
+    - go mod download
+    - go mod verify
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w
+      - -X gotribe-admin/internal/pkg/common.GitVersion={{.Version}}
+      - -X gotribe-admin/internal/pkg/common.GitCommit={{.Commit}}
+      - -X gotribe-admin/internal/pkg/common.GitTreeState={{.TreeState}}
+      - -X gotribe-admin/internal/pkg/common.BuildDate={{.Date}}
+
+archives:
+  - format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - README.md
+      - README_CN.md
+      - LICENSE
+      - CHANGELOG.md
+      - config.tmp.yml
+      - rbac_model.conf
+      - docker-compose.yml
+      - Dockerfile
+      - nginx.conf
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+
+dockers:
+  - image_templates:
+      - "gotribe-admin:{{ .Version }}"
+      - "gotribe-admin:latest"
+    dockerfile: Dockerfile
+    build_flag_templates:
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.description={{ .ProjectName }}
+      - --label=org.opencontainers.image.url=https://github.com/go-tribe/gotribe-admin
+      - --label=org.opencontainers.image.source=https://github.com/go-tribe/gotribe-admin
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ .Date }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=MIT
+
+release:
+  github:
+    owner: go-tribe
+    name: gotribe-admin
+  draft: false
+  prerelease: false
+  name_template: "{{ .ProjectName }} {{ .Version }}"
+  header: |
+    ## Changelog
+
+    See the [CHANGELOG.md](CHANGELOG.md) file for details.
+
+    ## Installation
+
+    ### Binary
+
+    Download the appropriate binary for your platform from the assets below.
+
+    ### Docker
+
+    ```bash
+    docker pull gotribe-admin:{{ .Version }}
+    ```
+
+    ### Source
+
+    ```bash
+    git clone https://github.com/go-tribe/gotribe-admin.git
+    cd gotribe-admin
+    git checkout {{ .Tag }}
+    make build
+    ```
+
+  footer: |
+    ## Documentation
+
+    - [README](README.md)
+    - [API Documentation](API.md)
+    - [Architecture](ARCHITECTURE.md)
+    - [Contributing](CONTRIBUTING.md)
+    - [Security](SECURITY.md)
+
+    ## Support
+
+    - [Issues](https://github.com/go-tribe/gotribe-admin/issues)
+    - [Discussions](https://github.com/go-tribe/gotribe-admin/discussions)

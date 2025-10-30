@@ -17,10 +17,10 @@ type Config struct {
 	Alias       string   `gorm:"type:varchar(20);not null;uniqueIndex;comment:别名" json:"alias"`
 	Title       string   `gorm:"type:varchar(30);not null;comment:标题" json:"title"`
 	Description string   `gorm:"type:varchar(300);not null;comment:描述" json:"description"`
-	Type        uint     `gorm:"type:tinyint;not null;default:1;comment:类型，1表示普通配置2:json类型" json:"type"`
-	Info        string   `gorm:"type:longtext;not null;comment:内容" json:"info"`
-	MDContent   string   `gorm:"type:longtext;not null;comment:MD内容" json:"mdContent"`
-	Status      uint     `gorm:"type:tinyint;not null;default:1;comment:状态，1-正常；2-禁用" json:"status"`
+	Type        uint     `gorm:"type:smallint;not null;default:1;comment:类型，1表示普通配置2:json类型" json:"type"`
+	Info        string   `gorm:"type:text;not null;comment:内容" json:"info"`
+	MDContent   string   `gorm:"type:text;not null;comment:MD内容" json:"mdContent"`
+	Status      uint     `gorm:"type:smallint;not null;default:1;comment:状态，1-正常；2-禁用" json:"status"`
 	Project     *Project `gorm:"-" json:"project"`
 }
 

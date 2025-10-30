@@ -6,15 +6,31 @@
 package util
 
 import (
-	"github.com/h2non/filetype"
-	"gotribe-admin/pkg/api/known"
+	"fmt"
 	"mime/multipart"
+
+	"gotribe-admin/pkg/api/known"
+
+	"github.com/h2non/filetype"
 )
 
-func GetFileType(header *multipart.FileHeader) int {
-	file, _ := header.Open()
+// File 文件工具类，用于处理文件相关操作
+type File struct{}
+
+// GetFileType 获取文件类型
+func (f *File) GetFileType(header *multipart.FileHeader) (int, error) {
+	file, err := header.Open()
+	if err != nil {
+		return known.FILE_TYPE_UNKNOWN, fmt.Errorf("无法打开文件: %v", err)
+	}
+	defer file.Close()
+
 	head := make([]byte, 261)
-	file.Read(head)
+	_, err = file.Read(head)
+	if err != nil {
+		return known.FILE_TYPE_UNKNOWN, fmt.Errorf("无法读取文件头: %v", err)
+	}
+
 	// 检查文件类型
 	var fileType int
 	switch {
@@ -35,5 +51,8 @@ func GetFileType(header *multipart.FileHeader) int {
 	default:
 		fileType = known.FILE_TYPE_UNKNOWN
 	}
-	return fileType
+	return fileType, nil
 }
+
+// 全局实例
+var FileUtil = &File{}

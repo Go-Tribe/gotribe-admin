@@ -15,9 +15,9 @@ type ProductSpec struct {
 	ProductSpecID string             `gorm:"type:char(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"productSpecID"`
 	Title         string             `gorm:"type:varchar(255);not null;comment:标题" json:"title"`
 	Remark        string             `gorm:"type:varchar(50);not null;comment:备注" json:"remark"`
-	Format        uint               `gorm:"type:tinyint(4);not null;default:1;comment:规格类型:1-文字,2-图片" json:"format"`
+	Format        uint               `gorm:"type:smallint;not null;default:1;comment:规格类型:1-文字,2-图片" json:"format"`
 	Image         string             `gorm:"type:varchar(255);comment:图片" json:"image"`
-	Sort          uint               `gorm:"type:tinyint(4);not null;default:1;comment:排序" json:"sort"`
+	Sort          uint               `gorm:"type:smallint;not null;default:1;comment:排序" json:"sort"`
 	Items         []*ProductSpecItem `gorm:"-" json:"items"`
 }
 

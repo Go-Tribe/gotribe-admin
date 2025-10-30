@@ -8,12 +8,13 @@ package repository
 import (
 	"errors"
 	"fmt"
-	"github.com/dengmengmian/ghelper/gconvert"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/vo"
 	"strings"
 	"time"
+
+	"github.com/dengmengmian/ghelper/gconvert"
 )
 
 type IPointLogRepository interface {
@@ -78,12 +79,15 @@ func GetPointLogOther(pointLogs []*model.PointLog) []*model.PointLog {
 
 // 创建推广场景
 func (cr PointLogRepository) CreatePoint(userID, types, reason, eventID, ProjectID string, points float64) error {
+	// 将元转换为分
+	pointsCents := int64(points * 100)
+
 	pointLog := &model.PointLog{
 		UserID:    userID,
 		Type:      types,
 		Reason:    reason,
 		EventID:   eventID,
-		Points:    points,
+		Points:    pointsCents,
 		ProjectID: ProjectID,
 	}
 	result := common.DB.Create(pointLog)
@@ -94,7 +98,7 @@ func (cr PointLogRepository) CreatePoint(userID, types, reason, eventID, Project
 	userPoint := &model.PointAvailable{
 		ProjectID:      ProjectID,
 		UserID:         userID,
-		Points:         points,
+		Points:         pointsCents,
 		PointsLogID:    int(pointLog.ID),
 		ExpirationDate: time.Now().AddDate(1, 0, 0), // 当前时间往后推一年
 	}

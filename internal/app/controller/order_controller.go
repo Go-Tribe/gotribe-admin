@@ -6,8 +6,6 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/pkg/api/dto"
@@ -16,6 +14,9 @@ import (
 	"gotribe-admin/pkg/api/vo"
 	"gotribe-admin/pkg/util"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type IOrderController interface {
@@ -101,7 +102,7 @@ func (tc OrderController) UpdateOrderByID(c *gin.Context) {
 		response.Fail(c, nil, "获取需要更新的订单信息失败: "+err.Error())
 		return
 	}
-	oldOrder.AmountPay = util.YuanToFen(req.AmountPay)
+	oldOrder.AmountPay = util.MoneyUtil.YuanToCents(req.AmountPay)
 	oldOrder.Status = req.Status
 	oldOrder.RemarkAdmin = req.RemarkAdmin
 	// 更新订单

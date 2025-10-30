@@ -10,26 +10,36 @@ import (
 	"fmt"
 )
 
-// 结构体转为json
-func Struct2Json(obj interface{}) string {
+// JSON 工具类，用于处理 JSON 序列化和反序列化
+type JSON struct{}
+
+// Struct2Json 结构体转为json
+func (j *JSON) Struct2Json(obj interface{}) (string, error) {
 	str, err := json.Marshal(obj)
 	if err != nil {
-		panic(fmt.Sprintf("[Struct2Json]转换异常: %v", err))
+		return "", fmt.Errorf("[Struct2Json]转换异常: %v", err)
 	}
-	return string(str)
+	return string(str), nil
 }
 
-// json转为结构体
-func Json2Struct(str string, obj interface{}) {
+// Json2Struct json转为结构体
+func (j *JSON) Json2Struct(str string, obj interface{}) error {
 	// 将json转为结构体
 	err := json.Unmarshal([]byte(str), obj)
 	if err != nil {
-		panic(fmt.Sprintf("[Json2Struct]转换异常: %v", err))
+		return fmt.Errorf("[Json2Struct]转换异常: %v", err)
 	}
+	return nil
 }
 
-// json interface转为结构体
-func JsonI2Struct(str interface{}, obj interface{}) {
-	JsonStr := str.(string)
-	Json2Struct(JsonStr, obj)
+// JsonI2Struct json interface转为结构体
+func (j *JSON) JsonI2Struct(str interface{}, obj interface{}) error {
+	JsonStr, ok := str.(string)
+	if !ok {
+		return fmt.Errorf("[JsonI2Struct]输入参数不是字符串类型")
+	}
+	return j.Json2Struct(JsonStr, obj)
 }
+
+// 全局实例
+var JSONUtil = &JSON{}

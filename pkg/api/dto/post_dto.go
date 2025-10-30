@@ -78,7 +78,7 @@ func ToPostInfoDto(post *model.Post) PostsDto {
 		People:      post.People,
 		Time:        post.Time,
 		Images:      imageList,
-		UnitPrice:   util.FenToYuan(int(post.UnitPrice)),
+		UnitPrice:   util.MoneyUtil.CentsToYuan(int64(post.UnitPrice)),
 		Video:       post.Video,
 	}
 }

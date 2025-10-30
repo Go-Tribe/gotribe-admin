@@ -6,31 +6,58 @@
 package jobs
 
 import (
-	"github.com/dengmengmian/ghelper/gconvert"
-	"github.com/douyacun/gositemap"
+	"context"
+
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
+
+	"github.com/dengmengmian/ghelper/gconvert"
+	"github.com/douyacun/gositemap"
 )
 
-func sitemapJob() {
-	// 查出 porject 信息
+// SitemapJob 站点地图生成任务
+type SitemapJob struct {
+	*BaseJob
+}
+
+// NewSitemapJob 创建站点地图任务
+func NewSitemapJob(config JobConfig) *SitemapJob {
+	job := &SitemapJob{}
+	job.BaseJob = NewBaseJob(config, job.execute)
+	return job
+}
+
+// execute 执行站点地图生成
+func (j *SitemapJob) execute(ctx context.Context) error {
+	common.Log.Info("Starting sitemap generation job")
+
+	// 查出 project 信息
 	projects, err := repository.NewProjectRepository().GetProjectsBySitemap()
 	if err != nil {
-		common.Log.Error("sitemapJob:", err.Error())
-		return
+		return err
 	}
+
 	var posts []*model.Post
 	st := gositemap.NewSiteMap()
 	st.SetPretty(true)
 	st.SetPublicPath("public")
+
 	for idx, project := range projects {
+		// 检查上下文是否被取消
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+
 		st.SetFilename(project.ProjectID + gconvert.String(idx) + ".xml")
 
 		if err := common.DB.Model(&model.Post{}).Where("status = ? and type != ? and project_id = ?", 2, 2, project.ProjectID).Find(&posts).Error; err != nil {
-			common.Log.Error("post:", err.Error())
-			return
+			common.Log.Errorf("Failed to query posts for project %s: %v", project.ProjectID, err)
+			continue
 		}
+
 		for _, post := range posts {
 			url := gositemap.NewUrl()
 			url.SetLoc(project.PostURL + post.PostID)
@@ -40,6 +67,11 @@ func sitemapJob() {
 			st.AppendUrl(url)
 		}
 	}
-	st.Storage()
-	return
+
+	if _, err := st.Storage(); err != nil {
+		return err
+	}
+
+	common.Log.Infof("Sitemap generation completed for %d projects", len(projects))
+	return nil
 }

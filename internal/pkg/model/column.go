@@ -17,9 +17,9 @@ type Column struct {
 	Title       string `gorm:"type:varchar(30);not null;comment:标题" json:"title,omitempty"`
 	Description string `gorm:"type:varchar(300);comment:描述" json:"description,omitempty"`
 	Icon        string `gorm:"type:varchar(300);comment:图片" json:"icon,omitempty"`
-	Info        string `gorm:"type:longtext;comment:内容" json:"info,omitempty"`
+	Info        string `gorm:"type:text;comment:内容" json:"info,omitempty"`
 	Ext         string `gorm:"type:text;comment:扩展字段" json:"ext"`
-	Status      uint8  `gorm:"type:tinyint;not null;default:1;comment:状态，1-正常；2-禁用" json:"status,omitempty"`
+	Status      uint8  `gorm:"type:smallint;not null;default:1;comment:状态，1-正常；2-禁用" json:"status,omitempty"`
 }
 
 func (p *Column) BeforeCreate(tx *gorm.DB) error {

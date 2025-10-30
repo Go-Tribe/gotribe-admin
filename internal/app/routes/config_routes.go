@@ -21,10 +21,10 @@ func InitConfigRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) 
 	// 开启casbin鉴权中间件
 	router.Use(middleware.CasbinMiddleware())
 	{
-		router.GET(":configID", configController.GetConfigInfo)
+		router.GET("/:configID", configController.GetConfigInfo)
 		router.GET("", configController.GetConfigs)
 		router.POST("", configController.CreateConfig)
-		router.PATCH(":configID", configController.UpdateConfigByID)
+		router.PATCH("/:configID", configController.UpdateConfigByID)
 		router.DELETE("", configController.BatchDeleteConfigByIds)
 	}
 	return r

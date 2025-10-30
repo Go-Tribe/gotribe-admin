@@ -21,11 +21,11 @@ func InitOrderRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) g
 	// 开启casbin鉴权中间件
 	router.Use(middleware.CasbinMiddleware())
 	{
-		router.GET(":orderID", orderController.GetOrderInfo)
+		router.GET("/:orderID", orderController.GetOrderInfo)
 		router.GET("", orderController.GetOrders)
-		router.GET("log/:orderID", orderController.GetOrderLogs)
-		router.PATCH(":orderID", orderController.UpdateOrderByID)
-		router.PATCH("logistics/:orderID", orderController.UpdateLogistics)
+		router.GET("/log/:orderID", orderController.GetOrderLogs)
+		router.PATCH("/:orderID", orderController.UpdateOrderByID)
+		router.PATCH("/logistics/:orderID", orderController.UpdateLogistics)
 		router.DELETE("", orderController.BatchDeleteOrderByIds)
 	}
 	return r

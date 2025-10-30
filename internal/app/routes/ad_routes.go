@@ -21,10 +21,10 @@ func InitAdRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) gin.
 	// 开启casbin鉴权中间件
 	router.Use(middleware.CasbinMiddleware())
 	{
-		router.GET(":adID", adController.GetAdInfo)
+		router.GET("/:adID", adController.GetAdInfo)
 		router.GET("", adController.GetAds)
 		router.POST("", adController.CreateAd)
-		router.PATCH(":adID", adController.UpdateAdByID)
+		router.PATCH("/:adID", adController.UpdateAdByID)
 		router.DELETE("", adController.BatchDeleteAdByIds)
 	}
 	return r

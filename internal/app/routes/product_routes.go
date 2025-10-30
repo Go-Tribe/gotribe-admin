@@ -21,10 +21,10 @@ func InitProductRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware)
 	// 开启casbin鉴权中间件
 	router.Use(middleware.CasbinMiddleware())
 	{
-		router.GET(":productID", productController.GetProductInfo)
+		router.GET("/:productID", productController.GetProductInfo)
 		router.GET("", productController.GetProducts)
 		router.POST("", productController.CreateProduct)
-		router.PATCH(":productID", productController.UpdateProductByID)
+		router.PATCH("/:productID", productController.UpdateProductByID)
 		router.DELETE("", productController.BatchDeleteProductByIds)
 	}
 	return r

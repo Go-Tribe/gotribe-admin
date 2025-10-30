@@ -232,7 +232,6 @@ erDiagram
 
 ### 1. 认证机制
 - JWT Token认证
-- RSA加密传输
 - 密码BCrypt加密
 
 ### 2. 权限控制

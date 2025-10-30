@@ -6,10 +6,11 @@
 package routes
 
 import (
-	jwt "github.com/appleboy/gin-jwt/v2"
-	"github.com/gin-gonic/gin"
 	"gotribe-admin/internal/app/controller"
 	"gotribe-admin/internal/pkg/middleware"
+
+	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
 )
 
 // 注册商品类型管理路由
@@ -21,10 +22,10 @@ func InitProductSpecItemRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMid
 	// 开启casbin鉴权中间件
 	router.Use(middleware.CasbinMiddleware())
 	{
-		router.GET(":productSpecItemID", productSpecItemController.GetProductSpecItemInfo)
+		router.GET("/:productSpecItemID", productSpecItemController.GetProductSpecItemInfo)
 		router.GET("", productSpecItemController.GetProductSpecItems)
 		router.POST("", productSpecItemController.CreateProductSpecItem)
-		router.PATCH(":productSpecItemID", productSpecItemController.UpdateProductSpecItemByID)
+		router.PATCH("/:productSpecItemID", productSpecItemController.UpdateProductSpecItemByID)
 		router.DELETE("", productSpecItemController.BatchDeleteProductSpecItemByIds)
 	}
 	return r

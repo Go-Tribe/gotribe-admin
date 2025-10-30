@@ -21,9 +21,9 @@ func InitResourceRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware
 	// 开启casbin鉴权中间件
 	router.Use(middleware.CasbinMiddleware())
 	{
-		router.GET(":resourceID", resourceController.GetResourceInfo)
+		router.GET("/:resourceID", resourceController.GetResourceInfo)
 		router.GET("", resourceController.GetResources)
-		router.PATCH(":resourceID", resourceController.UpdateResourceByID)
+		router.PATCH("/:resourceID", resourceController.UpdateResourceByID)
 		router.POST("/upload", resourceController.UploadResources)
 		router.DELETE("", resourceController.DeleteResourceByID)
 	}

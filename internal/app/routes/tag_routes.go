@@ -21,10 +21,10 @@ func InitTagRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) gin
 	// 开启casbin鉴权中间件
 	router.Use(middleware.CasbinMiddleware())
 	{
-		router.GET(":tagID", tagController.GetTagInfo)
+		router.GET("/:tagID", tagController.GetTagInfo)
 		router.GET("", tagController.GetTags)
 		router.POST("", tagController.CreateTag)
-		router.PATCH(":tagID", tagController.UpdateTagByID)
+		router.PATCH("/:tagID", tagController.UpdateTagByID)
 		router.DELETE("", tagController.BatchDeleteTagByIds)
 	}
 	return r

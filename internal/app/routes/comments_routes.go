@@ -22,7 +22,7 @@ func InitCommentRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware)
 	router.Use(middleware.CasbinMiddleware())
 	{
 		router.GET("", commentController.GetComments)
-		router.PATCH(":commentID", commentController.UpdateCommentByID)
+		router.PATCH("/:commentID", commentController.UpdateCommentByID)
 	}
 	return r
 }

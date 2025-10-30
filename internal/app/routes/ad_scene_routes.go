@@ -21,10 +21,10 @@ func InitAdSceneRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware)
 	// 开启casbin鉴权中间件
 	router.Use(middleware.CasbinMiddleware())
 	{
-		router.GET(":adSceneID", adSceneController.GetAdSceneInfo)
+		router.GET("/:adSceneID", adSceneController.GetAdSceneInfo)
 		router.GET("", adSceneController.GetAdScenes)
 		router.POST("", adSceneController.CreateAdScene)
-		router.PATCH(":adSceneID", adSceneController.UpdateAdSceneByID)
+		router.PATCH("/:adSceneID", adSceneController.UpdateAdSceneByID)
 		router.DELETE("", adSceneController.BatchDeleteAdSceneByIds)
 	}
 	return r

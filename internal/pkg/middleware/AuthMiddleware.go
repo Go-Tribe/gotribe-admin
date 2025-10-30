@@ -75,15 +75,9 @@ func login(c *gin.Context) (interface{}, error) {
 		return "", err
 	}
 
-	// 密码通过RSA解密
-	decodeData, err := util.RSAUtil.Decrypt([]byte(req.Password), config.Conf.System.RSAPrivateBytes)
-	if err != nil {
-		return nil, err
-	}
-
 	u := &model.Admin{
 		Username: req.Username,
-		Password: string(decodeData),
+		Password: req.Password,
 	}
 
 	// 密码校验

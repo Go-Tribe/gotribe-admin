@@ -23,9 +23,9 @@ func InitCategoryRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware
 		router.GET("/tree", categoryController.GetCategoryTree)
 		router.GET("", categoryController.GetCategorys)
 		router.POST("", categoryController.CreateCategory)
-		router.PATCH(":categoryID", categoryController.UpdateCategoryByID)
+		router.PATCH("/:categoryID", categoryController.UpdateCategoryByID)
 		router.DELETE("", categoryController.BatchDeleteCategoryByIds)
-		router.GET(":categoryID", categoryController.GetCategoryInfo)
+		router.GET("/:categoryID", categoryController.GetCategoryInfo)
 	}
 
 	return r

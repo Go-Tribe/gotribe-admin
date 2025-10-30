@@ -6,7 +6,6 @@
 package controller
 
 import (
-	"gotribe-admin/config"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -95,20 +94,7 @@ func (uc AdminController) ChangePwd(c *gin.Context) {
 		return
 	}
 
-	// 前端传来的密码是rsa加密的,先解密
-	// 密码通过RSA解密
-	decodeOldPassword, err := util.RSAUtil.Decrypt([]byte(req.OldPassword), config.Conf.System.RSAPrivateBytes)
-	if err != nil {
-		response.Fail(c, nil, err.Error())
-		return
-	}
-	decodeNewPassword, err := util.RSAUtil.Decrypt([]byte(req.NewPassword), config.Conf.System.RSAPrivateBytes)
-	if err != nil {
-		response.Fail(c, nil, err.Error())
-		return
-	}
-	req.OldPassword = string(decodeOldPassword)
-	req.NewPassword = string(decodeNewPassword)
+	// 直接使用明文密码进行校验与更新
 
 	// 获取当前用户
 	user, err := uc.AdminRepository.GetCurrentAdmin(c)
@@ -153,15 +139,8 @@ func (uc AdminController) CreateAdmin(c *gin.Context) {
 		return
 	}
 
-	// 密码通过RSA解密
-	// 密码不为空就解密
+	// 直接使用明文密码；如提供则校验长度
 	if req.Password != "" {
-		decodeData, err := util.RSAUtil.Decrypt([]byte(req.Password), config.Conf.System.RSAPrivateBytes)
-		if err != nil {
-			response.Fail(c, nil, err.Error())
-			return
-		}
-		req.Password = string(decodeData)
 		if len(req.Password) < 6 {
 			response.Fail(c, nil, "密码长度至少为6位")
 			return
@@ -357,13 +336,6 @@ func (uc AdminController) UpdateAdminByID(c *gin.Context) {
 
 		// 密码赋值
 		if req.Password != "" {
-			// 密码通过RSA解密
-			decodeData, err := util.RSAUtil.Decrypt([]byte(req.Password), config.Conf.System.RSAPrivateBytes)
-			if err != nil {
-				response.Fail(c, nil, err.Error())
-				return
-			}
-			req.Password = string(decodeData)
 			hashedPassword, err := util.PasswordUtil.GenPasswd(req.Password)
 			if err != nil {
 				response.Fail(c, nil, "密码加密失败: "+err.Error())

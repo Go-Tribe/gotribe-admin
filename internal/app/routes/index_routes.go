@@ -22,7 +22,7 @@ func InitIndexRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) g
 	router.Use(middleware.CasbinMiddleware())
 	{
 		router.GET("", indexController.GetIndexInfo)
-		router.GET("data", indexController.GetTimeRangeData)
+		router.GET("/data", indexController.GetTimeRangeData)
 	}
 	return r
 }

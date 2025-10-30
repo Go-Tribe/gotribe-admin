@@ -21,11 +21,11 @@ func InitPostRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) gi
 	// 开启casbin鉴权中间件
 	router.Use(middleware.CasbinMiddleware())
 	{
-		router.GET(":postID", postController.GetPostInfo)
+		router.GET("/:postID", postController.GetPostInfo)
 		router.GET("", postController.GetPosts)
 		router.POST("", postController.CreatePost)
-		router.PATCH(":postID", postController.UpdatePostByID)
-		router.PUT(":postID", postController.PushPostByID)
+		router.PATCH("/:postID", postController.UpdatePostByID)
+		router.PUT("/:postID", postController.PushPostByID)
 		router.DELETE("", postController.BatchDeletePostByIds)
 	}
 	return r

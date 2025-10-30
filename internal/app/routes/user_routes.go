@@ -21,10 +21,10 @@ func InitUserRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) gi
 	// 开启casbin鉴权中间件
 	router.Use(middleware.CasbinMiddleware())
 	{
-		router.GET(":userID", userController.GetUserInfo)
+		router.GET("/:userID", userController.GetUserInfo)
 		router.GET("", userController.GetUsers)
 		router.POST("", userController.CreateUser)
-		router.PATCH(":userID", userController.UpdateUserByID)
+		router.PATCH("/:userID", userController.UpdateUserByID)
 		router.DELETE("", userController.BatchDeleteUserByIds)
 		router.GET("/search", userController.SearchUserByUsername)
 	}

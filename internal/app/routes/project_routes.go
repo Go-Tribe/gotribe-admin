@@ -21,10 +21,10 @@ func InitProjectRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware)
 	// 开启casbin鉴权中间件
 	router.Use(middleware.CasbinMiddleware())
 	{
-		router.GET(":projectID", projectController.GetProjectInfo)
+		router.GET("/:projectID", projectController.GetProjectInfo)
 		router.GET("", projectController.GetProjects)
 		router.POST("", projectController.CreateProject)
-		router.PATCH(":projectID", projectController.UpdateProjectByID)
+		router.PATCH("/:projectID", projectController.UpdateProjectByID)
 		router.DELETE("", projectController.BatchDeleteProjectByIds)
 	}
 	return r

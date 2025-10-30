@@ -7,7 +7,6 @@ package config
 
 import (
 	"fmt"
-	"gotribe-admin/pkg/util"
 	"os"
 
 	"github.com/fsnotify/fsnotify"
@@ -50,17 +49,6 @@ func InitConfig() {
 		if err := viper.Unmarshal(Conf); err != nil {
 			panic(fmt.Errorf("初始化配置文件失败:%s \n", err))
 		}
-		// 读取rsa key
-		publicBytes, err := util.RSAUtil.ReadKeyFromFile(Conf.System.RSAPublicKey)
-		if err != nil {
-			panic(fmt.Errorf("读取RSA公钥失败: %v", err))
-		}
-		privateBytes, err := util.RSAUtil.ReadKeyFromFile(Conf.System.RSAPrivateKey)
-		if err != nil {
-			panic(fmt.Errorf("读取RSA私钥失败: %v", err))
-		}
-		Conf.System.RSAPublicBytes = publicBytes
-		Conf.System.RSAPrivateBytes = privateBytes
 	})
 
 	if err != nil {
@@ -70,32 +58,17 @@ func InitConfig() {
 	if err := viper.Unmarshal(Conf); err != nil {
 		panic(fmt.Errorf("初始化配置文件失败:%s \n", err))
 	}
-	// 读取rsa key
-	publicBytes, err := util.RSAUtil.ReadKeyFromFile(Conf.System.RSAPublicKey)
-	if err != nil {
-		panic(fmt.Errorf("读取RSA公钥失败: %v", err))
-	}
-	privateBytes, err := util.RSAUtil.ReadKeyFromFile(Conf.System.RSAPrivateKey)
-	if err != nil {
-		panic(fmt.Errorf("读取RSA私钥失败: %v", err))
-	}
-	Conf.System.RSAPublicBytes = publicBytes
-	Conf.System.RSAPrivateBytes = privateBytes
 
 }
 
 type SystemConfig struct {
-	Mode            string `mapstructure:"mode" json:"mode"`
-	UrlPathPrefix   string `mapstructure:"url-path-prefix" json:"urlPathPrefix"`
-	Port            int    `mapstructure:"port" json:"port"`
-	InitData        bool   `mapstructure:"init-data" json:"initData"`
-	RSAPublicKey    string `mapstructure:"rsa-public-key" json:"rsaPublicKey"`
-	RSAPrivateKey   string `mapstructure:"rsa-private-key" json:"rsaPrivateKey"`
-	RSAPublicBytes  []byte `mapstructure:"-" json:"-"`
-	RSAPrivateBytes []byte `mapstructure:"-" json:"-"`
-	CDNDomain       string `mapstructure:"cdn-domain" json:"CDNDomain"`
-	EnableMigrate   bool   `mapstructure:"enable-migrate" json:"enableMigrate"`
-	EnableOss       bool   `mapstructure:"enable-oss" json:"enableOss"`
+	Mode          string `mapstructure:"mode" json:"mode"`
+	UrlPathPrefix string `mapstructure:"url-path-prefix" json:"urlPathPrefix"`
+	Port          int    `mapstructure:"port" json:"port"`
+	InitData      bool   `mapstructure:"init-data" json:"initData"`
+	CDNDomain     string `mapstructure:"cdn-domain" json:"CDNDomain"`
+	EnableMigrate bool   `mapstructure:"enable-migrate" json:"enableMigrate"`
+	EnableOss     bool   `mapstructure:"enable-oss" json:"enableOss"`
 }
 
 type LogsConfig struct {

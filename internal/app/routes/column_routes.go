@@ -21,10 +21,10 @@ func InitColumnRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) 
 	// 开启casbin鉴权中间件
 	router.Use(middleware.CasbinMiddleware())
 	{
-		router.GET(":columnID", columnController.GetColumnInfo)
+		router.GET("/:columnID", columnController.GetColumnInfo)
 		router.GET("", columnController.GetColumns)
 		router.POST("", columnController.CreateColumn)
-		router.PATCH(":columnID", columnController.UpdateColumnByID)
+		router.PATCH("/:columnID", columnController.UpdateColumnByID)
 		router.DELETE("", columnController.BatchDeleteColumnByIds)
 	}
 	return r

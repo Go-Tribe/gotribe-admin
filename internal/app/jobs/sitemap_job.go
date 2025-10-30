@@ -12,7 +12,6 @@ import (
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 
-	"github.com/dengmengmian/ghelper/gconvert"
 	"github.com/douyacun/gositemap"
 )
 
@@ -43,7 +42,7 @@ func (j *SitemapJob) execute(ctx context.Context) error {
 	st.SetPretty(true)
 	st.SetPublicPath("public")
 
-	for idx, project := range projects {
+	for _, project := range projects {
 		// 检查上下文是否被取消
 		select {
 		case <-ctx.Done():
@@ -51,7 +50,8 @@ func (j *SitemapJob) execute(ctx context.Context) error {
 		default:
 		}
 
-		st.SetFilename(project.ProjectID + gconvert.String(idx) + ".xml")
+		// 使用固定的文件名，确保每次都是覆盖
+		st.SetFilename(project.ProjectID + ".xml")
 
 		if err := common.DB.Model(&model.Post{}).Where("status = ? and type != ? and project_id = ?", 2, 2, project.ProjectID).Find(&posts).Error; err != nil {
 			common.Log.Errorf("Failed to query posts for project %s: %v", project.ProjectID, err)

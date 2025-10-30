@@ -23,7 +23,7 @@ func DefaultJobsConfig() *JobsConfig {
 			"sitemap": {
 				Name:        "sitemap",
 				Description: "生成站点地图",
-				Schedule:    "@every 1m",
+				Schedule:    "@every 1m", // 改为24小时执行一次
 				Enabled:     true,
 				Timeout:     5 * time.Minute,
 				RetryCount:  3,

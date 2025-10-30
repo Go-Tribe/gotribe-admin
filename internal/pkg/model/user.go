@@ -15,9 +15,9 @@ import (
 
 type User struct {
 	Model
-	UserID     string     `gorm:"type:char(10);not null;uniqueIndex;comment:字符ID，分布式 ID;" json:"user_id"`
+	UserID     string     `gorm:"type:varchar(10);not null;uniqueIndex;comment:字符ID，分布式 ID;" json:"user_id"`
 	Username   string     `gorm:"type:varchar(30);not null;uniqueIndex;comment:用户名" json:"username"`
-	ProjectID  string     `gorm:"type:char(10);not null;index;comment:项目ID;" json:"project_id"`
+	ProjectID  string     `gorm:"type:varchar(10);not null;index;comment:项目ID;" json:"project_id"`
 	Password   string     `gorm:"type:varchar(255);not null;comment:密码" json:"-"`
 	Nickname   string     `gorm:"type:varchar(30);not null;comment:昵称" json:"nickname"`
 	Email      string     `gorm:"type:varchar(30);not null;uniqueIndex;comment:邮箱" json:"email"`

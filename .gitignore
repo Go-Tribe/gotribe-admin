@@ -61,7 +61,7 @@ node_modules/
 
 # Optional npm cache directory
 .npm
-
+.public/*
 # Optional eslint cache
 .eslintcache
 
@@ -279,3 +279,4 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+public/*

@@ -12,7 +12,7 @@ import (
 
 type Project struct {
 	Model
-	ProjectID      string `gorm:"type:char(10);not null;uniqueIndex:idx_project_project_id;comment:字符ID，分布式ID" json:"projectID"`
+	ProjectID      string `gorm:"type:varchar(10);not null;uniqueIndex:idx_project_project_id;comment:字符ID，分布式ID" json:"projectID"`
 	Name           string `gorm:"type:varchar(30);not null;comment:项目名" json:"name,omitempty"`
 	Title          string `gorm:"type:varchar(30);not null;comment:网站标题" json:"title,omitempty"`
 	Description    string `gorm:"type:varchar(300);comment:描述" json:"description,omitempty"`

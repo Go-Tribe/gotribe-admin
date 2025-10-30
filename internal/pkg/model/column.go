@@ -12,8 +12,8 @@ import (
 
 type Column struct {
 	Model
-	ColumnID    string `gorm:"type:char(10);not null;uniqueIndex:idx_column_column_id;comment:字符ID，分布式ID" json:"columnID"`
-	ProjectID   string `gorm:"type:char(10);not null;index;comment:项目ID;" json:"projectID"`
+	ColumnID    string `gorm:"type:varchar(10);not null;uniqueIndex:idx_column_column_id;comment:字符ID，分布式ID" json:"columnID"`
+	ProjectID   string `gorm:"type:varchar(10);not null;index;comment:项目ID;" json:"projectID"`
 	Title       string `gorm:"type:varchar(30);not null;comment:标题" json:"title,omitempty"`
 	Description string `gorm:"type:varchar(300);comment:描述" json:"description,omitempty"`
 	Icon        string `gorm:"type:varchar(300);comment:图片" json:"icon,omitempty"`

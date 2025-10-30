@@ -12,7 +12,7 @@ import (
 
 type Post struct {
 	Model
-	PostID      string    `gorm:"type:char(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"postID"`
+	PostID      string    `gorm:"type:varchar(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"postID"`
 	CategoryID  string    `gorm:"type:varchar(10);Index;comment:分类 ID" json:"categoryID"`
 	ProjectID   string    `gorm:"type:varchar(10);Index;comment:项目 ID" json:"projectID"`
 	ColumnID    string    `gorm:"type:varchar(10);Index;comment:专栏ID" json:"columnID"`

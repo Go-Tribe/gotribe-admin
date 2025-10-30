@@ -6,8 +6,6 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -15,6 +13,9 @@ import (
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type IProductSpecItemController interface {
@@ -40,13 +41,13 @@ func NewProductSpecItemController() IProductSpecItemController {
 func (tc ProductSpecItemController) GetProductSpecItemInfo(c *gin.Context) {
 	productSpecItem, err := tc.ProductSpecItemRepository.GetProductSpecItemByItemID(c.Param("productSpecItemID"))
 	if err != nil {
-		response.Fail(c, nil, "获取当前商品规格信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	productSpecItemInfoDto := dto.ToProductSpecItemInfoDto(&productSpecItem)
 	response.Success(c, gin.H{
 		"productSpecItem": productSpecItemInfoDto,
-	}, "获取当前商品规格信息成功")
+	}, common.Msg(c, common.MsgGetSuccess))
 }
 
 // 获取商品规格列表
@@ -59,7 +60,7 @@ func (tc ProductSpecItemController) GetProductSpecItems(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -67,10 +68,10 @@ func (tc ProductSpecItemController) GetProductSpecItems(c *gin.Context) {
 	// 获取
 	productSpecItem, total, err := tc.ProductSpecItemRepository.GetProductSpecItems(&req)
 	if err != nil {
-		response.Fail(c, nil, "获取商品规格列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"productSpecItems": dto.ToProductSpecItemsDto(productSpecItem), "total": total}, "获取商品规格列表成功")
+	response.Success(c, gin.H{"productSpecItems": dto.ToProductSpecItemsDto(productSpecItem), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 创建商品规格
@@ -83,7 +84,7 @@ func (tc ProductSpecItemController) CreateProductSpecItem(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -97,10 +98,10 @@ func (tc ProductSpecItemController) CreateProductSpecItem(c *gin.Context) {
 
 	productSpecItemInfo, err := tc.ProductSpecItemRepository.CreateProductSpecItem(&productSpecItem)
 	if err != nil {
-		response.Fail(c, nil, "创建商品规格失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"productSpecItem": dto.ToProductSpecItemInfoDto(productSpecItemInfo)}, "创建商品规格成功")
+	response.Success(c, gin.H{"productSpecItem": dto.ToProductSpecItemInfoDto(productSpecItemInfo)}, common.Msg(c, common.MsgCreateSuccess))
 }
 
 // 更新商品规格
@@ -113,7 +114,7 @@ func (tc ProductSpecItemController) UpdateProductSpecItemByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -121,7 +122,7 @@ func (tc ProductSpecItemController) UpdateProductSpecItemByID(c *gin.Context) {
 	// 根据path中的ProductSpecItemID获取商品规格信息
 	oldProductSpecItem, err := tc.ProductSpecItemRepository.GetProductSpecItemByItemID(c.Param("productSpecItemID"))
 	if err != nil {
-		response.Fail(c, nil, "获取需要更新的商品规格信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	oldProductSpecItem.Title = req.Title
@@ -130,10 +131,10 @@ func (tc ProductSpecItemController) UpdateProductSpecItemByID(c *gin.Context) {
 	// 更新商品规格
 	err = tc.ProductSpecItemRepository.UpdateProductSpecItem(&oldProductSpecItem)
 	if err != nil {
-		response.Fail(c, nil, "更新商品规格失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "更新商品规格成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
 // 批量删除商品规格
@@ -146,7 +147,7 @@ func (tc ProductSpecItemController) BatchDeleteProductSpecItemByIds(c *gin.Conte
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -155,10 +156,10 @@ func (tc ProductSpecItemController) BatchDeleteProductSpecItemByIds(c *gin.Conte
 	reqProductSpecItemIds := strings.Split(req.ProductSpecItemIds, ",")
 	err := tc.ProductSpecItemRepository.BatchDeleteProductSpecItemByIds(reqProductSpecItemIds)
 	if err != nil {
-		response.Fail(c, nil, "删除商品规格失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
 		return
 	}
 
-	response.Success(c, nil, "删除商品规格成功")
+	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 
 }

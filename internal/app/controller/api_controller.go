@@ -6,13 +6,14 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 
 	"strconv"
 )
@@ -45,31 +46,31 @@ func (ac ApiController) GetApis(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
 	// 获取
 	apis, total, err := ac.ApiRepository.GetApis(&req)
 	if err != nil {
-		response.Fail(c, nil, "获取接口列表失败")
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail))
 		return
 	}
 	response.Success(c, gin.H{
 		"apis": apis, "total": total,
-	}, "获取接口列表成功")
+	}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 获取接口树(按接口Category字段分类)
 func (ac ApiController) GetApiTree(c *gin.Context) {
 	tree, err := ac.ApiRepository.GetApiTree()
 	if err != nil {
-		response.Fail(c, nil, "获取接口树失败")
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	response.Success(c, gin.H{
-		"apiTree": tree,
-	}, "获取接口树成功")
+		"apis": tree,
+	}, common.Msg(c, common.MsgGetSuccess))
 }
 
 // 创建接口
@@ -82,7 +83,7 @@ func (ac ApiController) CreateApi(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -106,11 +107,11 @@ func (ac ApiController) CreateApi(c *gin.Context) {
 	// 创建接口
 	err = ac.ApiRepository.CreateApi(&api)
 	if err != nil {
-		response.Fail(c, nil, "创建接口失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
 		return
 	}
 
-	response.Success(c, nil, "创建接口成功")
+	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
 	return
 }
 
@@ -124,7 +125,7 @@ func (ac ApiController) UpdateApiByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -154,11 +155,11 @@ func (ac ApiController) UpdateApiByID(c *gin.Context) {
 
 	err = ac.ApiRepository.UpdateApiByID(uint(apiID), &api)
 	if err != nil {
-		response.Fail(c, nil, "更新接口失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
 
-	response.Success(c, nil, "更新接口成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
 // 批量删除接口
@@ -171,7 +172,7 @@ func (ac ApiController) BatchDeleteApiByIds(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -179,9 +180,8 @@ func (ac ApiController) BatchDeleteApiByIds(c *gin.Context) {
 	// 删除接口
 	err := ac.ApiRepository.BatchDeleteApiByIds(req.ApiIds)
 	if err != nil {
-		response.Fail(c, nil, "删除接口失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
 		return
 	}
-
-	response.Success(c, nil, "删除接口成功")
+	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 }

@@ -37,7 +37,7 @@ func (tc FeedbackController) GetFeedbacks(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -45,7 +45,7 @@ func (tc FeedbackController) GetFeedbacks(c *gin.Context) {
 	// 获取
 	feedbacks, total, err := tc.FeedbackRepository.GetFeedbacks(&req)
 	if err != nil {
-		response.Fail(c, nil, "获取列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
 
@@ -55,7 +55,7 @@ func (tc FeedbackController) GetFeedbacks(c *gin.Context) {
 		response.Fail(c, nil, "获取用户或项目信息失败: "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"feedbacks": dto.ToFeedbacksDto(feedbacks), "total": total}, "获取列表成功")
+	response.Success(c, gin.H{"feedbacks": dto.ToFeedbacksDto(feedbacks), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
 func getFeedbackOther(feedbacks []*model.Feedback) ([]*model.Feedback, error) {

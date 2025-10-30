@@ -6,14 +6,15 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type ICategoryController interface {
@@ -39,22 +40,22 @@ func NewCategoryController() ICategoryController {
 func (cc CategoryController) GetCategoryInfo(c *gin.Context) {
 	category, err := cc.CategoryRepository.GetConfigByCategoryID(c.Param("categoryID"))
 	if err != nil {
-		response.Fail(c, nil, "获取当前分类信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	response.Success(c, gin.H{
 		"category": category,
-	}, "获取当前分类信息成功")
+	}, common.Msg(c, common.MsgGetSuccess))
 }
 
 // 获取分类列表
 func (cc CategoryController) GetCategorys(c *gin.Context) {
 	categorys, err := cc.CategoryRepository.GetCategorys()
 	if err != nil {
-		response.Fail(c, nil, "获取分类列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"categorys": categorys}, "获取分类列表成功")
+	response.Success(c, gin.H{"categorys": categorys}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 获取分类树
@@ -77,7 +78,7 @@ func (cc CategoryController) CreateCategory(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -95,10 +96,10 @@ func (cc CategoryController) CreateCategory(c *gin.Context) {
 
 	err := cc.CategoryRepository.CreateCategory(&category)
 	if err != nil {
-		response.Fail(c, nil, "创建分类失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "创建分类成功")
+	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
 }
 
 // 更新分类
@@ -111,7 +112,7 @@ func (cc CategoryController) UpdateCategoryByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -119,7 +120,7 @@ func (cc CategoryController) UpdateCategoryByID(c *gin.Context) {
 	// 校验父级分类ID
 	category, err := cc.CategoryRepository.GetConfigByCategoryID(categoryID)
 	if err != nil {
-		response.Fail(c, nil, "分类不存在")
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	if req.ParentID == &category.ID {
@@ -136,11 +137,11 @@ func (cc CategoryController) UpdateCategoryByID(c *gin.Context) {
 	category.Description = req.Description
 	err = cc.CategoryRepository.UpdateCategoryByID(categoryID, &category)
 	if err != nil {
-		response.Fail(c, nil, "更新分类失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
 
-	response.Success(c, nil, "更新分类成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 
 }
 
@@ -154,16 +155,16 @@ func (cc CategoryController) BatchDeleteCategoryByIds(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
 	reqCategoryIds := strings.Split(req.CategoryIds, ",")
 	err := cc.CategoryRepository.BatchDeleteCategoryByIds(reqCategoryIds)
 	if err != nil {
-		response.Fail(c, nil, "删除分类失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
 		return
 	}
 
-	response.Success(c, nil, "删除分类成功")
+	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 }

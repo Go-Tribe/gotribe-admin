@@ -54,7 +54,7 @@ func NewProductController() IProductController {
 func (tc ProductController) GetProductInfo(c *gin.Context) {
 	product, err := tc.ProductRepository.GetProductByProductID(c.Param("productID"))
 	if err != nil {
-		response.Fail(c, nil, "获取当前产品信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 
@@ -68,7 +68,7 @@ func (tc ProductController) GetProductInfo(c *gin.Context) {
 	productInfoDto.SKU = dto.ToProductSkusDto(sku)
 	response.Success(c, gin.H{
 		"product": productInfoDto,
-	}, "获取当前产品信息成功")
+	}, common.Msg(c, common.MsgGetSuccess))
 }
 
 // 获取产品列表
@@ -81,7 +81,7 @@ func (tc ProductController) GetProducts(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -89,10 +89,10 @@ func (tc ProductController) GetProducts(c *gin.Context) {
 	// 获取
 	product, total, err := tc.ProductRepository.GetProducts(&req)
 	if err != nil {
-		response.Fail(c, nil, "获取产品列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"products": dto.ToProductsDto(product), "total": total}, "获取产品列表成功")
+	response.Success(c, gin.H{"products": dto.ToProductsDto(product), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 创建产品
@@ -106,7 +106,7 @@ func (tc ProductController) CreateProduct(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -171,7 +171,7 @@ func (tc ProductController) CreateProduct(c *gin.Context) {
 	productInfo, err := tc.ProductRepository.CreateProduct(tx, &product)
 	if err != nil {
 		tx.Rollback()
-		response.Fail(c, nil, "创建产品失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
 		return
 	}
 	// 创建产品成功后创建 SKU
@@ -192,7 +192,7 @@ func (tc ProductController) CreateProduct(c *gin.Context) {
 			}
 			if _, err := tc.ProductRepository.CreateProductSku(tx, &productSku); err != nil {
 				tx.Rollback()
-				response.Fail(c, nil, "创建产品SKU失败: "+err.Error())
+				response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
 				return
 			}
 		}
@@ -202,7 +202,7 @@ func (tc ProductController) CreateProduct(c *gin.Context) {
 		response.Fail(c, nil, "提交事务失败: "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"product": dto.ToProductInfoDto(*productInfo)}, "创建产品成功")
+	response.Success(c, gin.H{"product": dto.ToProductInfoDto(*productInfo)}, common.Msg(c, common.MsgCreateSuccess))
 }
 
 // 更新产品
@@ -215,7 +215,7 @@ func (tc ProductController) UpdateProductByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -252,7 +252,7 @@ func (tc ProductController) UpdateProductByID(c *gin.Context) {
 	// 根据path中的ProductID获取产品信息
 	oldProduct, err := tc.ProductRepository.GetProductByProductID(c.Param("productID"))
 	if err != nil {
-		response.Fail(c, nil, "获取需要更新的产品信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 
@@ -285,7 +285,7 @@ func (tc ProductController) UpdateProductByID(c *gin.Context) {
 	err = tc.ProductRepository.UpdateProduct(tx, &oldProduct)
 	if err != nil {
 		tx.Rollback()
-		response.Fail(c, nil, "更新产品失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
 
@@ -311,7 +311,7 @@ func (tc ProductController) UpdateProductByID(c *gin.Context) {
 			err = tc.ProductRepository.UpdateProductSku(tx, productSku)
 			if err != nil {
 				tx.Rollback()
-				response.Fail(c, nil, "更新产品SKU失败: "+err.Error())
+				response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 				return
 			}
 		}
@@ -323,7 +323,7 @@ func (tc ProductController) UpdateProductByID(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, nil, "更新产品成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
 // 批量删除产品
@@ -336,7 +336,7 @@ func (tc ProductController) BatchDeleteProductByIds(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -345,10 +345,10 @@ func (tc ProductController) BatchDeleteProductByIds(c *gin.Context) {
 	reqProductIds := strings.Split(req.ProductIds, ",")
 	err := tc.ProductRepository.BatchDeleteProductByIds(reqProductIds)
 	if err != nil {
-		response.Fail(c, nil, "删除产品失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
 		return
 	}
 
-	response.Success(c, nil, "删除产品成功")
+	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 
 }

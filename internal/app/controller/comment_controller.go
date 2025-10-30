@@ -42,7 +42,7 @@ func (pc CommentController) GetComments(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -50,10 +50,10 @@ func (pc CommentController) GetComments(c *gin.Context) {
 	// 获取
 	comment, total, err := pc.CommentRepository.GetComments(&req)
 	if err != nil {
-		response.Fail(c, nil, "获取评论列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"comments": dto.ToCommentsDto(comment), "total": total}, "获取评论列表成功")
+	response.Success(c, gin.H{"comments": dto.ToCommentsDto(comment), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 更新评论
@@ -61,7 +61,7 @@ func (pc CommentController) UpdateCommentByID(c *gin.Context) {
 	// 根据path中的CommentID获取评论信息
 	oldComment, err := pc.CommentRepository.GetCommentByComentID(c.Param("commentID"))
 	if err != nil {
-		response.Fail(c, nil, "获取需要更新的评论信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	var reqStatus uint
@@ -74,8 +74,8 @@ func (pc CommentController) UpdateCommentByID(c *gin.Context) {
 	// 更新评论
 	err = pc.CommentRepository.UpdateComment(&oldComment)
 	if err != nil {
-		response.Fail(c, nil, "更新评论失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "更新评论成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }

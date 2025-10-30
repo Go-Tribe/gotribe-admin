@@ -43,13 +43,13 @@ func NewUserController() IUserController {
 func (pc UserController) GetUserInfo(c *gin.Context) {
 	user, err := pc.UserRepository.GetUserByUserID(c.Param("userID"))
 	if err != nil {
-		response.Fail(c, nil, "获取当前用户信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	userInfoDto := dto.ToUserInfoDto(&user)
 	response.Success(c, gin.H{
 		"user": userInfoDto,
-	}, "获取当前用户信息成功")
+	}, common.Msg(c, common.MsgGetSuccess))
 }
 
 // 获取用户列表
@@ -62,7 +62,7 @@ func (pc UserController) GetUsers(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -70,10 +70,10 @@ func (pc UserController) GetUsers(c *gin.Context) {
 	// 获取
 	user, total, err := pc.UserRepository.GetUsers(&req)
 	if err != nil {
-		response.Fail(c, nil, "获取用户列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"users": dto.ToUsersDto(user), "total": total}, "获取用户列表成功")
+	response.Success(c, gin.H{"users": dto.ToUsersDto(user), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 创建用户
@@ -86,7 +86,7 @@ func (pc UserController) CreateUser(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -101,10 +101,10 @@ func (pc UserController) CreateUser(c *gin.Context) {
 
 	err := pc.UserRepository.CreateUser(&user)
 	if err != nil {
-		response.Fail(c, nil, "创建用户失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "创建用户成功")
+	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
 
 }
 
@@ -118,7 +118,7 @@ func (pc UserController) UpdateUserByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -126,7 +126,7 @@ func (pc UserController) UpdateUserByID(c *gin.Context) {
 	// 根据path中的UserID获取用户信息
 	oldUser, err := pc.UserRepository.GetUserByUserID(c.Param("userID"))
 	if err != nil {
-		response.Fail(c, nil, "获取需要更新的用户信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	oldUser.Nickname = req.Nickname
@@ -140,10 +140,10 @@ func (pc UserController) UpdateUserByID(c *gin.Context) {
 	// 更新用户
 	err = pc.UserRepository.UpdateUser(&oldUser)
 	if err != nil {
-		response.Fail(c, nil, "更新用户失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "更新用户成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
 // 批量删除
@@ -156,7 +156,7 @@ func (tc UserController) BatchDeleteUserByIds(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -165,11 +165,10 @@ func (tc UserController) BatchDeleteUserByIds(c *gin.Context) {
 	reqUserIds := strings.Split(req.UserIds, ",")
 	err := tc.UserRepository.BatchDeleteUserByIds(reqUserIds)
 	if err != nil {
-		response.Fail(c, nil, "删除用户失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
 		return
 	}
-
-	response.Success(c, nil, "删除用户成功")
+	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 
 }
 
@@ -179,5 +178,5 @@ func (tc UserController) SearchUserByUsername(c *gin.Context) {
 		response.Fail(c, nil, "获取需要更新的用户信息失败: "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"users": dto.ToUsersDto(user)}, "搜索用户列表成功")
+	response.Success(c, gin.H{"users": dto.ToUsersDto(user)}, common.Msg(c, common.MsgListSuccess))
 }

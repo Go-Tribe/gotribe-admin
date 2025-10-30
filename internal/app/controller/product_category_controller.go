@@ -6,14 +6,15 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type IProductCategoryController interface {
@@ -39,22 +40,22 @@ func NewProductCategoryController() IProductCategoryController {
 func (cc ProductCategoryController) GetProductCategoryInfo(c *gin.Context) {
 	productCategory, err := cc.ProductCategoryRepository.GetConfigByProductCategoryID(c.Param("productCategoryID"))
 	if err != nil {
-		response.Fail(c, nil, "获取当前分类信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	response.Success(c, gin.H{
-		"productCategory": productCategory,
-	}, "获取当前分类信息成功")
+		"product_category": productCategory,
+	}, common.Msg(c, common.MsgGetSuccess))
 }
 
 // 获取分类列表
 func (cc ProductCategoryController) GetProductCategorys(c *gin.Context) {
 	productCategorys, err := cc.ProductCategoryRepository.GetProductCategorys()
 	if err != nil {
-		response.Fail(c, nil, "获取分类列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"productCategorys": productCategorys}, "获取分类列表成功")
+	response.Success(c, gin.H{"productCategorys": productCategorys}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 获取分类树
@@ -77,7 +78,7 @@ func (cc ProductCategoryController) CreateProductCategory(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -96,10 +97,10 @@ func (cc ProductCategoryController) CreateProductCategory(c *gin.Context) {
 
 	err := cc.ProductCategoryRepository.CreateProductCategory(&productCategory)
 	if err != nil {
-		response.Fail(c, nil, "创建分类失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "创建分类成功")
+	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
 }
 
 // 更新分类
@@ -112,7 +113,7 @@ func (cc ProductCategoryController) UpdateProductCategoryByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -120,7 +121,7 @@ func (cc ProductCategoryController) UpdateProductCategoryByID(c *gin.Context) {
 	// 校验父级分类ID
 	productCategory, err := cc.ProductCategoryRepository.GetConfigByProductCategoryID(productCategoryID)
 	if err != nil {
-		response.Fail(c, nil, "分类不存在")
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	if req.ParentID == &productCategory.ID {
@@ -138,11 +139,11 @@ func (cc ProductCategoryController) UpdateProductCategoryByID(c *gin.Context) {
 	productCategory.ProjectID = req.ProjectID
 	err = cc.ProductCategoryRepository.UpdateProductCategoryByID(productCategoryID, &productCategory)
 	if err != nil {
-		response.Fail(c, nil, "更新分类失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
 
-	response.Success(c, nil, "更新分类成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 
 }
 
@@ -156,16 +157,16 @@ func (cc ProductCategoryController) BatchDeleteProductCategoryByIds(c *gin.Conte
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
 	reqProductCategoryIds := strings.Split(req.ProductCategoryIds, ",")
 	err := cc.ProductCategoryRepository.BatchDeleteProductCategoryByIds(reqProductCategoryIds)
 	if err != nil {
-		response.Fail(c, nil, "删除分类失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
 		return
 	}
 
-	response.Success(c, nil, "删除分类成功")
+	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 }

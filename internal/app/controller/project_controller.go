@@ -6,8 +6,6 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -15,6 +13,9 @@ import (
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type IProjectController interface {
@@ -40,13 +41,13 @@ func NewProjectController() IProjectController {
 func (pc ProjectController) GetProjectInfo(c *gin.Context) {
 	project, err := pc.ProjectRepository.GetProjectByProjectID(c.Param("projectID"))
 	if err != nil {
-		response.Fail(c, nil, "获取当前项目信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	projectInfoDto := dto.ToProjectInfoDto(&project)
 	response.Success(c, gin.H{
 		"project": projectInfoDto,
-	}, "获取当前项目信息成功")
+	}, common.Msg(c, common.MsgGetSuccess))
 }
 
 // 获取项目列表
@@ -59,7 +60,7 @@ func (pc ProjectController) GetProjects(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -67,10 +68,10 @@ func (pc ProjectController) GetProjects(c *gin.Context) {
 	// 获取
 	project, total, err := pc.ProjectRepository.GetProjects(&req)
 	if err != nil {
-		response.Fail(c, nil, "获取项目列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"projects": dto.ToProjectsDto(project), "total": total}, "获取项目列表成功")
+	response.Success(c, gin.H{"projects": dto.ToProjectsDto(project), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 创建项目
@@ -83,7 +84,7 @@ func (pc ProjectController) CreateProject(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -107,10 +108,10 @@ func (pc ProjectController) CreateProject(c *gin.Context) {
 
 	err := pc.ProjectRepository.CreateProject(&project)
 	if err != nil {
-		response.Fail(c, nil, "创建项目失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "创建项目成功")
+	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
 
 }
 
@@ -124,7 +125,7 @@ func (pc ProjectController) UpdateProjectByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -132,7 +133,7 @@ func (pc ProjectController) UpdateProjectByID(c *gin.Context) {
 	// 根据path中的ProjectID获取项目信息
 	oldProject, err := pc.ProjectRepository.GetProjectByProjectID(c.Param("projectID"))
 	if err != nil {
-		response.Fail(c, nil, "获取需要更新的项目信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	oldProject.Title = req.Title
@@ -152,10 +153,10 @@ func (pc ProjectController) UpdateProjectByID(c *gin.Context) {
 	// 更新项目
 	err = pc.ProjectRepository.UpdateProject(&oldProject)
 	if err != nil {
-		response.Fail(c, nil, "更新项目失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "更新项目成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
 // 批量删除
@@ -168,7 +169,7 @@ func (tc ProjectController) BatchDeleteProjectByIds(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -177,10 +178,9 @@ func (tc ProjectController) BatchDeleteProjectByIds(c *gin.Context) {
 	reqProjectIds := strings.Split(req.ProjectIds, ",")
 	err := tc.ProjectRepository.BatchDeleteProjectByIds(reqProjectIds)
 	if err != nil {
-		response.Fail(c, nil, "删除项目失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
 		return
 	}
-
-	response.Success(c, nil, "删除项目成功")
+	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 
 }

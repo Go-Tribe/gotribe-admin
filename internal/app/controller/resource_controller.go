@@ -45,13 +45,13 @@ func NewResourceController() IResourceController {
 func (pc ResourceController) GetResourceInfo(c *gin.Context) {
 	resource, err := pc.ResourceRepository.GetResourceByResourceID(c.Param("resourceID"))
 	if err != nil {
-		response.Fail(c, nil, "获取当前资源信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	resourceInfoDto := dto.ToResourceInfoDto(resource)
 	response.Success(c, gin.H{
 		"resource": resourceInfoDto,
-	}, "获取当前资源信息成功")
+	}, common.Msg(c, common.MsgGetSuccess))
 }
 
 // 获取资源列表
@@ -64,7 +64,7 @@ func (pc ResourceController) GetResources(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -72,10 +72,10 @@ func (pc ResourceController) GetResources(c *gin.Context) {
 	// 获取
 	resource, total, err := pc.ResourceRepository.GetResources(&req)
 	if err != nil {
-		response.Fail(c, nil, "获取资源列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"resources": dto.ToResourcesDto(resource), "total": total}, "获取资源列表成功")
+	response.Success(c, gin.H{"resources": dto.ToResourcesDto(resource), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 更新资源
@@ -88,7 +88,7 @@ func (pc ResourceController) UpdateResourceByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -96,7 +96,7 @@ func (pc ResourceController) UpdateResourceByID(c *gin.Context) {
 	// 根据path中的ResourceID获取资源信息
 	oldResource, err := pc.ResourceRepository.GetResourceByResourceID(c.Param("resourceID"))
 	if err != nil {
-		response.Fail(c, nil, "获取需要更新的资源信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	oldResource.Title = req.Title
@@ -104,10 +104,10 @@ func (pc ResourceController) UpdateResourceByID(c *gin.Context) {
 	// 更新资源
 	err = pc.ResourceRepository.UpdateResource(&oldResource)
 	if err != nil {
-		response.Fail(c, nil, "更新资源失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "更新资源成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
 // 上传资源
@@ -153,7 +153,7 @@ func (pc ResourceController) UploadResources(c *gin.Context) {
 	}
 
 	if err = pc.ResourceRepository.CreateResource(&resource); err != nil {
-		response.Fail(c, nil, "创建资源失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
 		return
 	}
 	response.Success(c, gin.H{"upload": uploadRes}, "上传资源成功")
@@ -169,16 +169,16 @@ func (pc ResourceController) DeleteResourceByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
 
 	err := pc.ResourceRepository.DeleteResourceByID(req.ResourceID)
 	if err != nil {
-		response.Fail(c, nil, "删除资源失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
 		return
 	}
 
-	response.Success(c, nil, "删除资源成功")
+	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 }

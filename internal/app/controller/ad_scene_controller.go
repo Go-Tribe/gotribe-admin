@@ -6,8 +6,6 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -15,6 +13,9 @@ import (
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type IAdSceneController interface {
@@ -40,13 +41,13 @@ func NewAdSceneController() IAdSceneController {
 func (pc AdSceneController) GetAdSceneInfo(c *gin.Context) {
 	adScene, err := pc.AdSceneRepository.GetAdSceneByAdSceneID(c.Param("adSceneID"))
 	if err != nil {
-		response.Fail(c, nil, "获取当前推广场景信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	adSceneInfoDto := dto.ToAdSceneInfoDto(adScene)
 	response.Success(c, gin.H{
 		"adScene": adSceneInfoDto,
-	}, "获取当前推广场景信息成功")
+	}, common.Msg(c, common.MsgGetSuccess))
 }
 
 // 获取推广场景列表
@@ -59,7 +60,7 @@ func (pc AdSceneController) GetAdScenes(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -67,10 +68,10 @@ func (pc AdSceneController) GetAdScenes(c *gin.Context) {
 	// 获取
 	adScene, total, err := pc.AdSceneRepository.GetAdScenes(&req)
 	if err != nil {
-		response.Fail(c, nil, "获取推广场景列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"adScenes": dto.ToAdScenesDto(adScene), "total": total}, "获取推广场景列表成功")
+	response.Success(c, gin.H{"adScenes": dto.ToAdScenesDto(adScene), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 创建推广场景
@@ -83,7 +84,7 @@ func (pc AdSceneController) CreateAdScene(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -96,10 +97,10 @@ func (pc AdSceneController) CreateAdScene(c *gin.Context) {
 
 	err := pc.AdSceneRepository.CreateAdScene(&adScene)
 	if err != nil {
-		response.Fail(c, nil, "创建推广场景失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "创建推广场景成功")
+	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
 
 }
 
@@ -113,7 +114,7 @@ func (pc AdSceneController) UpdateAdSceneByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -121,7 +122,7 @@ func (pc AdSceneController) UpdateAdSceneByID(c *gin.Context) {
 	// 根据path中的AdSceneID获取推广场景信息
 	oldAdScene, err := pc.AdSceneRepository.GetAdSceneByAdSceneID(c.Param("adSceneID"))
 	if err != nil {
-		response.Fail(c, nil, "获取需要更新的推广场景信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	oldAdScene.Title = req.Title
@@ -129,10 +130,10 @@ func (pc AdSceneController) UpdateAdSceneByID(c *gin.Context) {
 	// 更新推广场景
 	err = pc.AdSceneRepository.UpdateAdScene(&oldAdScene)
 	if err != nil {
-		response.Fail(c, nil, "更新推广场景失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "更新推广场景成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
 // 批量删除推广场景
@@ -145,7 +146,7 @@ func (pc AdSceneController) BatchDeleteAdSceneByIds(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -154,10 +155,9 @@ func (pc AdSceneController) BatchDeleteAdSceneByIds(c *gin.Context) {
 	reqAdSceneIds := strings.Split(req.AdSceneIds, ",")
 	err := pc.AdSceneRepository.BatchDeleteAdSceneByIds(reqAdSceneIds)
 	if err != nil {
-		response.Fail(c, nil, "删除推广场景失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
 		return
 	}
-
-	response.Success(c, nil, "删除推广场景成功")
+	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 
 }

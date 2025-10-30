@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"gotribe-admin/internal/app/jobs"
+	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
 
@@ -41,7 +42,7 @@ func (c *JobController) ListJobs(ctx *gin.Context) {
 		jobsVO = append(jobsVO, jobVO)
 	}
 
-	response.Success(ctx, gin.H{"jobs": jobsVO}, "获取任务列表成功")
+	response.Success(ctx, gin.H{"jobs": jobsVO}, common.Msg(ctx, common.MsgListSuccess))
 }
 
 // GetJobStatus 获取任务状态

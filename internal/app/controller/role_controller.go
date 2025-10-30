@@ -7,15 +7,16 @@ package controller
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
-	"github.com/thoas/go-funk"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+	"github.com/thoas/go-funk"
 )
 
 type IRoleController interface {
@@ -44,12 +45,12 @@ func (rc RoleController) GetRoles(c *gin.Context) {
 	var req vo.RoleListRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -57,10 +58,10 @@ func (rc RoleController) GetRoles(c *gin.Context) {
 	// 获取角色列表
 	roles, total, err := rc.RoleRepository.GetRoles(&req)
 	if err != nil {
-		response.Fail(c, nil, "获取角色列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"roles": roles, "total": total}, "获取角色列表成功")
+	response.Success(c, gin.H{"roles": roles, "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 创建角色
@@ -73,7 +74,7 @@ func (rc RoleController) CreateRole(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -104,10 +105,10 @@ func (rc RoleController) CreateRole(c *gin.Context) {
 	// 创建角色
 	err = rc.RoleRepository.CreateRole(&role)
 	if err != nil {
-		response.Fail(c, nil, "创建角色失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "创建角色成功")
+	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
 
 }
 
@@ -121,7 +122,7 @@ func (rc RoleController) UpdateRoleByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -174,7 +175,7 @@ func (rc RoleController) UpdateRoleByID(c *gin.Context) {
 	// 更新角色
 	err = rc.RoleRepository.UpdateRoleByID(uint(roleID), &role)
 	if err != nil {
-		response.Fail(c, nil, "更新角色失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
 
@@ -183,7 +184,7 @@ func (rc RoleController) UpdateRoleByID(c *gin.Context) {
 		// 获取policy
 		rolePolicies := common.CasbinEnforcer.GetFilteredPolicy(0, roles[0].Keyword)
 		if len(rolePolicies) == 0 {
-			response.Success(c, nil, "更新角色成功")
+			response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 			return
 		}
 		rolePoliciesCopy := make([][]string, 0)
@@ -227,7 +228,7 @@ func (rc RoleController) UpdateRoleByID(c *gin.Context) {
 	// 2.直接清理缓存，让活跃的用户自己重新缓存最新用户信息
 	ur.ClearAdminInfoCache()
 
-	response.Success(c, nil, "更新角色成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
 // 获取角色的权限菜单
@@ -243,7 +244,7 @@ func (rc RoleController) GetRoleMenusByID(c *gin.Context) {
 		response.Fail(c, nil, "获取角色的权限菜单失败: "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"menus": menus}, "获取角色的权限菜单成功")
+	response.Success(c, gin.H{"menus": menus}, common.Msg(c, common.MsgGetSuccess))
 }
 
 // 更新角色的权限菜单
@@ -256,7 +257,7 @@ func (rc RoleController) UpdateRoleMenusByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -297,7 +298,7 @@ func (rc RoleController) UpdateRoleMenusByID(c *gin.Context) {
 	mr := repository.NewMenuRepository()
 	ctxUserMenus, err := mr.GetUserMenusByUserID(ctxUser.ID)
 	if err != nil {
-		response.Fail(c, nil, "获取当前用户的可访问菜单列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
 
@@ -335,7 +336,7 @@ func (rc RoleController) UpdateRoleMenusByID(c *gin.Context) {
 		// 根据menuIds查询查询菜单
 		menus, err := mr.GetMenus()
 		if err != nil {
-			response.Fail(c, nil, "获取菜单列表失败: "+err.Error())
+			response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 			return
 		}
 		for _, menuID := range menuIds {
@@ -351,11 +352,11 @@ func (rc RoleController) UpdateRoleMenusByID(c *gin.Context) {
 
 	err = rc.RoleRepository.UpdateRoleMenus(roles[0])
 	if err != nil {
-		response.Fail(c, nil, "更新角色的权限菜单失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
 
-	response.Success(c, nil, "更新角色的权限菜单成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 
 }
 
@@ -397,7 +398,7 @@ func (rc RoleController) UpdateRoleApisByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -481,7 +482,7 @@ func (rc RoleController) UpdateRoleApisByID(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, nil, "更新角色的权限接口成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 
 }
 
@@ -495,7 +496,7 @@ func (rc RoleController) BatchDeleteRoleByIds(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -513,7 +514,7 @@ func (rc RoleController) BatchDeleteRoleByIds(c *gin.Context) {
 	// 获取角色信息
 	roles, err := rc.RoleRepository.GetRolesByIds(roleIds)
 	if err != nil {
-		response.Fail(c, nil, "获取角色信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	if len(roles) == 0 {
@@ -532,12 +533,12 @@ func (rc RoleController) BatchDeleteRoleByIds(c *gin.Context) {
 	// 删除角色
 	err = rc.RoleRepository.BatchDeleteRoleByIds(roleIds)
 	if err != nil {
-		response.Fail(c, nil, "删除角色失败")
+		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail))
 		return
 	}
 
 	// 删除角色成功直接清理缓存，让活跃的用户自己重新缓存最新用户信息
 	ur.ClearAdminInfoCache()
-	response.Success(c, nil, "删除角色成功")
+	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 
 }

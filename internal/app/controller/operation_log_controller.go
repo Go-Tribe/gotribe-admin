@@ -39,17 +39,17 @@ func (oc OperationLogController) GetOperationLogs(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
 	// 获取
 	logs, total, err := oc.operationLogRepository.GetOperationLogs(&req)
 	if err != nil {
-		response.Fail(c, nil, "获取操作日志列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"logs": logs, "total": total}, "获取操作日志列表成功")
+	response.Success(c, gin.H{"logs": logs, "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 批量删除操作日志
@@ -62,7 +62,7 @@ func (oc OperationLogController) BatchDeleteOperationLogByIds(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -70,9 +70,9 @@ func (oc OperationLogController) BatchDeleteOperationLogByIds(c *gin.Context) {
 	// 删除接口
 	err := oc.operationLogRepository.BatchDeleteOperationLogByIds(req.OperationLogIds)
 	if err != nil {
-		response.Fail(c, nil, "删除日志失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
 		return
 	}
 
-	response.Success(c, nil, "删除日志成功")
+	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 }

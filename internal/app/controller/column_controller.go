@@ -41,13 +41,13 @@ func NewColumnController() IColumnController {
 func (pc ColumnController) GetColumnInfo(c *gin.Context) {
 	column, err := pc.ColumnRepository.GetColumnByColumnID(c.Param("columnID"))
 	if err != nil {
-		response.Fail(c, nil, "获取当前专栏信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	columnInfoDto := dto.ToColumnInfoDto(column)
 	response.Success(c, gin.H{
 		"column": columnInfoDto,
-	}, "获取当前专栏信息成功")
+	}, common.Msg(c, common.MsgGetSuccess))
 }
 
 // 获取专栏列表
@@ -60,7 +60,7 @@ func (pc ColumnController) GetColumns(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -68,10 +68,10 @@ func (pc ColumnController) GetColumns(c *gin.Context) {
 	// 获取
 	column, total, err := pc.ColumnRepository.GetColumns(&req)
 	if err != nil {
-		response.Fail(c, nil, "获取专栏列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"columns": dto.ToColumnsDto(column), "total": total}, "获取专栏列表成功")
+	response.Success(c, gin.H{"columns": dto.ToColumnsDto(column), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 创建专栏
@@ -84,7 +84,7 @@ func (pc ColumnController) CreateColumn(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -99,10 +99,10 @@ func (pc ColumnController) CreateColumn(c *gin.Context) {
 
 	err := pc.ColumnRepository.CreateColumn(&column)
 	if err != nil {
-		response.Fail(c, nil, "创建专栏失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "创建专栏成功")
+	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
 
 }
 
@@ -116,7 +116,7 @@ func (pc ColumnController) UpdateColumnByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -124,7 +124,7 @@ func (pc ColumnController) UpdateColumnByID(c *gin.Context) {
 	// 根据path中的ColumnID获取专栏信息
 	oldColumn, err := pc.ColumnRepository.GetColumnByColumnID(c.Param("columnID"))
 	if err != nil {
-		response.Fail(c, nil, "获取需要更新的专栏信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	oldColumn.Title = req.Title
@@ -134,10 +134,10 @@ func (pc ColumnController) UpdateColumnByID(c *gin.Context) {
 	// 更新专栏
 	err = pc.ColumnRepository.UpdateColumn(&oldColumn)
 	if err != nil {
-		response.Fail(c, nil, "更新专栏失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "更新专栏成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
 // 批量删除
@@ -150,7 +150,7 @@ func (tc ColumnController) BatchDeleteColumnByIds(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -159,10 +159,9 @@ func (tc ColumnController) BatchDeleteColumnByIds(c *gin.Context) {
 	reqColumnIds := strings.Split(req.ColumnIds, ",")
 	err := tc.ColumnRepository.BatchDeleteColumnByIds(reqColumnIds)
 	if err != nil {
-		response.Fail(c, nil, "删除专栏失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
 		return
 	}
-
-	response.Success(c, nil, "删除专栏成功")
+	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 
 }

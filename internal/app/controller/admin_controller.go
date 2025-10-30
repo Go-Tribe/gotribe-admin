@@ -45,13 +45,13 @@ func NewAdminController() IAdminController {
 func (uc AdminController) GetAdminInfo(c *gin.Context) {
 	user, err := uc.AdminRepository.GetCurrentAdmin(c)
 	if err != nil {
-		response.Fail(c, nil, "获取当前用户信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	userInfoDto := dto.ToAdminInfoDto(user)
 	response.Success(c, gin.H{
 		"admin": userInfoDto,
-	}, "获取当前用户信息成功")
+	}, common.Msg(c, common.MsgGetSuccess))
 }
 
 // 获取用户列表
@@ -64,7 +64,7 @@ func (uc AdminController) GetAdmins(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -72,10 +72,10 @@ func (uc AdminController) GetAdmins(c *gin.Context) {
 	// 获取
 	users, total, err := uc.AdminRepository.GetAdmins(&req)
 	if err != nil {
-		response.Fail(c, nil, "获取管理员列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"admins": dto.ToAdminsDto(users), "total": total}, "获取管理员列表成功")
+	response.Success(c, gin.H{"admins": dto.ToAdminsDto(users), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 更新用户登录密码
@@ -89,7 +89,7 @@ func (uc AdminController) ChangePwd(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -118,10 +118,10 @@ func (uc AdminController) ChangePwd(c *gin.Context) {
 	}
 	err = uc.AdminRepository.ChangePwd(user.Username, hashedPassword)
 	if err != nil {
-		response.Fail(c, nil, "更新密码失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "更新密码成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
 // 创建用户
@@ -134,7 +134,7 @@ func (uc AdminController) CreateAdmin(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -203,10 +203,10 @@ func (uc AdminController) CreateAdmin(c *gin.Context) {
 
 	err = uc.AdminRepository.CreateAdmin(&user)
 	if err != nil {
-		response.Fail(c, nil, "创建用户失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "创建用户成功")
+	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
 
 }
 
@@ -220,7 +220,7 @@ func (uc AdminController) UpdateAdminByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -235,7 +235,7 @@ func (uc AdminController) UpdateAdminByID(c *gin.Context) {
 	// 根据path中的userID获取用户信息
 	oldAdmin, err := uc.AdminRepository.GetAdminByID(uint(userID))
 	if err != nil {
-		response.Fail(c, nil, "获取需要更新的用户信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 
@@ -349,10 +349,10 @@ func (uc AdminController) UpdateAdminByID(c *gin.Context) {
 	// 更新用户
 	err = uc.AdminRepository.UpdateAdmin(&user)
 	if err != nil {
-		response.Fail(c, nil, "更新用户失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "更新用户成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 
 }
 
@@ -366,7 +366,7 @@ func (uc AdminController) BatchDeleteAdminByIds(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -404,10 +404,9 @@ func (uc AdminController) BatchDeleteAdminByIds(c *gin.Context) {
 
 	err = uc.AdminRepository.BatchDeleteAdminByIds(reqAdminIds)
 	if err != nil {
-		response.Fail(c, nil, "删除用户失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
 		return
 	}
-
-	response.Success(c, nil, "删除用户成功")
+	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 
 }

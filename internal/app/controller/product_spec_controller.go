@@ -41,13 +41,13 @@ func NewProductSpecController() IProductSpecController {
 func (tc ProductSpecController) GetProductSpecInfo(c *gin.Context) {
 	productSpec, err := tc.ProductSpecRepository.GetProductSpecByProductSpecID(c.Param("productSpecID"))
 	if err != nil {
-		response.Fail(c, nil, "获取当前商品规格信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	productSpecInfoDto := dto.ToProductSpecInfoDto(productSpec)
 	response.Success(c, gin.H{
 		"productSpec": productSpecInfoDto,
-	}, "获取当前商品规格信息成功")
+	}, common.Msg(c, common.MsgGetSuccess))
 }
 
 // 获取商品规格列表
@@ -60,7 +60,7 @@ func (tc ProductSpecController) GetProductSpecs(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -68,10 +68,10 @@ func (tc ProductSpecController) GetProductSpecs(c *gin.Context) {
 	// 获取
 	productSpec, total, err := tc.ProductSpecRepository.GetProductSpecs(&req)
 	if err != nil {
-		response.Fail(c, nil, "获取商品规格列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"productSpecs": dto.ToProductSpecsDto(productSpec), "total": total}, "获取商品规格列表成功")
+	response.Success(c, gin.H{"productSpecs": dto.ToProductSpecsDto(productSpec), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 创建商品规格
@@ -84,7 +84,7 @@ func (tc ProductSpecController) CreateProductSpec(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -100,10 +100,10 @@ func (tc ProductSpecController) CreateProductSpec(c *gin.Context) {
 
 	productSpecInfo, err := tc.ProductSpecRepository.CreateProductSpec(&productSpec)
 	if err != nil {
-		response.Fail(c, nil, "创建商品规格失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"productSpec": dto.ToProductSpecInfoDto(*productSpecInfo)}, "创建商品规格成功")
+	response.Success(c, gin.H{"productSpec": dto.ToProductSpecInfoDto(*productSpecInfo)}, common.Msg(c, common.MsgCreateSuccess))
 }
 
 // 更新商品规格
@@ -116,7 +116,7 @@ func (tc ProductSpecController) UpdateProductSpecByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -124,7 +124,7 @@ func (tc ProductSpecController) UpdateProductSpecByID(c *gin.Context) {
 	// 根据path中的ProductSpecID获取商品规格信息
 	oldProductSpec, err := tc.ProductSpecRepository.GetProductSpecByProductSpecID(c.Param("productSpecID"))
 	if err != nil {
-		response.Fail(c, nil, "获取需要更新的商品规格信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	oldProductSpec.Title = req.Title
@@ -135,10 +135,10 @@ func (tc ProductSpecController) UpdateProductSpecByID(c *gin.Context) {
 	// 更新商品规格
 	err = tc.ProductSpecRepository.UpdateProductSpec(&oldProductSpec)
 	if err != nil {
-		response.Fail(c, nil, "更新商品规格失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "更新商品规格成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
 // 批量删除商品规格
@@ -151,7 +151,7 @@ func (tc ProductSpecController) BatchDeleteProductSpecByIds(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -160,11 +160,11 @@ func (tc ProductSpecController) BatchDeleteProductSpecByIds(c *gin.Context) {
 	reqProductSpecIds := strings.Split(req.ProductSpecIds, ",")
 	err := tc.ProductSpecRepository.BatchDeleteProductSpecByIds(reqProductSpecIds)
 	if err != nil {
-		response.Fail(c, nil, "删除商品规格失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
 		return
 	}
 
-	response.Success(c, nil, "删除商品规格成功")
+	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 
 }
 

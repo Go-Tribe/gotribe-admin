@@ -6,8 +6,6 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -15,6 +13,9 @@ import (
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type IConfigController interface {
@@ -40,13 +41,13 @@ func NewConfigController() IConfigController {
 func (pc ConfigController) GetConfigInfo(c *gin.Context) {
 	config, err := pc.ConfigRepository.GetConfigByConfigID(c.Param("configID"))
 	if err != nil {
-		response.Fail(c, nil, "获取当前配置信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	configInfoDto := dto.ToConfigInfoDto(config)
 	response.Success(c, gin.H{
 		"config": configInfoDto,
-	}, "获取当前配置信息成功")
+	}, common.Msg(c, common.MsgGetSuccess))
 }
 
 // 获取配置列表
@@ -59,7 +60,7 @@ func (pc ConfigController) GetConfigs(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -67,10 +68,10 @@ func (pc ConfigController) GetConfigs(c *gin.Context) {
 	// 获取
 	config, total, err := pc.ConfigRepository.GetConfigs(&req)
 	if err != nil {
-		response.Fail(c, nil, "获取配置列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"configs": dto.ToConfigsDto(config), "total": total}, "获取配置列表成功")
+	response.Success(c, gin.H{"configs": dto.ToConfigsDto(config), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 创建配置
@@ -83,7 +84,7 @@ func (pc ConfigController) CreateConfig(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -100,10 +101,10 @@ func (pc ConfigController) CreateConfig(c *gin.Context) {
 
 	err := pc.ConfigRepository.CreateConfig(&config)
 	if err != nil {
-		response.Fail(c, nil, "创建配置失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "创建配置成功")
+	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
 
 }
 
@@ -117,7 +118,7 @@ func (pc ConfigController) UpdateConfigByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -125,7 +126,7 @@ func (pc ConfigController) UpdateConfigByID(c *gin.Context) {
 	// 根据path中的ConfigID获取配置信息
 	oldConfig, err := pc.ConfigRepository.GetConfigByConfigID(c.Param("configID"))
 	if err != nil {
-		response.Fail(c, nil, "获取需要更新的配置信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	oldConfig.Title = req.Title
@@ -136,10 +137,10 @@ func (pc ConfigController) UpdateConfigByID(c *gin.Context) {
 	// 更新配置
 	err = pc.ConfigRepository.UpdateConfig(&oldConfig)
 	if err != nil {
-		response.Fail(c, nil, "更新配置失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "更新配置成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
 // 批量删除配置
@@ -152,7 +153,7 @@ func (pc ConfigController) BatchDeleteConfigByIds(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -161,10 +162,9 @@ func (pc ConfigController) BatchDeleteConfigByIds(c *gin.Context) {
 	reqConfigIds := strings.Split(req.ConfigIds, ",")
 	err := pc.ConfigRepository.BatchDeleteConfigByIds(reqConfigIds)
 	if err != nil {
-		response.Fail(c, nil, "删除配置失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
 		return
 	}
-
-	response.Success(c, nil, "删除配置成功")
+	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 
 }

@@ -6,13 +6,14 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/pkg/api/dto"
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type ISystemConfigController interface {
@@ -35,13 +36,13 @@ func NewSystemConfigController() ISystemConfigController {
 func (tc SystemConfigController) GetSystemConfigInfo(c *gin.Context) {
 	systemConfig, err := tc.SystemConfigRepository.GetSystemConfig()
 	if err != nil {
-		response.Fail(c, nil, "获取当前系统配置信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	systemConfigInfoDto := dto.ToSystemConfigInfoDto(&systemConfig)
 	response.Success(c, gin.H{
 		"systemConfig": systemConfigInfoDto,
-	}, "获取当前系统配置信息成功")
+	}, common.Msg(c, common.MsgGetSuccess))
 }
 
 // 更新系统配置
@@ -54,7 +55,7 @@ func (tc SystemConfigController) UpdateSystemConfigByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -73,8 +74,8 @@ func (tc SystemConfigController) UpdateSystemConfigByID(c *gin.Context) {
 	// 更新系统配置
 	err = tc.SystemConfigRepository.UpdateSystemConfig(&oldSystemConfig)
 	if err != nil {
-		response.Fail(c, nil, "更新系统配置失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "更新系统配置成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }

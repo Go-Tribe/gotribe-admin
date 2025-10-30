@@ -47,13 +47,13 @@ func NewPostController() IPostController {
 func (pc PostController) GetPostInfo(c *gin.Context) {
 	post, err := pc.PostRepository.GetPostByPostID(c.Param("postID"))
 	if err != nil {
-		response.Fail(c, nil, "获取当前内容信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	postInfoDto := dto.ToPostInfoDto(&post)
 	response.Success(c, gin.H{
 		"post": postInfoDto,
-	}, "获取当前内容信息成功")
+	}, common.Msg(c, common.MsgGetSuccess))
 }
 
 // 获取内容列表
@@ -66,7 +66,7 @@ func (pc PostController) GetPosts(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -74,10 +74,10 @@ func (pc PostController) GetPosts(c *gin.Context) {
 	// 获取
 	post, total, err := pc.PostRepository.GetPosts(&req)
 	if err != nil {
-		response.Fail(c, nil, "获取内容列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"posts": dto.ToPostsDto(post), "total": total}, "获取内容列表成功")
+	response.Success(c, gin.H{"posts": dto.ToPostsDto(post), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 创建内容
@@ -90,7 +90,7 @@ func (pc PostController) CreatePost(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -122,10 +122,10 @@ func (pc PostController) CreatePost(c *gin.Context) {
 
 	err := pc.PostRepository.CreatePost(&post)
 	if err != nil {
-		response.Fail(c, nil, "创建内容失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "创建内容成功")
+	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
 
 }
 
@@ -139,7 +139,7 @@ func (pc PostController) UpdatePostByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -147,7 +147,7 @@ func (pc PostController) UpdatePostByID(c *gin.Context) {
 	// 根据path中的PostID获取内容信息
 	oldPost, err := pc.PostRepository.GetPostByPostID(c.Param("postID"))
 	if err != nil {
-		response.Fail(c, nil, "获取需要更新的内容信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	imageStr := strings.Join(req.Images, ",")
@@ -177,10 +177,10 @@ func (pc PostController) UpdatePostByID(c *gin.Context) {
 	// 更新内容
 	err = pc.PostRepository.UpdatePost(&oldPost)
 	if err != nil {
-		response.Fail(c, nil, "更新内容失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "更新内容成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
 // 批量删除
@@ -193,7 +193,7 @@ func (tc PostController) BatchDeletePostByIds(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -202,11 +202,10 @@ func (tc PostController) BatchDeletePostByIds(c *gin.Context) {
 	reqPostIds := strings.Split(req.PostIds, ",")
 	err := tc.PostRepository.BatchDeletePostByIds(reqPostIds)
 	if err != nil {
-		response.Fail(c, nil, "删除内容失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
 		return
 	}
-
-	response.Success(c, nil, "删除内容成功")
+	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 
 }
 
@@ -222,7 +221,7 @@ func (pc PostController) PushPostByID(c *gin.Context) {
 	// 更新内容
 	err = pc.PostRepository.UpdatePost(&oldPost)
 	if err != nil {
-		response.Fail(c, nil, "更新内容失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
 	// 同步内容至百度
@@ -234,5 +233,5 @@ func (pc PostController) PushPostByID(c *gin.Context) {
 		go util.SEOUtil.PushBaidu(projectInfo.Domain, projectInfo.PushToken, postURLWithID)
 	}
 
-	response.Success(c, nil, "更新内容成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }

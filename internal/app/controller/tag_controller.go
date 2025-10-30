@@ -6,8 +6,6 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -15,6 +13,9 @@ import (
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type ITagController interface {
@@ -40,13 +41,13 @@ func NewTagController() ITagController {
 func (tc TagController) GetTagInfo(c *gin.Context) {
 	tag, err := tc.TagRepository.GetTagByTagID(c.Param("tagID"))
 	if err != nil {
-		response.Fail(c, nil, "获取当前标签信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	tagInfoDto := dto.ToTagInfoDto(tag)
 	response.Success(c, gin.H{
 		"tag": tagInfoDto,
-	}, "获取当前标签信息成功")
+	}, common.Msg(c, common.MsgGetSuccess))
 }
 
 // 获取标签列表
@@ -59,7 +60,7 @@ func (tc TagController) GetTags(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -67,10 +68,10 @@ func (tc TagController) GetTags(c *gin.Context) {
 	// 获取
 	tag, total, err := tc.TagRepository.GetTags(&req)
 	if err != nil {
-		response.Fail(c, nil, "获取标签列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"tags": dto.ToTagsDto(tag), "total": total}, "获取标签列表成功")
+	response.Success(c, gin.H{"tags": dto.ToTagsDto(tag), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 创建标签
@@ -83,7 +84,7 @@ func (tc TagController) CreateTag(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -96,10 +97,10 @@ func (tc TagController) CreateTag(c *gin.Context) {
 
 	tagInfo, err := tc.TagRepository.CreateTag(&tag)
 	if err != nil {
-		response.Fail(c, nil, "创建标签失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"tag": dto.ToTagInfoDto(*tagInfo)}, "创建标签成功")
+	response.Success(c, gin.H{"tag": dto.ToTagInfoDto(*tagInfo)}, common.Msg(c, common.MsgCreateSuccess))
 }
 
 // 更新标签
@@ -112,7 +113,7 @@ func (tc TagController) UpdateTagByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -120,7 +121,7 @@ func (tc TagController) UpdateTagByID(c *gin.Context) {
 	// 根据path中的TagID获取标签信息
 	oldTag, err := tc.TagRepository.GetTagByTagID(c.Param("tagID"))
 	if err != nil {
-		response.Fail(c, nil, "获取需要更新的标签信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	oldTag.Title = req.Title
@@ -129,10 +130,10 @@ func (tc TagController) UpdateTagByID(c *gin.Context) {
 	// 更新标签
 	err = tc.TagRepository.UpdateTag(&oldTag)
 	if err != nil {
-		response.Fail(c, nil, "更新标签失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "更新标签成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
 // 批量删除标签
@@ -145,7 +146,7 @@ func (tc TagController) BatchDeleteTagByIds(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -154,10 +155,9 @@ func (tc TagController) BatchDeleteTagByIds(c *gin.Context) {
 	reqTagIds := strings.Split(req.TagIds, ",")
 	err := tc.TagRepository.BatchDeleteTagByIds(reqTagIds)
 	if err != nil {
-		response.Fail(c, nil, "删除标签失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
 		return
 	}
-
-	response.Success(c, nil, "删除标签成功")
+	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 
 }

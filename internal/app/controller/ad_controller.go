@@ -6,8 +6,6 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -15,6 +13,9 @@ import (
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type IAdController interface {
@@ -40,13 +41,13 @@ func NewAdController() IAdController {
 func (pc AdController) GetAdInfo(c *gin.Context) {
 	ad, err := pc.AdRepository.GetAdByAdID(c.Param("adID"))
 	if err != nil {
-		response.Fail(c, nil, "获取当前广告信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	adInfoDto := dto.ToAdInfoDto(ad)
 	response.Success(c, gin.H{
 		"ad": adInfoDto,
-	}, "获取当前广告信息成功")
+	}, common.Msg(c, common.MsgGetSuccess))
 }
 
 // 获取广告列表
@@ -59,7 +60,7 @@ func (pc AdController) GetAds(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -67,10 +68,10 @@ func (pc AdController) GetAds(c *gin.Context) {
 	// 获取
 	ad, total, err := pc.AdRepository.GetAds(&req)
 	if err != nil {
-		response.Fail(c, nil, "获取广告列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"ads": dto.ToAdsDto(ad), "total": total}, "获取广告列表成功")
+	response.Success(c, gin.H{"ads": dto.ToAdsDto(ad), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 创建广告
@@ -83,7 +84,7 @@ func (pc AdController) CreateAd(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -103,10 +104,10 @@ func (pc AdController) CreateAd(c *gin.Context) {
 
 	err := pc.AdRepository.CreateAd(&ad)
 	if err != nil {
-		response.Fail(c, nil, "创建广告失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "创建广告成功")
+	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
 
 }
 
@@ -120,7 +121,7 @@ func (pc AdController) UpdateAdByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -128,7 +129,7 @@ func (pc AdController) UpdateAdByID(c *gin.Context) {
 	// 根据path中的AdID获取广告信息
 	oldAd, err := pc.AdRepository.GetAdByAdID(c.Param("adID"))
 	if err != nil {
-		response.Fail(c, nil, "获取需要更新的广告信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	oldAd.Title = req.Title
@@ -144,10 +145,10 @@ func (pc AdController) UpdateAdByID(c *gin.Context) {
 	// 更新广告
 	err = pc.AdRepository.UpdateAd(&oldAd)
 	if err != nil {
-		response.Fail(c, nil, "更新广告失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "更新广告成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
 // 批量删除广告
@@ -160,7 +161,7 @@ func (pc AdController) BatchDeleteAdByIds(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -169,10 +170,9 @@ func (pc AdController) BatchDeleteAdByIds(c *gin.Context) {
 	reqAdIds := strings.Split(req.AdIds, ",")
 	err := pc.AdRepository.BatchDeleteAdByIds(reqAdIds)
 	if err != nil {
-		response.Fail(c, nil, "删除广告失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
 		return
 	}
-
-	response.Success(c, nil, "删除广告成功")
+	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 
 }

@@ -48,13 +48,13 @@ func NewOrderController() IOrderController {
 func (tc OrderController) GetOrderInfo(c *gin.Context) {
 	order, err := tc.OrderRepository.GetOrderByOrderID(c.Param("orderID"))
 	if err != nil {
-		response.Fail(c, nil, "获取当前订单信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	orderInfoDto := dto.ToOrderInfoDto(order)
 	response.Success(c, gin.H{
 		"order": orderInfoDto,
-	}, "获取当前订单信息成功")
+	}, common.Msg(c, common.MsgGetSuccess))
 }
 
 // 获取订单列表
@@ -67,7 +67,7 @@ func (tc OrderController) GetOrders(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -75,10 +75,10 @@ func (tc OrderController) GetOrders(c *gin.Context) {
 	// 获取
 	order, total, err := tc.OrderRepository.GetOrders(&req)
 	if err != nil {
-		response.Fail(c, nil, "获取订单列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"orders": dto.ToOrdersDto(order), "total": total}, "获取订单列表成功")
+	response.Success(c, gin.H{"orders": dto.ToOrdersDto(order), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 更新订单
@@ -91,7 +91,7 @@ func (tc OrderController) UpdateOrderByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -99,7 +99,7 @@ func (tc OrderController) UpdateOrderByID(c *gin.Context) {
 	// 根据path中的OrderID获取订单信息
 	oldOrder, err := tc.OrderRepository.GetOrderByOrderID(c.Param("orderID"))
 	if err != nil {
-		response.Fail(c, nil, "获取需要更新的订单信息失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	oldOrder.AmountPay = util.MoneyUtil.YuanToCents(req.AmountPay)
@@ -108,12 +108,12 @@ func (tc OrderController) UpdateOrderByID(c *gin.Context) {
 	// 更新订单
 	err = tc.OrderRepository.UpdateOrder(oldOrder)
 	if err != nil {
-		response.Fail(c, nil, "更新订单失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
 	// 增加修改记录
 	err = tc.OrderLogRepository.CreateOrderLog(c.Param("orderID"), "后台编辑")
-	response.Success(c, nil, "更新订单成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
 // 批量删除订单
@@ -126,7 +126,7 @@ func (tc OrderController) BatchDeleteOrderByIds(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -135,11 +135,11 @@ func (tc OrderController) BatchDeleteOrderByIds(c *gin.Context) {
 	reqOrderIds := strings.Split(req.OrderIds, ",")
 	err := tc.OrderRepository.BatchDeleteOrderByIds(reqOrderIds)
 	if err != nil {
-		response.Fail(c, nil, "删除订单失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
 		return
 	}
 
-	response.Success(c, nil, "删除订单成功")
+	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 }
 
 // 获取订单记录
@@ -152,7 +152,7 @@ func (tc OrderController) GetOrderLogs(c *gin.Context) {
 	response.Success(c, gin.H{
 		"orderLogs": dto.ToOrderLogsDto(orderLogs),
 		"total":     total,
-	}, "获取订单记录成功")
+	}, common.Msg(c, common.MsgListSuccess))
 }
 
 func (tc OrderController) UpdateLogistics(c *gin.Context) {
@@ -164,7 +164,7 @@ func (tc OrderController) UpdateLogistics(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -181,10 +181,10 @@ func (tc OrderController) UpdateLogistics(c *gin.Context) {
 	// 更新物流信息
 	err = tc.OrderRepository.UpdateOrder(oldOrder)
 	if err != nil {
-		response.Fail(c, nil, "更新订单失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
 	// 增加修改记录
 	err = tc.OrderLogRepository.CreateOrderLog(c.Param("orderID"), "更新物流")
-	response.Success(c, nil, "更新订单成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }

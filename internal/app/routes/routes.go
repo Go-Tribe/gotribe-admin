@@ -38,6 +38,9 @@ func InitRoutes(fs embed.FS) *gin.Engine {
 	// 启用全局跨域中间件
 	r.Use(middleware.CORSMiddleware())
 
+	// 启用语言协商中间件（zh/en），默认中文
+	r.Use(middleware.LangMiddleware())
+
 	// 启用操作日志中间件
 	r.Use(middleware.OperationLogMiddleware())
 

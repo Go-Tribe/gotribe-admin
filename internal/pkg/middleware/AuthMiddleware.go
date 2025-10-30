@@ -118,25 +118,28 @@ func unauthorized(c *gin.Context, code int, message string) {
 
 // 登录成功后的响应
 func loginResponse(c *gin.Context, code int, token string, expires time.Time) {
+	msg := common.Msg(c, common.MsgLoginSuccess)
 	response.Response(c, code, code,
 		gin.H{
 			"token":   token,
 			"expires": expires.Format(known.TIME_FORMAT),
 		},
-		"登录成功")
+		msg)
 }
 
 // 登出后的响应
 func logoutResponse(c *gin.Context, code int) {
-	response.Success(c, nil, "退出成功")
+	msg := common.Msg(c, common.MsgLogoutSuccess)
+	response.Success(c, nil, msg)
 }
 
 // 刷新token后的响应
 func refreshResponse(c *gin.Context, code int, token string, expires time.Time) {
+	msg := common.Msg(c, common.MsgRefreshTokenSuccess)
 	response.Response(c, code, code,
 		gin.H{
 			"token":   token,
 			"expires": expires,
 		},
-		"刷新token成功")
+		msg)
 }

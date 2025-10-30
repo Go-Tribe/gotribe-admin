@@ -6,13 +6,14 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 
 	"strconv"
 )
@@ -42,20 +43,20 @@ func NewMenuController() IMenuController {
 func (mc MenuController) GetMenus(c *gin.Context) {
 	menus, err := mc.MenuRepository.GetMenus()
 	if err != nil {
-		response.Fail(c, nil, "获取菜单列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"menus": menus}, "获取菜单列表成功")
+	response.Success(c, gin.H{"menus": menus}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 获取菜单树
 func (mc MenuController) GetMenuTree(c *gin.Context) {
 	menuTree, err := mc.MenuRepository.GetMenuTree()
 	if err != nil {
-		response.Fail(c, nil, "获取菜单树失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"menuTree": menuTree}, "获取菜单树成功")
+	response.Success(c, gin.H{"menuTree": menuTree}, common.Msg(c, common.MsgGetSuccess))
 }
 
 // 创建菜单
@@ -68,7 +69,7 @@ func (mc MenuController) CreateMenu(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -101,10 +102,10 @@ func (mc MenuController) CreateMenu(c *gin.Context) {
 
 	err = mc.MenuRepository.CreateMenu(&menu)
 	if err != nil {
-		response.Fail(c, nil, "创建菜单失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "创建菜单成功")
+	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
 }
 
 // 更新菜单
@@ -117,7 +118,7 @@ func (mc MenuController) UpdateMenuByID(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -157,11 +158,10 @@ func (mc MenuController) UpdateMenuByID(c *gin.Context) {
 
 	err = mc.MenuRepository.UpdateMenuByID(uint(menuID), &menu)
 	if err != nil {
-		response.Fail(c, nil, "更新菜单失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
-
-	response.Success(c, nil, "更新菜单成功")
+	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 
 }
 
@@ -175,17 +175,16 @@ func (mc MenuController) BatchDeleteMenuByIds(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
 	err := mc.MenuRepository.BatchDeleteMenuByIds(req.MenuIds)
 	if err != nil {
-		response.Fail(c, nil, "删除菜单失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
 		return
 	}
-
-	response.Success(c, nil, "删除菜单成功")
+	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 }
 
 // 根据用户ID获取用户的可访问菜单列表
@@ -199,10 +198,10 @@ func (mc MenuController) GetUserMenusByUserID(c *gin.Context) {
 
 	menus, err := mc.MenuRepository.GetUserMenusByUserID(uint(userID))
 	if err != nil {
-		response.Fail(c, nil, "获取用户的可访问菜单列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"menus": menus}, "获取用户的可访问菜单列表成功")
+	response.Success(c, gin.H{"menus": menus}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 根据用户ID获取用户的可访问菜单树
@@ -216,7 +215,7 @@ func (mc MenuController) GetUserMenuTreeByUserID(c *gin.Context) {
 
 	menuTree, err := mc.MenuRepository.GetUserMenuTreeByUserID(uint(userID))
 	if err != nil {
-		response.Fail(c, nil, "获取用户的可访问菜单树失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
 		return
 	}
 	response.Success(c, gin.H{"menuTree": menuTree}, "获取用户的可访问菜单树成功")

@@ -41,7 +41,7 @@ func (pc PointController) GetPoints(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
@@ -49,10 +49,10 @@ func (pc PointController) GetPoints(c *gin.Context) {
 	// 获取
 	point, total, err := pc.PointRepository.GetPointLogs(&req)
 	if err != nil {
-		response.Fail(c, nil, "获取积分列表失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, gin.H{"points": dto.ToPointsDto(point), "total": total}, "获取积分列表成功")
+	response.Success(c, gin.H{"points": dto.ToPointsDto(point), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
 // 创建积分
@@ -65,16 +65,16 @@ func (pc PointController) CreatePoint(c *gin.Context) {
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.Trans)
+		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
 		response.Fail(c, nil, errStr)
 		return
 	}
 
 	err := pc.PointRepository.CreatePoint(req.UserID, "admin", "后台添加", "0", req.ProjectID, req.Point)
 	if err != nil {
-		response.Fail(c, nil, "创建积分失败: "+err.Error())
+		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
 		return
 	}
-	response.Success(c, nil, "创建积分成功")
+	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
 
 }

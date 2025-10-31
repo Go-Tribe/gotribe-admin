@@ -84,12 +84,17 @@ func login(c *gin.Context) (interface{}, error) {
 	userRepository := repository.NewAdminRepository()
 	user, err := userRepository.Login(u)
 	if err != nil {
+		// 检查是否为RepositoryError，如果是则返回本地化错误消息
+		if repoErr, ok := err.(*common.RepositoryError); ok {
+			localizedMsg := repoErr.GetLocalizedMessage(c)
+			return nil, fmt.Errorf("%s", localizedMsg)
+		}
 		return nil, err
 	}
 	// 将用户以json格式写入, payloadFunc/authorizator会使用到
 	userJson, err := util.JSONUtil.Struct2Json(user)
 	if err != nil {
-		return nil, fmt.Errorf("用户信息序列化失败: %v", err)
+		return nil, fmt.Errorf("%s: %v", common.Msg(c, common.MsgUserSerializeFail), err)
 	}
 	return map[string]interface{}{
 		"user": userJson,
@@ -113,13 +118,15 @@ func authorizator(data interface{}, c *gin.Context) bool {
 // 用户登录校验失败处理
 func unauthorized(c *gin.Context, code int, message string) {
 	common.Log.Debugf("JWT认证失败, 错误码: %d, 错误信息: %s", code, message)
-	response.ResponseFunc(c, code, code, nil, fmt.Sprintf("JWT认证失败, 错误码: %d, 错误信息: %s", code, message))
+	// 使用本地化的JWT认证失败消息，并包含具体的错误信息
+	localizedMsg := fmt.Sprintf("%s: %s", common.Msg(c, common.MsgJWTAuthFail), message)
+	response.Unauthorized(c, localizedMsg)
 }
 
 // 登录成功后的响应
 func loginResponse(c *gin.Context, code int, token string, expires time.Time) {
 	msg := common.Msg(c, common.MsgLoginSuccess)
-	response.ResponseFunc(c, code, code,
+	response.Success(c,
 		gin.H{
 			"token":   token,
 			"expires": expires.Format(known.TIME_FORMAT),
@@ -136,7 +143,7 @@ func logoutResponse(c *gin.Context, code int) {
 // 刷新token后的响应
 func refreshResponse(c *gin.Context, code int, token string, expires time.Time) {
 	msg := common.Msg(c, common.MsgRefreshTokenSuccess)
-	response.ResponseFunc(c, code, code,
+	response.Success(c,
 		gin.H{
 			"token":   token,
 			"expires": expires,

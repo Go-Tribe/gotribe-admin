@@ -12,89 +12,133 @@ import (
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/middleware"
 	"net/http"
+	"time"
 
+	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-
-	"time"
 )
 
-// 初始化
+// RouteInitializer 路由初始化器类型
+type RouteInitializer func(*gin.RouterGroup, *jwt.GinJWTMiddleware) gin.IRoutes
+
+// InitRoutes 初始化所有路由
 func InitRoutes(fs embed.FS) *gin.Engine {
-	//设置模式
+	// 设置运行模式
 	gin.SetMode(config.Conf.System.Mode)
 
-	// 创建带有默认中间件的路由:
-	// 日志与恢复中间件
+	// 创建 Gin 引擎
 	r := gin.Default()
-	// 创建不带中间件的路由:
 
-	// 启用限流中间件
-	// 默认每50毫秒填充一个令牌，最多填充200个
+	// 设置中间件
+	setupMiddlewares(r)
+
+	// 初始化 JWT 认证中间件
+	authMiddleware := initAuthMiddleware()
+
+	// 设置静态文件服务
+	setupStaticFiles(r, fs)
+
+	// 设置 Swagger 文档路由
+	setupSwaggerRoutes(r)
+
+	// 注册 API 路由
+	registerAPIRoutes(r, authMiddleware)
+
+	// 注册任务管理路由（特殊处理，不在 API 分组中）
+	JobRoutes(r, authMiddleware)
+
+	common.Log.Info("初始化路由完成！")
+	return r
+}
+
+// setupMiddlewares 设置全局中间件
+func setupMiddlewares(r *gin.Engine) {
+	// 限流中间件
 	fillInterval := time.Duration(config.Conf.RateLimit.FillInterval)
 	capacity := config.Conf.RateLimit.Capacity
 	r.Use(middleware.RateLimitMiddleware(time.Millisecond*fillInterval, capacity))
 
-	// 启用全局跨域中间件
+	// 全局跨域中间件
 	r.Use(middleware.CORSMiddleware())
 
-	// 启用语言协商中间件（zh/en），默认中文
+	// 语言协商中间件（zh/en），默认中文
 	r.Use(middleware.LangMiddleware())
 
-	// 启用操作日志中间件
+	// 操作日志中间件
 	r.Use(middleware.OperationLogMiddleware())
+}
 
-	// 初始化JWT认证中间件
+// initAuthMiddleware 初始化 JWT 认证中间件
+func initAuthMiddleware() *jwt.GinJWTMiddleware {
 	authMiddleware, err := middleware.InitAuth()
 	if err != nil {
-		common.Log.Panicf("初始化JWT中间件失败：%v", err)
-		panic(fmt.Sprintf("初始化JWT中间件失败：%v", err))
+		errMsg := fmt.Sprintf("初始化JWT中间件失败：%v", err)
+		common.Log.Panicf(errMsg)
+		panic(errMsg)
 	}
-	embedFS, _ := static.EmbedFolder(fs, "web/admin/dist")
+	return authMiddleware
+}
+
+// setupStaticFiles 设置静态文件服务
+func setupStaticFiles(r *gin.Engine, fs embed.FS) {
+	embedFS, err := static.EmbedFolder(fs, "web/admin/dist")
+	if err != nil {
+		common.Log.Errorf("设置静态文件服务失败：%v", err)
+		return
+	}
+
 	r.Use(static.Serve("/", embedFS))
 	r.NoRoute(func(c *gin.Context) {
 		common.Log.Infof("A 404 error occurred, but the specific URL path is not logged to prevent log injection.")
 		c.Redirect(http.StatusMovedPermanently, "/")
 	})
-	// end
+}
 
-	// Swagger 文档路由
+// setupSwaggerRoutes 设置 Swagger 文档路由
+func setupSwaggerRoutes(r *gin.Engine) {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+}
 
-	// 路由分组
+// registerAPIRoutes 注册所有 API 路由
+func registerAPIRoutes(r *gin.Engine, authMiddleware *jwt.GinJWTMiddleware) {
 	apiGroup := r.Group("/" + config.Conf.System.UrlPathPrefix)
 
-	// 注册路由
-	InitBaseRoutes(apiGroup, authMiddleware)            // 注册基础路由, 不需要jwt认证中间件,不需要casbin中间件
-	InitAdminRoutes(apiGroup, authMiddleware)           // 注册用户路由, jwt认证中间件,casbin鉴权中间件
-	InitRoleRoutes(apiGroup, authMiddleware)            // 注册角色路由, jwt认证中间件,casbin鉴权中间件
-	InitMenuRoutes(apiGroup, authMiddleware)            // 注册菜单路由, jwt认证中间件,casbin鉴权中间件
-	InitApiRoutes(apiGroup, authMiddleware)             // 注册接口路由, jwt认证中间件,casbin鉴权中间件
-	InitOperationLogRoutes(apiGroup, authMiddleware)    // 注册操作日志路由, jwt认证中间件,casbin鉴权中间件
-	InitProjectRoutes(apiGroup, authMiddleware)         // 注册项目管理路由, jwt认证中间件,casbin鉴权中间件
-	InitConfigRoutes(apiGroup, authMiddleware)          // 注册配置管理路由, jwt认证中间件,casbin鉴权中间件
-	InitTagRoutes(apiGroup, authMiddleware)             // 注册标签管理路由, jwt认证中间件,casbin鉴权中间件
-	InitCategoryRoutes(apiGroup, authMiddleware)        // 注册分类管理路由, jwt认证中间件,casbin鉴权中间件
-	InitPostRoutes(apiGroup, authMiddleware)            // 注册内容管理路由, jwt认证中间件,casbin鉴权中间件
-	InitUserRoutes(apiGroup, authMiddleware)            // 注册用户管理路由, jwt认证中间件,casbin鉴权中间件
-	InitResourceRoutes(apiGroup, authMiddleware)        // 注册资源管理路由, jwt认证中间件,casbin鉴权中间件
-	InitColumnRoutes(apiGroup, authMiddleware)          // 注册专栏管理路由, jwt认证中间件,casbin鉴权中间件
-	InitAdSceneRoutes(apiGroup, authMiddleware)         // 注册推广场景管理路由, jwt认证中间件,casbin鉴权中间件
-	InitAdRoutes(apiGroup, authMiddleware)              // 注册广告位管理路由, jwt认证中间件,casbin鉴权中间件
-	InitCommentRoutes(apiGroup, authMiddleware)         // 注册评论管理路由, jwt认证中间件,casbin鉴权中间件
-	JobRoutes(r, authMiddleware)                        // 注册任务管理路由
-	InitPointRoutes(apiGroup, authMiddleware)           // 注册积分管理路由, jwt认证中间件,casbin鉴权中间件
-	InitProductCategoryRoutes(apiGroup, authMiddleware) // 注册商品分类管理路由, jwt认证中间件,casbin鉴权中间件
-	InitProductTypeRoutes(apiGroup, authMiddleware)     // 注册商品类型管理路由, jwt认证中间件,casbin鉴权中间件
-	InitProductSpecRoutes(apiGroup, authMiddleware)     // 注册商品规格管理路由, jwt认证中间件,casbin鉴权中间件
-	InitProductSpecItemRoutes(apiGroup, authMiddleware) // 注册商品规格项管理路由, jwt认证中间件,casbin鉴权中间件
-	InitProductRoutes(apiGroup, authMiddleware)         // 注册商品管理路由, jwt认证中间件,casbin鉴权中间件
-	InitOrderRoutes(apiGroup, authMiddleware)           // 注册订单管理路由, jwt认证中间件,casbin鉴权中间件
-	InitSystemConfigRoutes(apiGroup, authMiddleware)    // 注册系统配置管理路由, jwt认证中间件,casbin鉴权中间件
-	InitFeedbackRoutes(apiGroup, authMiddleware)        // 注册反馈管理路由, jwt认证中间件,casbin鉴权中间件
-	InitIndexRoutes(apiGroup, authMiddleware)           // 注册首页数据路由, jwt认证中间件,casbin鉴权中间件
-	common.Log.Info("初始化路由完成！")
-	return r
+	// 路由初始化器列表
+	routeInitializers := []RouteInitializer{
+		InitBaseRoutes,            // 基础路由（无需认证）
+		InitAdminRoutes,           // 管理员路由
+		InitRoleRoutes,            // 角色管理
+		InitMenuRoutes,            // 菜单管理
+		InitApiRoutes,             // 接口管理
+		InitOperationLogRoutes,    // 操作日志
+		InitProjectRoutes,         // 项目管理
+		InitConfigRoutes,          // 配置管理
+		InitTagRoutes,             // 标签管理
+		InitCategoryRoutes,        // 分类管理
+		InitPostRoutes,            // 内容管理
+		InitUserRoutes,            // 用户管理
+		InitResourceRoutes,        // 资源管理
+		InitColumnRoutes,          // 专栏管理
+		InitAdSceneRoutes,         // 推广场景管理
+		InitAdRoutes,              // 广告位管理
+		InitCommentRoutes,         // 评论管理
+		InitPointRoutes,           // 积分管理
+		InitProductCategoryRoutes, // 商品分类管理
+		InitProductTypeRoutes,     // 商品类型管理
+		InitProductSpecRoutes,     // 商品规格管理
+		InitProductSpecItemRoutes, // 商品规格项管理
+		InitProductRoutes,         // 商品管理
+		InitOrderRoutes,           // 订单管理
+		InitSystemConfigRoutes,    // 系统配置管理
+		InitFeedbackRoutes,        // 反馈管理
+		InitIndexRoutes,           // 首页数据
+	}
+
+	// 批量注册路由
+	for _, initFunc := range routeInitializers {
+		initFunc(apiGroup, authMiddleware)
+	}
 }

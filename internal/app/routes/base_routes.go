@@ -6,9 +6,10 @@
 package routes
 
 import (
+	"gotribe-admin/internal/app/controller"
+
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
-	"gotribe-admin/internal/app/controller"
 )
 
 // 注册基础路由

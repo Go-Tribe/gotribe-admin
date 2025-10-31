@@ -171,7 +171,6 @@ cache/
 # Test files
 test/
 tests/
-*_test.go
 
 # Documentation
 docs/build/

@@ -1830,13 +1830,13 @@ paths:
       summary: 创建管理员
       tags:
       - 管理员管理
-  /admin/delete/batch:
+  /admin/delete:
     delete:
       consumes:
       - application/json
-      description: 根据管理员ID列表批量删除管理员
+      description: 根据用户ID批量删除用户
       parameters:
-      - description: 删除管理员请求
+      - description: 删除用户请求
         in: body
         name: request
         required: true
@@ -1855,7 +1855,7 @@ paths:
             $ref: '#/definitions/response.Response'
       security:
       - BearerAuth: []
-      summary: 批量删除管理员
+      summary: 批量删除用户
       tags:
       - 管理员管理
   /admin/info:

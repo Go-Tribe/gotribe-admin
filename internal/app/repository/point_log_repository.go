@@ -6,7 +6,6 @@
 package repository
 
 import (
-	"errors"
 	"fmt"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -46,7 +45,7 @@ func (cr PointLogRepository) GetPointLogs(req *vo.PointLogListRequest) ([]*model
 		// 查出用户 ID。再用用户 ID 去筛选
 		var user model.User
 		if result := common.DB.Model(&model.User{}).Where("nickname like ?", fmt.Sprintf("%%%s%%", req.Nickname)).First(&user); result.Error != nil {
-			return nil, 0, errors.New("用户不存在")
+			return nil, 0, common.ErrUserNotFound
 		}
 		db = db.Where("user_id = ?", user.UserID)
 	}

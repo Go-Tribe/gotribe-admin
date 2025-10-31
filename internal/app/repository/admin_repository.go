@@ -6,7 +6,6 @@
 package repository
 
 import (
-	"errors"
 	"fmt"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -60,13 +59,13 @@ func (ar AdminRepository) Login(admin *model.Admin) (*model.Admin, error) {
 		Preload("Roles").
 		First(&firstAdmin).Error
 	if err != nil {
-		return nil, errors.New("用户不存在")
+		return nil, common.ErrUserNotFound
 	}
 
 	// 判断用户的状态
 	adminStatus := firstAdmin.Status
 	if adminStatus != 1 {
-		return nil, errors.New("用户被禁用")
+		return nil, common.ErrUserDisabled
 	}
 
 	// 判断用户拥有的所有角色的状态,全部角色都被禁用则不能登录
@@ -81,13 +80,13 @@ func (ar AdminRepository) Login(admin *model.Admin) (*model.Admin, error) {
 	}
 
 	if !isValidate {
-		return nil, errors.New("用户角色被禁用")
+		return nil, common.ErrUserRoleDisabled
 	}
 
 	// 校验密码
 	err = util.PasswordUtil.ComparePasswd(firstAdmin.Password, admin.Password)
 	if err != nil {
-		return &firstAdmin, errors.New("密码错误")
+		return &firstAdmin, common.ErrPasswordIncorrect
 	}
 	return &firstAdmin, nil
 }
@@ -98,7 +97,7 @@ func (ar AdminRepository) GetCurrentAdmin(c *gin.Context) (model.Admin, error) {
 	var newAdmin model.Admin
 	ctxAdmin, exist := c.Get("user")
 	if !exist {
-		return newAdmin, errors.New("用户未登录")
+		return newAdmin, common.ErrUserNotLoggedIn
 	}
 	u, _ := ctxAdmin.(model.Admin)
 
@@ -240,7 +239,7 @@ func (ar AdminRepository) BatchDeleteAdminByIds(ids []uint) error {
 		// 根据ID获取用户
 		admin, err := ar.GetAdminByID(id)
 		if err != nil {
-			return errors.New(fmt.Sprintf("未获取到ID为%d的用户", id))
+			return common.NewUserNotFoundByIDError(id)
 		}
 		admins = append(admins, admin)
 	}
@@ -264,7 +263,7 @@ func (ar AdminRepository) GetAdminMinRoleSortsByIds(ids []uint) ([]int, error) {
 		return []int{}, err
 	}
 	if len(adminList) == 0 {
-		return []int{}, errors.New("未获取到任何用户信息")
+		return []int{}, common.ErrNoUsersFound
 	}
 	var roleMinSortList []int
 	for _, admin := range adminList {
@@ -290,12 +289,12 @@ func (ar AdminRepository) UpdateAdminInfoCacheByRoleID(roleID uint) error {
 	var role model.Role
 	err := common.DB.Where("id = ?", roleID).Preload("Admins").First(&role).Error
 	if err != nil {
-		return errors.New("根据角色ID角色信息失败")
+		return common.ErrRoleInfoFailed
 	}
 
 	admins := role.Admin
 	if len(admins) == 0 {
-		return errors.New("根据角色ID未获取到拥有该角色的用户")
+		return common.ErrNoUsersWithRole
 	}
 
 	// 更新用户信息缓存

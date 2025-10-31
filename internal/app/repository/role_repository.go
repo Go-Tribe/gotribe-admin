@@ -6,7 +6,6 @@
 package repository
 
 import (
-	"errors"
 	"fmt"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -108,7 +107,7 @@ func (r RoleRepository) GetRoleApisByRoleKeyword(roleKeyword string) ([]*model.A
 	var apis []*model.Api
 	err := common.DB.Find(&apis).Error
 	if err != nil {
-		return apis, errors.New("获取角色的权限接口失败")
+		return apis, common.ErrGetRoleApisFailed
 	}
 
 	accessApis := make([]*model.Api, 0)
@@ -133,22 +132,22 @@ func (r RoleRepository) UpdateRoleApis(roleKeyword string, reqRolePolicies [][]s
 	// 先获取path中的角色ID对应角色已有的police(需要先删除的)
 	err := common.CasbinEnforcer.LoadPolicy()
 	if err != nil {
-		return errors.New("角色的权限接口策略加载失败")
+		return common.ErrLoadRolePolicyFailed
 	}
 	rmPolicies, _ := common.CasbinEnforcer.GetFilteredPolicy(0, roleKeyword)
 	if len(rmPolicies) > 0 {
 		isRemoved, _ := common.CasbinEnforcer.RemovePolicies(rmPolicies)
 		if !isRemoved {
-			return errors.New("更新角色的权限接口失败")
+			return common.ErrUpdateRoleApisFailed
 		}
 	}
 	isAdded, _ := common.CasbinEnforcer.AddPolicies(reqRolePolicies)
 	if !isAdded {
-		return errors.New("更新角色的权限接口失败")
+		return common.ErrUpdateRoleApisFailed
 	}
 	err = common.CasbinEnforcer.LoadPolicy()
 	if err != nil {
-		return errors.New("更新角色的权限接口成功，角色的权限接口策略加载失败")
+		return common.ErrLoadRolePolicyFailed
 	} else {
 		return err
 	}
@@ -170,7 +169,7 @@ func (r RoleRepository) BatchDeleteRoleByIds(roleIds []uint) error {
 			if len(rmPolicies) > 0 {
 				isRemoved, _ := common.CasbinEnforcer.RemovePolicies(rmPolicies)
 				if !isRemoved {
-					return errors.New("删除角色成功, 删除角色关联权限接口失败")
+					return common.ErrDeleteRoleApisFailed
 				}
 			}
 		}

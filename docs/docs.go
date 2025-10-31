@@ -708,14 +708,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/delete/batch": {
+        "/admin/delete": {
             "delete": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "根据管理员ID列表批量删除管理员",
+                "description": "根据用户ID批量删除用户",
                 "consumes": [
                     "application/json"
                 ],
@@ -725,10 +725,10 @@ const docTemplate = `{
                 "tags": [
                     "管理员管理"
                 ],
-                "summary": "批量删除管理员",
+                "summary": "批量删除用户",
                 "parameters": [
                     {
-                        "description": "删除管理员请求",
+                        "description": "删除用户请求",
                         "name": "request",
                         "in": "body",
                         "required": true,

@@ -64,6 +64,14 @@ dev: # 开发运行
 test: # 运行测试
 	@go test -v ./...
 
+.PHONY: test-all
+test-all: # 运行所有测试用例（包括单元测试和基准测试）
+	@echo "运行所有单元测试..."
+	@go test -v ./...
+	@echo "\n运行基准测试..."
+	@go test -bench=. -v ./...
+	@echo "\n测试完成！"
+
 .PHONY: test-coverage
 test-coverage: # 运行测试并生成覆盖率报告
 	@go test -v -coverprofile=coverage.out ./...
@@ -135,6 +143,7 @@ help: # 显示帮助信息
 	@echo "  run          - 开发运行"
 	@echo "  dev          - 开发运行"
 	@echo "  test         - 运行测试"
+	@echo "  test-all     - 运行所有测试用例（包括单元测试和基准测试）"
 	@echo "  test-coverage- 运行测试并生成覆盖率报告"
 	@echo "  lint         - 代码检查"
 	@echo "  fmt          - 格式化代码"

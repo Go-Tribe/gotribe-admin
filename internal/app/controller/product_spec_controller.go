@@ -15,7 +15,6 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 )
 
 type IProductSpecController interface {
@@ -52,7 +51,7 @@ func NewProductSpecController() IProductSpecController {
 func (tc ProductSpecController) GetProductSpecInfo(c *gin.Context) {
 	productSpec, err := tc.ProductSpecRepository.GetProductSpecByProductSpecID(c.Param("productSpecID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	productSpecInfoDto := dto.ToProductSpecInfoDto(productSpec)
@@ -76,20 +75,19 @@ func (tc ProductSpecController) GetProductSpecs(c *gin.Context) {
 	var req vo.ProductSpecListRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.HandleValidationError(c, err)
 		return
 	}
 
 	// 获取
 	productSpec, total, err := tc.ProductSpecRepository.GetProductSpecs(&req)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
 	}
 	response.Success(c, gin.H{"productSpecs": dto.ToProductSpecsDto(productSpec), "total": total}, common.Msg(c, common.MsgListSuccess))
@@ -110,13 +108,12 @@ func (tc ProductSpecController) CreateProductSpec(c *gin.Context) {
 	var req vo.CreateProductSpecRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -131,7 +128,7 @@ func (tc ProductSpecController) CreateProductSpec(c *gin.Context) {
 
 	productSpecInfo, err := tc.ProductSpecRepository.CreateProductSpec(&productSpec)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
 	}
 	response.Success(c, gin.H{"productSpec": dto.ToProductSpecInfoDto(*productSpecInfo)}, common.Msg(c, common.MsgCreateSuccess))
@@ -154,20 +151,19 @@ func (tc ProductSpecController) UpdateProductSpecByID(c *gin.Context) {
 	var req vo.CreateProductSpecRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.HandleValidationError(c, err)
 		return
 	}
 
 	// 根据path中的ProductSpecID获取商品规格信息
 	oldProductSpec, err := tc.ProductSpecRepository.GetProductSpecByProductSpecID(c.Param("productSpecID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	oldProductSpec.Title = req.Title
@@ -178,7 +174,7 @@ func (tc ProductSpecController) UpdateProductSpecByID(c *gin.Context) {
 	// 更新商品规格
 	err = tc.ProductSpecRepository.UpdateProductSpec(&oldProductSpec)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
@@ -200,13 +196,12 @@ func (tc ProductSpecController) BatchDeleteProductSpecByIds(c *gin.Context) {
 	var req vo.DeleteProductSpecRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -214,7 +209,7 @@ func (tc ProductSpecController) BatchDeleteProductSpecByIds(c *gin.Context) {
 	reqProductSpecIds := strings.Split(req.ProductSpecIds, ",")
 	err := tc.ProductSpecRepository.BatchDeleteProductSpecByIds(reqProductSpecIds)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return
 	}
 
@@ -237,7 +232,7 @@ func (tc ProductSpecController) GetProductSpecAndItem(c *gin.Context) {
 	categoryID := c.Param("categoryID")
 	productSpecAndItem, err := tc.ProductSpecRepository.GetProductSpecAndItem(categoryID)
 	if err != nil {
-		response.Fail(c, nil, "获取商品规格失败: "+err.Error())
+		response.InternalServerError(c, "获取商品规格失败: "+err.Error())
 		return
 	}
 	response.Success(c, gin.H{"productSpecAndItem": dto.ToProductSpecsDto(productSpecAndItem)}, "获取商品规格成功")

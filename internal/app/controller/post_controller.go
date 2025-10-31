@@ -57,7 +57,7 @@ func NewPostController() IPostController {
 func (pc PostController) GetPostInfo(c *gin.Context) {
 	post, err := pc.PostRepository.GetPostByPostID(c.Param("postID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	postInfoDto := dto.ToPostInfoDto(&post)
@@ -81,20 +81,20 @@ func (pc PostController) GetPosts(c *gin.Context) {
 	var req vo.PostListRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 获取
 	post, total, err := pc.PostRepository.GetPosts(&req)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
 	}
 	response.Success(c, gin.H{"posts": dto.ToPostsDto(post), "total": total}, common.Msg(c, common.MsgListSuccess))
@@ -115,13 +115,13 @@ func (pc PostController) CreatePost(c *gin.Context) {
 	var req vo.CreatePostRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 	imageStr := strings.Join(req.Images, ",")
@@ -152,7 +152,7 @@ func (pc PostController) CreatePost(c *gin.Context) {
 
 	err := pc.PostRepository.CreatePost(&post)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
@@ -175,20 +175,20 @@ func (pc PostController) UpdatePostByID(c *gin.Context) {
 	var req vo.UpdatePostRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 根据path中的PostID获取内容信息
 	oldPost, err := pc.PostRepository.GetPostByPostID(c.Param("postID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	imageStr := strings.Join(req.Images, ",")
@@ -218,7 +218,7 @@ func (pc PostController) UpdatePostByID(c *gin.Context) {
 	// 更新内容
 	err = pc.PostRepository.UpdatePost(&oldPost)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
@@ -239,13 +239,13 @@ func (tc PostController) BatchDeletePostByIds(c *gin.Context) {
 	var req vo.DeletePostsRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
@@ -253,7 +253,7 @@ func (tc PostController) BatchDeletePostByIds(c *gin.Context) {
 	reqPostIds := strings.Split(req.PostIds, ",")
 	err := tc.PostRepository.BatchDeletePostByIds(reqPostIds)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
@@ -275,14 +275,14 @@ func (pc PostController) PushPostByID(c *gin.Context) {
 	// 根据path中的PostID获取内容信息
 	oldPost, err := pc.PostRepository.GetPostByPostID(c.Param("postID"))
 	if err != nil {
-		response.Fail(c, nil, "获取需要更新的内容信息失败: "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	oldPost.Status = known.POST_STATUS_PUBLIC
 	// 更新内容
 	err = pc.PostRepository.UpdatePost(&oldPost)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
 	}
 	// 同步内容至百度

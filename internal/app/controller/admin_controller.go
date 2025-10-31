@@ -54,7 +54,7 @@ func NewAdminController() IAdminController {
 func (uc AdminController) GetAdminInfo(c *gin.Context) {
 	user, err := uc.AdminRepository.GetCurrentAdmin(c)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	userInfoDto := dto.ToAdminInfoDto(user)
@@ -78,20 +78,19 @@ func (uc AdminController) GetAdmins(c *gin.Context) {
 	var req vo.AdminListRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.HandleValidationError(c, err)
 		return
 	}
 
 	// 获取
 	users, total, err := uc.AdminRepository.GetAdmins(&req)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
 	}
 	response.Success(c, gin.H{"admins": dto.ToAdminsDto(users), "total": total}, common.Msg(c, common.MsgListSuccess))
@@ -113,13 +112,13 @@ func (uc AdminController) ChangePwd(c *gin.Context) {
 
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
@@ -128,7 +127,7 @@ func (uc AdminController) ChangePwd(c *gin.Context) {
 	// 获取当前用户
 	user, err := uc.AdminRepository.GetCurrentAdmin(c)
 	if err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 获取用户的真实正确密码
@@ -136,18 +135,18 @@ func (uc AdminController) ChangePwd(c *gin.Context) {
 	// 判断前端请求的密码是否等于真实密码
 	err = util.PasswordUtil.ComparePasswd(correctPasswd, req.OldPassword)
 	if err != nil {
-		response.Fail(c, nil, "原密码有误")
+		response.PasswordIncorrect(c, "原密码有误")
 		return
 	}
 	// 更新密码
 	hashedPassword, err := util.PasswordUtil.GenPasswd(req.NewPassword)
 	if err != nil {
-		response.Fail(c, nil, "密码加密失败: "+err.Error())
+		response.InternalServerError(c, "密码加密失败: "+err.Error())
 		return
 	}
 	err = uc.AdminRepository.ChangePwd(user.Username, hashedPassword)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
+		response.DatabaseError(c, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
@@ -168,20 +167,19 @@ func (uc AdminController) CreateAdmin(c *gin.Context) {
 	var req vo.CreateAdminRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.HandleValidationError(c, err)
 		return
 	}
 
 	// 直接使用明文密码；如提供则校验长度
 	if req.Password != "" {
 		if len(req.Password) < 6 {
-			response.Fail(c, nil, "密码长度至少为6位")
+			response.ValidationFail(c, "密码长度至少为6位")
 			return
 		}
 	}
@@ -189,7 +187,7 @@ func (uc AdminController) CreateAdmin(c *gin.Context) {
 	// 当前用户角色排序最小值（最高等级角色）以及当前用户
 	currentRoleSortMin, ctxAdmin, err := uc.AdminRepository.GetCurrentAdminMinRoleSort(c)
 	if err != nil {
-		response.Fail(c, nil, err.Error())
+		response.InternalServerError(c, err.Error())
 		return
 	}
 
@@ -199,11 +197,11 @@ func (uc AdminController) CreateAdmin(c *gin.Context) {
 	rr := repository.NewRoleRepository()
 	roles, err := rr.GetRolesByIds(reqRoleIds)
 	if err != nil {
-		response.Fail(c, nil, "根据角色ID获取角色信息失败: "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	if len(roles) == 0 {
-		response.Fail(c, nil, "未获取到角色信息")
+		response.NotFound(c, "未获取到角色信息")
 		return
 	}
 	var reqRoleSorts []int
@@ -215,7 +213,7 @@ func (uc AdminController) CreateAdmin(c *gin.Context) {
 
 	// 当前用户的角色排序最小值 需要小于 前端传来的角色排序最小值（用户不能创建比自己等级高的或者相同等级的用户）
 	if currentRoleSortMin >= reqRoleSortMin {
-		response.Fail(c, nil, "用户不能创建比自己等级高的或者相同等级的用户")
+		response.Forbidden(c, "用户不能创建比自己等级高的或者相同等级的用户")
 		return
 	}
 
@@ -225,7 +223,7 @@ func (uc AdminController) CreateAdmin(c *gin.Context) {
 	}
 	hashedPassword, err := util.PasswordUtil.GenPasswd(req.Password)
 	if err != nil {
-		response.Fail(c, nil, "密码加密失败: "+err.Error())
+		response.InternalServerError(c, "密码加密失败: "+err.Error())
 		return
 	}
 	user := model.Admin{
@@ -242,7 +240,7 @@ func (uc AdminController) CreateAdmin(c *gin.Context) {
 
 	err = uc.AdminRepository.CreateAdmin(&user)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
@@ -265,34 +263,33 @@ func (uc AdminController) UpdateAdminByID(c *gin.Context) {
 	var req vo.CreateAdminRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.HandleValidationError(c, err)
 		return
 	}
 
 	//获取path中的userID
 	userID, _ := strconv.Atoi(c.Param("userID"))
 	if userID <= 0 {
-		response.Fail(c, nil, "用户ID不正确")
+		response.ValidationFail(c, "用户ID不正确")
 		return
 	}
 
 	// 根据path中的userID获取用户信息
 	oldAdmin, err := uc.AdminRepository.GetAdminByID(uint(userID))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 
 	// 获取当前用户
 	ctxAdmin, err := uc.AdminRepository.GetCurrentAdmin(c)
 	if err != nil {
-		response.Fail(c, nil, err.Error())
+		response.InternalServerError(c, err.Error())
 		return
 	}
 	// 获取当前用户的所有角色
@@ -314,11 +311,11 @@ func (uc AdminController) UpdateAdminByID(c *gin.Context) {
 	rr := repository.NewRoleRepository()
 	roles, err := rr.GetRolesByIds(reqRoleIds)
 	if err != nil {
-		response.Fail(c, nil, "根据角色ID获取角色信息失败: "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	if len(roles) == 0 {
-		response.Fail(c, nil, "未获取到角色信息")
+		response.NotFound(c, "未获取到角色信息")
 		return
 	}
 	var reqRoleSorts []int
@@ -345,19 +342,19 @@ func (uc AdminController) UpdateAdminByID(c *gin.Context) {
 		// 如果是更新自己
 		// 不能禁用自己
 		if req.Status == 2 {
-			response.Fail(c, nil, "不能禁用自己")
+			response.Forbidden(c, "不能禁用自己")
 			return
 		}
 		// 不能更改自己的角色
 		reqDiff, currentDiff := funk.Difference(req.RoleIds, currentRoleIds)
 		if len(reqDiff.([]uint)) > 0 || len(currentDiff.([]uint)) > 0 {
-			response.Fail(c, nil, "不能更改自己的角色")
+			response.Forbidden(c, "不能更改自己的角色")
 			return
 		}
 
 		// 不能更新自己的密码，只能在个人中心更新
 		if req.Password != "" {
-			response.Fail(c, nil, "请到个人中心更新自身密码")
+			response.Forbidden(c, "请到个人中心更新自身密码")
 			return
 		}
 
@@ -370,17 +367,17 @@ func (uc AdminController) UpdateAdminByID(c *gin.Context) {
 		// 根据path中的userID获取用户角色排序最小值
 		minRoleSorts, err := uc.AdminRepository.GetAdminMinRoleSortsByIds([]uint{uint(userID)})
 		if err != nil || len(minRoleSorts) == 0 {
-			response.Fail(c, nil, "根据用户ID获取用户角色排序最小值失败")
+			response.InternalServerError(c, "根据用户ID获取用户角色排序最小值失败")
 			return
 		}
 		if currentRoleSortMin >= minRoleSorts[0] {
-			response.Fail(c, nil, "用户不能更新比自己角色等级高的或者相同等级的用户")
+			response.Forbidden(c, "用户不能更新比自己角色等级高的或者相同等级的用户")
 			return
 		}
 
 		// 用户不能把别的用户角色等级更新得比自己高或相等
 		if currentRoleSortMin >= reqRoleSortMin {
-			response.Fail(c, nil, "用户不能把别的用户角色等级更新得比自己高或相等")
+			response.Forbidden(c, "用户不能把别的用户角色等级更新得比自己高或相等")
 			return
 		}
 
@@ -388,7 +385,7 @@ func (uc AdminController) UpdateAdminByID(c *gin.Context) {
 		if req.Password != "" {
 			hashedPassword, err := util.PasswordUtil.GenPasswd(req.Password)
 			if err != nil {
-				response.Fail(c, nil, "密码加密失败: "+err.Error())
+				response.InternalServerError(c, "密码加密失败: "+err.Error())
 				return
 			}
 			user.Password = hashedPassword
@@ -399,35 +396,34 @@ func (uc AdminController) UpdateAdminByID(c *gin.Context) {
 	// 更新用户
 	err = uc.AdminRepository.UpdateAdmin(&user)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 
 }
 
-// BatchDeleteAdminByIds 批量删除管理员
-// @Summary      批量删除管理员
-// @Description  根据管理员ID列表批量删除管理员
+// BatchDeleteAdminByIds 批量删除用户
+// @Summary      批量删除用户
+// @Description  根据用户ID批量删除用户
 // @Tags         管理员管理
 // @Accept       json
 // @Produce      json
-// @Param        request body vo.DeleteAdminRequest true "删除管理员请求"
+// @Param        request body vo.DeleteAdminRequest true "删除用户请求"
 // @Success      200 {object} response.Response
 // @Failure      400 {object} response.Response
-// @Router       /admin/delete/batch [delete]
+// @Router       /admin/delete [delete]
 // @Security     BearerAuth
 func (uc AdminController) BatchDeleteAdminByIds(c *gin.Context) {
 	var req vo.DeleteAdminRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -436,35 +432,35 @@ func (uc AdminController) BatchDeleteAdminByIds(c *gin.Context) {
 	// 根据用户ID获取用户角色排序最小值
 	roleMinSortList, err := uc.AdminRepository.GetAdminMinRoleSortsByIds(reqAdminIds)
 	if err != nil || len(roleMinSortList) == 0 {
-		response.Fail(c, nil, "根据用户ID获取用户角色排序最小值失败")
+		response.InternalServerError(c, "根据用户ID获取用户角色排序最小值失败")
 		return
 	}
 
 	// 当前用户角色排序最小值（最高等级角色）以及当前用户
 	minSort, ctxAdmin, err := uc.AdminRepository.GetCurrentAdminMinRoleSort(c)
 	if err != nil {
-		response.Fail(c, nil, err.Error())
+		response.InternalServerError(c, err.Error())
 		return
 	}
 	currentRoleSortMin := int(minSort)
 
 	// 不能删除自己
 	if funk.Contains(reqAdminIds, ctxAdmin.ID) {
-		response.Fail(c, nil, "用户不能删除自己")
+		response.Forbidden(c, "用户不能删除自己")
 		return
 	}
 
 	// 不能删除比自己角色排序低(等级高)的用户
 	for _, sort := range roleMinSortList {
 		if currentRoleSortMin >= sort {
-			response.Fail(c, nil, "用户不能删除比自己角色等级高的用户")
+			response.Forbidden(c, "用户不能删除比自己角色等级高的用户")
 			return
 		}
 	}
 
 	err = uc.AdminRepository.BatchDeleteAdminByIds(reqAdminIds)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))

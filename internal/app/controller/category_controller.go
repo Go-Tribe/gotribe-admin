@@ -50,7 +50,7 @@ func NewCategoryController() ICategoryController {
 func (cc CategoryController) GetCategoryInfo(c *gin.Context) {
 	category, err := cc.CategoryRepository.GetConfigByCategoryID(c.Param("categoryID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	response.Success(c, gin.H{
@@ -71,7 +71,7 @@ func (cc CategoryController) GetCategoryInfo(c *gin.Context) {
 func (cc CategoryController) GetCategorys(c *gin.Context) {
 	categorys, err := cc.CategoryRepository.GetCategorys()
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
 	}
 	response.Success(c, gin.H{"categorys": categorys}, common.Msg(c, common.MsgListSuccess))
@@ -90,7 +90,7 @@ func (cc CategoryController) GetCategorys(c *gin.Context) {
 func (cc CategoryController) GetCategoryTree(c *gin.Context) {
 	categoryTree, err := cc.CategoryRepository.GetCategoryTree()
 	if err != nil {
-		response.Fail(c, nil, "获取分类树失败: "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	response.Success(c, gin.H{"categoryTree": categoryTree}, "获取分类树成功")
@@ -111,13 +111,13 @@ func (cc CategoryController) CreateCategory(c *gin.Context) {
 	var req vo.CreateCategoryRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
@@ -134,7 +134,7 @@ func (cc CategoryController) CreateCategory(c *gin.Context) {
 
 	err := cc.CategoryRepository.CreateCategory(&category)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
@@ -156,24 +156,24 @@ func (cc CategoryController) UpdateCategoryByID(c *gin.Context) {
 	var req vo.UpdateCategoryRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 	categoryID := c.Param("categoryID")
 	// 校验父级分类ID
 	category, err := cc.CategoryRepository.GetConfigByCategoryID(categoryID)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	if req.ParentID == &category.ID {
-		response.Fail(c, nil, "不能把自己设为父分类")
+		response.ValidationFail(c, "不能把自己设为父分类")
 		return
 	}
 	category.Title = req.Title
@@ -186,7 +186,7 @@ func (cc CategoryController) UpdateCategoryByID(c *gin.Context) {
 	category.Description = req.Description
 	err = cc.CategoryRepository.UpdateCategoryByID(categoryID, &category)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
 	}
 
@@ -209,19 +209,19 @@ func (cc CategoryController) BatchDeleteCategoryByIds(c *gin.Context) {
 	var req vo.DeleteCategoryRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 	reqCategoryIds := strings.Split(req.CategoryIds, ",")
 	err := cc.CategoryRepository.BatchDeleteCategoryByIds(reqCategoryIds)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return
 	}
 

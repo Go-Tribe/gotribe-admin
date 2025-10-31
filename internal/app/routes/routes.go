@@ -52,7 +52,8 @@ func InitRoutes(fs embed.FS) *gin.Engine {
 		common.Log.Panicf("初始化JWT中间件失败：%v", err)
 		panic(fmt.Sprintf("初始化JWT中间件失败：%v", err))
 	}
-	r.Use(static.Serve("/", static.EmbedFolder(fs, "web/admin/dist")))
+	embedFS, _ := static.EmbedFolder(fs, "web/admin/dist")
+	r.Use(static.Serve("/", embedFS))
 	r.NoRoute(func(c *gin.Context) {
 		common.Log.Infof("A 404 error occurred, but the specific URL path is not logged to prevent log injection.")
 		c.Redirect(http.StatusMovedPermanently, "/")

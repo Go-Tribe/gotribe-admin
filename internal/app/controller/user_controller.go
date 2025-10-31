@@ -53,7 +53,7 @@ func NewUserController() IUserController {
 func (pc UserController) GetUserInfo(c *gin.Context) {
 	user, err := pc.UserRepository.GetUserByUserID(c.Param("userID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	userInfoDto := dto.ToUserInfoDto(&user)
@@ -77,20 +77,20 @@ func (pc UserController) GetUsers(c *gin.Context) {
 	var req vo.UserListRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 获取
 	user, total, err := pc.UserRepository.GetUsers(&req)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
 	}
 	response.Success(c, gin.H{"users": dto.ToUsersDto(user), "total": total}, common.Msg(c, common.MsgListSuccess))
@@ -111,13 +111,13 @@ func (pc UserController) CreateUser(c *gin.Context) {
 	var req vo.CreateUserRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
@@ -131,7 +131,7 @@ func (pc UserController) CreateUser(c *gin.Context) {
 
 	err := pc.UserRepository.CreateUser(&user)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
@@ -154,20 +154,20 @@ func (pc UserController) UpdateUserByID(c *gin.Context) {
 	var req vo.UpdateUserRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 根据path中的UserID获取用户信息
 	oldUser, err := pc.UserRepository.GetUserByUserID(c.Param("userID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	oldUser.Nickname = req.Nickname
@@ -181,7 +181,7 @@ func (pc UserController) UpdateUserByID(c *gin.Context) {
 	// 更新用户
 	err = pc.UserRepository.UpdateUser(&oldUser)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
@@ -202,13 +202,13 @@ func (tc UserController) BatchDeleteUserByIds(c *gin.Context) {
 	var req vo.DeleteUsersRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
@@ -216,7 +216,7 @@ func (tc UserController) BatchDeleteUserByIds(c *gin.Context) {
 	reqUserIds := strings.Split(req.UserIds, ",")
 	err := tc.UserRepository.BatchDeleteUserByIds(reqUserIds)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
@@ -237,7 +237,7 @@ func (tc UserController) BatchDeleteUserByIds(c *gin.Context) {
 func (tc UserController) SearchUserByUsername(c *gin.Context) {
 	user, err := tc.UserRepository.SearchUserByNickname(c.Param("nickname"))
 	if err != nil {
-		response.Fail(c, nil, "获取需要更新的用户信息失败: "+err.Error())
+		response.InternalServerError(c, "获取需要更新的用户信息失败: "+err.Error())
 		return
 	}
 	response.Success(c, gin.H{"users": dto.ToUsersDto(user)}, common.Msg(c, common.MsgListSuccess))

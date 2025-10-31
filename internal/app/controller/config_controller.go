@@ -51,7 +51,7 @@ func NewConfigController() IConfigController {
 func (pc ConfigController) GetConfigInfo(c *gin.Context) {
 	config, err := pc.ConfigRepository.GetConfigByConfigID(c.Param("configID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	configInfoDto := dto.ToConfigInfoDto(config)
@@ -75,20 +75,20 @@ func (pc ConfigController) GetConfigs(c *gin.Context) {
 	var req vo.ConfigListRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 获取
 	config, total, err := pc.ConfigRepository.GetConfigs(&req)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
 	}
 	response.Success(c, gin.H{"configs": dto.ToConfigsDto(config), "total": total}, common.Msg(c, common.MsgListSuccess))
@@ -109,13 +109,13 @@ func (pc ConfigController) CreateConfig(c *gin.Context) {
 	var req vo.CreateConfigRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
@@ -131,7 +131,7 @@ func (pc ConfigController) CreateConfig(c *gin.Context) {
 
 	err := pc.ConfigRepository.CreateConfig(&config)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
@@ -155,20 +155,20 @@ func (pc ConfigController) UpdateConfigByID(c *gin.Context) {
 	var req vo.UpdateConfigRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 根据path中的ConfigID获取配置信息
 	oldConfig, err := pc.ConfigRepository.GetConfigByConfigID(c.Param("configID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	oldConfig.Title = req.Title
@@ -179,7 +179,7 @@ func (pc ConfigController) UpdateConfigByID(c *gin.Context) {
 	// 更新配置
 	err = pc.ConfigRepository.UpdateConfig(&oldConfig)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
@@ -201,13 +201,13 @@ func (pc ConfigController) BatchDeleteConfigByIds(c *gin.Context) {
 	var req vo.DeleteConfigsRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
@@ -215,7 +215,7 @@ func (pc ConfigController) BatchDeleteConfigByIds(c *gin.Context) {
 	reqConfigIds := strings.Split(req.ConfigIds, ",")
 	err := pc.ConfigRepository.BatchDeleteConfigByIds(reqConfigIds)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))

@@ -13,7 +13,6 @@ import (
 	"gotribe-admin/pkg/api/vo"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 
 	"strconv"
 )
@@ -51,19 +50,18 @@ func (ac ApiController) GetApis(c *gin.Context) {
 	var req vo.ApiListRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.HandleValidationError(c, err)
 		return
 	}
 	// 获取
 	apis, total, err := ac.ApiRepository.GetApis(&req)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgListFail))
+		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
 	}
 	response.Success(c, gin.H{
@@ -84,7 +82,7 @@ func (ac ApiController) GetApis(c *gin.Context) {
 func (ac ApiController) GetApiTree(c *gin.Context) {
 	tree, err := ac.ApiRepository.GetApiTree()
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	response.Success(c, gin.H{
@@ -107,13 +105,12 @@ func (ac ApiController) CreateApi(c *gin.Context) {
 	var req vo.CreateApiRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -121,7 +118,7 @@ func (ac ApiController) CreateApi(c *gin.Context) {
 	ur := repository.NewAdminRepository()
 	ctxUser, err := ur.GetCurrentAdmin(c)
 	if err != nil {
-		response.Fail(c, nil, "获取当前用户信息失败")
+		response.InternalServerError(c, "获取当前用户信息失败")
 		return
 	}
 
@@ -136,7 +133,7 @@ func (ac ApiController) CreateApi(c *gin.Context) {
 	// 创建接口
 	err = ac.ApiRepository.CreateApi(&api)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
 	}
 
@@ -160,20 +157,19 @@ func (ac ApiController) UpdateApiByID(c *gin.Context) {
 	var req vo.UpdateApiRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.HandleValidationError(c, err)
 		return
 	}
 
 	// 获取路径中的apiID
 	apiID, _ := strconv.Atoi(c.Param("apiID"))
 	if apiID <= 0 {
-		response.Fail(c, nil, "接口ID不正确")
+		response.ValidationFail(c, "接口ID不正确")
 		return
 	}
 
@@ -181,7 +177,7 @@ func (ac ApiController) UpdateApiByID(c *gin.Context) {
 	ur := repository.NewAdminRepository()
 	ctxUser, err := ur.GetCurrentAdmin(c)
 	if err != nil {
-		response.Fail(c, nil, "获取当前用户信息失败")
+		response.InternalServerError(c, "获取当前用户信息失败")
 		return
 	}
 
@@ -195,7 +191,7 @@ func (ac ApiController) UpdateApiByID(c *gin.Context) {
 
 	err = ac.ApiRepository.UpdateApiByID(uint(apiID), &api)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
 	}
 
@@ -217,20 +213,19 @@ func (ac ApiController) BatchDeleteApiByIds(c *gin.Context) {
 	var req vo.DeleteApiRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.HandleValidationError(c, err)
 		return
 	}
 
 	// 删除接口
 	err := ac.ApiRepository.BatchDeleteApiByIds(req.ApiIds)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))

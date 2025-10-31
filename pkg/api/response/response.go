@@ -28,12 +28,73 @@ func ResponseFunc(c *gin.Context, httpStatus int, code int, data gin.H, message 
 	})
 }
 
+// ResponseWithCode 根据错误码自动设置HTTP状态码
+func ResponseWithCode(c *gin.Context, code int, data gin.H, message string) {
+	httpStatus := GetHTTPStatus(code)
+	ResponseFunc(c, httpStatus, code, data, message)
+}
+
 // 返回前端-成功
 func Success(c *gin.Context, data gin.H, message string) {
-	ResponseFunc(c, http.StatusOK, 200, data, message)
+	ResponseFunc(c, http.StatusOK, CodeSuccess, data, message)
 }
 
 // 返回前端-失败
 func Fail(c *gin.Context, data gin.H, message string) {
-	ResponseFunc(c, http.StatusBadRequest, 400, data, message)
+	ResponseFunc(c, http.StatusBadRequest, CodeBadRequest, data, message)
+}
+
+// 参数验证失败
+func ValidationFail(c *gin.Context, message string) {
+	ResponseWithCode(c, CodeValidationFailed, nil, message)
+}
+
+// 未认证
+func Unauthorized(c *gin.Context, message string) {
+	ResponseWithCode(c, CodeUnauthorized, nil, message)
+}
+
+// 权限不足
+func Forbidden(c *gin.Context, message string) {
+	ResponseWithCode(c, CodeForbidden, nil, message)
+}
+
+// 资源不存在
+func NotFound(c *gin.Context, message string) {
+	ResponseWithCode(c, CodeNotFound, nil, message)
+}
+
+// 内部服务器错误
+func InternalServerError(c *gin.Context, message string) {
+	ResponseWithCode(c, CodeInternalServerError, nil, message)
+}
+
+// 数据库错误
+func DatabaseError(c *gin.Context, message string) {
+	ResponseWithCode(c, CodeDatabaseError, nil, message)
+}
+
+// 用户不存在
+func UserNotFound(c *gin.Context, message string) {
+	ResponseWithCode(c, CodeUserNotFound, nil, message)
+}
+
+// 用户已被禁用
+func UserDisabled(c *gin.Context, message string) {
+	ResponseWithCode(c, CodeUserDisabled, nil, message)
+}
+
+// 密码错误
+func PasswordIncorrect(c *gin.Context, message string) {
+	ResponseWithCode(c, CodePasswordIncorrect, nil, message)
+}
+
+// Token无效
+func TokenInvalid(c *gin.Context, message string) {
+	ResponseWithCode(c, CodeTokenInvalid, nil, message)
+}
+
+// 权限不足（业务级别）
+func PermissionDenied(c *gin.Context, message string) {
+	ResponseWithCode(c, CodePermissionDenied, nil, message)
 }

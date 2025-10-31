@@ -68,14 +68,14 @@ func (c *JobController) ListJobs(ctx *gin.Context) {
 func (c *JobController) GetJobStatus(ctx *gin.Context) {
 	jobName := ctx.Param("name")
 	if jobName == "" {
-		response.Fail(ctx, gin.H{}, "任务名称不能为空")
+		response.ValidationFail(ctx, "任务名称不能为空")
 		return
 	}
 
 	registry := jobs.GetGlobalRegistry()
 	status, err := registry.GetJobStatus(jobName)
 	if err != nil {
-		response.Fail(ctx, gin.H{}, "任务状态获取失败: "+err.Error())
+		response.InternalServerError(ctx, "任务状态获取失败: "+err.Error())
 		return
 	}
 
@@ -97,7 +97,7 @@ func (c *JobController) GetJobStatus(ctx *gin.Context) {
 func (c *JobController) GetJobHistory(ctx *gin.Context) {
 	jobName := ctx.Param("name")
 	if jobName == "" {
-		response.Fail(ctx, gin.H{}, "任务名称不能为空")
+		response.ValidationFail(ctx, "任务名称不能为空")
 		return
 	}
 
@@ -110,7 +110,7 @@ func (c *JobController) GetJobHistory(ctx *gin.Context) {
 	registry := jobs.GetGlobalRegistry()
 	history, err := registry.GetJobHistory(jobName, limit)
 	if err != nil {
-		response.Fail(ctx, gin.H{}, "任务历史获取失败: "+err.Error())
+		response.InternalServerError(ctx, "任务历史获取失败: "+err.Error())
 		return
 	}
 
@@ -131,13 +131,13 @@ func (c *JobController) GetJobHistory(ctx *gin.Context) {
 func (c *JobController) EnableJob(ctx *gin.Context) {
 	jobName := ctx.Param("name")
 	if jobName == "" {
-		response.Fail(ctx, gin.H{}, "任务名称不能为空")
+		response.ValidationFail(ctx, "任务名称不能为空")
 		return
 	}
 
 	registry := jobs.GetGlobalRegistry()
 	if err := registry.EnableJob(jobName); err != nil {
-		response.Fail(ctx, gin.H{}, "启用任务失败: "+err.Error())
+		response.InternalServerError(ctx, "启用任务失败: "+err.Error())
 		return
 	}
 
@@ -158,13 +158,13 @@ func (c *JobController) EnableJob(ctx *gin.Context) {
 func (c *JobController) DisableJob(ctx *gin.Context) {
 	jobName := ctx.Param("name")
 	if jobName == "" {
-		response.Fail(ctx, gin.H{}, "任务名称不能为空")
+		response.ValidationFail(ctx, "任务名称不能为空")
 		return
 	}
 
 	registry := jobs.GetGlobalRegistry()
 	if err := registry.DisableJob(jobName); err != nil {
-		response.Fail(ctx, gin.H{}, "禁用任务失败: "+err.Error())
+		response.InternalServerError(ctx, "禁用任务失败: "+err.Error())
 		return
 	}
 

@@ -51,7 +51,7 @@ func NewProductCategoryController() IProductCategoryController {
 func (cc ProductCategoryController) GetProductCategoryInfo(c *gin.Context) {
 	productCategory, err := cc.ProductCategoryRepository.GetConfigByProductCategoryID(c.Param("productCategoryID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	response.Success(c, gin.H{
@@ -72,7 +72,7 @@ func (cc ProductCategoryController) GetProductCategoryInfo(c *gin.Context) {
 func (cc ProductCategoryController) GetProductCategorys(c *gin.Context) {
 	productCategorys, err := cc.ProductCategoryRepository.GetProductCategorys()
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
 	}
 	response.Success(c, gin.H{"productCategorys": productCategorys}, common.Msg(c, common.MsgListSuccess))
@@ -91,7 +91,7 @@ func (cc ProductCategoryController) GetProductCategorys(c *gin.Context) {
 func (cc ProductCategoryController) GetProductCategoryTree(c *gin.Context) {
 	productCategoryTree, err := cc.ProductCategoryRepository.GetProductCategoryTree()
 	if err != nil {
-		response.Fail(c, nil, "获取分类树失败: "+err.Error())
+		response.InternalServerError(c, "获取分类树失败: "+err.Error())
 		return
 	}
 	response.Success(c, gin.H{"productCategoryTree": productCategoryTree}, "获取分类树成功")
@@ -113,13 +113,13 @@ func (cc ProductCategoryController) CreateProductCategory(c *gin.Context) {
 	var req vo.CreateProductCategoryRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
@@ -137,7 +137,7 @@ func (cc ProductCategoryController) CreateProductCategory(c *gin.Context) {
 
 	err := cc.ProductCategoryRepository.CreateProductCategory(&productCategory)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
@@ -160,24 +160,24 @@ func (cc ProductCategoryController) UpdateProductCategoryByID(c *gin.Context) {
 	var req vo.UpdateProductCategoryRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 	productCategoryID := c.Param("productCategoryID")
 	// 校验父级分类ID
 	productCategory, err := cc.ProductCategoryRepository.GetConfigByProductCategoryID(productCategoryID)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	if req.ParentID == &productCategory.ID {
-		response.Fail(c, nil, "不能把自己设为父分类")
+		response.ValidationFail(c, "不能把自己设为父分类")
 		return
 	}
 	productCategory.Title = req.Title
@@ -191,7 +191,7 @@ func (cc ProductCategoryController) UpdateProductCategoryByID(c *gin.Context) {
 	productCategory.ProjectID = req.ProjectID
 	err = cc.ProductCategoryRepository.UpdateProductCategoryByID(productCategoryID, &productCategory)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
 	}
 
@@ -215,19 +215,19 @@ func (cc ProductCategoryController) BatchDeleteProductCategoryByIds(c *gin.Conte
 	var req vo.DeleteProductCategoryRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 	reqProductCategoryIds := strings.Split(req.ProductCategoryIds, ",")
 	err := cc.ProductCategoryRepository.BatchDeleteProductCategoryByIds(reqProductCategoryIds)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return
 	}
 

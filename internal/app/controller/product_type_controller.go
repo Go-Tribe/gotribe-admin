@@ -58,7 +58,7 @@ func NewProductTypeController() IProductTypeController {
 func (tc ProductTypeController) GetProductTypeInfo(c *gin.Context) {
 	productType, err := tc.ProductTypeRepository.GetProductTypeByProductTypeID(c.Param("productTypeID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	productTypeInfoDto := dto.ToProductTypeInfoDto(productType)
@@ -69,7 +69,7 @@ func (tc ProductTypeController) GetProductTypeInfo(c *gin.Context) {
 	// 获取关联的规格信息并追加进去
 	productSpecs, err := tc.ProductSpecRepository.GetProductSpecsByProductSpecIDs(specIds)
 	if err != nil {
-		response.Fail(c, nil, "获取商品规格信息失败: "+err.Error())
+		response.InternalServerError(c, "获取商品规格信息失败: "+err.Error())
 		return
 	}
 	productTypeInfoDto.Spec = dto.ToProductSpecsDto(productSpecs)
@@ -99,20 +99,20 @@ func (tc ProductTypeController) GetProductTypes(c *gin.Context) {
 	var req vo.ProductTypeListRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 获取
 	productType, total, err := tc.ProductTypeRepository.GetProductTypes(&req)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
 	}
 	response.Success(c, gin.H{"productTypes": dto.ToProductTypesDto(productType), "total": total}, common.Msg(c, common.MsgListSuccess))
@@ -134,13 +134,13 @@ func (tc ProductTypeController) CreateProductType(c *gin.Context) {
 	var req vo.CreateProductTypeRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
@@ -154,7 +154,7 @@ func (tc ProductTypeController) CreateProductType(c *gin.Context) {
 
 	productTypeInfo, err := tc.ProductTypeRepository.CreateProductType(&productType)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
 	}
 	response.Success(c, gin.H{"productType": dto.ToProductTypeInfoDto(*productTypeInfo)}, common.Msg(c, common.MsgCreateSuccess))
@@ -177,20 +177,20 @@ func (tc ProductTypeController) UpdateProductTypeByID(c *gin.Context) {
 	var req vo.CreateProductTypeRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 根据path中的ProductTypeID获取商品类型信息
 	oldProductType, err := tc.ProductTypeRepository.GetProductTypeByProductTypeID(c.Param("productTypeID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	oldProductType.Title = req.Title
@@ -200,7 +200,7 @@ func (tc ProductTypeController) UpdateProductTypeByID(c *gin.Context) {
 	// 更新商品类型
 	err = tc.ProductTypeRepository.UpdateProductType(&oldProductType)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
@@ -222,13 +222,13 @@ func (tc ProductTypeController) BatchDeleteProductTypeByIds(c *gin.Context) {
 	var req vo.DeleteProductTypesRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
@@ -236,7 +236,7 @@ func (tc ProductTypeController) BatchDeleteProductTypeByIds(c *gin.Context) {
 	reqProductTypeIds := strings.Split(req.ProductTypeIds, ",")
 	err := tc.ProductTypeRepository.BatchDeleteProductTypeByIds(reqProductTypeIds)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return
 	}
 

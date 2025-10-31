@@ -16,7 +16,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 )
 
 // 注意：此控制器仅用于生成 Swagger 文档
@@ -53,13 +52,12 @@ func (ac AuthController) Login(c *gin.Context) {
 	var req vo.RegisterAndLoginRequest
 	// 请求json绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -71,14 +69,14 @@ func (ac AuthController) Login(c *gin.Context) {
 	// 密码校验
 	user, err := ac.AdminRepository.Login(u)
 	if err != nil {
-		response.Fail(c, nil, "用户名或密码错误")
+		response.PasswordIncorrect(c, "用户名或密码错误")
 		return
 	}
 
 	// 将用户以json格式写入, payloadFunc/authorizator会使用到
 	userJson, err := util.JSONUtil.Struct2Json(user)
 	if err != nil {
-		response.Fail(c, nil, fmt.Sprintf("用户信息序列化失败: %v", err))
+		response.InternalServerError(c, fmt.Sprintf("用户信息序列化失败: %v", err))
 		return
 	}
 

@@ -44,7 +44,7 @@ func NewSystemConfigController() ISystemConfigController {
 func (tc SystemConfigController) GetSystemConfigInfo(c *gin.Context) {
 	systemConfig, err := tc.SystemConfigRepository.GetSystemConfig()
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	systemConfigInfoDto := dto.ToSystemConfigInfoDto(&systemConfig)
@@ -68,20 +68,20 @@ func (tc SystemConfigController) UpdateSystemConfigByID(c *gin.Context) {
 	var req vo.CreateSystemConfigRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 根据path中的SystemConfigID获取系统配置信息
 	oldSystemConfig, err := tc.SystemConfigRepository.GetSystemConfig()
 	if err != nil {
-		response.Fail(c, nil, "获取需要更新的系统配置信息失败: "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	oldSystemConfig.Title = req.Title
@@ -92,7 +92,7 @@ func (tc SystemConfigController) UpdateSystemConfigByID(c *gin.Context) {
 	// 更新系统配置
 	err = tc.SystemConfigRepository.UpdateSystemConfig(&oldSystemConfig)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))

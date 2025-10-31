@@ -51,7 +51,7 @@ func NewTagController() ITagController {
 func (tc TagController) GetTagInfo(c *gin.Context) {
 	tag, err := tc.TagRepository.GetTagByTagID(c.Param("tagID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	tagInfoDto := dto.ToTagInfoDto(tag)
@@ -75,20 +75,20 @@ func (tc TagController) GetTags(c *gin.Context) {
 	var req vo.TagListRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 获取
 	tag, total, err := tc.TagRepository.GetTags(&req)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
 	}
 	response.Success(c, gin.H{"tags": dto.ToTagsDto(tag), "total": total}, common.Msg(c, common.MsgListSuccess))
@@ -109,13 +109,13 @@ func (tc TagController) CreateTag(c *gin.Context) {
 	var req vo.CreateTagRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
@@ -127,7 +127,7 @@ func (tc TagController) CreateTag(c *gin.Context) {
 
 	tagInfo, err := tc.TagRepository.CreateTag(&tag)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
 	}
 	response.Success(c, gin.H{"tag": dto.ToTagInfoDto(*tagInfo)}, common.Msg(c, common.MsgCreateSuccess))
@@ -150,20 +150,20 @@ func (tc TagController) UpdateTagByID(c *gin.Context) {
 	var req vo.CreateTagRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 根据path中的TagID获取标签信息
 	oldTag, err := tc.TagRepository.GetTagByTagID(c.Param("tagID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	oldTag.Title = req.Title
@@ -172,7 +172,7 @@ func (tc TagController) UpdateTagByID(c *gin.Context) {
 	// 更新标签
 	err = tc.TagRepository.UpdateTag(&oldTag)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
@@ -194,13 +194,13 @@ func (tc TagController) BatchDeleteTagByIds(c *gin.Context) {
 	var req vo.DeleteTagsRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
@@ -208,7 +208,7 @@ func (tc TagController) BatchDeleteTagByIds(c *gin.Context) {
 	reqTagIds := strings.Split(req.TagIds, ",")
 	err := tc.TagRepository.BatchDeleteTagByIds(reqTagIds)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))

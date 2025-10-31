@@ -52,7 +52,7 @@ func NewColumnController() IColumnController {
 func (pc ColumnController) GetColumnInfo(c *gin.Context) {
 	column, err := pc.ColumnRepository.GetColumnByColumnID(c.Param("columnID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	columnInfoDto := dto.ToColumnInfoDto(column)
@@ -81,20 +81,20 @@ func (pc ColumnController) GetColumns(c *gin.Context) {
 	var req vo.ColumnListRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 获取
 	column, total, err := pc.ColumnRepository.GetColumns(&req)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
 	}
 	response.Success(c, gin.H{"columns": dto.ToColumnsDto(column), "total": total}, common.Msg(c, common.MsgListSuccess))
@@ -116,13 +116,13 @@ func (pc ColumnController) CreateColumn(c *gin.Context) {
 	var req vo.CreateColumnRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
@@ -136,7 +136,7 @@ func (pc ColumnController) CreateColumn(c *gin.Context) {
 
 	err := pc.ColumnRepository.CreateColumn(&column)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
@@ -160,20 +160,20 @@ func (pc ColumnController) UpdateColumnByID(c *gin.Context) {
 	var req vo.UpdateColumnRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 根据path中的ColumnID获取专栏信息
 	oldColumn, err := pc.ColumnRepository.GetColumnByColumnID(c.Param("columnID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	oldColumn.Title = req.Title
@@ -183,7 +183,7 @@ func (pc ColumnController) UpdateColumnByID(c *gin.Context) {
 	// 更新专栏
 	err = pc.ColumnRepository.UpdateColumn(&oldColumn)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
@@ -205,13 +205,13 @@ func (pc ColumnController) BatchDeleteColumnByIds(c *gin.Context) {
 	var req vo.DeleteColumnsRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
@@ -219,7 +219,7 @@ func (pc ColumnController) BatchDeleteColumnByIds(c *gin.Context) {
 	reqColumnIds := strings.Split(req.ColumnIds, ",")
 	err := pc.ColumnRepository.BatchDeleteColumnByIds(reqColumnIds)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))

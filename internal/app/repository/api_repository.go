@@ -131,7 +131,7 @@ func (a ApiRepository) UpdateApiByID(apiID uint, api *model.Api) error {
 	}
 	// 更新了method和path就更新casbin中policy
 	if oldApi.Path != api.Path || oldApi.Method != api.Method {
-		policies := common.CasbinEnforcer.GetFilteredPolicy(1, oldApi.Path, oldApi.Method)
+		policies, _ := common.CasbinEnforcer.GetFilteredPolicy(1, oldApi.Path, oldApi.Method)
 		// 接口在casbin的policy中存在才进行操作
 		if len(policies) > 0 {
 			// 先删除
@@ -175,7 +175,7 @@ func (a ApiRepository) BatchDeleteApiByIds(apiIds []uint) error {
 	// 如果删除成功，删除casbin中policy
 	if err == nil {
 		for _, api := range apis {
-			policies := common.CasbinEnforcer.GetFilteredPolicy(1, api.Path, api.Method)
+			policies, _ := common.CasbinEnforcer.GetFilteredPolicy(1, api.Path, api.Method)
 			if len(policies) > 0 {
 				isRemoved, _ := common.CasbinEnforcer.RemovePolicies(policies)
 				if !isRemoved {

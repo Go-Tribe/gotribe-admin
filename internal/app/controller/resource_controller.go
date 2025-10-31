@@ -56,7 +56,7 @@ func NewResourceController() IResourceController {
 func (pc ResourceController) GetResourceInfo(c *gin.Context) {
 	resource, err := pc.ResourceRepository.GetResourceByResourceID(c.Param("resourceID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	resourceInfoDto := dto.ToResourceInfoDto(resource)
@@ -81,20 +81,20 @@ func (pc ResourceController) GetResources(c *gin.Context) {
 	var req vo.ResourceListRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 获取
 	resource, total, err := pc.ResourceRepository.GetResources(&req)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
 	}
 	response.Success(c, gin.H{"resources": dto.ToResourcesDto(resource), "total": total}, common.Msg(c, common.MsgListSuccess))
@@ -117,20 +117,20 @@ func (pc ResourceController) UpdateResourceByID(c *gin.Context) {
 	var req vo.CreateResourceRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 根据path中的ResourceID获取资源信息
 	oldResource, err := pc.ResourceRepository.GetResourceByResourceID(c.Param("resourceID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	oldResource.Title = req.Title
@@ -138,7 +138,7 @@ func (pc ResourceController) UpdateResourceByID(c *gin.Context) {
 	// 更新资源
 	err = pc.ResourceRepository.UpdateResource(&oldResource)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
@@ -159,11 +159,11 @@ func (pc ResourceController) UpdateResourceByID(c *gin.Context) {
 func (pc ResourceController) UploadResources(c *gin.Context) {
 	fileHeader, err := c.FormFile("file")
 	if err != nil {
-		response.Fail(c, nil, "上传资源失败: "+err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	if fileHeader.Size > known.DEFAULT_UPLOAD_SIZE {
-		response.Fail(c, nil, "上传资源过大")
+		response.ValidationFail(c, "上传资源过大")
 		return
 	}
 	upload, err := upload.NewUploadFile(
@@ -175,14 +175,14 @@ func (pc ResourceController) UploadResources(c *gin.Context) {
 	)
 	fileRes, err := upload.UploadFile(fileHeader)
 	if err != nil {
-		response.Fail(c, nil, "上传 CDN 失败："+err.Error())
+		response.InternalServerError(c, "上传 CDN 失败："+err.Error())
 		return
 	}
 	uploadRes := dto.ToUploadResourceDto(&fileRes)
 	uploadRes.Domain = config.Conf.System.CDNDomain
 	fileType, err := util.FileUtil.GetFileType(fileHeader)
 	if err != nil {
-		response.Fail(c, nil, "获取文件类型失败: "+err.Error())
+		response.InternalServerError(c, "获取文件类型失败: "+err.Error())
 		return
 	}
 	uploadRes.FileType = fileType
@@ -198,7 +198,7 @@ func (pc ResourceController) UploadResources(c *gin.Context) {
 	}
 
 	if err = pc.ResourceRepository.CreateResource(&resource); err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
 	}
 	response.Success(c, gin.H{"upload": uploadRes}, "上传资源成功")
@@ -220,19 +220,19 @@ func (pc ResourceController) DeleteResourceByID(c *gin.Context) {
 	var req vo.DeleteResourcesRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	err := pc.ResourceRepository.DeleteResourceByID(req.ResourceID)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return
 	}
 

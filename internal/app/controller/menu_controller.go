@@ -13,7 +13,6 @@ import (
 	"gotribe-admin/pkg/api/vo"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 
 	"strconv"
 )
@@ -52,7 +51,7 @@ func NewMenuController() IMenuController {
 func (mc MenuController) GetMenus(c *gin.Context) {
 	menus, err := mc.MenuRepository.GetMenus()
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
 	}
 	response.Success(c, gin.H{"menus": menus}, common.Msg(c, common.MsgListSuccess))
@@ -71,7 +70,7 @@ func (mc MenuController) GetMenus(c *gin.Context) {
 func (mc MenuController) GetMenuTree(c *gin.Context) {
 	menuTree, err := mc.MenuRepository.GetMenuTree()
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	response.Success(c, gin.H{"menuTree": menuTree}, common.Msg(c, common.MsgGetSuccess))
@@ -92,13 +91,12 @@ func (mc MenuController) CreateMenu(c *gin.Context) {
 	var req vo.CreateMenuRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.HandleValidationError(c, err)
 		return
 	}
 
@@ -106,7 +104,7 @@ func (mc MenuController) CreateMenu(c *gin.Context) {
 	ur := repository.NewAdminRepository()
 	ctxUser, err := ur.GetCurrentAdmin(c)
 	if err != nil {
-		response.Fail(c, nil, "获取当前用户信息失败")
+		response.InternalServerError(c, "获取当前用户信息失败")
 		return
 	}
 
@@ -130,7 +128,7 @@ func (mc MenuController) CreateMenu(c *gin.Context) {
 
 	err = mc.MenuRepository.CreateMenu(&menu)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
@@ -152,20 +150,19 @@ func (mc MenuController) UpdateMenuByID(c *gin.Context) {
 	var req vo.UpdateMenuRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.HandleValidationError(c, err)
 		return
 	}
 
 	// 获取路径中的menuID
 	menuID, _ := strconv.Atoi(c.Param("menuID"))
 	if menuID <= 0 {
-		response.Fail(c, nil, "菜单ID不正确")
+		response.ValidationFail(c, "菜单ID不正确")
 		return
 	}
 
@@ -173,7 +170,7 @@ func (mc MenuController) UpdateMenuByID(c *gin.Context) {
 	ur := repository.NewAdminRepository()
 	ctxUser, err := ur.GetCurrentAdmin(c)
 	if err != nil {
-		response.Fail(c, nil, "获取当前用户信息失败")
+		response.InternalServerError(c, "获取当前用户信息失败")
 		return
 	}
 
@@ -197,7 +194,7 @@ func (mc MenuController) UpdateMenuByID(c *gin.Context) {
 
 	err = mc.MenuRepository.UpdateMenuByID(uint(menuID), &menu)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
@@ -219,18 +216,17 @@ func (mc MenuController) BatchDeleteMenuByIds(c *gin.Context) {
 	var req vo.DeleteMenuRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
-		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.HandleValidationError(c, err)
 		return
 	}
 	err := mc.MenuRepository.BatchDeleteMenuByIds(req.MenuIds)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
@@ -251,13 +247,13 @@ func (mc MenuController) GetUserMenusByUserID(c *gin.Context) {
 	// 获取路径中的userID
 	userID, _ := strconv.Atoi(c.Param("userID"))
 	if userID <= 0 {
-		response.Fail(c, nil, "用户ID不正确")
+		response.ValidationFail(c, "用户ID不正确")
 		return
 	}
 
 	menus, err := mc.MenuRepository.GetUserMenusByUserID(uint(userID))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
 	}
 	response.Success(c, gin.H{"menus": menus}, common.Msg(c, common.MsgListSuccess))
@@ -278,13 +274,13 @@ func (mc MenuController) GetUserMenuTreeByUserID(c *gin.Context) {
 	// 获取路径中的userID
 	userID, _ := strconv.Atoi(c.Param("userID"))
 	if userID <= 0 {
-		response.Fail(c, nil, "用户ID不正确")
+		response.ValidationFail(c, "用户ID不正确")
 		return
 	}
 
 	menuTree, err := mc.MenuRepository.GetUserMenuTreeByUserID(uint(userID))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	response.Success(c, gin.H{"menuTree": menuTree}, "获取用户的可访问菜单树成功")

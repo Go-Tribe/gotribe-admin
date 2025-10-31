@@ -52,7 +52,7 @@ func NewAdSceneController() IAdSceneController {
 func (pc AdSceneController) GetAdSceneInfo(c *gin.Context) {
 	adScene, err := pc.AdSceneRepository.GetAdSceneByAdSceneID(c.Param("adSceneID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	adSceneInfoDto := dto.ToAdSceneInfoDto(adScene)
@@ -79,20 +79,20 @@ func (pc AdSceneController) GetAdScenes(c *gin.Context) {
 	var req vo.AdSceneListRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 获取
 	adScene, total, err := pc.AdSceneRepository.GetAdScenes(&req)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
 	}
 	response.Success(c, gin.H{"adScenes": dto.ToAdScenesDto(adScene), "total": total}, common.Msg(c, common.MsgListSuccess))
@@ -114,13 +114,13 @@ func (pc AdSceneController) CreateAdScene(c *gin.Context) {
 	var req vo.CreateAdSceneRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
@@ -132,7 +132,7 @@ func (pc AdSceneController) CreateAdScene(c *gin.Context) {
 
 	err := pc.AdSceneRepository.CreateAdScene(&adScene)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
@@ -156,20 +156,20 @@ func (pc AdSceneController) UpdateAdSceneByID(c *gin.Context) {
 	var req vo.UpdateAdSceneRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 根据path中的AdSceneID获取推广场景信息
 	oldAdScene, err := pc.AdSceneRepository.GetAdSceneByAdSceneID(c.Param("adSceneID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	oldAdScene.Title = req.Title
@@ -177,7 +177,7 @@ func (pc AdSceneController) UpdateAdSceneByID(c *gin.Context) {
 	// 更新推广场景
 	err = pc.AdSceneRepository.UpdateAdScene(&oldAdScene)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
@@ -199,13 +199,13 @@ func (pc AdSceneController) BatchDeleteAdSceneByIds(c *gin.Context) {
 	var req vo.DeleteAdScenesRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
@@ -213,7 +213,7 @@ func (pc AdSceneController) BatchDeleteAdSceneByIds(c *gin.Context) {
 	reqAdSceneIds := strings.Split(req.AdSceneIds, ",")
 	err := pc.AdSceneRepository.BatchDeleteAdSceneByIds(reqAdSceneIds)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))

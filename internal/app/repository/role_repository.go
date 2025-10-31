@@ -102,7 +102,7 @@ func (r RoleRepository) UpdateRoleMenus(role *model.Role) error {
 
 // 根据角色关键字获取角色的权限接口
 func (r RoleRepository) GetRoleApisByRoleKeyword(roleKeyword string) ([]*model.Api, error) {
-	policies := common.CasbinEnforcer.GetFilteredPolicy(0, roleKeyword)
+	policies, _ := common.CasbinEnforcer.GetFilteredPolicy(0, roleKeyword)
 
 	// 获取所有接口
 	var apis []*model.Api
@@ -135,7 +135,7 @@ func (r RoleRepository) UpdateRoleApis(roleKeyword string, reqRolePolicies [][]s
 	if err != nil {
 		return errors.New("角色的权限接口策略加载失败")
 	}
-	rmPolicies := common.CasbinEnforcer.GetFilteredPolicy(0, roleKeyword)
+	rmPolicies, _ := common.CasbinEnforcer.GetFilteredPolicy(0, roleKeyword)
 	if len(rmPolicies) > 0 {
 		isRemoved, _ := common.CasbinEnforcer.RemovePolicies(rmPolicies)
 		if !isRemoved {
@@ -166,7 +166,7 @@ func (r RoleRepository) BatchDeleteRoleByIds(roleIds []uint) error {
 	if err == nil {
 		for _, role := range roles {
 			roleKeyword := role.Keyword
-			rmPolicies := common.CasbinEnforcer.GetFilteredPolicy(0, roleKeyword)
+			rmPolicies, _ := common.CasbinEnforcer.GetFilteredPolicy(0, roleKeyword)
 			if len(rmPolicies) > 0 {
 				isRemoved, _ := common.CasbinEnforcer.RemovePolicies(rmPolicies)
 				if !isRemoved {

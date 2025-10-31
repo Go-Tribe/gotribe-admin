@@ -52,7 +52,7 @@ func NewAdController() IAdController {
 func (pc AdController) GetAdInfo(c *gin.Context) {
 	ad, err := pc.AdRepository.GetAdByAdID(c.Param("adID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	adInfoDto := dto.ToAdInfoDto(ad)
@@ -81,20 +81,20 @@ func (pc AdController) GetAds(c *gin.Context) {
 	var req vo.AdListRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 获取
 	ad, total, err := pc.AdRepository.GetAds(&req)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
 	}
 	response.Success(c, gin.H{"ads": dto.ToAdsDto(ad), "total": total}, common.Msg(c, common.MsgListSuccess))
@@ -116,13 +116,13 @@ func (pc AdController) CreateAd(c *gin.Context) {
 	var req vo.CreateAdRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
@@ -141,7 +141,7 @@ func (pc AdController) CreateAd(c *gin.Context) {
 
 	err := pc.AdRepository.CreateAd(&ad)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
@@ -165,20 +165,20 @@ func (pc AdController) UpdateAdByID(c *gin.Context) {
 	var req vo.UpdateAdRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 根据path中的AdID获取广告信息
 	oldAd, err := pc.AdRepository.GetAdByAdID(c.Param("adID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	oldAd.Title = req.Title
@@ -194,7 +194,7 @@ func (pc AdController) UpdateAdByID(c *gin.Context) {
 	// 更新广告
 	err = pc.AdRepository.UpdateAd(&oldAd)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
@@ -216,13 +216,13 @@ func (pc AdController) BatchDeleteAdByIds(c *gin.Context) {
 	var req vo.DeleteAdsRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
@@ -230,7 +230,7 @@ func (pc AdController) BatchDeleteAdByIds(c *gin.Context) {
 	reqAdIds := strings.Split(req.AdIds, ",")
 	err := pc.AdRepository.BatchDeleteAdByIds(reqAdIds)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))

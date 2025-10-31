@@ -42,27 +42,27 @@ func (tc FeedbackController) GetFeedbacks(c *gin.Context) {
 	var req vo.FeedbackListRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 获取
 	feedbacks, total, err := tc.FeedbackRepository.GetFeedbacks(&req)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
 	}
 
 	// 获取所有的用户信息和项目信息，并附加到反馈中
 	feedbacks, err = getFeedbackOther(feedbacks)
 	if err != nil {
-		response.Fail(c, nil, "获取用户或项目信息失败: "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	response.Success(c, gin.H{"feedbacks": dto.ToFeedbacksDto(feedbacks), "total": total}, common.Msg(c, common.MsgListSuccess))

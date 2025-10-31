@@ -10,6 +10,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"gotribe-admin/internal/app/repository"
+	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/pkg/api/response"
 )
 
@@ -46,7 +47,7 @@ func NewIndexController() IIndexController {
 func (pc IndexController) GetIndexInfo(c *gin.Context) {
 	indexInfo, err := pc.IndexRepository.GetIndexData(c.Query("projectID"))
 	if err != nil {
-		response.Fail(c, nil, "获取首页头部数据失败: "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	response.Success(c, gin.H{
@@ -69,7 +70,7 @@ func (pc IndexController) GetIndexInfo(c *gin.Context) {
 func (pc IndexController) GetTimeRangeData(c *gin.Context) {
 	timeRangeData, err := pc.IndexRepository.GetTimeRangeData(c.Query("projectID"), c.Query("timeRange"))
 	if err != nil {
-		response.Fail(c, nil, "获取首页折线数据失败: "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	response.Success(c, gin.H{

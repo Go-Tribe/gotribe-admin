@@ -51,7 +51,7 @@ func NewProjectController() IProjectController {
 func (pc ProjectController) GetProjectInfo(c *gin.Context) {
 	project, err := pc.ProjectRepository.GetProjectByProjectID(c.Param("projectID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	projectInfoDto := dto.ToProjectInfoDto(&project)
@@ -75,20 +75,20 @@ func (pc ProjectController) GetProjects(c *gin.Context) {
 	var req vo.ProjectListRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 获取
 	project, total, err := pc.ProjectRepository.GetProjects(&req)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgListFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
 	}
 	response.Success(c, gin.H{"projects": dto.ToProjectsDto(project), "total": total}, common.Msg(c, common.MsgListSuccess))
@@ -109,13 +109,13 @@ func (pc ProjectController) CreateProject(c *gin.Context) {
 	var req vo.CreateProjectRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
@@ -138,7 +138,7 @@ func (pc ProjectController) CreateProject(c *gin.Context) {
 
 	err := pc.ProjectRepository.CreateProject(&project)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgCreateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
@@ -161,20 +161,20 @@ func (pc ProjectController) UpdateProjectByID(c *gin.Context) {
 	var req vo.CreateProjectRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
 	// 根据path中的ProjectID获取项目信息
 	oldProject, err := pc.ProjectRepository.GetProjectByProjectID(c.Param("projectID"))
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgGetFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	oldProject.Title = req.Title
@@ -194,7 +194,7 @@ func (pc ProjectController) UpdateProjectByID(c *gin.Context) {
 	// 更新项目
 	err = pc.ProjectRepository.UpdateProject(&oldProject)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgUpdateFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
@@ -215,13 +215,13 @@ func (tc ProjectController) BatchDeleteProjectByIds(c *gin.Context) {
 	var req vo.DeleteProjectsRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
-		response.Fail(c, nil, err.Error())
+		response.HandleBindError(c, err)
 		return
 	}
 	// 参数校验
 	if err := common.Validate.Struct(&req); err != nil {
 		errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
-		response.Fail(c, nil, errStr)
+		response.ValidationFail(c, errStr)
 		return
 	}
 
@@ -229,7 +229,7 @@ func (tc ProjectController) BatchDeleteProjectByIds(c *gin.Context) {
 	reqProjectIds := strings.Split(req.ProjectIds, ",")
 	err := tc.ProjectRepository.BatchDeleteProjectByIds(reqProjectIds)
 	if err != nil {
-		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
+		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))

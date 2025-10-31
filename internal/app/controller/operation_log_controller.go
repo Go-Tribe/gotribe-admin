@@ -29,7 +29,17 @@ func NewOperationLogController() IOperationLogController {
 	return operationLogController
 }
 
-// 获取操作日志列表
+// GetOperationLogs 获取操作日志列表
+// @Summary      获取操作日志列表
+// @Description  获取所有操作日志的列表
+// @Tags         操作日志管理
+// @Accept       json
+// @Produce      json
+// @Param        request query vo.OperationLogListRequest false "查询参数"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /operation-log [get]
+// @Security     BearerAuth
 func (oc OperationLogController) GetOperationLogs(c *gin.Context) {
 	var req vo.OperationLogListRequest
 	// 绑定参数
@@ -52,7 +62,18 @@ func (oc OperationLogController) GetOperationLogs(c *gin.Context) {
 	response.Success(c, gin.H{"logs": logs, "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 批量删除操作日志
+// BatchDeleteOperationLogByIds 批量删除操作日志
+// @Summary      批量删除操作日志
+// @Description  根据操作日志ID列表批量删除操作日志
+// @Tags         操作日志管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.DeleteOperationLogRequest true "操作日志ID列表"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Failure      500 {object} response.Response
+// @Router       /operation-log [delete]
+// @Security     BearerAuth
 func (oc OperationLogController) BatchDeleteOperationLogByIds(c *gin.Context) {
 	var req vo.DeleteOperationLogRequest
 	// 参数绑定

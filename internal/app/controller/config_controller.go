@@ -37,7 +37,17 @@ func NewConfigController() IConfigController {
 	return cnfigController
 }
 
-// 获取当前配置信息
+// GetConfigInfo 获取配置信息
+// @Summary      获取配置信息
+// @Description  根据配置ID获取配置详细信息
+// @Tags         配置管理
+// @Accept       json
+// @Produce      json
+// @Param        configID path string true "配置ID"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /config/{configID} [get]
+// @Security     BearerAuth
 func (pc ConfigController) GetConfigInfo(c *gin.Context) {
 	config, err := pc.ConfigRepository.GetConfigByConfigID(c.Param("configID"))
 	if err != nil {
@@ -50,7 +60,17 @@ func (pc ConfigController) GetConfigInfo(c *gin.Context) {
 	}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 获取配置列表
+// GetConfigs 获取配置列表
+// @Summary      获取配置列表
+// @Description  获取所有配置的列表
+// @Tags         配置管理
+// @Accept       json
+// @Produce      json
+// @Param        request query vo.ConfigListRequest false "查询参数"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /config [get]
+// @Security     BearerAuth
 func (pc ConfigController) GetConfigs(c *gin.Context) {
 	var req vo.ConfigListRequest
 	// 参数绑定
@@ -74,7 +94,17 @@ func (pc ConfigController) GetConfigs(c *gin.Context) {
 	response.Success(c, gin.H{"configs": dto.ToConfigsDto(config), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 创建配置
+// CreateConfig 创建配置
+// @Summary      创建配置
+// @Description  创建一个新的配置
+// @Tags         配置管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.CreateConfigRequest true "创建配置请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /config [post]
+// @Security     BearerAuth
 func (pc ConfigController) CreateConfig(c *gin.Context) {
 	var req vo.CreateConfigRequest
 	// 参数绑定
@@ -108,7 +138,19 @@ func (pc ConfigController) CreateConfig(c *gin.Context) {
 
 }
 
-// 更新配置
+// UpdateConfigByID 更新配置
+// @Summary      更新配置
+// @Description  根据配置ID更新配置信息
+// @Tags         配置管理
+// @Accept       json
+// @Produce      json
+// @Param        configID path string true "配置ID"
+// @Param        request body vo.UpdateConfigRequest true "配置信息"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Failure      500 {object} response.Response
+// @Router       /config/{configID} [patch]
+// @Security     BearerAuth
 func (pc ConfigController) UpdateConfigByID(c *gin.Context) {
 	var req vo.UpdateConfigRequest
 	// 参数绑定
@@ -143,7 +185,18 @@ func (pc ConfigController) UpdateConfigByID(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
-// 批量删除配置
+// BatchDeleteConfigByIds 批量删除配置
+// @Summary      批量删除配置
+// @Description  根据配置ID列表批量删除配置
+// @Tags         配置管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.DeleteConfigsRequest true "配置ID列表"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Failure      500 {object} response.Response
+// @Router       /config [delete]
+// @Security     BearerAuth
 func (pc ConfigController) BatchDeleteConfigByIds(c *gin.Context) {
 	var req vo.DeleteConfigsRequest
 	// 参数绑定

@@ -15,6 +15,8 @@ import (
 
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"time"
 )
@@ -56,6 +58,9 @@ func InitRoutes(fs embed.FS) *gin.Engine {
 		c.Redirect(http.StatusMovedPermanently, "/")
 	})
 	// end
+
+	// Swagger 文档路由
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// 路由分组
 	apiGroup := r.Group("/" + config.Conf.System.UrlPathPrefix)

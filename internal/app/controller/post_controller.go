@@ -43,7 +43,17 @@ func NewPostController() IPostController {
 	return postController
 }
 
-// 获取当前内容信息
+// GetPostInfo 获取内容信息
+// @Summary      获取内容信息
+// @Description  根据内容ID获取内容详细信息
+// @Tags         内容管理
+// @Accept       json
+// @Produce      json
+// @Param        postID path string true "内容ID"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /post/{postID} [get]
+// @Security     BearerAuth
 func (pc PostController) GetPostInfo(c *gin.Context) {
 	post, err := pc.PostRepository.GetPostByPostID(c.Param("postID"))
 	if err != nil {
@@ -56,7 +66,17 @@ func (pc PostController) GetPostInfo(c *gin.Context) {
 	}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 获取内容列表
+// GetPosts 获取内容列表
+// @Summary      获取内容列表
+// @Description  获取所有内容的列表
+// @Tags         内容管理
+// @Accept       json
+// @Produce      json
+// @Param        request query vo.PostListRequest false "查询参数"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /post [get]
+// @Security     BearerAuth
 func (pc PostController) GetPosts(c *gin.Context) {
 	var req vo.PostListRequest
 	// 参数绑定
@@ -80,7 +100,17 @@ func (pc PostController) GetPosts(c *gin.Context) {
 	response.Success(c, gin.H{"posts": dto.ToPostsDto(post), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 创建内容
+// CreatePost 创建内容
+// @Summary      创建内容
+// @Description  创建一个新的内容
+// @Tags         内容管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.CreatePostRequest true "创建内容请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /post [post]
+// @Security     BearerAuth
 func (pc PostController) CreatePost(c *gin.Context) {
 	var req vo.CreatePostRequest
 	// 参数绑定
@@ -129,7 +159,18 @@ func (pc PostController) CreatePost(c *gin.Context) {
 
 }
 
-// 更新内容
+// UpdatePostByID 更新内容
+// @Summary      更新内容
+// @Description  根据内容ID更新内容信息
+// @Tags         内容管理
+// @Accept       json
+// @Produce      json
+// @Param        postID path string true "内容ID"
+// @Param        request body vo.UpdatePostRequest true "更新内容请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /post/{postID} [patch]
+// @Security     BearerAuth
 func (pc PostController) UpdatePostByID(c *gin.Context) {
 	var req vo.UpdatePostRequest
 	// 参数绑定
@@ -183,7 +224,17 @@ func (pc PostController) UpdatePostByID(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
-// 批量删除
+// BatchDeletePostByIds 批量删除内容
+// @Summary      批量删除内容
+// @Description  根据内容ID列表批量删除内容
+// @Tags         内容管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.DeletePostsRequest true "删除内容请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /post [delete]
+// @Security     BearerAuth
 func (tc PostController) BatchDeletePostByIds(c *gin.Context) {
 	var req vo.DeletePostsRequest
 	// 参数绑定
@@ -209,7 +260,17 @@ func (tc PostController) BatchDeletePostByIds(c *gin.Context) {
 
 }
 
-// 更新内容
+// PushPostByID 发布内容
+// @Summary      发布内容
+// @Description  根据内容ID发布内容
+// @Tags         内容管理
+// @Accept       json
+// @Produce      json
+// @Param        postID path string true "内容ID"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /post/{postID} [put]
+// @Security     BearerAuth
 func (pc PostController) PushPostByID(c *gin.Context) {
 	// 根据path中的PostID获取内容信息
 	oldPost, err := pc.PostRepository.GetPostByPostID(c.Param("postID"))

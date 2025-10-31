@@ -37,7 +37,18 @@ func NewColumnController() IColumnController {
 	return columnController
 }
 
-// 获取当前专栏信息
+// GetColumnInfo 获取当前专栏信息
+// @Summary 获取专栏详情
+// @Description 根据专栏ID获取专栏详细信息
+// @Tags 专栏管理
+// @Accept json
+// @Produce json
+// @Param columnID path string true "专栏ID"
+// @Success 200 {object} response.Response{data=map[string]dto.ColumnDto} "成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /column/{columnID} [get]
+// @Security BearerAuth
 func (pc ColumnController) GetColumnInfo(c *gin.Context) {
 	column, err := pc.ColumnRepository.GetColumnByColumnID(c.Param("columnID"))
 	if err != nil {
@@ -50,7 +61,22 @@ func (pc ColumnController) GetColumnInfo(c *gin.Context) {
 	}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 获取专栏列表
+// GetColumns 获取专栏列表
+// @Summary 获取专栏列表
+// @Description 根据查询条件获取专栏列表，支持分页
+// @Tags 专栏管理
+// @Accept json
+// @Produce json
+// @Param columnID query string false "专栏ID"
+// @Param projectID query string false "项目ID"
+// @Param title query string false "专栏标题"
+// @Param pageNum query int false "页码"
+// @Param pageSize query int false "每页数量"
+// @Success 200 {object} response.Response{data=map[string]interface{}} "成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /column [get]
+// @Security BearerAuth
 func (pc ColumnController) GetColumns(c *gin.Context) {
 	var req vo.ColumnListRequest
 	// 参数绑定
@@ -74,7 +100,18 @@ func (pc ColumnController) GetColumns(c *gin.Context) {
 	response.Success(c, gin.H{"columns": dto.ToColumnsDto(column), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 创建专栏
+// CreateColumn 创建专栏
+// @Summary 创建专栏
+// @Description 创建新的专栏
+// @Tags 专栏管理
+// @Accept json
+// @Produce json
+// @Param column body vo.CreateColumnRequest true "专栏信息"
+// @Success 200 {object} response.Response "创建成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /column [post]
+// @Security BearerAuth
 func (pc ColumnController) CreateColumn(c *gin.Context) {
 	var req vo.CreateColumnRequest
 	// 参数绑定
@@ -106,7 +143,19 @@ func (pc ColumnController) CreateColumn(c *gin.Context) {
 
 }
 
-// 更新专栏
+// UpdateColumnByID 更新专栏
+// @Summary 更新专栏
+// @Description 根据专栏ID更新专栏信息
+// @Tags 专栏管理
+// @Accept json
+// @Produce json
+// @Param columnID path string true "专栏ID"
+// @Param column body vo.UpdateColumnRequest true "专栏信息"
+// @Success 200 {object} response.Response "更新成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /column/{columnID} [patch]
+// @Security BearerAuth
 func (pc ColumnController) UpdateColumnByID(c *gin.Context) {
 	var req vo.UpdateColumnRequest
 	// 参数绑定
@@ -140,8 +189,19 @@ func (pc ColumnController) UpdateColumnByID(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
-// 批量删除
-func (tc ColumnController) BatchDeleteColumnByIds(c *gin.Context) {
+// BatchDeleteColumnByIds 批量删除专栏
+// @Summary 批量删除专栏
+// @Description 根据专栏ID列表批量删除专栏
+// @Tags 专栏管理
+// @Accept json
+// @Produce json
+// @Param columns body vo.DeleteColumnsRequest true "专栏ID列表"
+// @Success 200 {object} response.Response "删除成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /column [delete]
+// @Security BearerAuth
+func (pc ColumnController) BatchDeleteColumnByIds(c *gin.Context) {
 	var req vo.DeleteColumnsRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
@@ -157,7 +217,7 @@ func (tc ColumnController) BatchDeleteColumnByIds(c *gin.Context) {
 
 	// 前端传来的标签ID
 	reqColumnIds := strings.Split(req.ColumnIds, ",")
-	err := tc.ColumnRepository.BatchDeleteColumnByIds(reqColumnIds)
+	err := pc.ColumnRepository.BatchDeleteColumnByIds(reqColumnIds)
 	if err != nil {
 		response.Fail(c, nil, common.Msg(c, common.MsgDeleteFail)+": "+err.Error())
 		return

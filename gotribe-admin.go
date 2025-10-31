@@ -2,6 +2,27 @@
 // Use of this source code is governed by a Apache style
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://www.gotribe.cn
+
+// @title           Gotribe Admin API
+// @version         1.0
+// @description     这是一个使用 Swagger 进行接口文档管理的 Go API 服务器。
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8088
+// @BasePath  /api
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description 请输入 Bearer {token}，注意 Bearer 和 token 之间有一个空格
+
 package main
 
 import (
@@ -9,6 +30,7 @@ import (
 	"embed"
 	"fmt"
 	"gotribe-admin/config"
+	_ "gotribe-admin/docs" // swagger docs
 	"gotribe-admin/internal/app/jobs"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/app/routes"

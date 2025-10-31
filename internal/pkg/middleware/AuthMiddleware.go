@@ -113,13 +113,13 @@ func authorizator(data interface{}, c *gin.Context) bool {
 // 用户登录校验失败处理
 func unauthorized(c *gin.Context, code int, message string) {
 	common.Log.Debugf("JWT认证失败, 错误码: %d, 错误信息: %s", code, message)
-	response.Response(c, code, code, nil, fmt.Sprintf("JWT认证失败, 错误码: %d, 错误信息: %s", code, message))
+	response.ResponseFunc(c, code, code, nil, fmt.Sprintf("JWT认证失败, 错误码: %d, 错误信息: %s", code, message))
 }
 
 // 登录成功后的响应
 func loginResponse(c *gin.Context, code int, token string, expires time.Time) {
 	msg := common.Msg(c, common.MsgLoginSuccess)
-	response.Response(c, code, code,
+	response.ResponseFunc(c, code, code,
 		gin.H{
 			"token":   token,
 			"expires": expires.Format(known.TIME_FORMAT),
@@ -136,7 +136,7 @@ func logoutResponse(c *gin.Context, code int) {
 // 刷新token后的响应
 func refreshResponse(c *gin.Context, code int, token string, expires time.Time) {
 	msg := common.Msg(c, common.MsgRefreshTokenSuccess)
-	response.Response(c, code, code,
+	response.ResponseFunc(c, code, code,
 		gin.H{
 			"token":   token,
 			"expires": expires,

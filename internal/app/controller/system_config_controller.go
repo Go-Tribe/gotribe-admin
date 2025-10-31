@@ -32,7 +32,15 @@ func NewSystemConfigController() ISystemConfigController {
 	return systemConfigController
 }
 
-// 获取当前系统配置信息
+// GetSystemConfigInfo 获取系统配置信息
+// @Summary      获取系统配置信息
+// @Description  获取当前系统配置信息
+// @Tags         系统配置
+// @Accept       json
+// @Produce      json
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /base/config [get]
 func (tc SystemConfigController) GetSystemConfigInfo(c *gin.Context) {
 	systemConfig, err := tc.SystemConfigRepository.GetSystemConfig()
 	if err != nil {
@@ -45,7 +53,17 @@ func (tc SystemConfigController) GetSystemConfigInfo(c *gin.Context) {
 	}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 更新系统配置
+// UpdateSystemConfigByID 更新系统配置
+// @Summary      更新系统配置
+// @Description  更新系统配置信息
+// @Tags         系统配置
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.CreateSystemConfigRequest true "更新系统配置请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /systemConfig/update [patch]
+// @Security     BearerAuth
 func (tc SystemConfigController) UpdateSystemConfigByID(c *gin.Context) {
 	var req vo.CreateSystemConfigRequest
 	// 参数绑定

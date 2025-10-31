@@ -39,7 +39,17 @@ func NewUserController() IUserController {
 	return userController
 }
 
-// 获取当前用户信息
+// GetUserInfo 获取用户信息
+// @Summary      获取用户信息
+// @Description  根据用户ID获取用户详细信息
+// @Tags         用户管理
+// @Accept       json
+// @Produce      json
+// @Param        userID path string true "用户ID"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /user/{userID} [get]
+// @Security     BearerAuth
 func (pc UserController) GetUserInfo(c *gin.Context) {
 	user, err := pc.UserRepository.GetUserByUserID(c.Param("userID"))
 	if err != nil {
@@ -52,7 +62,17 @@ func (pc UserController) GetUserInfo(c *gin.Context) {
 	}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 获取用户列表
+// GetUsers 获取用户列表
+// @Summary      获取用户列表
+// @Description  获取所有用户的列表
+// @Tags         用户管理
+// @Accept       json
+// @Produce      json
+// @Param        request query vo.UserListRequest false "查询参数"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /user [get]
+// @Security     BearerAuth
 func (pc UserController) GetUsers(c *gin.Context) {
 	var req vo.UserListRequest
 	// 参数绑定
@@ -76,7 +96,17 @@ func (pc UserController) GetUsers(c *gin.Context) {
 	response.Success(c, gin.H{"users": dto.ToUsersDto(user), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 创建用户
+// CreateUser 创建用户
+// @Summary      创建用户
+// @Description  创建一个新的用户
+// @Tags         用户管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.CreateUserRequest true "创建用户请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /user [post]
+// @Security     BearerAuth
 func (pc UserController) CreateUser(c *gin.Context) {
 	var req vo.CreateUserRequest
 	// 参数绑定
@@ -108,7 +138,18 @@ func (pc UserController) CreateUser(c *gin.Context) {
 
 }
 
-// 更新用户
+// UpdateUserByID 更新用户
+// @Summary      更新用户
+// @Description  根据用户ID更新用户信息
+// @Tags         用户管理
+// @Accept       json
+// @Produce      json
+// @Param        userID path string true "用户ID"
+// @Param        request body vo.UpdateUserRequest true "更新用户请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /user/{userID} [patch]
+// @Security     BearerAuth
 func (pc UserController) UpdateUserByID(c *gin.Context) {
 	var req vo.UpdateUserRequest
 	// 参数绑定
@@ -146,7 +187,17 @@ func (pc UserController) UpdateUserByID(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
-// 批量删除
+// BatchDeleteUserByIds 批量删除用户
+// @Summary      批量删除用户
+// @Description  根据用户ID列表批量删除用户
+// @Tags         用户管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.DeleteUsersRequest true "删除用户请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /user [delete]
+// @Security     BearerAuth
 func (tc UserController) BatchDeleteUserByIds(c *gin.Context) {
 	var req vo.DeleteUsersRequest
 	// 参数绑定
@@ -172,6 +223,17 @@ func (tc UserController) BatchDeleteUserByIds(c *gin.Context) {
 
 }
 
+// SearchUserByUsername 搜索用户
+// @Summary      搜索用户
+// @Description  根据昵称搜索用户
+// @Tags         用户管理
+// @Accept       json
+// @Produce      json
+// @Param        nickname query string true "用户昵称"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /user/search [get]
+// @Security     BearerAuth
 func (tc UserController) SearchUserByUsername(c *gin.Context) {
 	user, err := tc.UserRepository.SearchUserByNickname(c.Param("nickname"))
 	if err != nil {

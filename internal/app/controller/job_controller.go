@@ -25,6 +25,15 @@ func NewJobController() *JobController {
 }
 
 // ListJobs 列出所有任务
+// @Summary      获取任务列表
+// @Description  获取系统中所有定时任务的列表
+// @Tags         任务管理
+// @Accept       json
+// @Produce      json
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /job [get]
+// @Security     BearerAuth
 func (c *JobController) ListJobs(ctx *gin.Context) {
 	registry := jobs.GetGlobalRegistry()
 	jobList := registry.ListJobs()
@@ -46,6 +55,16 @@ func (c *JobController) ListJobs(ctx *gin.Context) {
 }
 
 // GetJobStatus 获取任务状态
+// @Summary      获取任务状态
+// @Description  根据任务名称获取指定任务的运行状态
+// @Tags         任务管理
+// @Accept       json
+// @Produce      json
+// @Param        name path string true "任务名称"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /job/{name}/status [get]
+// @Security     BearerAuth
 func (c *JobController) GetJobStatus(ctx *gin.Context) {
 	jobName := ctx.Param("name")
 	if jobName == "" {
@@ -64,6 +83,17 @@ func (c *JobController) GetJobStatus(ctx *gin.Context) {
 }
 
 // GetJobHistory 获取任务执行历史
+// @Summary      获取任务执行历史
+// @Description  根据任务名称获取指定任务的执行历史记录
+// @Tags         任务管理
+// @Accept       json
+// @Produce      json
+// @Param        name path string true "任务名称"
+// @Param        limit query int false "限制返回记录数" default(10)
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /job/{name}/history [get]
+// @Security     BearerAuth
 func (c *JobController) GetJobHistory(ctx *gin.Context) {
 	jobName := ctx.Param("name")
 	if jobName == "" {
@@ -88,6 +118,16 @@ func (c *JobController) GetJobHistory(ctx *gin.Context) {
 }
 
 // EnableJob 启用任务
+// @Summary      启用任务
+// @Description  根据任务名称启用指定的定时任务
+// @Tags         任务管理
+// @Accept       json
+// @Produce      json
+// @Param        name path string true "任务名称"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /job/{name}/enable [post]
+// @Security     BearerAuth
 func (c *JobController) EnableJob(ctx *gin.Context) {
 	jobName := ctx.Param("name")
 	if jobName == "" {
@@ -105,6 +145,16 @@ func (c *JobController) EnableJob(ctx *gin.Context) {
 }
 
 // DisableJob 禁用任务
+// @Summary      禁用任务
+// @Description  根据任务名称禁用指定的定时任务
+// @Tags         任务管理
+// @Accept       json
+// @Produce      json
+// @Param        name path string true "任务名称"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /job/{name}/disable [post]
+// @Security     BearerAuth
 func (c *JobController) DisableJob(ctx *gin.Context) {
 	jobName := ctx.Param("name")
 	if jobName == "" {

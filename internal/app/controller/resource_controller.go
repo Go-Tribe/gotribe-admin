@@ -41,7 +41,18 @@ func NewResourceController() IResourceController {
 	return resourceController
 }
 
-// 获取当前资源信息
+// GetResourceInfo 获取当前资源信息
+// @Summary 获取资源信息
+// @Description 根据资源ID获取资源详细信息
+// @Tags 资源管理
+// @Accept json
+// @Produce json
+// @Param resourceID path string true "资源ID"
+// @Success 200 {object} response.Response{data=object{resource=dto.ResourceDto}} "获取成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /api/v1/resources/{resourceID} [get]
+// @Security BearerAuth
 func (pc ResourceController) GetResourceInfo(c *gin.Context) {
 	resource, err := pc.ResourceRepository.GetResourceByResourceID(c.Param("resourceID"))
 	if err != nil {
@@ -54,7 +65,18 @@ func (pc ResourceController) GetResourceInfo(c *gin.Context) {
 	}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 获取资源列表
+// GetResources 获取资源列表
+// @Summary 获取资源列表
+// @Description 获取资源列表，支持分页和筛选
+// @Tags 资源管理
+// @Accept json
+// @Produce json
+// @Param request query vo.ResourceListRequest false "查询参数"
+// @Success 200 {object} response.Response{data=object{resources=[]dto.ResourceDto,total=int}} "获取成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /api/v1/resources [get]
+// @Security BearerAuth
 func (pc ResourceController) GetResources(c *gin.Context) {
 	var req vo.ResourceListRequest
 	// 参数绑定
@@ -78,7 +100,19 @@ func (pc ResourceController) GetResources(c *gin.Context) {
 	response.Success(c, gin.H{"resources": dto.ToResourcesDto(resource), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 更新资源
+// UpdateResourceByID 更新资源
+// @Summary 更新资源
+// @Description 根据资源ID更新资源信息
+// @Tags 资源管理
+// @Accept json
+// @Produce json
+// @Param resourceID path string true "资源ID"
+// @Param request body vo.CreateResourceRequest true "更新资源请求参数"
+// @Success 200 {object} response.Response "更新成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /api/v1/resources/{resourceID} [put]
+// @Security BearerAuth
 func (pc ResourceController) UpdateResourceByID(c *gin.Context) {
 	var req vo.CreateResourceRequest
 	// 参数绑定
@@ -110,7 +144,18 @@ func (pc ResourceController) UpdateResourceByID(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
-// 上传资源
+// UploadResources 上传资源
+// @Summary 上传资源
+// @Description 上传文件资源到服务器
+// @Tags 资源管理
+// @Accept multipart/form-data
+// @Produce json
+// @Param file formData file true "上传的文件"
+// @Success 200 {object} response.Response{data=object{upload=dto.UploadResourceDto}} "上传成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /api/v1/resources/upload [post]
+// @Security BearerAuth
 func (pc ResourceController) UploadResources(c *gin.Context) {
 	fileHeader, err := c.FormFile("file")
 	if err != nil {
@@ -159,7 +204,18 @@ func (pc ResourceController) UploadResources(c *gin.Context) {
 	response.Success(c, gin.H{"upload": uploadRes}, "上传资源成功")
 }
 
-// 批量删除
+// DeleteResourceByID 删除资源
+// @Summary 删除资源
+// @Description 根据资源ID删除资源
+// @Tags 资源管理
+// @Accept json
+// @Produce json
+// @Param request body vo.DeleteResourcesRequest true "删除资源请求参数"
+// @Success 200 {object} response.Response "删除成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /api/v1/resources [delete]
+// @Security BearerAuth
 func (pc ResourceController) DeleteResourceByID(c *gin.Context) {
 	var req vo.DeleteResourcesRequest
 	// 参数绑定

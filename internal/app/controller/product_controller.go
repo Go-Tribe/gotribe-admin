@@ -51,6 +51,17 @@ func NewProductController() IProductController {
 
 // 获取当前产品信息
 // 获取当前产品信息
+// GetProductInfo 获取当前产品信息
+// @Summary      获取产品信息
+// @Description  根据产品ID获取产品详细信息
+// @Tags         产品管理
+// @Accept       json
+// @Produce      json
+// @Param        productID path string true "产品ID"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /product/{productID} [get]
+// @Security     BearerAuth
 func (tc ProductController) GetProductInfo(c *gin.Context) {
 	product, err := tc.ProductRepository.GetProductByProductID(c.Param("productID"))
 	if err != nil {
@@ -71,7 +82,17 @@ func (tc ProductController) GetProductInfo(c *gin.Context) {
 	}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 获取产品列表
+// GetProducts 获取产品列表
+// @Summary      获取产品列表
+// @Description  获取所有产品的列表
+// @Tags         产品管理
+// @Accept       json
+// @Produce      json
+// @Param        request query vo.ProductListRequest false "查询参数"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /product [get]
+// @Security     BearerAuth
 func (tc ProductController) GetProducts(c *gin.Context) {
 	var req vo.ProductListRequest
 	// 参数绑定
@@ -95,8 +116,17 @@ func (tc ProductController) GetProducts(c *gin.Context) {
 	response.Success(c, gin.H{"products": dto.ToProductsDto(product), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 创建产品
-// internal/app/controller/product_controller.go#L141-L178
+// CreateProduct 创建产品
+// @Summary      创建产品
+// @Description  创建一个新的产品
+// @Tags         产品管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.CreateProductRequest true "创建产品请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /product [post]
+// @Security     BearerAuth
 func (tc ProductController) CreateProduct(c *gin.Context) {
 	var req vo.CreateProductRequest
 	// 参数绑定
@@ -205,7 +235,18 @@ func (tc ProductController) CreateProduct(c *gin.Context) {
 	response.Success(c, gin.H{"product": dto.ToProductInfoDto(*productInfo)}, common.Msg(c, common.MsgCreateSuccess))
 }
 
-// 更新产品
+// UpdateProductByID 更新产品
+// @Summary      更新产品
+// @Description  根据产品ID更新产品信息
+// @Tags         产品管理
+// @Accept       json
+// @Produce      json
+// @Param        productID path string true "产品ID"
+// @Param        request body vo.CreateProductRequest true "更新产品请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /product/{productID} [patch]
+// @Security     BearerAuth
 func (tc ProductController) UpdateProductByID(c *gin.Context) {
 	var req vo.CreateProductRequest
 	// 参数绑定
@@ -326,7 +367,17 @@ func (tc ProductController) UpdateProductByID(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
-// 批量删除产品
+// BatchDeleteProductByIds 批量删除产品
+// @Summary      批量删除产品
+// @Description  根据产品ID列表批量删除产品
+// @Tags         产品管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.DeleteProductsRequest true "删除产品请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /product [delete]
+// @Security     BearerAuth
 func (tc ProductController) BatchDeleteProductByIds(c *gin.Context) {
 	var req vo.DeleteProductsRequest
 	// 参数绑定

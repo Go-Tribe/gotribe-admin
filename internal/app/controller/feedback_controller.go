@@ -27,7 +27,17 @@ func NewFeedbackController() IFeedbackController {
 	return feedbackController
 }
 
-// 获取列表
+// GetFeedbacks 获取反馈列表
+// @Summary      获取反馈列表
+// @Description  获取所有反馈的列表，支持分页和筛选
+// @Tags         反馈管理
+// @Accept       json
+// @Produce      json
+// @Param        request query vo.FeedbackListRequest false "查询参数"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /feedback [get]
+// @Security     BearerAuth
 func (tc FeedbackController) GetFeedbacks(c *gin.Context) {
 	var req vo.FeedbackListRequest
 	// 参数绑定

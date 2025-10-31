@@ -1,0 +1,5612 @@
+basePath: /api
+definitions:
+  dto.AdDto:
+    properties:
+      SceneTitle:
+        type: string
+      adID:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      ext:
+        type: string
+      image:
+        type: string
+      sceneID:
+        type: string
+      sort:
+        type: integer
+      status:
+        type: integer
+      title:
+        type: string
+      updatedAt:
+        type: string
+      url:
+        type: string
+      urlType:
+        type: integer
+      video:
+        type: string
+    type: object
+  dto.AdSceneDto:
+    properties:
+      adSceneID:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      projectID:
+        type: string
+      projectTitle:
+        type: string
+      title:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  dto.ColumnDto:
+    properties:
+      columnID:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      icon:
+        type: string
+      info:
+        type: string
+      projectID:
+        type: string
+      title:
+        type: string
+    type: object
+  dto.OrderDto:
+    properties:
+      amount:
+        type: number
+      amountPay:
+        type: number
+      consigneeAddress:
+        type: string
+      consigneeCity:
+        type: string
+      consigneeDistrict:
+        type: string
+      consigneeName:
+        type: string
+      consigneePhone:
+        type: string
+      consigneeProvince:
+        type: string
+      consigneeStreet:
+        type: string
+      createdAt:
+        type: string
+      logisticsCompany:
+        type: string
+      logisticsNumber:
+        type: string
+      orderID:
+        type: string
+      orderNumber:
+        type: string
+      orderType:
+        type: integer
+      payMethod:
+        type: integer
+      payStatus:
+        type: integer
+      payTime:
+        type: string
+      productID:
+        type: string
+      productImage:
+        type: string
+      productName:
+        type: string
+      productSku:
+        type: string
+      projectID:
+        type: string
+      quantity:
+        type: integer
+      refundStatus:
+        type: integer
+      refundTime:
+        type: string
+      remark:
+        type: string
+      remarkAdmin:
+        type: string
+      status:
+        type: integer
+      unitPrice:
+        type: number
+      user:
+        $ref: '#/definitions/dto.UserDto'
+      userID:
+        type: string
+      username:
+        type: string
+    type: object
+  dto.ProductSpecDto:
+    properties:
+      createdAt:
+        type: string
+      format:
+        type: integer
+      image:
+        type: string
+      item:
+        items:
+          $ref: '#/definitions/dto.ProductSpecItemDto'
+        type: array
+      productSpecID:
+        type: string
+      remark:
+        type: string
+      sort:
+        type: integer
+      title:
+        type: string
+    type: object
+  dto.ProductSpecItemDto:
+    properties:
+      createdAt:
+        type: string
+      enabled:
+        type: integer
+      productSpecItemID:
+        type: string
+      sort:
+        type: integer
+      specID:
+        type: string
+      title:
+        type: string
+    type: object
+  dto.ProductTypeDto:
+    properties:
+      categoryID:
+        type: string
+      createdAt:
+        type: string
+      productTypeID:
+        type: string
+      remark:
+        type: string
+      spec:
+        items:
+          $ref: '#/definitions/dto.ProductSpecDto'
+        type: array
+      specIds:
+        type: string
+      title:
+        type: string
+    type: object
+  dto.ResourceDto:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      file_extension:
+        type: string
+      fileType:
+        type: integer
+      path:
+        type: string
+      resourceID:
+        type: string
+      size:
+        type: integer
+      title:
+        type: string
+      url:
+        type: string
+    type: object
+  dto.UploadResourceDto:
+    properties:
+      domain:
+        type: string
+      fileExt:
+        type: string
+      fileType:
+        type: integer
+      key:
+        type: string
+    type: object
+  dto.UserDto:
+    properties:
+      avatarURL:
+        type: string
+      birthday:
+        type: string
+      createdAt:
+        type: string
+      email:
+        type: string
+      nickname:
+        type: string
+      point:
+        type: number
+      projectID:
+        type: string
+      sex:
+        type: string
+      status:
+        type: integer
+      userID:
+        type: string
+      username:
+        type: string
+    type: object
+  response.Response:
+    description: 统一API响应格式
+    properties:
+      code:
+        description: 状态码
+        example: 200
+        type: integer
+      data:
+        description: 响应数据
+      message:
+        description: 响应消息
+        example: 操作成功
+        type: string
+    type: object
+  vo.ChangePwdRequest:
+    properties:
+      newPassword:
+        type: string
+      oldPassword:
+        type: string
+    required:
+    - newPassword
+    - oldPassword
+    type: object
+  vo.CreateAdRequest:
+    properties:
+      description:
+        maxLength: 150
+        minLength: 0
+        type: string
+      ext:
+        type: string
+      image:
+        type: string
+      sceneID:
+        type: string
+      sort:
+        type: integer
+      status:
+        enum:
+        - 1
+        - 2
+        type: integer
+      title:
+        maxLength: 50
+        minLength: 2
+        type: string
+      url:
+        maxLength: 255
+        minLength: 2
+        type: string
+      urlType:
+        type: integer
+      video:
+        type: string
+    required:
+    - sceneID
+    - sort
+    - title
+    - url
+    - urlType
+    type: object
+  vo.CreateAdSceneRequest:
+    properties:
+      description:
+        maxLength: 150
+        minLength: 0
+        type: string
+      projectID:
+        type: string
+      title:
+        maxLength: 50
+        minLength: 2
+        type: string
+    required:
+    - projectID
+    - title
+    type: object
+  vo.CreateAdminRequest:
+    properties:
+      avatar:
+        type: string
+      introduction:
+        maxLength: 255
+        minLength: 0
+        type: string
+      mobile:
+        type: string
+      nickname:
+        maxLength: 20
+        minLength: 0
+        type: string
+      password:
+        type: string
+      roleIds:
+        items:
+          type: integer
+        type: array
+      status:
+        enum:
+        - 1
+        - 2
+        type: integer
+      username:
+        maxLength: 20
+        minLength: 2
+        type: string
+    required:
+    - mobile
+    - roleIds
+    - username
+    type: object
+  vo.CreateApiRequest:
+    properties:
+      category:
+        maxLength: 50
+        minLength: 1
+        type: string
+      desc:
+        maxLength: 100
+        minLength: 0
+        type: string
+      method:
+        maxLength: 20
+        minLength: 1
+        type: string
+      path:
+        maxLength: 100
+        minLength: 1
+        type: string
+    required:
+    - category
+    - method
+    - path
+    type: object
+  vo.CreateCategoryRequest:
+    properties:
+      description:
+        type: string
+      hidden:
+        enum:
+        - 1
+        - 2
+        type: integer
+      icon:
+        type: string
+      parentID:
+        type: integer
+      path:
+        type: string
+      sort:
+        maximum: 999
+        minimum: 1
+        type: integer
+      status:
+        type: integer
+      title:
+        maxLength: 50
+        minLength: 1
+        type: string
+    required:
+    - title
+    type: object
+  vo.CreateColumnRequest:
+    properties:
+      description:
+        maxLength: 300
+        minLength: 2
+        type: string
+      icon:
+        maxLength: 300
+        minLength: 2
+        type: string
+      info:
+        type: string
+      projectID:
+        maxLength: 10
+        minLength: 2
+        type: string
+      title:
+        maxLength: 20
+        minLength: 2
+        type: string
+    required:
+    - description
+    - icon
+    - projectID
+    - title
+    type: object
+  vo.CreateConfigRequest:
+    properties:
+      alias:
+        maxLength: 20
+        minLength: 2
+        type: string
+      description:
+        maxLength: 150
+        minLength: 2
+        type: string
+      info:
+        maxLength: 3000
+        minLength: 2
+        type: string
+      mdContent:
+        type: string
+      projectID:
+        type: string
+      title:
+        maxLength: 20
+        minLength: 2
+        type: string
+      type:
+        type: integer
+    required:
+    - alias
+    - description
+    - info
+    - projectID
+    - title
+    - type
+    type: object
+  vo.CreateMenuRequest:
+    properties:
+      activeMenu:
+        maxLength: 100
+        minLength: 0
+        type: string
+      alwaysShow:
+        enum:
+        - 1
+        - 2
+        type: integer
+      breadcrumb:
+        enum:
+        - 1
+        - 2
+        type: integer
+      component:
+        maxLength: 100
+        minLength: 1
+        type: string
+      hidden:
+        enum:
+        - 1
+        - 2
+        type: integer
+      icon:
+        maxLength: 50
+        minLength: 0
+        type: string
+      name:
+        maxLength: 50
+        minLength: 1
+        type: string
+      noCache:
+        enum:
+        - 1
+        - 2
+        type: integer
+      parentID:
+        type: integer
+      path:
+        maxLength: 100
+        minLength: 1
+        type: string
+      redirect:
+        maxLength: 100
+        minLength: 0
+        type: string
+      sort:
+        maximum: 999
+        minimum: 1
+        type: integer
+      status:
+        enum:
+        - 1
+        - 2
+        type: integer
+      title:
+        maxLength: 50
+        minLength: 1
+        type: string
+    required:
+    - component
+    - name
+    - path
+    - title
+    type: object
+  vo.CreateOrderLogisticsRequest:
+    properties:
+      company:
+        description: 物流公司
+        type: string
+      number:
+        description: 物流单号
+        type: string
+    required:
+    - company
+    - number
+    type: object
+  vo.CreateOrderRequest:
+    properties:
+      amountPay:
+        minimum: 1
+        type: number
+      remarkAdmin:
+        type: string
+      status:
+        type: integer
+    required:
+    - amountPay
+    - status
+    type: object
+  vo.CreatePointLogRequest:
+    properties:
+      point:
+        type: number
+      projectID:
+        type: string
+      userID:
+        type: string
+    required:
+    - point
+    - projectID
+    - userID
+    type: object
+  vo.CreatePostRequest:
+    properties:
+      author:
+        type: string
+      categoryID:
+        type: string
+      columnID:
+        type: string
+      content:
+        type: string
+      description:
+        maxLength: 300
+        minLength: 2
+        type: string
+      ext:
+        type: string
+      htmlContent:
+        type: string
+      icon:
+        type: string
+      images:
+        items:
+          type: string
+        type: array
+      isPasswd:
+        type: integer
+      isTop:
+        type: integer
+      location:
+        type: string
+      password:
+        type: string
+      people:
+        type: string
+      projectID:
+        type: string
+      tag:
+        type: string
+      time:
+        type: string
+      title:
+        maxLength: 60
+        minLength: 2
+        type: string
+      type:
+        type: integer
+      unitPrice:
+        type: number
+      userID:
+        type: string
+      video:
+        type: string
+    required:
+    - author
+    - categoryID
+    - content
+    - description
+    - htmlContent
+    - projectID
+    - title
+    - type
+    - userID
+    type: object
+  vo.CreateProductCategoryRequest:
+    properties:
+      description:
+        type: string
+      hidden:
+        enum:
+        - 1
+        - 2
+        type: integer
+      icon:
+        type: string
+      parentID:
+        type: integer
+      path:
+        type: string
+      projectID:
+        type: string
+      sort:
+        maximum: 999
+        minimum: 1
+        type: integer
+      status:
+        type: integer
+      title:
+        maxLength: 50
+        minLength: 1
+        type: string
+    required:
+    - title
+    type: object
+  vo.CreateProductRequest:
+    properties:
+      Htmlcontent:
+        type: string
+      buyLimit:
+        maximum: 100
+        minimum: 1
+        type: integer
+      categoryID:
+        type: string
+      content:
+        type: string
+      description:
+        type: string
+      enable:
+        enum:
+        - 1
+        - 2
+        type: integer
+      images:
+        items:
+          type: string
+        type: array
+      productNumber:
+        type: string
+      productSpec:
+        type: string
+      projectID:
+        type: string
+      sku:
+        items:
+          $ref: '#/definitions/vo.Sku'
+        type: array
+      tag:
+        type: string
+      title:
+        maxLength: 60
+        minLength: 2
+        type: string
+      video:
+        type: string
+    required:
+    - buyLimit
+    - categoryID
+    - projectID
+    - sku
+    - title
+    type: object
+  vo.CreateProductSpecItemRequest:
+    properties:
+      enabled:
+        enum:
+        - 1
+        - 2
+        type: integer
+      sort:
+        maximum: 999
+        minimum: 1
+        type: integer
+      specID:
+        type: string
+      title:
+        maxLength: 20
+        minLength: 2
+        type: string
+    required:
+    - specID
+    - title
+    type: object
+  vo.CreateProductSpecRequest:
+    properties:
+      format:
+        type: integer
+      image:
+        type: string
+      remark:
+        type: string
+      sort:
+        maximum: 999
+        minimum: 1
+        type: integer
+      title:
+        maxLength: 20
+        minLength: 2
+        type: string
+    required:
+    - title
+    type: object
+  vo.CreateProductTypeRequest:
+    properties:
+      categoryID:
+        type: string
+      remark:
+        type: string
+      specIDs:
+        type: string
+      title:
+        maxLength: 20
+        minLength: 2
+        type: string
+    required:
+    - categoryID
+    - specIDs
+    - title
+    type: object
+  vo.CreateProjectRequest:
+    properties:
+      author:
+        type: string
+      baiduAnalytics:
+        type: string
+      description:
+        type: string
+      domain:
+        type: string
+      favicon:
+        type: string
+      icp:
+        type: string
+      info:
+        type: string
+      keywords:
+        type: string
+      name:
+        maxLength: 20
+        minLength: 2
+        type: string
+      navImage:
+        type: string
+      postUrl:
+        type: string
+      publicSecurity:
+        type: string
+      pushToken:
+        type: string
+      title:
+        type: string
+    required:
+    - name
+    type: object
+  vo.CreateResourceRequest:
+    properties:
+      description:
+        maxLength: 150
+        minLength: 2
+        type: string
+      title:
+        maxLength: 20
+        minLength: 2
+        type: string
+    required:
+    - description
+    - title
+    type: object
+  vo.CreateRoleRequest:
+    properties:
+      desc:
+        maxLength: 100
+        minLength: 0
+        type: string
+      keyword:
+        maxLength: 20
+        minLength: 1
+        type: string
+      name:
+        maxLength: 20
+        minLength: 1
+        type: string
+      sort:
+        maximum: 999
+        minimum: 1
+        type: integer
+      status:
+        enum:
+        - 1
+        - 2
+        type: integer
+    required:
+    - keyword
+    - name
+    type: object
+  vo.CreateSystemConfigRequest:
+    properties:
+      content:
+        type: string
+      footer:
+        type: string
+      icon:
+        type: string
+      logo:
+        type: string
+      title:
+        maxLength: 20
+        minLength: 2
+        type: string
+    required:
+    - logo
+    - title
+    type: object
+  vo.CreateTagRequest:
+    properties:
+      color:
+        type: string
+      description:
+        type: string
+      title:
+        maxLength: 20
+        minLength: 2
+        type: string
+    required:
+    - title
+    type: object
+  vo.CreateUserRequest:
+    properties:
+      email:
+        type: string
+      nickname:
+        maxLength: 20
+        minLength: 2
+        type: string
+      password:
+        maxLength: 20
+        minLength: 6
+        type: string
+      phone:
+        type: string
+      projectID:
+        maxLength: 20
+        minLength: 2
+        type: string
+      username:
+        maxLength: 20
+        minLength: 2
+        type: string
+    required:
+    - nickname
+    - password
+    - projectID
+    - username
+    type: object
+  vo.DeleteAdScenesRequest:
+    properties:
+      adScenesIds:
+        type: string
+    type: object
+  vo.DeleteAdminRequest:
+    properties:
+      userIds:
+        items:
+          type: integer
+        type: array
+    type: object
+  vo.DeleteAdsRequest:
+    properties:
+      adsIds:
+        type: string
+    type: object
+  vo.DeleteApiRequest:
+    properties:
+      apiIds:
+        items:
+          type: integer
+        type: array
+    type: object
+  vo.DeleteCategoryRequest:
+    properties:
+      categoryIds:
+        type: string
+    type: object
+  vo.DeleteColumnsRequest:
+    properties:
+      columnIds:
+        type: string
+    type: object
+  vo.DeleteConfigsRequest:
+    properties:
+      configIds:
+        type: string
+    type: object
+  vo.DeleteMenuRequest:
+    properties:
+      menuIds:
+        items:
+          type: integer
+        type: array
+    type: object
+  vo.DeleteOperationLogRequest:
+    properties:
+      operationLogIds:
+        items:
+          type: integer
+        type: array
+    type: object
+  vo.DeleteOrdersRequest:
+    properties:
+      orderIds:
+        type: string
+    type: object
+  vo.DeletePostsRequest:
+    properties:
+      postIds:
+        type: string
+    type: object
+  vo.DeleteProductCategoryRequest:
+    properties:
+      productCategoryIds:
+        type: string
+    type: object
+  vo.DeleteProductSpecItemsRequest:
+    properties:
+      productSpecItemIds:
+        type: string
+    type: object
+  vo.DeleteProductSpecRequest:
+    properties:
+      productSpecIds:
+        type: string
+    type: object
+  vo.DeleteProductTypesRequest:
+    properties:
+      productTypeIds:
+        type: string
+    type: object
+  vo.DeleteProductsRequest:
+    properties:
+      productIds:
+        type: string
+    type: object
+  vo.DeleteProjectsRequest:
+    properties:
+      projectIds:
+        type: string
+    type: object
+  vo.DeleteResourcesRequest:
+    properties:
+      resourceID:
+        type: string
+    type: object
+  vo.DeleteRoleRequest:
+    properties:
+      roleIds:
+        items:
+          type: integer
+        type: array
+    type: object
+  vo.DeleteTagsRequest:
+    properties:
+      tagIds:
+        type: string
+    type: object
+  vo.DeleteUsersRequest:
+    properties:
+      userIds:
+        type: string
+    type: object
+  vo.RegisterAndLoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  vo.Sku:
+    properties:
+      costPrice:
+        type: number
+      enableDefault:
+        type: integer
+      image:
+        type: string
+      marketPrice:
+        type: number
+      quantity:
+        type: integer
+      skuID:
+        type: string
+      skuTitle:
+        type: string
+      unitPoint:
+        type: number
+      unitPrice:
+        type: number
+    required:
+    - costPrice
+    - image
+    - marketPrice
+    - quantity
+    - skuTitle
+    - unitPoint
+    - unitPrice
+    type: object
+  vo.UpdateAdRequest:
+    properties:
+      description:
+        maxLength: 150
+        minLength: 0
+        type: string
+      ext:
+        type: string
+      image:
+        type: string
+      sceneID:
+        type: string
+      sort:
+        type: integer
+      status:
+        enum:
+        - 1
+        - 2
+        type: integer
+      title:
+        maxLength: 50
+        minLength: 2
+        type: string
+      url:
+        maxLength: 255
+        minLength: 2
+        type: string
+      urlType:
+        type: integer
+      video:
+        type: string
+    required:
+    - sceneID
+    - sort
+    - title
+    - url
+    - urlType
+    type: object
+  vo.UpdateAdSceneRequest:
+    properties:
+      description:
+        maxLength: 150
+        minLength: 2
+        type: string
+      title:
+        maxLength: 50
+        minLength: 2
+        type: string
+    required:
+    - description
+    - title
+    type: object
+  vo.UpdateApiRequest:
+    properties:
+      category:
+        maxLength: 50
+        minLength: 1
+        type: string
+      desc:
+        maxLength: 100
+        minLength: 0
+        type: string
+      method:
+        maxLength: 20
+        minLength: 1
+        type: string
+      path:
+        maxLength: 100
+        minLength: 1
+        type: string
+    type: object
+  vo.UpdateCategoryRequest:
+    properties:
+      description:
+        type: string
+      hidden:
+        enum:
+        - 1
+        - 2
+        type: integer
+      icon:
+        type: string
+      parentID:
+        type: integer
+      path:
+        type: string
+      sort:
+        maximum: 999
+        minimum: 1
+        type: integer
+      status:
+        type: integer
+      title:
+        maxLength: 50
+        minLength: 1
+        type: string
+    required:
+    - parentID
+    - title
+    type: object
+  vo.UpdateColumnRequest:
+    properties:
+      description:
+        maxLength: 300
+        minLength: 2
+        type: string
+      icon:
+        maxLength: 300
+        minLength: 2
+        type: string
+      info:
+        type: string
+      title:
+        maxLength: 20
+        minLength: 2
+        type: string
+    required:
+    - description
+    - icon
+    - title
+    type: object
+  vo.UpdateConfigRequest:
+    properties:
+      description:
+        maxLength: 150
+        minLength: 2
+        type: string
+      info:
+        maxLength: 3000
+        minLength: 2
+        type: string
+      mdContent:
+        type: string
+      projectID:
+        type: string
+      title:
+        maxLength: 20
+        minLength: 2
+        type: string
+    required:
+    - description
+    - info
+    - projectID
+    - title
+    type: object
+  vo.UpdateMenuRequest:
+    properties:
+      activeMenu:
+        maxLength: 100
+        minLength: 0
+        type: string
+      alwaysShow:
+        enum:
+        - 1
+        - 2
+        type: integer
+      breadcrumb:
+        enum:
+        - 1
+        - 2
+        type: integer
+      component:
+        maxLength: 100
+        minLength: 0
+        type: string
+      hidden:
+        enum:
+        - 1
+        - 2
+        type: integer
+      icon:
+        maxLength: 50
+        minLength: 0
+        type: string
+      name:
+        maxLength: 50
+        minLength: 1
+        type: string
+      noCache:
+        enum:
+        - 1
+        - 2
+        type: integer
+      parentID:
+        type: integer
+      path:
+        maxLength: 100
+        minLength: 1
+        type: string
+      redirect:
+        maxLength: 100
+        minLength: 0
+        type: string
+      sort:
+        maximum: 999
+        minimum: 1
+        type: integer
+      status:
+        enum:
+        - 1
+        - 2
+        type: integer
+      title:
+        maxLength: 50
+        minLength: 1
+        type: string
+    required:
+    - name
+    - path
+    - title
+    type: object
+  vo.UpdatePostRequest:
+    properties:
+      author:
+        type: string
+      categoryID:
+        type: string
+      columnID:
+        type: string
+      content:
+        type: string
+      description:
+        maxLength: 300
+        minLength: 2
+        type: string
+      ext:
+        type: string
+      htmlContent:
+        type: string
+      icon:
+        type: string
+      images:
+        items:
+          type: string
+        type: array
+      isPasswd:
+        type: integer
+      isTop:
+        type: integer
+      location:
+        type: string
+      password:
+        type: string
+      people:
+        type: string
+      projectID:
+        type: string
+      status:
+        type: integer
+      tag:
+        type: string
+      time:
+        type: string
+      title:
+        maxLength: 60
+        minLength: 2
+        type: string
+      type:
+        type: integer
+      unitPrice:
+        type: number
+      userID:
+        type: string
+      video:
+        type: string
+    required:
+    - author
+    - categoryID
+    - content
+    - description
+    - htmlContent
+    - projectID
+    - title
+    - type
+    - userID
+    type: object
+  vo.UpdateProductCategoryRequest:
+    properties:
+      description:
+        type: string
+      hidden:
+        enum:
+        - 1
+        - 2
+        type: integer
+      icon:
+        type: string
+      parentID:
+        type: integer
+      path:
+        type: string
+      projectID:
+        type: string
+      sort:
+        maximum: 999
+        minimum: 1
+        type: integer
+      status:
+        type: integer
+      title:
+        maxLength: 50
+        minLength: 1
+        type: string
+    required:
+    - parentID
+    - projectID
+    - title
+    type: object
+  vo.UpdateRoleApisRequest:
+    properties:
+      apiIds:
+        items:
+          type: integer
+        type: array
+    type: object
+  vo.UpdateRoleMenusRequest:
+    properties:
+      menuIds:
+        items:
+          type: integer
+        type: array
+    type: object
+  vo.UpdateUserRequest:
+    properties:
+      email:
+        type: string
+      nickname:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+    type: object
+host: localhost:8088
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: 这是一个使用 Swagger 进行接口文档管理的 Go API 服务器。
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Gotribe Admin API
+  version: "1.0"
+paths:
+  /ad:
+    delete:
+      consumes:
+      - application/json
+      description: 根据广告ID列表批量删除广告
+      parameters:
+      - description: 广告ID列表
+        in: body
+        name: ads
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeleteAdsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量删除广告
+      tags:
+      - 广告管理
+    get:
+      consumes:
+      - application/json
+      description: 根据查询条件获取广告列表，支持分页
+      parameters:
+      - description: 场景ID
+        in: query
+        name: sceneID
+        type: string
+      - description: 广告标题
+        in: query
+        name: title
+        type: string
+      - description: 状态(1:启用 2:禁用)
+        in: query
+        name: status
+        type: integer
+      - description: 页码
+        in: query
+        name: pageNum
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取广告列表
+      tags:
+      - 广告管理
+    post:
+      consumes:
+      - application/json
+      description: 创建新的广告
+      parameters:
+      - description: 广告信息
+        in: body
+        name: ad
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateAdRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建广告
+      tags:
+      - 广告管理
+  /ad/{adID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据广告ID获取广告详细信息
+      parameters:
+      - description: 广告ID
+        in: path
+        name: adID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    $ref: '#/definitions/dto.AdDto'
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取广告详情
+      tags:
+      - 广告管理
+    patch:
+      consumes:
+      - application/json
+      description: 根据广告ID更新广告信息
+      parameters:
+      - description: 广告ID
+        in: path
+        name: adID
+        required: true
+        type: string
+      - description: 广告信息
+        in: body
+        name: ad
+        required: true
+        schema:
+          $ref: '#/definitions/vo.UpdateAdRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新广告
+      tags:
+      - 广告管理
+  /ad/scene:
+    delete:
+      consumes:
+      - application/json
+      description: 根据推广场景ID列表批量删除推广场景
+      parameters:
+      - description: 推广场景ID列表
+        in: body
+        name: adScenes
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeleteAdScenesRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量删除推广场景
+      tags:
+      - 推广场景管理
+    get:
+      consumes:
+      - application/json
+      description: 根据查询条件获取推广场景列表，支持分页
+      parameters:
+      - description: 项目ID
+        in: query
+        name: ProjectID
+        type: string
+      - description: 页码
+        in: query
+        name: pageNum
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取推广场景列表
+      tags:
+      - 推广场景管理
+    post:
+      consumes:
+      - application/json
+      description: 创建新的推广场景
+      parameters:
+      - description: 推广场景信息
+        in: body
+        name: adScene
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateAdSceneRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建推广场景
+      tags:
+      - 推广场景管理
+  /ad/scene/{adSceneID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据推广场景ID获取推广场景详细信息
+      parameters:
+      - description: 推广场景ID
+        in: path
+        name: adSceneID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    $ref: '#/definitions/dto.AdSceneDto'
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取推广场景详情
+      tags:
+      - 推广场景管理
+    patch:
+      consumes:
+      - application/json
+      description: 根据推广场景ID更新推广场景信息
+      parameters:
+      - description: 推广场景ID
+        in: path
+        name: adSceneID
+        required: true
+        type: string
+      - description: 推广场景信息
+        in: body
+        name: adScene
+        required: true
+        schema:
+          $ref: '#/definitions/vo.UpdateAdSceneRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新推广场景
+      tags:
+      - 推广场景管理
+  /admin/changePwd:
+    put:
+      consumes:
+      - application/json
+      description: 更新当前管理员的登录密码
+      parameters:
+      - description: 更新密码请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.ChangePwdRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新管理员登录密码
+      tags:
+      - 管理员管理
+  /admin/create:
+    post:
+      consumes:
+      - application/json
+      description: 创建一个新的管理员
+      parameters:
+      - description: 创建管理员请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateAdminRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建管理员
+      tags:
+      - 管理员管理
+  /admin/delete/batch:
+    delete:
+      consumes:
+      - application/json
+      description: 根据管理员ID列表批量删除管理员
+      parameters:
+      - description: 删除管理员请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeleteAdminRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量删除管理员
+      tags:
+      - 管理员管理
+  /admin/info:
+    post:
+      consumes:
+      - application/json
+      description: 获取当前登录管理员详细信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取当前登录管理员信息
+      tags:
+      - 管理员管理
+  /admin/list:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有管理员的列表
+      parameters:
+      - in: query
+        name: mobile
+        type: string
+      - in: query
+        name: nickname
+        type: string
+      - in: query
+        name: pageNum
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: status
+        type: integer
+      - in: query
+        name: username
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取管理员列表
+      tags:
+      - 管理员管理
+  /admin/update/{userID}:
+    patch:
+      consumes:
+      - application/json
+      description: 根据管理员ID更新管理员信息
+      parameters:
+      - description: 管理员ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      - description: 更新管理员请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateAdminRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新管理员
+      tags:
+      - 管理员管理
+  /api/create:
+    post:
+      consumes:
+      - application/json
+      description: 创建一个新的接口
+      parameters:
+      - description: 创建接口请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateApiRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建接口
+      tags:
+      - 接口管理
+  /api/delete/batch:
+    delete:
+      consumes:
+      - application/json
+      description: 根据接口ID列表批量删除接口
+      parameters:
+      - description: 删除接口请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeleteApiRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量删除接口
+      tags:
+      - 接口管理
+  /api/list:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有接口的列表
+      parameters:
+      - in: query
+        name: category
+        type: string
+      - in: query
+        name: creator
+        type: string
+      - in: query
+        name: method
+        type: string
+      - in: query
+        name: pageNum
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: path
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取接口列表
+      tags:
+      - 接口管理
+  /api/tree:
+    get:
+      consumes:
+      - application/json
+      description: 获取树形结构的接口列表(按接口Category字段分类)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取接口树
+      tags:
+      - 接口管理
+  /api/update/{apiID}:
+    patch:
+      consumes:
+      - application/json
+      description: 根据接口ID更新接口信息
+      parameters:
+      - description: 接口ID
+        in: path
+        name: apiID
+        required: true
+        type: string
+      - description: 更新接口请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.UpdateApiRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新接口
+      tags:
+      - 接口管理
+  /api/v1/product-categories:
+    delete:
+      consumes:
+      - application/json
+      description: 根据分类ID列表批量删除分类
+      parameters:
+      - description: 删除分类请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeleteProductCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量删除分类
+      tags:
+      - 商品分类管理
+    get:
+      consumes:
+      - application/json
+      description: 获取所有商品分类列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  properties:
+                    productCategorys:
+                      items:
+                        type: object
+                      type: array
+                  type: object
+              type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取分类列表
+      tags:
+      - 商品分类管理
+    post:
+      consumes:
+      - application/json
+      description: 创建新的商品分类
+      parameters:
+      - description: 创建分类请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateProductCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建分类
+      tags:
+      - 商品分类管理
+  /api/v1/product-categories/{productCategoryID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据分类ID获取分类详细信息
+      parameters:
+      - description: 分类ID
+        in: path
+        name: productCategoryID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  properties:
+                    product_category:
+                      type: object
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取分类信息
+      tags:
+      - 商品分类管理
+    put:
+      consumes:
+      - application/json
+      description: 根据分类ID更新分类信息
+      parameters:
+      - description: 分类ID
+        in: path
+        name: productCategoryID
+        required: true
+        type: string
+      - description: 更新分类请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.UpdateProductCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新分类
+      tags:
+      - 商品分类管理
+  /api/v1/product-categories/tree:
+    get:
+      consumes:
+      - application/json
+      description: 获取商品分类的树形结构
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  properties:
+                    productCategoryTree:
+                      items:
+                        type: object
+                      type: array
+                  type: object
+              type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取分类树
+      tags:
+      - 商品分类管理
+  /api/v1/product-spec-items:
+    delete:
+      consumes:
+      - application/json
+      description: 根据商品规格ID列表批量删除商品规格项
+      parameters:
+      - description: 删除商品规格请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeleteProductSpecItemsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量删除商品规格
+      tags:
+      - 商品规格项管理
+    get:
+      consumes:
+      - application/json
+      description: 获取商品规格项列表，支持分页和筛选
+      parameters:
+      - in: query
+        name: pageNum
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: specID
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  properties:
+                    productSpecItems:
+                      items:
+                        $ref: '#/definitions/dto.ProductSpecItemDto'
+                      type: array
+                    total:
+                      type: integer
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取商品规格列表
+      tags:
+      - 商品规格项管理
+    post:
+      consumes:
+      - application/json
+      description: 创建新的商品规格项
+      parameters:
+      - description: 创建商品规格请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateProductSpecItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  properties:
+                    productSpecItem:
+                      $ref: '#/definitions/dto.ProductSpecItemDto'
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建商品规格
+      tags:
+      - 商品规格项管理
+  /api/v1/product-spec-items/{productSpecItemID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据商品规格ID获取商品规格详细信息
+      parameters:
+      - description: 商品规格项ID
+        in: path
+        name: productSpecItemID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  properties:
+                    productSpecItem:
+                      $ref: '#/definitions/dto.ProductSpecItemDto'
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取商品规格信息
+      tags:
+      - 商品规格项管理
+    put:
+      consumes:
+      - application/json
+      description: 根据商品规格ID更新商品规格信息
+      parameters:
+      - description: 商品规格项ID
+        in: path
+        name: productSpecItemID
+        required: true
+        type: string
+      - description: 更新商品规格请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateProductSpecItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新商品规格
+      tags:
+      - 商品规格项管理
+  /api/v1/resources:
+    delete:
+      consumes:
+      - application/json
+      description: 根据资源ID删除资源
+      parameters:
+      - description: 删除资源请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeleteResourcesRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 删除资源
+      tags:
+      - 资源管理
+    get:
+      consumes:
+      - application/json
+      description: 获取资源列表，支持分页和筛选
+      parameters:
+      - in: query
+        name: pageNum
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: resourceID
+        type: string
+      - in: query
+        name: type
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  properties:
+                    resources:
+                      items:
+                        $ref: '#/definitions/dto.ResourceDto'
+                      type: array
+                    total:
+                      type: integer
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取资源列表
+      tags:
+      - 资源管理
+  /api/v1/resources/{resourceID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据资源ID获取资源详细信息
+      parameters:
+      - description: 资源ID
+        in: path
+        name: resourceID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  properties:
+                    resource:
+                      $ref: '#/definitions/dto.ResourceDto'
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取资源信息
+      tags:
+      - 资源管理
+    put:
+      consumes:
+      - application/json
+      description: 根据资源ID更新资源信息
+      parameters:
+      - description: 资源ID
+        in: path
+        name: resourceID
+        required: true
+        type: string
+      - description: 更新资源请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateResourceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新资源
+      tags:
+      - 资源管理
+  /api/v1/resources/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 上传文件资源到服务器
+      parameters:
+      - description: 上传的文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 上传成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  properties:
+                    upload:
+                      $ref: '#/definitions/dto.UploadResourceDto'
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 上传资源
+      tags:
+      - 资源管理
+  /base/config:
+    get:
+      consumes:
+      - application/json
+      description: 获取当前系统配置信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 获取系统配置信息
+      tags:
+      - 系统配置
+  /base/login:
+    post:
+      consumes:
+      - application/json
+      description: 管理员用户登录接口，返回JWT token
+      parameters:
+      - description: 登录请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.RegisterAndLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登录成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  properties:
+                    expires:
+                      type: string
+                    token:
+                      type: string
+                  type: object
+              type: object
+        "400":
+          description: 登录失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 用户登录
+      tags:
+      - 认证管理
+  /base/logout:
+    post:
+      consumes:
+      - application/json
+      description: 管理员用户登出接口
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登出成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 登出失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 用户登出
+      tags:
+      - 认证管理
+  /base/refreshToken:
+    post:
+      consumes:
+      - application/json
+      description: 刷新JWT token，延长登录状态
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 刷新成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  properties:
+                    expires:
+                      type: string
+                    token:
+                      type: string
+                  type: object
+              type: object
+        "400":
+          description: 刷新失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 刷新token
+      tags:
+      - 认证管理
+  /category:
+    delete:
+      consumes:
+      - application/json
+      description: 根据分类ID列表批量删除分类
+      parameters:
+      - description: 删除分类请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeleteCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量删除分类
+      tags:
+      - 分类管理
+    get:
+      consumes:
+      - application/json
+      description: 获取所有分类的列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取分类列表
+      tags:
+      - 分类管理
+    post:
+      consumes:
+      - application/json
+      description: 创建一个新的分类
+      parameters:
+      - description: 创建分类请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建分类
+      tags:
+      - 分类管理
+  /category/{categoryID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据分类ID获取分类详细信息
+      parameters:
+      - description: 分类ID
+        in: path
+        name: categoryID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取分类详情
+      tags:
+      - 分类管理
+    patch:
+      consumes:
+      - application/json
+      description: 根据分类ID更新分类信息
+      parameters:
+      - description: 分类ID
+        in: path
+        name: categoryID
+        required: true
+        type: string
+      - description: 更新分类请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.UpdateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新分类
+      tags:
+      - 分类管理
+  /category/tree:
+    get:
+      consumes:
+      - application/json
+      description: 获取树形结构的分类列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取分类树
+      tags:
+      - 分类管理
+  /column:
+    delete:
+      consumes:
+      - application/json
+      description: 根据专栏ID列表批量删除专栏
+      parameters:
+      - description: 专栏ID列表
+        in: body
+        name: columns
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeleteColumnsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量删除专栏
+      tags:
+      - 专栏管理
+    get:
+      consumes:
+      - application/json
+      description: 根据查询条件获取专栏列表，支持分页
+      parameters:
+      - description: 专栏ID
+        in: query
+        name: columnID
+        type: string
+      - description: 项目ID
+        in: query
+        name: projectID
+        type: string
+      - description: 专栏标题
+        in: query
+        name: title
+        type: string
+      - description: 页码
+        in: query
+        name: pageNum
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取专栏列表
+      tags:
+      - 专栏管理
+    post:
+      consumes:
+      - application/json
+      description: 创建新的专栏
+      parameters:
+      - description: 专栏信息
+        in: body
+        name: column
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateColumnRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建专栏
+      tags:
+      - 专栏管理
+  /column/{columnID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据专栏ID获取专栏详细信息
+      parameters:
+      - description: 专栏ID
+        in: path
+        name: columnID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    $ref: '#/definitions/dto.ColumnDto'
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取专栏详情
+      tags:
+      - 专栏管理
+    patch:
+      consumes:
+      - application/json
+      description: 根据专栏ID更新专栏信息
+      parameters:
+      - description: 专栏ID
+        in: path
+        name: columnID
+        required: true
+        type: string
+      - description: 专栏信息
+        in: body
+        name: column
+        required: true
+        schema:
+          $ref: '#/definitions/vo.UpdateColumnRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新专栏
+      tags:
+      - 专栏管理
+  /comment:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有评论的列表，支持分页和筛选
+      parameters:
+      - in: query
+        name: nickname
+        type: string
+      - in: query
+        name: objectID
+        type: string
+      - in: query
+        name: objectType
+        type: integer
+      - in: query
+        name: pageNum
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: projectID
+        type: string
+      - in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取评论列表
+      tags:
+      - 评论管理
+  /comment/{commentID}:
+    patch:
+      consumes:
+      - application/json
+      description: 根据评论ID更新评论的审核状态
+      parameters:
+      - description: 评论ID
+        in: path
+        name: commentID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新评论状态
+      tags:
+      - 评论管理
+  /config:
+    delete:
+      consumes:
+      - application/json
+      description: 根据配置ID列表批量删除配置
+      parameters:
+      - description: 配置ID列表
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeleteConfigsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量删除配置
+      tags:
+      - 配置管理
+    get:
+      consumes:
+      - application/json
+      description: 获取所有配置的列表
+      parameters:
+      - in: query
+        name: ProjectID
+        type: string
+      - in: query
+        name: configID
+        type: string
+      - in: query
+        name: pageNum
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: title
+        type: string
+      - in: query
+        name: type
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取配置列表
+      tags:
+      - 配置管理
+    post:
+      consumes:
+      - application/json
+      description: 创建一个新的配置
+      parameters:
+      - description: 创建配置请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建配置
+      tags:
+      - 配置管理
+  /config/{configID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据配置ID获取配置详细信息
+      parameters:
+      - description: 配置ID
+        in: path
+        name: configID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取配置信息
+      tags:
+      - 配置管理
+    patch:
+      consumes:
+      - application/json
+      description: 根据配置ID更新配置信息
+      parameters:
+      - description: 配置ID
+        in: path
+        name: configID
+        required: true
+        type: string
+      - description: 配置信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.UpdateConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新配置
+      tags:
+      - 配置管理
+  /feedback:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有反馈的列表，支持分页和筛选
+      parameters:
+      - in: query
+        name: pageNum
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: projectID
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取反馈列表
+      tags:
+      - 反馈管理
+  /index/info:
+    get:
+      consumes:
+      - application/json
+      description: 根据项目ID获取首页头部数据
+      parameters:
+      - description: 项目ID
+        in: query
+        name: projectID
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取首页信息
+      tags:
+      - 首页管理
+  /index/time-range:
+    get:
+      consumes:
+      - application/json
+      description: 根据时间范围和项目ID获取首页折线图数据
+      parameters:
+      - description: 项目ID
+        in: query
+        name: projectID
+        type: string
+      - description: 时间范围
+        in: query
+        name: timeRange
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取时间范围数据
+      tags:
+      - 首页管理
+  /job:
+    get:
+      consumes:
+      - application/json
+      description: 获取系统中所有定时任务的列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取任务列表
+      tags:
+      - 任务管理
+  /job/{name}/disable:
+    post:
+      consumes:
+      - application/json
+      description: 根据任务名称禁用指定的定时任务
+      parameters:
+      - description: 任务名称
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 禁用任务
+      tags:
+      - 任务管理
+  /job/{name}/enable:
+    post:
+      consumes:
+      - application/json
+      description: 根据任务名称启用指定的定时任务
+      parameters:
+      - description: 任务名称
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 启用任务
+      tags:
+      - 任务管理
+  /job/{name}/history:
+    get:
+      consumes:
+      - application/json
+      description: 根据任务名称获取指定任务的执行历史记录
+      parameters:
+      - description: 任务名称
+        in: path
+        name: name
+        required: true
+        type: string
+      - default: 10
+        description: 限制返回记录数
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取任务执行历史
+      tags:
+      - 任务管理
+  /job/{name}/status:
+    get:
+      consumes:
+      - application/json
+      description: 根据任务名称获取指定任务的运行状态
+      parameters:
+      - description: 任务名称
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取任务状态
+      tags:
+      - 任务管理
+  /menu/access/list/{userID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据用户ID获取用户的可访问菜单列表
+      parameters:
+      - description: 用户ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取用户的可访问菜单列表
+      tags:
+      - 菜单管理
+  /menu/access/tree/{userID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据用户ID获取用户的可访问菜单树
+      parameters:
+      - description: 用户ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取用户的可访问菜单树
+      tags:
+      - 菜单管理
+  /menu/create:
+    post:
+      consumes:
+      - application/json
+      description: 创建一个新的菜单
+      parameters:
+      - description: 创建菜单请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateMenuRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建菜单
+      tags:
+      - 菜单管理
+  /menu/delete/batch:
+    delete:
+      consumes:
+      - application/json
+      description: 根据菜单ID列表批量删除菜单
+      parameters:
+      - description: 删除菜单请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeleteMenuRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量删除菜单
+      tags:
+      - 菜单管理
+  /menu/list:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有菜单的列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取菜单列表
+      tags:
+      - 菜单管理
+  /menu/tree:
+    get:
+      consumes:
+      - application/json
+      description: 获取树形结构的菜单列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取菜单树
+      tags:
+      - 菜单管理
+  /menu/update/{menuID}:
+    patch:
+      consumes:
+      - application/json
+      description: 根据菜单ID更新菜单信息
+      parameters:
+      - description: 菜单ID
+        in: path
+        name: menuID
+        required: true
+        type: string
+      - description: 更新菜单请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.UpdateMenuRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新菜单
+      tags:
+      - 菜单管理
+  /operation-log:
+    delete:
+      consumes:
+      - application/json
+      description: 根据操作日志ID列表批量删除操作日志
+      parameters:
+      - description: 操作日志ID列表
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeleteOperationLogRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量删除操作日志
+      tags:
+      - 操作日志管理
+    get:
+      consumes:
+      - application/json
+      description: 获取所有操作日志的列表
+      parameters:
+      - in: query
+        name: ip
+        type: string
+      - in: query
+        name: pageNum
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: path
+        type: string
+      - in: query
+        name: status
+        type: integer
+      - in: query
+        name: username
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取操作日志列表
+      tags:
+      - 操作日志管理
+  /order:
+    delete:
+      consumes:
+      - application/json
+      description: 根据订单ID列表批量删除订单
+      parameters:
+      - description: 订单ID列表
+        in: body
+        name: orders
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeleteOrdersRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量删除订单
+      tags:
+      - 订单管理
+    get:
+      consumes:
+      - application/json
+      description: 根据查询条件获取订单列表，支持分页
+      parameters:
+      - description: 订单ID
+        in: query
+        name: orderID
+        type: string
+      - description: 用户ID
+        in: query
+        name: userID
+        type: string
+      - description: 订单状态
+        in: query
+        name: status
+        type: integer
+      - description: 页码
+        in: query
+        name: pageNum
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取订单列表
+      tags:
+      - 订单管理
+  /order/{orderID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据订单ID获取订单详细信息
+      parameters:
+      - description: 订单ID
+        in: path
+        name: orderID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    $ref: '#/definitions/dto.OrderDto'
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取订单详情
+      tags:
+      - 订单管理
+    patch:
+      consumes:
+      - application/json
+      description: 根据订单ID更新订单信息
+      parameters:
+      - description: 订单ID
+        in: path
+        name: orderID
+        required: true
+        type: string
+      - description: 订单信息
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新订单
+      tags:
+      - 订单管理
+  /order/{orderID}/logistics:
+    patch:
+      consumes:
+      - application/json
+      description: 根据订单ID更新物流信息
+      parameters:
+      - description: 订单ID
+        in: path
+        name: orderID
+        required: true
+        type: string
+      - description: 物流信息
+        in: body
+        name: logistics
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateOrderLogisticsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新物流信息
+      tags:
+      - 订单管理
+  /order/{orderID}/logs:
+    get:
+      consumes:
+      - application/json
+      description: 根据订单ID获取订单操作记录
+      parameters:
+      - description: 订单ID
+        in: path
+        name: orderID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取订单记录
+      tags:
+      - 订单管理
+  /point:
+    get:
+      consumes:
+      - application/json
+      description: 根据查询条件获取积分列表，支持分页
+      parameters:
+      - description: 用户ID
+        in: query
+        name: userID
+        type: string
+      - description: 项目ID
+        in: query
+        name: projectID
+        type: string
+      - description: 页码
+        in: query
+        name: pageNum
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取积分列表
+      tags:
+      - 积分管理
+    post:
+      consumes:
+      - application/json
+      description: 为用户创建积分记录
+      parameters:
+      - description: 积分信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreatePointLogRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建积分
+      tags:
+      - 积分管理
+  /post:
+    delete:
+      consumes:
+      - application/json
+      description: 根据内容ID列表批量删除内容
+      parameters:
+      - description: 删除内容请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeletePostsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量删除内容
+      tags:
+      - 内容管理
+    get:
+      consumes:
+      - application/json
+      description: 获取所有内容的列表
+      parameters:
+      - in: query
+        name: pageNum
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: postID
+        type: string
+      - in: query
+        name: projectID
+        type: string
+      - in: query
+        name: title
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取内容列表
+      tags:
+      - 内容管理
+    post:
+      consumes:
+      - application/json
+      description: 创建一个新的内容
+      parameters:
+      - description: 创建内容请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreatePostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建内容
+      tags:
+      - 内容管理
+  /post/{postID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据内容ID获取内容详细信息
+      parameters:
+      - description: 内容ID
+        in: path
+        name: postID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取内容信息
+      tags:
+      - 内容管理
+    patch:
+      consumes:
+      - application/json
+      description: 根据内容ID更新内容信息
+      parameters:
+      - description: 内容ID
+        in: path
+        name: postID
+        required: true
+        type: string
+      - description: 更新内容请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.UpdatePostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新内容
+      tags:
+      - 内容管理
+    put:
+      consumes:
+      - application/json
+      description: 根据内容ID发布内容
+      parameters:
+      - description: 内容ID
+        in: path
+        name: postID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 发布内容
+      tags:
+      - 内容管理
+  /product:
+    delete:
+      consumes:
+      - application/json
+      description: 根据产品ID列表批量删除产品
+      parameters:
+      - description: 删除产品请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeleteProductsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量删除产品
+      tags:
+      - 产品管理
+    get:
+      consumes:
+      - application/json
+      description: 获取所有产品的列表
+      parameters:
+      - in: query
+        name: categoryID
+        type: string
+      - in: query
+        name: pageNum
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: projectID
+        type: string
+      - in: query
+        name: title
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取产品列表
+      tags:
+      - 产品管理
+    post:
+      consumes:
+      - application/json
+      description: 创建一个新的产品
+      parameters:
+      - description: 创建产品请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建产品
+      tags:
+      - 产品管理
+  /product-spec:
+    delete:
+      consumes:
+      - application/json
+      description: 根据商品规格ID列表批量删除商品规格
+      parameters:
+      - description: 商品规格ID列表
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeleteProductSpecRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量删除商品规格
+      tags:
+      - 商品规格管理
+    get:
+      consumes:
+      - application/json
+      description: 获取所有商品规格的列表
+      parameters:
+      - in: query
+        name: pageNum
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: title
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取商品规格列表
+      tags:
+      - 商品规格管理
+    post:
+      consumes:
+      - application/json
+      description: 创建一个新的商品规格
+      parameters:
+      - description: 创建商品规格请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateProductSpecRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建商品规格
+      tags:
+      - 商品规格管理
+  /product-spec/{productSpecID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据商品规格ID获取商品规格详细信息
+      parameters:
+      - description: 商品规格ID
+        in: path
+        name: productSpecID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取商品规格信息
+      tags:
+      - 商品规格管理
+    patch:
+      consumes:
+      - application/json
+      description: 根据商品规格ID更新商品规格信息
+      parameters:
+      - description: 商品规格ID
+        in: path
+        name: productSpecID
+        required: true
+        type: string
+      - description: 商品规格信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateProductSpecRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新商品规格
+      tags:
+      - 商品规格管理
+  /product-spec/category/{categoryID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据商品分类ID获取对应的规格和规格项
+      parameters:
+      - description: 商品分类ID
+        in: path
+        name: categoryID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取商品规格和规格项
+      tags:
+      - 商品规格管理
+  /product-type:
+    delete:
+      consumes:
+      - application/json
+      description: 根据商品类型ID列表批量删除商品类型
+      parameters:
+      - description: 商品类型ID列表
+        in: body
+        name: productTypes
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeleteProductTypesRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量删除商品类型
+      tags:
+      - 商品类型管理
+    get:
+      consumes:
+      - application/json
+      description: 根据查询条件获取商品类型列表，支持分页
+      parameters:
+      - description: 商品类型ID
+        in: query
+        name: productTypeID
+        type: string
+      - description: 商品类型标题
+        in: query
+        name: title
+        type: string
+      - description: 分类ID
+        in: query
+        name: categoryID
+        type: string
+      - description: 页码
+        in: query
+        name: pageNum
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取商品类型列表
+      tags:
+      - 商品类型管理
+    post:
+      consumes:
+      - application/json
+      description: 创建新的商品类型
+      parameters:
+      - description: 商品类型信息
+        in: body
+        name: productType
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateProductTypeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    $ref: '#/definitions/dto.ProductTypeDto'
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建商品类型
+      tags:
+      - 商品类型管理
+  /product-type/{productTypeID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据商品类型ID获取商品类型详细信息，包含关联的规格信息
+      parameters:
+      - description: 商品类型ID
+        in: path
+        name: productTypeID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    $ref: '#/definitions/dto.ProductTypeDto'
+                  type: object
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取商品类型详情
+      tags:
+      - 商品类型管理
+    patch:
+      consumes:
+      - application/json
+      description: 根据商品类型ID更新商品类型信息
+      parameters:
+      - description: 商品类型ID
+        in: path
+        name: productTypeID
+        required: true
+        type: string
+      - description: 商品类型信息
+        in: body
+        name: productType
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateProductTypeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 内部服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新商品类型
+      tags:
+      - 商品类型管理
+  /product/{productID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据产品ID获取产品详细信息
+      parameters:
+      - description: 产品ID
+        in: path
+        name: productID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取产品信息
+      tags:
+      - 产品管理
+    patch:
+      consumes:
+      - application/json
+      description: 根据产品ID更新产品信息
+      parameters:
+      - description: 产品ID
+        in: path
+        name: productID
+        required: true
+        type: string
+      - description: 更新产品请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新产品
+      tags:
+      - 产品管理
+  /project:
+    delete:
+      consumes:
+      - application/json
+      description: 根据项目ID列表批量删除项目
+      parameters:
+      - description: 删除项目请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeleteProjectsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量删除项目
+      tags:
+      - 项目管理
+    get:
+      consumes:
+      - application/json
+      description: 获取所有项目的列表，支持分页和筛选
+      parameters:
+      - in: query
+        name: pageNum
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: projectID
+        type: string
+      - in: query
+        name: title
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取项目列表
+      tags:
+      - 项目管理
+    post:
+      consumes:
+      - application/json
+      description: 创建一个新的项目
+      parameters:
+      - description: 创建项目请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateProjectRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建项目
+      tags:
+      - 项目管理
+  /project/{projectID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据项目ID获取项目详细信息
+      parameters:
+      - description: 项目ID
+        in: path
+        name: projectID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取项目信息
+      tags:
+      - 项目管理
+    patch:
+      consumes:
+      - application/json
+      description: 根据项目ID更新项目信息
+      parameters:
+      - description: 项目ID
+        in: path
+        name: projectID
+        required: true
+        type: string
+      - description: 更新项目请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateProjectRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新项目
+      tags:
+      - 项目管理
+  /role/apis/get/{roleID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据角色ID获取角色的权限接口列表
+      parameters:
+      - description: 角色ID
+        in: path
+        name: roleID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取角色的权限接口
+      tags:
+      - 角色管理
+  /role/apis/update/{roleID}:
+    patch:
+      consumes:
+      - application/json
+      description: 根据角色ID更新角色的权限接口
+      parameters:
+      - description: 角色ID
+        in: path
+        name: roleID
+        required: true
+        type: string
+      - description: 更新角色权限接口请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.UpdateRoleApisRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新角色的权限接口
+      tags:
+      - 角色管理
+  /role/create:
+    post:
+      consumes:
+      - application/json
+      description: 创建一个新的角色
+      parameters:
+      - description: 创建角色请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建角色
+      tags:
+      - 角色管理
+  /role/delete/batch:
+    delete:
+      consumes:
+      - application/json
+      description: 根据角色ID列表批量删除角色
+      parameters:
+      - description: 删除角色请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeleteRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量删除角色
+      tags:
+      - 角色管理
+  /role/list:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有角色的列表
+      parameters:
+      - in: query
+        name: keyword
+        type: string
+      - in: query
+        name: name
+        type: string
+      - in: query
+        name: pageNum
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取角色列表
+      tags:
+      - 角色管理
+  /role/menus/get/{roleID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据角色ID获取角色的权限菜单列表
+      parameters:
+      - description: 角色ID
+        in: path
+        name: roleID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取角色的权限菜单
+      tags:
+      - 角色管理
+  /role/menus/update/{roleID}:
+    patch:
+      consumes:
+      - application/json
+      description: 根据角色ID更新角色的权限菜单
+      parameters:
+      - description: 角色ID
+        in: path
+        name: roleID
+        required: true
+        type: string
+      - description: 更新角色权限菜单请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.UpdateRoleMenusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新角色的权限菜单
+      tags:
+      - 角色管理
+  /role/update/{roleID}:
+    patch:
+      consumes:
+      - application/json
+      description: 根据角色ID更新角色信息
+      parameters:
+      - description: 角色ID
+        in: path
+        name: roleID
+        required: true
+        type: string
+      - description: 更新角色请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新角色
+      tags:
+      - 角色管理
+  /systemConfig/update:
+    patch:
+      consumes:
+      - application/json
+      description: 更新系统配置信息
+      parameters:
+      - description: 更新系统配置请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateSystemConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新系统配置
+      tags:
+      - 系统配置
+  /tag:
+    delete:
+      consumes:
+      - application/json
+      description: 根据标签ID列表批量删除标签
+      parameters:
+      - description: 标签ID列表
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeleteTagsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量删除标签
+      tags:
+      - 标签管理
+    get:
+      consumes:
+      - application/json
+      description: 获取所有标签的列表
+      parameters:
+      - in: query
+        name: pageNum
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: tagID
+        type: string
+      - in: query
+        name: title
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取标签列表
+      tags:
+      - 标签管理
+    post:
+      consumes:
+      - application/json
+      description: 创建一个新的标签
+      parameters:
+      - description: 创建标签请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateTagRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建标签
+      tags:
+      - 标签管理
+  /tag/{tagID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据标签ID获取标签详细信息
+      parameters:
+      - description: 标签ID
+        in: path
+        name: tagID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取标签信息
+      tags:
+      - 标签管理
+    patch:
+      consumes:
+      - application/json
+      description: 根据标签ID更新标签信息
+      parameters:
+      - description: 标签ID
+        in: path
+        name: tagID
+        required: true
+        type: string
+      - description: 标签信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateTagRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新标签
+      tags:
+      - 标签管理
+  /user:
+    delete:
+      consumes:
+      - application/json
+      description: 根据用户ID列表批量删除用户
+      parameters:
+      - description: 删除用户请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.DeleteUsersRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 批量删除用户
+      tags:
+      - 用户管理
+    get:
+      consumes:
+      - application/json
+      description: 获取所有用户的列表
+      parameters:
+      - in: query
+        name: nickname
+        type: string
+      - in: query
+        name: pageNum
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: userID
+        type: string
+      - in: query
+        name: username
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取用户列表
+      tags:
+      - 用户管理
+    post:
+      consumes:
+      - application/json
+      description: 创建一个新的用户
+      parameters:
+      - description: 创建用户请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建用户
+      tags:
+      - 用户管理
+  /user/{userID}:
+    get:
+      consumes:
+      - application/json
+      description: 根据用户ID获取用户详细信息
+      parameters:
+      - description: 用户ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取用户信息
+      tags:
+      - 用户管理
+    patch:
+      consumes:
+      - application/json
+      description: 根据用户ID更新用户信息
+      parameters:
+      - description: 用户ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      - description: 更新用户请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vo.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新用户
+      tags:
+      - 用户管理
+  /user/search:
+    get:
+      consumes:
+      - application/json
+      description: 根据昵称搜索用户
+      parameters:
+      - description: 用户昵称
+        in: query
+        name: nickname
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 搜索用户
+      tags:
+      - 用户管理
+securityDefinitions:
+  BearerAuth:
+    description: 请输入 Bearer {token}，注意 Bearer 和 token 之间有一个空格
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

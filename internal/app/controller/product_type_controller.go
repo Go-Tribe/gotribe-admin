@@ -43,8 +43,18 @@ func NewProductTypeController() IProductTypeController {
 	return productTypeController
 }
 
-// 获取当前商品类型信息
-// 获取当前商品类型信息
+// GetProductTypeInfo 获取当前商品类型信息
+// @Summary 获取商品类型详情
+// @Description 根据商品类型ID获取商品类型详细信息，包含关联的规格信息
+// @Tags 商品类型管理
+// @Accept json
+// @Produce json
+// @Param productTypeID path string true "商品类型ID"
+// @Success 200 {object} response.Response{data=map[string]dto.ProductTypeDto} "成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /product-type/{productTypeID} [get]
+// @Security BearerAuth
 func (tc ProductTypeController) GetProductTypeInfo(c *gin.Context) {
 	productType, err := tc.ProductTypeRepository.GetProductTypeByProductTypeID(c.Param("productTypeID"))
 	if err != nil {
@@ -62,14 +72,29 @@ func (tc ProductTypeController) GetProductTypeInfo(c *gin.Context) {
 		response.Fail(c, nil, "获取商品规格信息失败: "+err.Error())
 		return
 	}
-	productTypeInfoDto.Spec = productSpecs
+	productTypeInfoDto.Spec = dto.ToProductSpecsDto(productSpecs)
 
 	response.Success(c, gin.H{
 		"productType": productTypeInfoDto,
 	}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 获取商品类型列表
+// GetProductTypes 获取商品类型列表
+// @Summary 获取商品类型列表
+// @Description 根据查询条件获取商品类型列表，支持分页
+// @Tags 商品类型管理
+// @Accept json
+// @Produce json
+// @Param productTypeID query string false "商品类型ID"
+// @Param title query string false "商品类型标题"
+// @Param categoryID query string false "分类ID"
+// @Param pageNum query int false "页码"
+// @Param pageSize query int false "每页数量"
+// @Success 200 {object} response.Response{data=map[string]interface{}} "成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /product-type [get]
+// @Security BearerAuth
 func (tc ProductTypeController) GetProductTypes(c *gin.Context) {
 	var req vo.ProductTypeListRequest
 	// 参数绑定
@@ -93,7 +118,18 @@ func (tc ProductTypeController) GetProductTypes(c *gin.Context) {
 	response.Success(c, gin.H{"productTypes": dto.ToProductTypesDto(productType), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 创建商品类型
+// CreateProductType 创建商品类型
+// @Summary 创建商品类型
+// @Description 创建新的商品类型
+// @Tags 商品类型管理
+// @Accept json
+// @Produce json
+// @Param productType body vo.CreateProductTypeRequest true "商品类型信息"
+// @Success 200 {object} response.Response{data=map[string]dto.ProductTypeDto} "创建成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /product-type [post]
+// @Security BearerAuth
 func (tc ProductTypeController) CreateProductType(c *gin.Context) {
 	var req vo.CreateProductTypeRequest
 	// 参数绑定
@@ -124,7 +160,19 @@ func (tc ProductTypeController) CreateProductType(c *gin.Context) {
 	response.Success(c, gin.H{"productType": dto.ToProductTypeInfoDto(*productTypeInfo)}, common.Msg(c, common.MsgCreateSuccess))
 }
 
-// 更新商品类型
+// UpdateProductTypeByID 更新商品类型
+// @Summary 更新商品类型
+// @Description 根据商品类型ID更新商品类型信息
+// @Tags 商品类型管理
+// @Accept json
+// @Produce json
+// @Param productTypeID path string true "商品类型ID"
+// @Param productType body vo.CreateProductTypeRequest true "商品类型信息"
+// @Success 200 {object} response.Response "更新成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /product-type/{productTypeID} [patch]
+// @Security BearerAuth
 func (tc ProductTypeController) UpdateProductTypeByID(c *gin.Context) {
 	var req vo.CreateProductTypeRequest
 	// 参数绑定
@@ -158,7 +206,18 @@ func (tc ProductTypeController) UpdateProductTypeByID(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
-// 批量删除商品类型
+// BatchDeleteProductTypeByIds 批量删除商品类型
+// @Summary 批量删除商品类型
+// @Description 根据商品类型ID列表批量删除商品类型
+// @Tags 商品类型管理
+// @Accept json
+// @Produce json
+// @Param productTypes body vo.DeleteProductTypesRequest true "商品类型ID列表"
+// @Success 200 {object} response.Response "删除成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /product-type [delete]
+// @Security BearerAuth
 func (tc ProductTypeController) BatchDeleteProductTypeByIds(c *gin.Context) {
 	var req vo.DeleteProductTypesRequest
 	// 参数绑定

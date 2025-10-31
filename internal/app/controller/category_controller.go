@@ -36,7 +36,17 @@ func NewCategoryController() ICategoryController {
 	return categoryController
 }
 
-// 获取当前分类信息
+// GetCategoryInfo 获取当前分类信息
+// @Summary      获取分类详情
+// @Description  根据分类ID获取分类详细信息
+// @Tags         分类管理
+// @Accept       json
+// @Produce      json
+// @Param        categoryID path string true "分类ID"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /category/{categoryID} [get]
+// @Security     BearerAuth
 func (cc CategoryController) GetCategoryInfo(c *gin.Context) {
 	category, err := cc.CategoryRepository.GetConfigByCategoryID(c.Param("categoryID"))
 	if err != nil {
@@ -48,7 +58,16 @@ func (cc CategoryController) GetCategoryInfo(c *gin.Context) {
 	}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 获取分类列表
+// GetCategorys 获取分类列表
+// @Summary      获取分类列表
+// @Description  获取所有分类的列表
+// @Tags         分类管理
+// @Accept       json
+// @Produce      json
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /category [get]
+// @Security     BearerAuth
 func (cc CategoryController) GetCategorys(c *gin.Context) {
 	categorys, err := cc.CategoryRepository.GetCategorys()
 	if err != nil {
@@ -58,7 +77,16 @@ func (cc CategoryController) GetCategorys(c *gin.Context) {
 	response.Success(c, gin.H{"categorys": categorys}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 获取分类树
+// GetCategoryTree 获取分类树
+// @Summary      获取分类树
+// @Description  获取树形结构的分类列表
+// @Tags         分类管理
+// @Accept       json
+// @Produce      json
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /category/tree [get]
+// @Security     BearerAuth
 func (cc CategoryController) GetCategoryTree(c *gin.Context) {
 	categoryTree, err := cc.CategoryRepository.GetCategoryTree()
 	if err != nil {
@@ -68,7 +96,17 @@ func (cc CategoryController) GetCategoryTree(c *gin.Context) {
 	response.Success(c, gin.H{"categoryTree": categoryTree}, "获取分类树成功")
 }
 
-// 创建分类
+// CreateCategory 创建分类
+// @Summary      创建分类
+// @Description  创建一个新的分类
+// @Tags         分类管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.CreateCategoryRequest true "创建分类请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /category [post]
+// @Security     BearerAuth
 func (cc CategoryController) CreateCategory(c *gin.Context) {
 	var req vo.CreateCategoryRequest
 	// 参数绑定
@@ -102,7 +140,18 @@ func (cc CategoryController) CreateCategory(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
 }
 
-// 更新分类
+// UpdateCategoryByID 更新分类
+// @Summary      更新分类
+// @Description  根据分类ID更新分类信息
+// @Tags         分类管理
+// @Accept       json
+// @Produce      json
+// @Param        categoryID path string true "分类ID"
+// @Param        request body vo.UpdateCategoryRequest true "更新分类请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /category/{categoryID} [patch]
+// @Security     BearerAuth
 func (cc CategoryController) UpdateCategoryByID(c *gin.Context) {
 	var req vo.UpdateCategoryRequest
 	// 参数绑定
@@ -145,7 +194,17 @@ func (cc CategoryController) UpdateCategoryByID(c *gin.Context) {
 
 }
 
-// 批量删除分类
+// BatchDeleteCategoryByIds 批量删除分类
+// @Summary      批量删除分类
+// @Description  根据分类ID列表批量删除分类
+// @Tags         分类管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.DeleteCategoryRequest true "删除分类请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /category [delete]
+// @Security     BearerAuth
 func (cc CategoryController) BatchDeleteCategoryByIds(c *gin.Context) {
 	var req vo.DeleteCategoryRequest
 	// 参数绑定

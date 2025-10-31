@@ -37,7 +37,17 @@ func NewProjectController() IProjectController {
 	return projectController
 }
 
-// 获取当前项目信息
+// GetProjectInfo 获取当前项目信息
+// @Summary      获取项目信息
+// @Description  根据项目ID获取项目详细信息
+// @Tags         项目管理
+// @Accept       json
+// @Produce      json
+// @Param        projectID path string true "项目ID"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /project/{projectID} [get]
+// @Security     BearerAuth
 func (pc ProjectController) GetProjectInfo(c *gin.Context) {
 	project, err := pc.ProjectRepository.GetProjectByProjectID(c.Param("projectID"))
 	if err != nil {
@@ -50,7 +60,17 @@ func (pc ProjectController) GetProjectInfo(c *gin.Context) {
 	}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 获取项目列表
+// GetProjects 获取项目列表
+// @Summary      获取项目列表
+// @Description  获取所有项目的列表，支持分页和筛选
+// @Tags         项目管理
+// @Accept       json
+// @Produce      json
+// @Param        request query vo.ProjectListRequest false "查询参数"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /project [get]
+// @Security     BearerAuth
 func (pc ProjectController) GetProjects(c *gin.Context) {
 	var req vo.ProjectListRequest
 	// 参数绑定
@@ -74,7 +94,17 @@ func (pc ProjectController) GetProjects(c *gin.Context) {
 	response.Success(c, gin.H{"projects": dto.ToProjectsDto(project), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 创建项目
+// CreateProject 创建项目
+// @Summary      创建项目
+// @Description  创建一个新的项目
+// @Tags         项目管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.CreateProjectRequest true "创建项目请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /project [post]
+// @Security     BearerAuth
 func (pc ProjectController) CreateProject(c *gin.Context) {
 	var req vo.CreateProjectRequest
 	// 参数绑定
@@ -115,7 +145,18 @@ func (pc ProjectController) CreateProject(c *gin.Context) {
 
 }
 
-// 更新项目
+// UpdateProjectByID 更新项目
+// @Summary      更新项目
+// @Description  根据项目ID更新项目信息
+// @Tags         项目管理
+// @Accept       json
+// @Produce      json
+// @Param        projectID path string true "项目ID"
+// @Param        request body vo.CreateProjectRequest true "更新项目请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /project/{projectID} [patch]
+// @Security     BearerAuth
 func (pc ProjectController) UpdateProjectByID(c *gin.Context) {
 	var req vo.CreateProjectRequest
 	// 参数绑定
@@ -159,7 +200,17 @@ func (pc ProjectController) UpdateProjectByID(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
-// 批量删除
+// BatchDeleteProjectByIds 批量删除项目
+// @Summary      批量删除项目
+// @Description  根据项目ID列表批量删除项目
+// @Tags         项目管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.DeleteProjectsRequest true "删除项目请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /project [delete]
+// @Security     BearerAuth
 func (tc ProjectController) BatchDeleteProjectByIds(c *gin.Context) {
 	var req vo.DeleteProjectsRequest
 	// 参数绑定

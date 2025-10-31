@@ -36,7 +36,17 @@ func NewApiController() IApiController {
 	return apiController
 }
 
-// 获取接口列表
+// GetApis 获取接口列表
+// @Summary      获取接口列表
+// @Description  获取所有接口的列表
+// @Tags         接口管理
+// @Accept       json
+// @Produce      json
+// @Param        request query vo.ApiListRequest false "查询参数"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /api/list [get]
+// @Security     BearerAuth
 func (ac ApiController) GetApis(c *gin.Context) {
 	var req vo.ApiListRequest
 	// 参数绑定
@@ -61,7 +71,16 @@ func (ac ApiController) GetApis(c *gin.Context) {
 	}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 获取接口树(按接口Category字段分类)
+// GetApiTree 获取接口树
+// @Summary      获取接口树
+// @Description  获取树形结构的接口列表(按接口Category字段分类)
+// @Tags         接口管理
+// @Accept       json
+// @Produce      json
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /api/tree [get]
+// @Security     BearerAuth
 func (ac ApiController) GetApiTree(c *gin.Context) {
 	tree, err := ac.ApiRepository.GetApiTree()
 	if err != nil {
@@ -73,7 +92,17 @@ func (ac ApiController) GetApiTree(c *gin.Context) {
 	}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 创建接口
+// CreateApi 创建接口
+// @Summary      创建接口
+// @Description  创建一个新的接口
+// @Tags         接口管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.CreateApiRequest true "创建接口请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /api/create [post]
+// @Security     BearerAuth
 func (ac ApiController) CreateApi(c *gin.Context) {
 	var req vo.CreateApiRequest
 	// 参数绑定
@@ -115,7 +144,18 @@ func (ac ApiController) CreateApi(c *gin.Context) {
 	return
 }
 
-// 更新接口
+// UpdateApiByID 更新接口
+// @Summary      更新接口
+// @Description  根据接口ID更新接口信息
+// @Tags         接口管理
+// @Accept       json
+// @Produce      json
+// @Param        apiID path string true "接口ID"
+// @Param        request body vo.UpdateApiRequest true "更新接口请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /api/update/{apiID} [patch]
+// @Security     BearerAuth
 func (ac ApiController) UpdateApiByID(c *gin.Context) {
 	var req vo.UpdateApiRequest
 	// 参数绑定
@@ -162,7 +202,17 @@ func (ac ApiController) UpdateApiByID(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
-// 批量删除接口
+// BatchDeleteApiByIds 批量删除接口
+// @Summary      批量删除接口
+// @Description  根据接口ID列表批量删除接口
+// @Tags         接口管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.DeleteApiRequest true "删除接口请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /api/delete/batch [delete]
+// @Security     BearerAuth
 func (ac ApiController) BatchDeleteApiByIds(c *gin.Context) {
 	var req vo.DeleteApiRequest
 	// 参数绑定

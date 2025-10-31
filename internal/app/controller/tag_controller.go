@@ -37,7 +37,17 @@ func NewTagController() ITagController {
 	return tagController
 }
 
-// 获取当前标签信息
+// GetTagInfo 获取标签信息
+// @Summary      获取标签信息
+// @Description  根据标签ID获取标签详细信息
+// @Tags         标签管理
+// @Accept       json
+// @Produce      json
+// @Param        tagID path string true "标签ID"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /tag/{tagID} [get]
+// @Security     BearerAuth
 func (tc TagController) GetTagInfo(c *gin.Context) {
 	tag, err := tc.TagRepository.GetTagByTagID(c.Param("tagID"))
 	if err != nil {
@@ -50,7 +60,17 @@ func (tc TagController) GetTagInfo(c *gin.Context) {
 	}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 获取标签列表
+// GetTags 获取标签列表
+// @Summary      获取标签列表
+// @Description  获取所有标签的列表
+// @Tags         标签管理
+// @Accept       json
+// @Produce      json
+// @Param        request query vo.TagListRequest false "查询参数"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /tag [get]
+// @Security     BearerAuth
 func (tc TagController) GetTags(c *gin.Context) {
 	var req vo.TagListRequest
 	// 参数绑定
@@ -74,7 +94,17 @@ func (tc TagController) GetTags(c *gin.Context) {
 	response.Success(c, gin.H{"tags": dto.ToTagsDto(tag), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 创建标签
+// CreateTag 创建标签
+// @Summary      创建标签
+// @Description  创建一个新的标签
+// @Tags         标签管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.CreateTagRequest true "创建标签请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /tag [post]
+// @Security     BearerAuth
 func (tc TagController) CreateTag(c *gin.Context) {
 	var req vo.CreateTagRequest
 	// 参数绑定
@@ -103,7 +133,19 @@ func (tc TagController) CreateTag(c *gin.Context) {
 	response.Success(c, gin.H{"tag": dto.ToTagInfoDto(*tagInfo)}, common.Msg(c, common.MsgCreateSuccess))
 }
 
-// 更新标签
+// UpdateTagByID 更新标签
+// @Summary      更新标签
+// @Description  根据标签ID更新标签信息
+// @Tags         标签管理
+// @Accept       json
+// @Produce      json
+// @Param        tagID path string true "标签ID"
+// @Param        request body vo.CreateTagRequest true "标签信息"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Failure      500 {object} response.Response
+// @Router       /tag/{tagID} [patch]
+// @Security     BearerAuth
 func (tc TagController) UpdateTagByID(c *gin.Context) {
 	var req vo.CreateTagRequest
 	// 参数绑定
@@ -136,7 +178,18 @@ func (tc TagController) UpdateTagByID(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
-// 批量删除标签
+// BatchDeleteTagByIds 批量删除标签
+// @Summary      批量删除标签
+// @Description  根据标签ID列表批量删除标签
+// @Tags         标签管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.DeleteTagsRequest true "标签ID列表"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Failure      500 {object} response.Response
+// @Router       /tag [delete]
+// @Security     BearerAuth
 func (tc TagController) BatchDeleteTagByIds(c *gin.Context) {
 	var req vo.DeleteTagsRequest
 	// 参数绑定

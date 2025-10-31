@@ -32,8 +32,17 @@ func NewIndexController() IIndexController {
 	return indexController
 }
 
-// GetIndexInfo retrieves the index page information based on the project ID.
-// It calls the repository to get data and returns a success or fail response.
+// GetIndexInfo 获取首页信息
+// @Summary      获取首页信息
+// @Description  根据项目ID获取首页头部数据
+// @Tags         首页管理
+// @Accept       json
+// @Produce      json
+// @Param        projectID query string false "项目ID"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /index/info [get]
+// @Security     BearerAuth
 func (pc IndexController) GetIndexInfo(c *gin.Context) {
 	indexInfo, err := pc.IndexRepository.GetIndexData(c.Query("projectID"))
 	if err != nil {
@@ -45,8 +54,18 @@ func (pc IndexController) GetIndexInfo(c *gin.Context) {
 	}, "获取首页头部数据成功")
 }
 
-// GetTimeRangeData retrieves the time range data for the index page based on the specified time range and project ID.
-// It calls the repository to get data and returns a success or fail response.
+// GetTimeRangeData 获取时间范围数据
+// @Summary      获取时间范围数据
+// @Description  根据时间范围和项目ID获取首页折线图数据
+// @Tags         首页管理
+// @Accept       json
+// @Produce      json
+// @Param        projectID query string false "项目ID"
+// @Param        timeRange query string false "时间范围"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /index/time-range [get]
+// @Security     BearerAuth
 func (pc IndexController) GetTimeRangeData(c *gin.Context) {
 	timeRangeData, err := pc.IndexRepository.GetTimeRangeData(c.Query("projectID"), c.Query("timeRange"))
 	if err != nil {

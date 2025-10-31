@@ -44,7 +44,18 @@ func NewOrderController() IOrderController {
 	return orderController
 }
 
-// 获取当前订单信息
+// GetOrderInfo 获取当前订单信息
+// @Summary 获取订单详情
+// @Description 根据订单ID获取订单详细信息
+// @Tags 订单管理
+// @Accept json
+// @Produce json
+// @Param orderID path string true "订单ID"
+// @Success 200 {object} response.Response{data=map[string]dto.OrderDto} "成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /order/{orderID} [get]
+// @Security BearerAuth
 func (tc OrderController) GetOrderInfo(c *gin.Context) {
 	order, err := tc.OrderRepository.GetOrderByOrderID(c.Param("orderID"))
 	if err != nil {
@@ -57,7 +68,22 @@ func (tc OrderController) GetOrderInfo(c *gin.Context) {
 	}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 获取订单列表
+// GetOrders 获取订单列表
+// @Summary 获取订单列表
+// @Description 根据查询条件获取订单列表，支持分页
+// @Tags 订单管理
+// @Accept json
+// @Produce json
+// @Param orderID query string false "订单ID"
+// @Param userID query string false "用户ID"
+// @Param status query int false "订单状态"
+// @Param pageNum query int false "页码"
+// @Param pageSize query int false "每页数量"
+// @Success 200 {object} response.Response{data=map[string]interface{}} "成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /order [get]
+// @Security BearerAuth
 func (tc OrderController) GetOrders(c *gin.Context) {
 	var req vo.OrderListRequest
 	// 参数绑定
@@ -81,7 +107,19 @@ func (tc OrderController) GetOrders(c *gin.Context) {
 	response.Success(c, gin.H{"orders": dto.ToOrdersDto(order), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 更新订单
+// UpdateOrderByID 更新订单
+// @Summary 更新订单
+// @Description 根据订单ID更新订单信息
+// @Tags 订单管理
+// @Accept json
+// @Produce json
+// @Param orderID path string true "订单ID"
+// @Param order body vo.CreateOrderRequest true "订单信息"
+// @Success 200 {object} response.Response "更新成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /order/{orderID} [patch]
+// @Security BearerAuth
 func (tc OrderController) UpdateOrderByID(c *gin.Context) {
 	var req vo.CreateOrderRequest
 	// 参数绑定
@@ -116,7 +154,18 @@ func (tc OrderController) UpdateOrderByID(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
-// 批量删除订单
+// BatchDeleteOrderByIds 批量删除订单
+// @Summary 批量删除订单
+// @Description 根据订单ID列表批量删除订单
+// @Tags 订单管理
+// @Accept json
+// @Produce json
+// @Param orders body vo.DeleteOrdersRequest true "订单ID列表"
+// @Success 200 {object} response.Response "删除成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /order [delete]
+// @Security BearerAuth
 func (tc OrderController) BatchDeleteOrderByIds(c *gin.Context) {
 	var req vo.DeleteOrdersRequest
 	// 参数绑定
@@ -142,7 +191,18 @@ func (tc OrderController) BatchDeleteOrderByIds(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 }
 
-// 获取订单记录
+// GetOrderLogs 获取订单记录
+// @Summary 获取订单记录
+// @Description 根据订单ID获取订单操作记录
+// @Tags 订单管理
+// @Accept json
+// @Produce json
+// @Param orderID path string true "订单ID"
+// @Success 200 {object} response.Response{data=map[string]interface{}} "成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /order/{orderID}/logs [get]
+// @Security BearerAuth
 func (tc OrderController) GetOrderLogs(c *gin.Context) {
 	orderLogs, total, err := tc.OrderLogRepository.GetOrderLogs(c.Param("orderID"))
 	if err != nil {
@@ -155,6 +215,19 @@ func (tc OrderController) GetOrderLogs(c *gin.Context) {
 	}, common.Msg(c, common.MsgListSuccess))
 }
 
+// UpdateLogistics 更新物流信息
+// @Summary 更新物流信息
+// @Description 根据订单ID更新物流信息
+// @Tags 订单管理
+// @Accept json
+// @Produce json
+// @Param orderID path string true "订单ID"
+// @Param logistics body vo.CreateOrderLogisticsRequest true "物流信息"
+// @Success 200 {object} response.Response "更新成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /order/{orderID}/logistics [patch]
+// @Security BearerAuth
 func (tc OrderController) UpdateLogistics(c *gin.Context) {
 	var req vo.CreateOrderLogisticsRequest
 	// 参数绑定

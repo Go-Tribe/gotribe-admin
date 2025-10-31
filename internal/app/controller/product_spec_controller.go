@@ -6,8 +6,6 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -15,6 +13,9 @@ import (
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type IProductSpecController interface {
@@ -37,7 +38,17 @@ func NewProductSpecController() IProductSpecController {
 	return productSpecController
 }
 
-// 获取当前商品规格信息
+// GetProductSpecInfo 获取商品规格信息
+// @Summary      获取商品规格信息
+// @Description  根据商品规格ID获取商品规格详细信息
+// @Tags         商品规格管理
+// @Accept       json
+// @Produce      json
+// @Param        productSpecID path string true "商品规格ID"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /product-spec/{productSpecID} [get]
+// @Security     BearerAuth
 func (tc ProductSpecController) GetProductSpecInfo(c *gin.Context) {
 	productSpec, err := tc.ProductSpecRepository.GetProductSpecByProductSpecID(c.Param("productSpecID"))
 	if err != nil {
@@ -50,7 +61,17 @@ func (tc ProductSpecController) GetProductSpecInfo(c *gin.Context) {
 	}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 获取商品规格列表
+// GetProductSpecs 获取商品规格列表
+// @Summary      获取商品规格列表
+// @Description  获取所有商品规格的列表
+// @Tags         商品规格管理
+// @Accept       json
+// @Produce      json
+// @Param        request query vo.ProductSpecListRequest false "查询参数"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /product-spec [get]
+// @Security     BearerAuth
 func (tc ProductSpecController) GetProductSpecs(c *gin.Context) {
 	var req vo.ProductSpecListRequest
 	// 参数绑定
@@ -74,7 +95,17 @@ func (tc ProductSpecController) GetProductSpecs(c *gin.Context) {
 	response.Success(c, gin.H{"productSpecs": dto.ToProductSpecsDto(productSpec), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 创建商品规格
+// CreateProductSpec 创建商品规格
+// @Summary      创建商品规格
+// @Description  创建一个新的商品规格
+// @Tags         商品规格管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.CreateProductSpecRequest true "创建商品规格请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /product-spec [post]
+// @Security     BearerAuth
 func (tc ProductSpecController) CreateProductSpec(c *gin.Context) {
 	var req vo.CreateProductSpecRequest
 	// 参数绑定
@@ -106,7 +137,19 @@ func (tc ProductSpecController) CreateProductSpec(c *gin.Context) {
 	response.Success(c, gin.H{"productSpec": dto.ToProductSpecInfoDto(*productSpecInfo)}, common.Msg(c, common.MsgCreateSuccess))
 }
 
-// 更新商品规格
+// UpdateProductSpecByID 更新商品规格
+// @Summary      更新商品规格
+// @Description  根据商品规格ID更新商品规格信息
+// @Tags         商品规格管理
+// @Accept       json
+// @Produce      json
+// @Param        productSpecID path string true "商品规格ID"
+// @Param        request body vo.CreateProductSpecRequest true "商品规格信息"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Failure      500 {object} response.Response
+// @Router       /product-spec/{productSpecID} [patch]
+// @Security     BearerAuth
 func (tc ProductSpecController) UpdateProductSpecByID(c *gin.Context) {
 	var req vo.CreateProductSpecRequest
 	// 参数绑定
@@ -141,7 +184,18 @@ func (tc ProductSpecController) UpdateProductSpecByID(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
-// 批量删除商品规格
+// BatchDeleteProductSpecByIds 批量删除商品规格
+// @Summary      批量删除商品规格
+// @Description  根据商品规格ID列表批量删除商品规格
+// @Tags         商品规格管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.DeleteProductSpecRequest true "商品规格ID列表"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Failure      500 {object} response.Response
+// @Router       /product-spec [delete]
+// @Security     BearerAuth
 func (tc ProductSpecController) BatchDeleteProductSpecByIds(c *gin.Context) {
 	var req vo.DeleteProductSpecRequest
 	// 参数绑定
@@ -168,7 +222,17 @@ func (tc ProductSpecController) BatchDeleteProductSpecByIds(c *gin.Context) {
 
 }
 
-// 通过分类商品分类 ID 获取规格和规格项
+// GetProductSpecAndItem 获取商品规格和规格项
+// @Summary      获取商品规格和规格项
+// @Description  根据商品分类ID获取对应的规格和规格项
+// @Tags         商品规格管理
+// @Accept       json
+// @Produce      json
+// @Param        categoryID path string true "商品分类ID"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /product-spec/category/{categoryID} [get]
+// @Security     BearerAuth
 func (tc ProductSpecController) GetProductSpecAndItem(c *gin.Context) {
 	categoryID := c.Param("categoryID")
 	productSpecAndItem, err := tc.ProductSpecRepository.GetProductSpecAndItem(categoryID)

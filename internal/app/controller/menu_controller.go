@@ -39,7 +39,16 @@ func NewMenuController() IMenuController {
 	return menuController
 }
 
-// 获取菜单列表
+// GetMenus 获取菜单列表
+// @Summary      获取菜单列表
+// @Description  获取所有菜单的列表
+// @Tags         菜单管理
+// @Accept       json
+// @Produce      json
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /menu/list [get]
+// @Security     BearerAuth
 func (mc MenuController) GetMenus(c *gin.Context) {
 	menus, err := mc.MenuRepository.GetMenus()
 	if err != nil {
@@ -49,7 +58,16 @@ func (mc MenuController) GetMenus(c *gin.Context) {
 	response.Success(c, gin.H{"menus": menus}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 获取菜单树
+// GetMenuTree 获取菜单树
+// @Summary      获取菜单树
+// @Description  获取树形结构的菜单列表
+// @Tags         菜单管理
+// @Accept       json
+// @Produce      json
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /menu/tree [get]
+// @Security     BearerAuth
 func (mc MenuController) GetMenuTree(c *gin.Context) {
 	menuTree, err := mc.MenuRepository.GetMenuTree()
 	if err != nil {
@@ -59,7 +77,17 @@ func (mc MenuController) GetMenuTree(c *gin.Context) {
 	response.Success(c, gin.H{"menuTree": menuTree}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 创建菜单
+// CreateMenu 创建菜单
+// @Summary      创建菜单
+// @Description  创建一个新的菜单
+// @Tags         菜单管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.CreateMenuRequest true "创建菜单请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /menu/create [post]
+// @Security     BearerAuth
 func (mc MenuController) CreateMenu(c *gin.Context) {
 	var req vo.CreateMenuRequest
 	// 参数绑定
@@ -108,7 +136,18 @@ func (mc MenuController) CreateMenu(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
 }
 
-// 更新菜单
+// UpdateMenuByID 更新菜单
+// @Summary      更新菜单
+// @Description  根据菜单ID更新菜单信息
+// @Tags         菜单管理
+// @Accept       json
+// @Produce      json
+// @Param        menuID path string true "菜单ID"
+// @Param        request body vo.UpdateMenuRequest true "更新菜单请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /menu/update/{menuID} [patch]
+// @Security     BearerAuth
 func (mc MenuController) UpdateMenuByID(c *gin.Context) {
 	var req vo.UpdateMenuRequest
 	// 参数绑定
@@ -165,7 +204,17 @@ func (mc MenuController) UpdateMenuByID(c *gin.Context) {
 
 }
 
-// 批量删除菜单
+// BatchDeleteMenuByIds 批量删除菜单
+// @Summary      批量删除菜单
+// @Description  根据菜单ID列表批量删除菜单
+// @Tags         菜单管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.DeleteMenuRequest true "删除菜单请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /menu/delete/batch [delete]
+// @Security     BearerAuth
 func (mc MenuController) BatchDeleteMenuByIds(c *gin.Context) {
 	var req vo.DeleteMenuRequest
 	// 参数绑定
@@ -187,7 +236,17 @@ func (mc MenuController) BatchDeleteMenuByIds(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 }
 
-// 根据用户ID获取用户的可访问菜单列表
+// GetUserMenusByUserID 获取用户的可访问菜单列表
+// @Summary      获取用户的可访问菜单列表
+// @Description  根据用户ID获取用户的可访问菜单列表
+// @Tags         菜单管理
+// @Accept       json
+// @Produce      json
+// @Param        userID path string true "用户ID"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /menu/access/list/{userID} [get]
+// @Security     BearerAuth
 func (mc MenuController) GetUserMenusByUserID(c *gin.Context) {
 	// 获取路径中的userID
 	userID, _ := strconv.Atoi(c.Param("userID"))
@@ -204,7 +263,17 @@ func (mc MenuController) GetUserMenusByUserID(c *gin.Context) {
 	response.Success(c, gin.H{"menus": menus}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 根据用户ID获取用户的可访问菜单树
+// GetUserMenuTreeByUserID 获取用户的可访问菜单树
+// @Summary      获取用户的可访问菜单树
+// @Description  根据用户ID获取用户的可访问菜单树
+// @Tags         菜单管理
+// @Accept       json
+// @Produce      json
+// @Param        userID path string true "用户ID"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /menu/access/tree/{userID} [get]
+// @Security     BearerAuth
 func (mc MenuController) GetUserMenuTreeByUserID(c *gin.Context) {
 	// 获取路径中的userID
 	userID, _ := strconv.Atoi(c.Param("userID"))

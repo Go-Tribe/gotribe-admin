@@ -36,7 +36,18 @@ func NewProductCategoryController() IProductCategoryController {
 	return productCategoryController
 }
 
-// 获取当前分类信息
+// GetProductCategoryInfo 获取当前分类信息
+// @Summary 获取分类信息
+// @Description 根据分类ID获取分类详细信息
+// @Tags 商品分类管理
+// @Accept json
+// @Produce json
+// @Param productCategoryID path string true "分类ID"
+// @Success 200 {object} response.Response{data=object{product_category=object}} "获取成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /api/v1/product-categories/{productCategoryID} [get]
+// @Security BearerAuth
 func (cc ProductCategoryController) GetProductCategoryInfo(c *gin.Context) {
 	productCategory, err := cc.ProductCategoryRepository.GetConfigByProductCategoryID(c.Param("productCategoryID"))
 	if err != nil {
@@ -48,7 +59,16 @@ func (cc ProductCategoryController) GetProductCategoryInfo(c *gin.Context) {
 	}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 获取分类列表
+// GetProductCategorys 获取分类列表
+// @Summary 获取分类列表
+// @Description 获取所有商品分类列表
+// @Tags 商品分类管理
+// @Accept json
+// @Produce json
+// @Success 200 {object} response.Response{data=object{productCategorys=[]object}} "获取成功"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /api/v1/product-categories [get]
+// @Security BearerAuth
 func (cc ProductCategoryController) GetProductCategorys(c *gin.Context) {
 	productCategorys, err := cc.ProductCategoryRepository.GetProductCategorys()
 	if err != nil {
@@ -58,7 +78,16 @@ func (cc ProductCategoryController) GetProductCategorys(c *gin.Context) {
 	response.Success(c, gin.H{"productCategorys": productCategorys}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 获取分类树
+// GetProductCategoryTree 获取分类树
+// @Summary 获取分类树
+// @Description 获取商品分类的树形结构
+// @Tags 商品分类管理
+// @Accept json
+// @Produce json
+// @Success 200 {object} response.Response{data=object{productCategoryTree=[]object}} "获取成功"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /api/v1/product-categories/tree [get]
+// @Security BearerAuth
 func (cc ProductCategoryController) GetProductCategoryTree(c *gin.Context) {
 	productCategoryTree, err := cc.ProductCategoryRepository.GetProductCategoryTree()
 	if err != nil {
@@ -68,7 +97,18 @@ func (cc ProductCategoryController) GetProductCategoryTree(c *gin.Context) {
 	response.Success(c, gin.H{"productCategoryTree": productCategoryTree}, "获取分类树成功")
 }
 
-// 创建分类
+// CreateProductCategory 创建分类
+// @Summary 创建分类
+// @Description 创建新的商品分类
+// @Tags 商品分类管理
+// @Accept json
+// @Produce json
+// @Param request body vo.CreateProductCategoryRequest true "创建分类请求参数"
+// @Success 200 {object} response.Response "创建成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /api/v1/product-categories [post]
+// @Security BearerAuth
 func (cc ProductCategoryController) CreateProductCategory(c *gin.Context) {
 	var req vo.CreateProductCategoryRequest
 	// 参数绑定
@@ -103,7 +143,19 @@ func (cc ProductCategoryController) CreateProductCategory(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
 }
 
-// 更新分类
+// UpdateProductCategoryByID 更新分类
+// @Summary 更新分类
+// @Description 根据分类ID更新分类信息
+// @Tags 商品分类管理
+// @Accept json
+// @Produce json
+// @Param productCategoryID path string true "分类ID"
+// @Param request body vo.UpdateProductCategoryRequest true "更新分类请求参数"
+// @Success 200 {object} response.Response "更新成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /api/v1/product-categories/{productCategoryID} [put]
+// @Security BearerAuth
 func (cc ProductCategoryController) UpdateProductCategoryByID(c *gin.Context) {
 	var req vo.UpdateProductCategoryRequest
 	// 参数绑定
@@ -147,7 +199,18 @@ func (cc ProductCategoryController) UpdateProductCategoryByID(c *gin.Context) {
 
 }
 
-// 批量删除分类
+// BatchDeleteProductCategoryByIds 批量删除分类
+// @Summary 批量删除分类
+// @Description 根据分类ID列表批量删除分类
+// @Tags 商品分类管理
+// @Accept json
+// @Produce json
+// @Param request body vo.DeleteProductCategoryRequest true "删除分类请求参数"
+// @Success 200 {object} response.Response "删除成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /api/v1/product-categories [delete]
+// @Security BearerAuth
 func (cc ProductCategoryController) BatchDeleteProductCategoryByIds(c *gin.Context) {
 	var req vo.DeleteProductCategoryRequest
 	// 参数绑定

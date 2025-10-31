@@ -32,7 +32,17 @@ func NewCommentController() ICommentController {
 	return commentController
 }
 
-// 获取评论列表
+// GetComments 获取评论列表
+// @Summary      获取评论列表
+// @Description  获取所有评论的列表，支持分页和筛选
+// @Tags         评论管理
+// @Accept       json
+// @Produce      json
+// @Param        request query vo.CommentListRequest false "查询参数"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /comment [get]
+// @Security     BearerAuth
 func (pc CommentController) GetComments(c *gin.Context) {
 	var req vo.CommentListRequest
 	// 参数绑定
@@ -56,7 +66,17 @@ func (pc CommentController) GetComments(c *gin.Context) {
 	response.Success(c, gin.H{"comments": dto.ToCommentsDto(comment), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 更新评论
+// UpdateCommentByID 更新评论
+// @Summary      更新评论状态
+// @Description  根据评论ID更新评论的审核状态
+// @Tags         评论管理
+// @Accept       json
+// @Produce      json
+// @Param        commentID path string true "评论ID"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /comment/{commentID} [patch]
+// @Security     BearerAuth
 func (pc CommentController) UpdateCommentByID(c *gin.Context) {
 	// 根据path中的CommentID获取评论信息
 	oldComment, err := pc.CommentRepository.GetCommentByComentID(c.Param("commentID"))

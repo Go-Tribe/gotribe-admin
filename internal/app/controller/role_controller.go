@@ -40,7 +40,17 @@ func NewRoleController() IRoleController {
 	return roleController
 }
 
-// 获取角色列表
+// GetRoles 获取角色列表
+// @Summary      获取角色列表
+// @Description  获取所有角色的列表
+// @Tags         角色管理
+// @Accept       json
+// @Produce      json
+// @Param        request query vo.RoleListRequest false "查询参数"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /role/list [get]
+// @Security     BearerAuth
 func (rc RoleController) GetRoles(c *gin.Context) {
 	var req vo.RoleListRequest
 	// 参数绑定
@@ -64,7 +74,17 @@ func (rc RoleController) GetRoles(c *gin.Context) {
 	response.Success(c, gin.H{"roles": roles, "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 创建角色
+// CreateRole 创建角色
+// @Summary      创建角色
+// @Description  创建一个新的角色
+// @Tags         角色管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.CreateRoleRequest true "创建角色请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /role/create [post]
+// @Security     BearerAuth
 func (rc RoleController) CreateRole(c *gin.Context) {
 	var req vo.CreateRoleRequest
 	// 参数绑定
@@ -112,7 +132,18 @@ func (rc RoleController) CreateRole(c *gin.Context) {
 
 }
 
-// 更新角色
+// UpdateRoleByID 更新角色
+// @Summary      更新角色
+// @Description  根据角色ID更新角色信息
+// @Tags         角色管理
+// @Accept       json
+// @Produce      json
+// @Param        roleID path string true "角色ID"
+// @Param        request body vo.CreateRoleRequest true "更新角色请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /role/update/{roleID} [patch]
+// @Security     BearerAuth
 func (rc RoleController) UpdateRoleByID(c *gin.Context) {
 	var req vo.CreateRoleRequest
 	// 参数绑定
@@ -231,7 +262,17 @@ func (rc RoleController) UpdateRoleByID(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
-// 获取角色的权限菜单
+// GetRoleMenusByID 获取角色的权限菜单
+// @Summary      获取角色的权限菜单
+// @Description  根据角色ID获取角色的权限菜单列表
+// @Tags         角色管理
+// @Accept       json
+// @Produce      json
+// @Param        roleID path string true "角色ID"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /role/menus/get/{roleID} [get]
+// @Security     BearerAuth
 func (rc RoleController) GetRoleMenusByID(c *gin.Context) {
 	// 获取path中的roleID
 	roleID, _ := strconv.Atoi(c.Param("roleID"))
@@ -247,7 +288,18 @@ func (rc RoleController) GetRoleMenusByID(c *gin.Context) {
 	response.Success(c, gin.H{"menus": menus}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 更新角色的权限菜单
+// UpdateRoleMenusByID 更新角色的权限菜单
+// @Summary      更新角色的权限菜单
+// @Description  根据角色ID更新角色的权限菜单
+// @Tags         角色管理
+// @Accept       json
+// @Produce      json
+// @Param        roleID path string true "角色ID"
+// @Param        request body vo.UpdateRoleMenusRequest true "更新角色权限菜单请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /role/menus/update/{roleID} [patch]
+// @Security     BearerAuth
 func (rc RoleController) UpdateRoleMenusByID(c *gin.Context) {
 	var req vo.UpdateRoleMenusRequest
 	// 参数绑定
@@ -360,7 +412,17 @@ func (rc RoleController) UpdateRoleMenusByID(c *gin.Context) {
 
 }
 
-// 获取角色的权限接口
+// GetRoleApisByID 获取角色的权限接口
+// @Summary      获取角色的权限接口
+// @Description  根据角色ID获取角色的权限接口列表
+// @Tags         角色管理
+// @Accept       json
+// @Produce      json
+// @Param        roleID path string true "角色ID"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /role/apis/get/{roleID} [get]
+// @Security     BearerAuth
 func (rc RoleController) GetRoleApisByID(c *gin.Context) {
 	// 获取path中的roleID
 	roleID, _ := strconv.Atoi(c.Param("roleID"))
@@ -388,7 +450,18 @@ func (rc RoleController) GetRoleApisByID(c *gin.Context) {
 	response.Success(c, gin.H{"apis": apis}, "获取角色的权限接口成功")
 }
 
-// 更新角色的权限接口
+// UpdateRoleApisByID 更新角色的权限接口
+// @Summary      更新角色的权限接口
+// @Description  根据角色ID更新角色的权限接口
+// @Tags         角色管理
+// @Accept       json
+// @Produce      json
+// @Param        roleID path string true "角色ID"
+// @Param        request body vo.UpdateRoleApisRequest true "更新角色权限接口请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /role/apis/update/{roleID} [patch]
+// @Security     BearerAuth
 func (rc RoleController) UpdateRoleApisByID(c *gin.Context) {
 	var req vo.UpdateRoleApisRequest
 	// 参数绑定
@@ -486,7 +559,17 @@ func (rc RoleController) UpdateRoleApisByID(c *gin.Context) {
 
 }
 
-// 批量删除角色
+// BatchDeleteRoleByIds 批量删除角色
+// @Summary      批量删除角色
+// @Description  根据角色ID列表批量删除角色
+// @Tags         角色管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.DeleteRoleRequest true "删除角色请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /role/delete/batch [delete]
+// @Security     BearerAuth
 func (rc RoleController) BatchDeleteRoleByIds(c *gin.Context) {
 	var req vo.DeleteRoleRequest
 	// 参数绑定

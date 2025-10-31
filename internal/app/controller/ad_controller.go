@@ -37,7 +37,18 @@ func NewAdController() IAdController {
 	return adController
 }
 
-// 获取当前广告信息
+// GetAdInfo 获取当前广告信息
+// @Summary 获取广告详情
+// @Description 根据广告ID获取广告详细信息
+// @Tags 广告管理
+// @Accept json
+// @Produce json
+// @Param adID path string true "广告ID"
+// @Success 200 {object} response.Response{data=map[string]dto.AdDto} "成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /ad/{adID} [get]
+// @Security BearerAuth
 func (pc AdController) GetAdInfo(c *gin.Context) {
 	ad, err := pc.AdRepository.GetAdByAdID(c.Param("adID"))
 	if err != nil {
@@ -50,7 +61,22 @@ func (pc AdController) GetAdInfo(c *gin.Context) {
 	}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 获取广告列表
+// GetAds 获取广告列表
+// @Summary 获取广告列表
+// @Description 根据查询条件获取广告列表，支持分页
+// @Tags 广告管理
+// @Accept json
+// @Produce json
+// @Param sceneID query string false "场景ID"
+// @Param title query string false "广告标题"
+// @Param status query int false "状态(1:启用 2:禁用)"
+// @Param pageNum query int false "页码"
+// @Param pageSize query int false "每页数量"
+// @Success 200 {object} response.Response{data=map[string]interface{}} "成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /ad [get]
+// @Security BearerAuth
 func (pc AdController) GetAds(c *gin.Context) {
 	var req vo.AdListRequest
 	// 参数绑定
@@ -74,7 +100,18 @@ func (pc AdController) GetAds(c *gin.Context) {
 	response.Success(c, gin.H{"ads": dto.ToAdsDto(ad), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 创建广告
+// CreateAd 创建广告
+// @Summary 创建广告
+// @Description 创建新的广告
+// @Tags 广告管理
+// @Accept json
+// @Produce json
+// @Param ad body vo.CreateAdRequest true "广告信息"
+// @Success 200 {object} response.Response "创建成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /ad [post]
+// @Security BearerAuth
 func (pc AdController) CreateAd(c *gin.Context) {
 	var req vo.CreateAdRequest
 	// 参数绑定
@@ -111,7 +148,19 @@ func (pc AdController) CreateAd(c *gin.Context) {
 
 }
 
-// 更新广告
+// UpdateAdByID 更新广告
+// @Summary 更新广告
+// @Description 根据广告ID更新广告信息
+// @Tags 广告管理
+// @Accept json
+// @Produce json
+// @Param adID path string true "广告ID"
+// @Param ad body vo.UpdateAdRequest true "广告信息"
+// @Success 200 {object} response.Response "更新成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /ad/{adID} [patch]
+// @Security BearerAuth
 func (pc AdController) UpdateAdByID(c *gin.Context) {
 	var req vo.UpdateAdRequest
 	// 参数绑定
@@ -151,7 +200,18 @@ func (pc AdController) UpdateAdByID(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
-// 批量删除广告
+// BatchDeleteAdByIds 批量删除广告
+// @Summary 批量删除广告
+// @Description 根据广告ID列表批量删除广告
+// @Tags 广告管理
+// @Accept json
+// @Produce json
+// @Param ads body vo.DeleteAdsRequest true "广告ID列表"
+// @Success 200 {object} response.Response "删除成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /ad [delete]
+// @Security BearerAuth
 func (pc AdController) BatchDeleteAdByIds(c *gin.Context) {
 	var req vo.DeleteAdsRequest
 	// 参数绑定

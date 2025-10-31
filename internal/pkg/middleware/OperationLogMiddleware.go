@@ -25,10 +25,20 @@ var skipPaths = []string{
 	"/assets/",
 	"/images/",
 	"/favicon.ico",
+	"/swagger/",
 }
 
 func OperationLogMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// 获取实际请求路径
+		requestPath := c.Request.URL.Path
+
+		// 如果请求的是 Swagger 相关路径，直接跳过
+		if strings.HasPrefix(requestPath, "/swagger/") {
+			c.Next()
+			return
+		}
+
 		// 获取访问路径
 		path := strings.TrimPrefix(c.FullPath(), "/"+config.Conf.System.UrlPathPrefix)
 

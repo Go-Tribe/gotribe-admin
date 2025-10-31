@@ -37,7 +37,18 @@ func NewProductSpecItemController() IProductSpecItemController {
 	return productSpecItemController
 }
 
-// 获取当前商品规格信息
+// GetProductSpecItemInfo 获取当前商品规格信息
+// @Summary 获取商品规格信息
+// @Description 根据商品规格ID获取商品规格详细信息
+// @Tags 商品规格项管理
+// @Accept json
+// @Produce json
+// @Param productSpecItemID path string true "商品规格项ID"
+// @Success 200 {object} response.Response{data=object{productSpecItem=dto.ProductSpecItemDto}} "获取成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /api/v1/product-spec-items/{productSpecItemID} [get]
+// @Security BearerAuth
 func (tc ProductSpecItemController) GetProductSpecItemInfo(c *gin.Context) {
 	productSpecItem, err := tc.ProductSpecItemRepository.GetProductSpecItemByItemID(c.Param("productSpecItemID"))
 	if err != nil {
@@ -50,7 +61,18 @@ func (tc ProductSpecItemController) GetProductSpecItemInfo(c *gin.Context) {
 	}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 获取商品规格列表
+// GetProductSpecItems 获取商品规格列表
+// @Summary 获取商品规格列表
+// @Description 获取商品规格项列表，支持分页和筛选
+// @Tags 商品规格项管理
+// @Accept json
+// @Produce json
+// @Param request query vo.ProductSpecItemListRequest false "查询参数"
+// @Success 200 {object} response.Response{data=object{productSpecItems=[]dto.ProductSpecItemDto,total=int}} "获取成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /api/v1/product-spec-items [get]
+// @Security BearerAuth
 func (tc ProductSpecItemController) GetProductSpecItems(c *gin.Context) {
 	var req vo.ProductSpecItemListRequest
 	// 参数绑定
@@ -74,7 +96,18 @@ func (tc ProductSpecItemController) GetProductSpecItems(c *gin.Context) {
 	response.Success(c, gin.H{"productSpecItems": dto.ToProductSpecItemsDto(productSpecItem), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 创建商品规格
+// CreateProductSpecItem 创建商品规格
+// @Summary 创建商品规格
+// @Description 创建新的商品规格项
+// @Tags 商品规格项管理
+// @Accept json
+// @Produce json
+// @Param request body vo.CreateProductSpecItemRequest true "创建商品规格请求参数"
+// @Success 200 {object} response.Response{data=object{productSpecItem=dto.ProductSpecItemDto}} "创建成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /api/v1/product-spec-items [post]
+// @Security BearerAuth
 func (tc ProductSpecItemController) CreateProductSpecItem(c *gin.Context) {
 	var req vo.CreateProductSpecItemRequest
 	// 参数绑定
@@ -104,7 +137,19 @@ func (tc ProductSpecItemController) CreateProductSpecItem(c *gin.Context) {
 	response.Success(c, gin.H{"productSpecItem": dto.ToProductSpecItemInfoDto(productSpecItemInfo)}, common.Msg(c, common.MsgCreateSuccess))
 }
 
-// 更新商品规格
+// UpdateProductSpecItemByID 更新商品规格
+// @Summary 更新商品规格
+// @Description 根据商品规格ID更新商品规格信息
+// @Tags 商品规格项管理
+// @Accept json
+// @Produce json
+// @Param productSpecItemID path string true "商品规格项ID"
+// @Param request body vo.CreateProductSpecItemRequest true "更新商品规格请求参数"
+// @Success 200 {object} response.Response "更新成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /api/v1/product-spec-items/{productSpecItemID} [put]
+// @Security BearerAuth
 func (tc ProductSpecItemController) UpdateProductSpecItemByID(c *gin.Context) {
 	var req vo.CreateProductSpecItemRequest
 	// 参数绑定
@@ -137,7 +182,18 @@ func (tc ProductSpecItemController) UpdateProductSpecItemByID(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
-// 批量删除商品规格
+// BatchDeleteProductSpecItemByIds 批量删除商品规格
+// @Summary 批量删除商品规格
+// @Description 根据商品规格ID列表批量删除商品规格项
+// @Tags 商品规格项管理
+// @Accept json
+// @Produce json
+// @Param request body vo.DeleteProductSpecItemsRequest true "删除商品规格请求参数"
+// @Success 200 {object} response.Response "删除成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "服务器内部错误"
+// @Router /api/v1/product-spec-items [delete]
+// @Security BearerAuth
 func (tc ProductSpecItemController) BatchDeleteProductSpecItemByIds(c *gin.Context) {
 	var req vo.DeleteProductSpecItemsRequest
 	// 参数绑定

@@ -37,7 +37,18 @@ func NewAdSceneController() IAdSceneController {
 	return adSceneController
 }
 
-// 获取当前推广场景信息
+// GetAdSceneInfo 获取当前推广场景信息
+// @Summary 获取推广场景详情
+// @Description 根据推广场景ID获取推广场景详细信息
+// @Tags 推广场景管理
+// @Accept json
+// @Produce json
+// @Param adSceneID path string true "推广场景ID"
+// @Success 200 {object} response.Response{data=map[string]dto.AdSceneDto} "成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /ad/scene/{adSceneID} [get]
+// @Security BearerAuth
 func (pc AdSceneController) GetAdSceneInfo(c *gin.Context) {
 	adScene, err := pc.AdSceneRepository.GetAdSceneByAdSceneID(c.Param("adSceneID"))
 	if err != nil {
@@ -50,7 +61,20 @@ func (pc AdSceneController) GetAdSceneInfo(c *gin.Context) {
 	}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 获取推广场景列表
+// GetAdScenes 获取推广场景列表
+// @Summary 获取推广场景列表
+// @Description 根据查询条件获取推广场景列表，支持分页
+// @Tags 推广场景管理
+// @Accept json
+// @Produce json
+// @Param ProjectID query string false "项目ID"
+// @Param pageNum query int false "页码"
+// @Param pageSize query int false "每页数量"
+// @Success 200 {object} response.Response{data=map[string]interface{}} "成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /ad/scene [get]
+// @Security BearerAuth
 func (pc AdSceneController) GetAdScenes(c *gin.Context) {
 	var req vo.AdSceneListRequest
 	// 参数绑定
@@ -74,7 +98,18 @@ func (pc AdSceneController) GetAdScenes(c *gin.Context) {
 	response.Success(c, gin.H{"adScenes": dto.ToAdScenesDto(adScene), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 创建推广场景
+// CreateAdScene 创建推广场景
+// @Summary 创建推广场景
+// @Description 创建新的推广场景
+// @Tags 推广场景管理
+// @Accept json
+// @Produce json
+// @Param adScene body vo.CreateAdSceneRequest true "推广场景信息"
+// @Success 200 {object} response.Response "创建成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /ad/scene [post]
+// @Security BearerAuth
 func (pc AdSceneController) CreateAdScene(c *gin.Context) {
 	var req vo.CreateAdSceneRequest
 	// 参数绑定
@@ -104,7 +139,19 @@ func (pc AdSceneController) CreateAdScene(c *gin.Context) {
 
 }
 
-// 更新推广场景
+// UpdateAdSceneByID 更新推广场景
+// @Summary 更新推广场景
+// @Description 根据推广场景ID更新推广场景信息
+// @Tags 推广场景管理
+// @Accept json
+// @Produce json
+// @Param adSceneID path string true "推广场景ID"
+// @Param adScene body vo.UpdateAdSceneRequest true "推广场景信息"
+// @Success 200 {object} response.Response "更新成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /ad/scene/{adSceneID} [patch]
+// @Security BearerAuth
 func (pc AdSceneController) UpdateAdSceneByID(c *gin.Context) {
 	var req vo.UpdateAdSceneRequest
 	// 参数绑定
@@ -136,7 +183,18 @@ func (pc AdSceneController) UpdateAdSceneByID(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
-// 批量删除推广场景
+// BatchDeleteAdSceneByIds 批量删除推广场景
+// @Summary 批量删除推广场景
+// @Description 根据推广场景ID列表批量删除推广场景
+// @Tags 推广场景管理
+// @Accept json
+// @Produce json
+// @Param adScenes body vo.DeleteAdScenesRequest true "推广场景ID列表"
+// @Success 200 {object} response.Response "删除成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "内部服务器错误"
+// @Router /ad/scene [delete]
+// @Security BearerAuth
 func (pc AdSceneController) BatchDeleteAdSceneByIds(c *gin.Context) {
 	var req vo.DeleteAdScenesRequest
 	// 参数绑定

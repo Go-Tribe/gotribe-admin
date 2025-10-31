@@ -41,7 +41,16 @@ func NewAdminController() IAdminController {
 	return userController
 }
 
-// 获取当前登录用户信息
+// GetAdminInfo 获取当前登录管理员信息
+// @Summary      获取当前登录管理员信息
+// @Description  获取当前登录管理员详细信息
+// @Tags         管理员管理
+// @Accept       json
+// @Produce      json
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /admin/info [post]
+// @Security     BearerAuth
 func (uc AdminController) GetAdminInfo(c *gin.Context) {
 	user, err := uc.AdminRepository.GetCurrentAdmin(c)
 	if err != nil {
@@ -54,7 +63,17 @@ func (uc AdminController) GetAdminInfo(c *gin.Context) {
 	}, common.Msg(c, common.MsgGetSuccess))
 }
 
-// 获取用户列表
+// GetAdmins 获取管理员列表
+// @Summary      获取管理员列表
+// @Description  获取所有管理员的列表
+// @Tags         管理员管理
+// @Accept       json
+// @Produce      json
+// @Param        request query vo.AdminListRequest false "查询参数"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /admin/list [get]
+// @Security     BearerAuth
 func (uc AdminController) GetAdmins(c *gin.Context) {
 	var req vo.AdminListRequest
 	// 参数绑定
@@ -78,7 +97,17 @@ func (uc AdminController) GetAdmins(c *gin.Context) {
 	response.Success(c, gin.H{"admins": dto.ToAdminsDto(users), "total": total}, common.Msg(c, common.MsgListSuccess))
 }
 
-// 更新用户登录密码
+// ChangePwd 更新管理员登录密码
+// @Summary      更新管理员登录密码
+// @Description  更新当前管理员的登录密码
+// @Tags         管理员管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.ChangePwdRequest true "更新密码请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /admin/changePwd [put]
+// @Security     BearerAuth
 func (uc AdminController) ChangePwd(c *gin.Context) {
 	var req vo.ChangePwdRequest
 
@@ -124,7 +153,17 @@ func (uc AdminController) ChangePwd(c *gin.Context) {
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
-// 创建用户
+// CreateAdmin 创建管理员
+// @Summary      创建管理员
+// @Description  创建一个新的管理员
+// @Tags         管理员管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.CreateAdminRequest true "创建管理员请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /admin/create [post]
+// @Security     BearerAuth
 func (uc AdminController) CreateAdmin(c *gin.Context) {
 	var req vo.CreateAdminRequest
 	// 参数绑定
@@ -210,7 +249,18 @@ func (uc AdminController) CreateAdmin(c *gin.Context) {
 
 }
 
-// 更新用户
+// UpdateAdminByID 更新管理员
+// @Summary      更新管理员
+// @Description  根据管理员ID更新管理员信息
+// @Tags         管理员管理
+// @Accept       json
+// @Produce      json
+// @Param        userID path string true "管理员ID"
+// @Param        request body vo.CreateAdminRequest true "更新管理员请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /admin/update/{userID} [patch]
+// @Security     BearerAuth
 func (uc AdminController) UpdateAdminByID(c *gin.Context) {
 	var req vo.CreateAdminRequest
 	// 参数绑定
@@ -356,7 +406,17 @@ func (uc AdminController) UpdateAdminByID(c *gin.Context) {
 
 }
 
-// 批量删除用户
+// BatchDeleteAdminByIds 批量删除管理员
+// @Summary      批量删除管理员
+// @Description  根据管理员ID列表批量删除管理员
+// @Tags         管理员管理
+// @Accept       json
+// @Produce      json
+// @Param        request body vo.DeleteAdminRequest true "删除管理员请求"
+// @Success      200 {object} response.Response
+// @Failure      400 {object} response.Response
+// @Router       /admin/delete/batch [delete]
+// @Security     BearerAuth
 func (uc AdminController) BatchDeleteAdminByIds(c *gin.Context) {
 	var req vo.DeleteAdminRequest
 	// 参数绑定

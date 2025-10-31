@@ -6,12 +6,13 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
 	"gotribe-admin/config"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/pkg/api/known"
 	"gotribe-admin/pkg/api/response"
+
+	"github.com/gin-gonic/gin"
 
 	"strings"
 	"sync"
@@ -25,12 +26,12 @@ func CasbinMiddleware() gin.HandlerFunc {
 		ur := repository.NewAdminRepository()
 		admin, err := ur.GetCurrentAdmin(c)
 		if err != nil {
-			response.Response(c, 401, 401, nil, "用户未登录")
+			response.ResponseFunc(c, 401, 401, nil, "用户未登录")
 			c.Abort()
 			return
 		}
 		if admin.Status != 1 {
-			response.Response(c, 401, 401, nil, "当前用户已被禁用")
+			response.ResponseFunc(c, 401, 401, nil, "当前用户已被禁用")
 			c.Abort()
 			return
 		}
@@ -55,7 +56,7 @@ func CasbinMiddleware() gin.HandlerFunc {
 
 		isPass := check(subs, obj, act)
 		if !isPass {
-			response.Response(c, 401, 401, nil, "没有权限")
+			response.ResponseFunc(c, 401, 401, nil, "没有权限")
 			c.Abort()
 			return
 		}

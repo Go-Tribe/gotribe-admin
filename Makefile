@@ -119,6 +119,14 @@ install: build # 安装到系统
 uninstall: # 从系统卸载
 	@rm -f /usr/local/bin/$(PROJECT_NAME)
 
+.PHONY: swagger
+swagger: # 生成 Swagger 文档
+	@swag init -g ./gotribe-admin.go -o ./docs
+
+.PHONY: swagger-clean
+swagger-clean: # 清理 Swagger 文档
+	@-rm -vrf $(ROOT_DIR)/docs
+
 .PHONY: help
 help: # 显示帮助信息
 	@echo "Available targets:"
@@ -141,4 +149,6 @@ help: # 显示帮助信息
 	@echo "  install      - 安装到系统"
 	@echo "  uninstall    - 从系统卸载"
 	@echo "  clean        - 清理构建产物"
+	@echo "  swagger      - 生成 Swagger 文档"
+	@echo "  swagger-clean- 清理 Swagger 文档"
 	@echo "  help         - 显示帮助信息"

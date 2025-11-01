@@ -6,7 +6,6 @@
 package repository
 
 import (
-	"fmt"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/vo"
@@ -32,7 +31,7 @@ func (tr FeedbackRepository) GetFeedbacks(req *vo.FeedbackListRequest) ([]*model
 
 	projectID := strings.TrimSpace(req.ProjectID)
 	if req.ProjectID != "" {
-		db = db.Where("project_id = ?", fmt.Sprintf("%s", projectID))
+		db = db.Where("project_id = ?", projectID)
 	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数

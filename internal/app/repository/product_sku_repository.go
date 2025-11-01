@@ -6,7 +6,6 @@
 package repository
 
 import (
-	"errors"
 	"fmt"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -68,7 +67,7 @@ func (tr ProductSkuRepository) BatchDeleteProductSkuByIds(ids []string) error {
 		// 根据ID获取sku
 		productSku, err := tr.GetProductSkuByProductSkuID(id)
 		if err != nil {
-			return errors.New(fmt.Sprintf("未获取到ID为%s的sku", id))
+			return fmt.Errorf("未获取到ID为%s的sku", id)
 		}
 		productSkus = append(productSkus, productSku)
 	}

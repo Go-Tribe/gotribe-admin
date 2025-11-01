@@ -6,13 +6,13 @@
 package repository
 
 import (
-	"errors"
 	"fmt"
-	"gorm.io/gorm"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/vo"
 	"strings"
+
+	"gorm.io/gorm"
 )
 
 type IProductRepository interface {
@@ -90,7 +90,7 @@ func (tr ProductRepository) BatchDeleteProductByIds(ids []string) error {
 		// 根据ID获取产品
 		product, err := tr.GetProductByProductID(id)
 		if err != nil {
-			return errors.New(fmt.Sprintf("未获取到ID为%s的产品", id))
+			return fmt.Errorf("未获取到ID为%s的产品", id)
 		}
 		products = append(products, product)
 	}

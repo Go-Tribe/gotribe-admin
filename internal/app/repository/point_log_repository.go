@@ -36,10 +36,10 @@ func (cr PointLogRepository) GetPointLogs(req *vo.PointLogListRequest) ([]*model
 
 	projectID := strings.TrimSpace(req.ProjectID)
 	if !gconvert.IsEmpty(projectID) {
-		db = db.Where("project_id = ?", fmt.Sprintf("%s", projectID))
+		db = db.Where("project_id = ?", projectID)
 	}
 	if !gconvert.IsEmpty(req.UserID) {
-		db = db.Where("user_id =  ?", fmt.Sprintf("%s", req.UserID))
+		db = db.Where("user_id =  ?", req.UserID)
 	}
 	if !gconvert.IsEmpty(req.Nickname) {
 		// 查出用户 ID。再用用户 ID 去筛选

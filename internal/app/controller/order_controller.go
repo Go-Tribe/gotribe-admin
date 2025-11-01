@@ -150,7 +150,9 @@ func (tc OrderController) UpdateOrderByID(c *gin.Context) {
 		return
 	}
 	// 增加修改记录
-	err = tc.OrderLogRepository.CreateOrderLog(c.Param("orderID"), "后台编辑")
+	if err = tc.OrderLogRepository.CreateOrderLog(c.Param("orderID"), "后台编辑"); err != nil {
+		common.Log.Errorf("创建订单日志失败: %v", err)
+	}
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }
 
@@ -258,6 +260,8 @@ func (tc OrderController) UpdateLogistics(c *gin.Context) {
 		return
 	}
 	// 增加修改记录
-	err = tc.OrderLogRepository.CreateOrderLog(c.Param("orderID"), "更新物流")
+	if err = tc.OrderLogRepository.CreateOrderLog(c.Param("orderID"), "更新物流"); err != nil {
+		common.Log.Errorf("创建订单日志失败: %v", err)
+	}
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))
 }

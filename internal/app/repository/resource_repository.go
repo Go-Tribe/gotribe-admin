@@ -94,6 +94,9 @@ func (rr ResourceRepository) DeleteResourceByID(id string) error {
 
 	// 硬删除
 	err = common.DB.Unscoped().Delete(&project).Error
+	if err != nil {
+		return err
+	}
 	// 删除 cdn 文件
 	upload, err := upload.NewUploadFile(
 		config.Conf.UploadFile.Endpoint,
@@ -102,6 +105,9 @@ func (rr ResourceRepository) DeleteResourceByID(id string) error {
 		config.Conf.UploadFile.Bucket,
 		config.Conf.System.EnableOss,
 	)
+	if err != nil {
+		return err
+	}
 
 	return upload.DeleteFile(project.Path)
 }

@@ -6,7 +6,6 @@
 package repository
 
 import (
-	"errors"
 	"fmt"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -48,11 +47,11 @@ func (cr ColumnRepository) GetColumns(req *vo.ColumnListRequest) ([]*model.Colum
 	}
 	columnID := strings.TrimSpace(req.ColumnID)
 	if req.ColumnID != "" {
-		db = db.Where("column_id = ?", fmt.Sprintf("%s", columnID))
+		db = db.Where("column_id = ?", columnID)
 	}
 	projectID := strings.TrimSpace(req.ProjectID)
 	if req.ProjectID != "" {
-		db = db.Where("project_id = ?", fmt.Sprintf("%s", projectID))
+		db = db.Where("project_id = ?", projectID)
 	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数
@@ -94,7 +93,7 @@ func (cr ColumnRepository) BatchDeleteColumnByIds(ids []string) error {
 		// 根据ID获取标签
 		column, err := cr.GetColumnByColumnID(id)
 		if err != nil {
-			return errors.New(fmt.Sprintf("未获取到ID为%s的专栏", id))
+			return fmt.Errorf("未获取到ID为%s的专栏", id)
 		}
 		columns = append(columns, column)
 	}

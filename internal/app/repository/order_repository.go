@@ -6,7 +6,6 @@
 package repository
 
 import (
-	"errors"
 	"fmt"
 	"github.com/thoas/go-funk"
 	"gotribe-admin/internal/pkg/common"
@@ -58,7 +57,7 @@ func (tr OrderRepository) GetOrders(req *vo.OrderListRequest) ([]*model.Order, i
 
 	orderID := strings.TrimSpace(req.OrderNumber)
 	if req.OrderNumber != "" {
-		db = db.Where("order_number = ?", fmt.Sprintf("%s", orderID))
+		db = db.Where("order_number = ?", orderID)
 	}
 	if req.Title != "" {
 		db = db.Where("product_name LIKE ?", fmt.Sprintf("%%%s%%", req.Title))
@@ -72,7 +71,7 @@ func (tr OrderRepository) GetOrders(req *vo.OrderListRequest) ([]*model.Order, i
 		db = db.Where("date(created_at) >= ?", t)
 	}
 	if req.UserID != "" {
-		db = db.Where("user_id = ?", fmt.Sprintf("%s", req.UserID))
+		db = db.Where("user_id = ?", req.UserID)
 	}
 	if req.Status != 0 {
 		db = db.Where("status = ?", req.Status)
@@ -138,7 +137,7 @@ func (tr OrderRepository) BatchDeleteOrderByIds(ids []string) error {
 		// 根据ID获取订单
 		order, err := tr.GetOrderByOrderID(id)
 		if err != nil {
-			return errors.New(fmt.Sprintf("未获取到ID为%s的订单", id))
+			return fmt.Errorf("未获取到ID为%s的订单", id)
 		}
 		orders = append(orders, order)
 	}

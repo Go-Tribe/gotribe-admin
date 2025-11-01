@@ -115,7 +115,7 @@ func main() {
 	╚██████╔╝╚█████╔╝░░░██║░░░██║░░██║██║██████╦╝███████╗
 	░╚═════╝░░╚════╝░░░░╚═╝░░░╚═╝░░╚═╝╚═╝╚═════╝░╚══════╝`)
 	fmt.Println("	App running at:")
-	fmt.Println(fmt.Sprintf("	- Local: %s%s:%d", "http://", host, port))
+	fmt.Printf("	- Local: %s%s:%d\n", "http://", host, port)
 	// Wait for interrupt signal to gracefully shutdown the server with
 	// a timeout of 5 seconds.
 	quit := make(chan os.Signal, 1)

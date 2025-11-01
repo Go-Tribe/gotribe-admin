@@ -6,7 +6,6 @@
 package repository
 
 import (
-	"errors"
 	"fmt"
 	"github.com/dengmengmian/ghelper/gconvert"
 	"gotribe-admin/internal/pkg/common"
@@ -49,11 +48,11 @@ func (cr ConfigRepository) GetConfigs(req *vo.ConfigListRequest) ([]*model.Confi
 	}
 	configID := strings.TrimSpace(req.ConfigID)
 	if !gconvert.IsEmpty(configID) {
-		db = db.Where("config_id = ?", fmt.Sprintf("%s", configID))
+		db = db.Where("config_id = ?", configID)
 	}
 	projectID := strings.TrimSpace(req.ProjectID)
 	if !gconvert.IsEmpty(projectID) {
-		db = db.Where("project_id = ?", fmt.Sprintf("%s", projectID))
+		db = db.Where("project_id = ?", projectID)
 	}
 	reqType := req.Type
 	if reqType != 0 {
@@ -110,7 +109,7 @@ func (cr ConfigRepository) BatchDeleteConfigByIds(ids []string) error {
 		// 根据ID获取标签
 		config, err := cr.GetConfigByConfigID(id)
 		if err != nil {
-			return errors.New(fmt.Sprintf("未获取到ID为%s的配置", id))
+			return fmt.Errorf("未获取到ID为%s的配置", id)
 		}
 		configs = append(configs, config)
 	}

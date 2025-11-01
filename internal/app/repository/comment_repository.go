@@ -41,7 +41,7 @@ func (cr CommentRepository) GetComments(req *vo.CommentListRequest) ([]*model.Co
 
 	objectID := strings.TrimSpace(req.ObjectID)
 	if !gconvert.IsEmpty(objectID) {
-		db = db.Where("object_id = ?", fmt.Sprintf("%s", objectID))
+		db = db.Where("object_id = ?", objectID)
 	}
 	if !gconvert.IsEmpty(req.ObjectType) {
 		db = db.Where("object_type = ?", req.ObjectType)

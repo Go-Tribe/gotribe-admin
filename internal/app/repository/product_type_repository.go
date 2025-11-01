@@ -71,7 +71,7 @@ func (tr ProductTypeRepository) GetProductTypes(req *vo.ProductTypeListRequest) 
 // 创建商品类型
 func (tr ProductTypeRepository) CreateProductType(productType *model.ProductType) (*model.ProductType, error) {
 	if isProductTypeExist(productType.Title) {
-		return nil, errors.New(fmt.Sprintf("%s商品类型已存在", productType.Title))
+		return nil, fmt.Errorf("%s商品类型已存在", productType.Title)
 	}
 	result := common.DB.Create(productType)
 	if result.Error != nil {
@@ -97,7 +97,7 @@ func (tr ProductTypeRepository) BatchDeleteProductTypeByIds(ids []string) error 
 		// 根据ID获取商品类型
 		productType, err := tr.GetProductTypeByProductTypeID(id)
 		if err != nil {
-			return errors.New(fmt.Sprintf("未获取到ID为%s的商品类型", id))
+			return fmt.Errorf("未获取到ID为%s的商品类型", id)
 		}
 		productTypes = append(productTypes, productType)
 	}

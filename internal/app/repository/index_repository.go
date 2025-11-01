@@ -59,6 +59,9 @@ func (r IndexRepository) GetIndexData(projectID string) (map[string]interface{},
 		Select("COUNT(*)").
 		Where("event_type = 1 AND created_at >= ? AND project_id = ?", startOfDay, projectID).
 		Count(&visitCount).Error
+	if err != nil {
+		return nil, err
+	}
 	// 返回结果
 	data := map[string]interface{}{
 		"sales":      util.MoneyUtil.CentsToYuan(result.TotalSales),

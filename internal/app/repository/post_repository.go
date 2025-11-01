@@ -6,7 +6,6 @@
 package repository
 
 import (
-	"errors"
 	"fmt"
 	"github.com/dengmengmian/ghelper/gconvert"
 	"gotribe-admin/internal/pkg/common"
@@ -52,11 +51,11 @@ func (pr PostRepository) GetPosts(req *vo.PostListRequest) ([]*model.Post, int64
 	}
 	postID := strings.TrimSpace(req.PostID)
 	if !gconvert.IsEmpty(postID) {
-		db = db.Where("post_id = ?", fmt.Sprintf("%s", postID))
+		db = db.Where("post_id = ?", postID)
 	}
 	projectID := strings.TrimSpace(req.ProjectID)
 	if !gconvert.IsEmpty(projectID) {
-		db = db.Where("project_id = ?", fmt.Sprintf("%s", projectID))
+		db = db.Where("project_id = ?", projectID)
 	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数
@@ -71,6 +70,9 @@ func (pr PostRepository) GetPosts(req *vo.PostListRequest) ([]*model.Post, int64
 		err = db.Offset((pageNum - 1) * pageSize).Limit(pageSize).Find(&list).Error
 	} else {
 		err = db.Find(&list).Error
+	}
+	if err != nil {
+		return nil, 0, err
 	}
 	// 调用 GetPostOther 并处理返回值
 	list, err = GetPostOther(list)
@@ -182,7 +184,7 @@ func (pr PostRepository) BatchDeletePostByIds(ids []string) error {
 		// 根据ID获取标签
 		post, err := pr.GetPostByPostID(id)
 		if err != nil {
-			return errors.New(fmt.Sprintf("未获取到ID为%s的内容", id))
+			return fmt.Errorf("未获取到ID为%s的内容", id)
 		}
 		posts = append(posts, post)
 	}

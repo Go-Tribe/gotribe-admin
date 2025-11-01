@@ -6,7 +6,6 @@
 package repository
 
 import (
-	"errors"
 	"fmt"
 	"github.com/dengmengmian/ghelper/gconvert"
 	"gotribe-admin/internal/pkg/common"
@@ -45,7 +44,7 @@ func (cr AdRepository) GetAds(req *vo.AdListRequest) ([]*model.Ad, int64, error)
 
 	adSceneID := strings.TrimSpace(req.SceneID)
 	if !gconvert.IsEmpty(adSceneID) {
-		db = db.Where("scene_id = ?", fmt.Sprintf("%s", adSceneID))
+		db = db.Where("scene_id = ?", adSceneID)
 	}
 	if !gconvert.IsEmpty(req.Title) {
 		db = db.Where("title like ?", fmt.Sprintf("%%%s%%", req.Title))
@@ -103,7 +102,7 @@ func (cr AdRepository) BatchDeleteAdByIds(ids []string) error {
 		// 根据ID获取标签
 		ad, err := cr.GetAdByAdID(id)
 		if err != nil {
-			return errors.New(fmt.Sprintf("未获取到ID为%s的推广场景", id))
+			return fmt.Errorf("未获取到ID为%s的推广场景", id)
 		}
 		ads = append(ads, ad)
 	}

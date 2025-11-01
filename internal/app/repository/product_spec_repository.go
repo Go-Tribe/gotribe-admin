@@ -69,7 +69,7 @@ func (tr ProductSpecRepository) GetProductSpecs(req *vo.ProductSpecListRequest) 
 // 创建商品规格
 func (tr ProductSpecRepository) CreateProductSpec(productSpec *model.ProductSpec) (*model.ProductSpec, error) {
 	if isProductSpecExist(productSpec.Title) {
-		return nil, errors.New(fmt.Sprintf("%s商品规格已存在", productSpec.Title))
+		return nil, fmt.Errorf("%s商品规格已存在", productSpec.Title)
 	}
 	result := common.DB.Create(productSpec)
 	if result.Error != nil {
@@ -95,7 +95,7 @@ func (tr ProductSpecRepository) BatchDeleteProductSpecByIds(ids []string) error 
 		// 根据ID获取商品规格
 		productSpec, err := tr.GetProductSpecByProductSpecID(id)
 		if err != nil {
-			return errors.New(fmt.Sprintf("未获取到ID为%s的商品规格", id))
+			return fmt.Errorf("未获取到ID为%s的商品规格", id)
 		}
 		productSpecs = append(productSpecs, productSpec)
 	}

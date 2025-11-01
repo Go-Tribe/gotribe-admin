@@ -46,7 +46,7 @@ func (tr ProductSpecItemRepository) GetProductSpecItems(req *vo.ProductSpecItemL
 
 	specID := strings.TrimSpace(req.SpecID)
 	if !gconvert.IsEmpty(specID) {
-		db = db.Where("spec_id = ?", fmt.Sprintf("%s", specID))
+		db = db.Where("spec_id = ?", specID)
 	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数
@@ -68,7 +68,7 @@ func (tr ProductSpecItemRepository) GetProductSpecItems(req *vo.ProductSpecItemL
 // 创建商品规格值
 func (tr ProductSpecItemRepository) CreateProductSpecItem(productSpecItem *model.ProductSpecItem) (*model.ProductSpecItem, error) {
 	if isProductSpecItemExist(productSpecItem.Title) {
-		return nil, errors.New(fmt.Sprintf("%s商品规格值已存在", productSpecItem.Title))
+		return nil, fmt.Errorf("%s商品规格值已存在", productSpecItem.Title)
 	}
 	result := common.DB.Create(productSpecItem)
 	if result.Error != nil {
@@ -94,7 +94,7 @@ func (tr ProductSpecItemRepository) BatchDeleteProductSpecItemByIds(ids []string
 		// 根据ID获取商品规格值
 		productSpecItem, err := tr.GetProductSpecItemByItemID(id)
 		if err != nil {
-			return errors.New(fmt.Sprintf("未获取到ID为%s的商品规格值", id))
+			return fmt.Errorf("未获取到ID为%s的商品规格值", id)
 		}
 		productSpecItems = append(productSpecItems, productSpecItem)
 	}

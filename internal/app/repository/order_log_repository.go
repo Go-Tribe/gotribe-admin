@@ -6,7 +6,6 @@
 package repository
 
 import (
-	"fmt"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 )
@@ -37,7 +36,7 @@ func (tr OrderLogRepository) GetOrderLogs(orderID string) ([]*model.OrderLog, in
 	db := common.DB.Model(&model.OrderLog{}).Order("created_at DESC")
 
 	if orderID != "" {
-		db = db.Where("order_id = ?", fmt.Sprintf("%s", orderID))
+		db = db.Where("order_id = ?", orderID)
 	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数

@@ -173,6 +173,10 @@ func (pc ResourceController) UploadResources(c *gin.Context) {
 		config.Conf.UploadFile.Bucket,
 		config.Conf.System.EnableOss,
 	)
+	if err != nil {
+		response.InternalServerError(c, "初始化上传服务失败："+err.Error())
+		return
+	}
 	fileRes, err := upload.UploadFile(fileHeader)
 	if err != nil {
 		response.InternalServerError(c, "上传 CDN 失败："+err.Error())

@@ -6,7 +6,6 @@
 package repository
 
 import (
-	"errors"
 	"fmt"
 	"github.com/dengmengmian/ghelper/gconvert"
 	"gotribe-admin/internal/pkg/common"
@@ -45,7 +44,7 @@ func (cr AdSceneRepository) GetAdScenes(req *vo.AdSceneListRequest) ([]*model.Ad
 
 	projectID := strings.TrimSpace(req.ProjectID)
 	if !gconvert.IsEmpty(projectID) {
-		db = db.Where("project_id = ?", fmt.Sprintf("%s", projectID))
+		db = db.Where("project_id = ?", projectID)
 	}
 
 	// 当pageNum > 0 且 pageSize > 0 才分页
@@ -98,7 +97,7 @@ func (cr AdSceneRepository) BatchDeleteAdSceneByIds(ids []string) error {
 		// 根据ID获取标签
 		adScene, err := cr.GetAdSceneByAdSceneID(id)
 		if err != nil {
-			return errors.New(fmt.Sprintf("未获取到ID为%s的推广场景", id))
+			return fmt.Errorf("未获取到ID为%s的推广场景", id)
 		}
 		adScenes = append(adScenes, adScene)
 	}

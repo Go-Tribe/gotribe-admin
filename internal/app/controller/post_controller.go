@@ -287,8 +287,9 @@ func (pc PostController) PushPostByID(c *gin.Context) {
 	}
 	// 同步内容至百度
 	projectInfo, err := pc.ProjectRepository.GetProjectByProjectID(oldPost.ProjectID)
-
-	if !gconvert.IsEmpty(projectInfo.PushToken) {
+	if err != nil {
+		common.Log.Errorf("获取项目信息失败: %v", err)
+	} else if !gconvert.IsEmpty(projectInfo.PushToken) {
 		// 处理 url
 		postURLWithID := projectInfo.PostURL + oldPost.PostID
 		go util.SEOUtil.PushBaidu(projectInfo.Domain, projectInfo.PushToken, postURLWithID)

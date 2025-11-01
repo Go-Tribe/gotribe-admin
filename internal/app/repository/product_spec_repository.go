@@ -108,10 +108,7 @@ func (tr ProductSpecRepository) BatchDeleteProductSpecByIds(ids []string) error 
 func isProductSpecExist(title string) bool {
 	var productSpec model.ProductSpec
 	result := common.DB.Where("title = ?", title).First(&productSpec)
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return false
-	}
-	return true
+	return !errors.Is(result.Error, gorm.ErrRecordNotFound)
 }
 
 // 获取多个商品规格

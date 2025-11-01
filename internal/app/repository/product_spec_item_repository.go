@@ -107,8 +107,5 @@ func (tr ProductSpecItemRepository) BatchDeleteProductSpecItemByIds(ids []string
 func isProductSpecItemExist(title string) bool {
 	var productSpecItem model.ProductSpecItem
 	result := common.DB.Where("title = ?", title).First(&productSpecItem)
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return false
-	}
-	return true
+	return !errors.Is(result.Error, gorm.ErrRecordNotFound)
 }

@@ -6,7 +6,6 @@
 package repository
 
 import (
-	"errors"
 	"fmt"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -49,7 +48,7 @@ func (pr ProjectRepository) GetProjects(req *vo.ProjectListRequest) ([]*model.Pr
 	}
 	projectID := strings.TrimSpace(req.ProjectID)
 	if req.ProjectID != "" {
-		db = db.Where("project_id = ?", fmt.Sprintf("%s", projectID))
+		db = db.Where("project_id = ?", projectID)
 	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数
@@ -91,7 +90,7 @@ func (pr ProjectRepository) BatchDeleteProjectByIds(ids []string) error {
 		// 根据ID获取标签
 		project, err := pr.GetProjectByProjectID(id)
 		if err != nil {
-			return errors.New(fmt.Sprintf("未获取到ID为%s的项目", id))
+			return fmt.Errorf("未获取到ID为%s的项目", id)
 		}
 		projects = append(projects, project)
 	}

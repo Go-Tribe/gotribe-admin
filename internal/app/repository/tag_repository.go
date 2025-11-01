@@ -49,7 +49,7 @@ func (tr TagRepository) GetTags(req *vo.TagListRequest) ([]*model.Tag, int64, er
 	}
 	tagID := strings.TrimSpace(req.TagID)
 	if req.TagID != "" {
-		db = db.Where("tag_id = ?", fmt.Sprintf("%s", tagID))
+		db = db.Where("tag_id = ?", tagID)
 	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数
@@ -71,7 +71,7 @@ func (tr TagRepository) GetTags(req *vo.TagListRequest) ([]*model.Tag, int64, er
 // 创建标签
 func (tr TagRepository) CreateTag(tag *model.Tag) (*model.Tag, error) {
 	if isTagExist(tag.Title) {
-		return nil, errors.New(fmt.Sprintf("%s标签已存在", tag.Title))
+		return nil, fmt.Errorf("%s标签已存在", tag.Title)
 	}
 	result := common.DB.Create(tag)
 	if result.Error != nil {
@@ -97,7 +97,7 @@ func (tr TagRepository) BatchDeleteTagByIds(ids []string) error {
 		// 根据ID获取标签
 		tag, err := tr.GetTagByTagID(id)
 		if err != nil {
-			return errors.New(fmt.Sprintf("未获取到ID为%s的标签", id))
+			return fmt.Errorf("未获取到ID为%s的标签", id)
 		}
 		tags = append(tags, tag)
 	}
@@ -110,8 +110,5 @@ func (tr TagRepository) BatchDeleteTagByIds(ids []string) error {
 func isTagExist(title string) bool {
 	var tag model.Tag
 	result := common.DB.Where("title = ?", title).First(&tag)
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return false
-	}
-	return true
+	return !errors.Is(result.Error, gorm.ErrRecordNotFound)
 }

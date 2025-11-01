@@ -84,9 +84,3 @@ func createIfNotExists(db *gorm.DB, model interface{}, id uint) error {
 	}
 	return err
 }
-
-// 批量创建函数
-func createBatchIfNotExists(db *gorm.DB, models interface{}, getID func(interface{}, int) uint) error {
-	// 这里可以根据具体需求实现批量检查逻辑
-	return db.Create(models).Error
-}

@@ -49,7 +49,7 @@ func (tr ProductTypeRepository) GetProductTypes(req *vo.ProductTypeListRequest) 
 	}
 	productTypeID := strings.TrimSpace(req.ProductTypeID)
 	if req.ProductTypeID != "" {
-		db = db.Where("productType_id = ?", fmt.Sprintf("%s", productTypeID))
+		db = db.Where("productType_id = ?", productTypeID)
 	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数
@@ -110,8 +110,5 @@ func (tr ProductTypeRepository) BatchDeleteProductTypeByIds(ids []string) error 
 func isProductTypeExist(title string) bool {
 	var productType model.ProductType
 	result := common.DB.Where("title = ?", title).First(&productType)
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return false
-	}
-	return true
+	return !errors.Is(result.Error, gorm.ErrRecordNotFound)
 }

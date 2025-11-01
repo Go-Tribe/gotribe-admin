@@ -292,7 +292,11 @@ func (pc PostController) PushPostByID(c *gin.Context) {
 	} else if !gconvert.IsEmpty(projectInfo.PushToken) {
 		// 处理 url
 		postURLWithID := projectInfo.PostURL + oldPost.PostID
-		go util.SEOUtil.PushBaidu(projectInfo.Domain, projectInfo.PushToken, postURLWithID)
+		go func() {
+			if _, err := util.SEOUtil.PushBaidu(projectInfo.Domain, projectInfo.PushToken, postURLWithID); err != nil {
+				common.Log.Errorf("推送百度失败: %v", err)
+			}
+		}()
 	}
 
 	response.Success(c, nil, common.Msg(c, common.MsgUpdateSuccess))

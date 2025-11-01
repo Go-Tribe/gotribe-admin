@@ -78,7 +78,11 @@ func main() {
 		common.Log.Errorf("Failed to start jobs: %v", err)
 		return
 	}
-	defer jobs.StopAllJobs()
+	defer func() {
+		if err := jobs.StopAllJobs(); err != nil {
+			common.Log.Errorf("Failed to stop jobs: %v", err)
+		}
+	}()
 
 	// 操作日志中间件处理日志时没有将日志发送到rabbitmq或者kafka中, 而是发送到了channel中
 	// 这里开启3个goroutine处理channel将日志记录到数据库
@@ -132,9 +136,7 @@ func main() {
 		common.Log.Fatal("Server Shutdown:", err)
 	}
 	// catching ctx.Done(). timeout of 5 seconds.
-	select {
-	case <-ctx.Done():
-		common.Log.Info("timeout of 5 seconds.")
-	}
+	<-ctx.Done()
+	common.Log.Info("timeout of 5 seconds.")
 	common.Log.Info("Server exiting")
 }

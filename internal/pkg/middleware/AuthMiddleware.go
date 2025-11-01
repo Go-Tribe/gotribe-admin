@@ -50,7 +50,10 @@ func payloadFunc(data interface{}) jwt.MapClaims {
 	if v, ok := data.(map[string]interface{}); ok {
 		var user model.Admin
 		// 将用户json转为结构体
-		util.JSONUtil.JsonI2Struct(v["user"], &user)
+		if err := util.JSONUtil.JsonI2Struct(v["user"], &user); err != nil {
+			common.Log.Errorf("Failed to parse user data: %v", err)
+			return jwt.MapClaims{}
+		}
 		return jwt.MapClaims{
 			jwt.IdentityKey: user.ID,
 			"user":          v["user"],
@@ -112,7 +115,10 @@ func authorizator(data interface{}, c *gin.Context) bool {
 		userStr := v["user"].(string)
 		var user model.Admin
 		// 将用户json转为结构体
-		util.JSONUtil.Json2Struct(userStr, &user)
+		if err := util.JSONUtil.Json2Struct(userStr, &user); err != nil {
+			common.Log.Errorf("Failed to parse user data: %v", err)
+			return false
+		}
 		// 将用户保存到context, api调用时取数据方便
 		c.Set("user", user)
 		return true

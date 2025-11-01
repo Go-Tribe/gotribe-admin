@@ -55,7 +55,7 @@ func (ur UserRepository) GetUsers(req *vo.UserListRequest) ([]*model.User, int64
 	}
 	userID := strings.TrimSpace(req.UserID)
 	if req.UserID != "" {
-		db = db.Where("user_id = ?", fmt.Sprintf("%s", userID))
+		db = db.Where("user_id = ?", userID)
 	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数
@@ -124,7 +124,7 @@ func (ur UserRepository) BatchDeleteUserByIds(ids []string) error {
 		// 根据ID获取用户
 		user, err := ur.GetUserByUserID(id)
 		if err != nil {
-			return errors.New(fmt.Sprintf("未获取到ID为%s的用户", id))
+			return fmt.Errorf("未获取到ID为%s的用户", id)
 		}
 		users = append(users, user)
 	}

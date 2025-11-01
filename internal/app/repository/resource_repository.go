@@ -6,7 +6,6 @@
 package repository
 
 import (
-	"errors"
 	"fmt"
 	"gotribe-admin/config"
 	"gotribe-admin/internal/pkg/common"
@@ -50,7 +49,7 @@ func (rr ResourceRepository) GetResources(req *vo.ResourceListRequest) ([]*model
 
 	resourceID := strings.TrimSpace(req.ResourceID)
 	if req.ResourceID != "" {
-		db = db.Where("resource_id = ?", fmt.Sprintf("%s", resourceID))
+		db = db.Where("resource_id = ?", resourceID)
 	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数
@@ -89,7 +88,7 @@ func (rr ResourceRepository) UpdateResource(resource *model.Resource) error {
 func (rr ResourceRepository) DeleteResourceByID(id string) error {
 	project, err := rr.GetResourceByResourceID(id)
 	if err != nil {
-		return errors.New(fmt.Sprintf("未获取到ID为%s的项目", id))
+		return fmt.Errorf("未获取到ID为%s的项目", id)
 	}
 
 	// 硬删除

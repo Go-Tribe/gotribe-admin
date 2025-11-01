@@ -138,7 +138,6 @@ func (ac ApiController) CreateApi(c *gin.Context) {
 	}
 
 	response.Success(c, nil, common.Msg(c, common.MsgCreateSuccess))
-	return
 }
 
 // UpdateApiByID 更新接口

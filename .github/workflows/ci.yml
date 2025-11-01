@@ -122,9 +122,9 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    # 如果配置了 Docker Hub secrets，则登录
+    # 尝试登录 Docker Hub（如果没有配置 secrets 会失败但不影响构建）
     - name: Login to Docker Hub
-      if: ${{ secrets.DOCKER_USERNAME != '' && secrets.DOCKER_PASSWORD != '' }}
+      continue-on-error: true
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
@@ -142,13 +142,14 @@ jobs:
           type=semver,pattern={{major}}.{{minor}}
           type=raw,value=latest,enable={{is_default_branch}}
 
-    - name: Build and conditionally push Docker image
+    - name: Build and push Docker image
+      continue-on-error: true
       uses: docker/build-push-action@v5
       with:
         context: .
         platforms: linux/amd64,linux/arm64
-        # 只有在配置了 secrets 且是 main 分支时才推送
-        push: ${{ secrets.DOCKER_USERNAME != '' && secrets.DOCKER_PASSWORD != '' && github.ref == 'refs/heads/main' }}
+        # 只在 main 分支推送，如果没有登录会失败但不影响构建
+        push: ${{ github.ref == 'refs/heads/main' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha

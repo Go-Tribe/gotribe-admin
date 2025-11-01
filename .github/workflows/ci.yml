@@ -34,7 +34,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.21'
+        go-version: '1.25'
 
     - name: Cache Go modules
       uses: actions/cache@v3
@@ -64,7 +64,7 @@ jobs:
     - name: Lint
       uses: golangci/golangci-lint-action@v3
       with:
-        version: latest
+        version: v1.61.0
         args: --timeout=5m
 
     - name: Test
@@ -96,7 +96,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.21'
+        go-version: '1.25'
 
     - name: Build
       run: |
@@ -180,7 +180,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.21'
+        go-version: '1.25'
 
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@v4

@@ -124,7 +124,7 @@ jobs:
 
     # 如果配置了 Docker Hub secrets，则登录
     - name: Login to Docker Hub
-      if: ${{ secrets.DOCKER_USERNAME && secrets.DOCKER_PASSWORD }}
+      if: ${{ secrets.DOCKER_USERNAME != '' && secrets.DOCKER_PASSWORD != '' }}
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
@@ -148,7 +148,7 @@ jobs:
         context: .
         platforms: linux/amd64,linux/arm64
         # 只有在配置了 secrets 且是 main 分支时才推送
-        push: ${{ secrets.DOCKER_USERNAME && secrets.DOCKER_PASSWORD && github.ref == 'refs/heads/main' }}
+        push: ${{ secrets.DOCKER_USERNAME != '' && secrets.DOCKER_PASSWORD != '' && github.ref == 'refs/heads/main' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha

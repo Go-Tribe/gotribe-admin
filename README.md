@@ -51,35 +51,35 @@ High-level flow and responsibilities:
 
 Architecture diagram:
 ```mermaid
-flowchart TD
-  Client[Admin UI (web/admin)] --> HTTP[HTTP Server (Gin)]
-  Docs[Swagger Docs (docs/swagger)] --> HTTP
+graph TD;
+  Client[Admin UI web/admin] --> HTTP[HTTP Server Gin];
+  Docs[Swagger Docs docs/swagger] --> HTTP;
 
-  HTTP --> MW[Middleware (internal/pkg/middleware)]
-  MW --> Routes[Routes (internal/app/routes)]
-  Routes --> Ctrl[Controllers (internal/app/controller)]
-  Ctrl --> Repo[Repositories (internal/app/repository)]
-  Repo --> DB[(MySQL/PostgreSQL)]
-  Repo --> Cache[(Redis)]
+  HTTP --> MW[Middleware internal/pkg/middleware];
+  MW --> Routes[Routes internal/app/routes];
+  Routes --> Ctrl[Controllers internal/app/controller];
+  Ctrl --> Repo[Repositories internal/app/repository];
+  Repo --> DB[(MySQL/PostgreSQL)];
+  Repo --> Cache[(Redis)];
 
-  subgraph Auth[Authorization]
+  subgraph Authorization
     Enforcer[Casbin Enforcer]
-    ModelSrc[RBAC Model: env > config > embedded]
+    ModelSrc[RBAC Model env > config > embedded]
   end
 
-  MW -. access check .-> Enforcer
-  Repo -. access check .-> Enforcer
-  ModelSrc --> Enforcer
+  MW -. access check .-> Enforcer;
+  Repo -. access check .-> Enforcer;
+  ModelSrc --> Enforcer;
 
-  subgraph Core[Core Components]
-    Common[Common (internal/pkg/common)]
-    Domain[Domain Models (internal/pkg/model)]
-    Config[Config Loader (config/config.go)]
+  subgraph Core_Components
+    Common[Common internal/pkg/common]
+    Domain[Domain Models internal/pkg/model]
+    Config[Config Loader config/config.go]
   end
 
-  Common --> Enforcer
-  Config --> Enforcer
-  Ctrl --> Domain
+  Common --> Enforcer;
+  Config --> Enforcer;
+  Ctrl --> Domain;
 ```
 
 Project structure (selected):

@@ -49,35 +49,35 @@ export RBAC_MODEL_PATH=/etc/gotribe/rbac_model.conf
 
 架构图：
 ```mermaid
-flowchart TD
-  Client[管理后台 UI (web/admin)] --> HTTP[HTTP 服务 (Gin)]
-  Docs[Swagger 文档 (docs/swagger)] --> HTTP
+graph TD;
+  Client[管理后台 UI web/admin] --> HTTP[HTTP 服务 Gin];
+  Docs[Swagger 文档 docs/swagger] --> HTTP;
 
-  HTTP --> MW[中间件 (internal/pkg/middleware)]
-  MW --> Routes[路由 (internal/app/routes)]
-  Routes --> Ctrl[控制器 (internal/app/controller)]
-  Ctrl --> Repo[仓储 (internal/app/repository)]
-  Repo --> DB[(MySQL/PostgreSQL)]
-  Repo --> Cache[(Redis)]
+  HTTP --> MW[中间件 internal/pkg/middleware];
+  MW --> Routes[路由 internal/app/routes];
+  Routes --> Ctrl[控制器 internal/app/controller];
+  Ctrl --> Repo[仓储 internal/app/repository];
+  Repo --> DB[(MySQL/PostgreSQL)];
+  Repo --> Cache[(Redis)];
 
-  subgraph Auth[权限控制]
+  subgraph 权限控制
     Enforcer[Casbin Enforcer]
-    ModelSrc[RBAC 模型：环境变量 > 配置 > 内置]
+    ModelSrc[RBAC 模型 环境变量 > 配置 > 内置]
   end
 
-  MW -. 访问判定 .-> Enforcer
-  Repo -. 访问判定 .-> Enforcer
-  ModelSrc --> Enforcer
+  MW -. 访问判定 .-> Enforcer;
+  Repo -. 访问判定 .-> Enforcer;
+  ModelSrc --> Enforcer;
 
-  subgraph Core[核心组件]
-    Common[公共组件 (internal/pkg/common)]
-    Domain[领域模型 (internal/pkg/model)]
-    Config[配置加载 (config/config.go)]
+  subgraph 核心组件
+    Common[公共组件 internal/pkg/common]
+    Domain[领域模型 internal/pkg/model]
+    Config[配置加载 config/config.go]
   end
 
-  Common --> Enforcer
-  Config --> Enforcer
-  Ctrl --> Domain
+  Common --> Enforcer;
+  Config --> Enforcer;
+  Ctrl --> Domain;
 ```
 
 项目结构（精选）：

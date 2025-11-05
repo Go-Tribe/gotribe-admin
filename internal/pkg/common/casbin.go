@@ -8,8 +8,10 @@ package common
 import (
 	"fmt"
 	"gotribe-admin/config"
+	"os"
 
 	"github.com/casbin/casbin/v2"
+	"github.com/casbin/casbin/v2/model"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
 )
 
@@ -33,13 +35,41 @@ func databaseCasbin() (*casbin.Enforcer, error) {
 	if err != nil {
 		return nil, err
 	}
-	e, err := casbin.NewEnforcer(config.Conf.Casbin.ModelPath, a)
-	if err != nil {
-		return nil, err
+
+	// 外部路径优先：环境变量 > 配置文件
+	modelPath := os.Getenv("RBAC_MODEL_PATH")
+	if modelPath == "" {
+		modelPath = config.Conf.Casbin.ModelPath
 	}
 
-	err = e.LoadPolicy()
-	if err != nil {
+	var e *casbin.Enforcer
+	// 如果外部文件存在则优先使用
+	if modelPath != "" {
+		if _, statErr := os.Stat(modelPath); statErr == nil {
+			Log.Infof("加载外部 RBAC 模型: %s", modelPath)
+			e, err = casbin.NewEnforcer(modelPath, a)
+		} else {
+			Log.Warnf("外部 RBAC 模型不可用(%s): %v，使用内置默认", modelPath, statErr)
+		}
+	}
+
+	// 兜底：使用内置默认模型
+	if e == nil {
+		if embeddedRBACModel == "" {
+			return nil, fmt.Errorf("内置 RBAC 模型为空，无法初始化")
+		}
+		m := model.NewModel()
+		if err := m.LoadModelFromText(embeddedRBACModel); err != nil {
+			return nil, fmt.Errorf("加载内置 RBAC 模型失败: %w", err)
+		}
+		Log.Info("加载内置默认 RBAC 模型")
+		e, err = casbin.NewEnforcer(m, a)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if err = e.LoadPolicy(); err != nil {
 		return nil, err
 	}
 	return e, nil

@@ -3,11 +3,12 @@
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://www.gotribe.cn
 
-package docs
+package swagger
 
 import (
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // SwaggerDeletedAt 为 gorm.DeletedAt 提供 Swagger 类型定义

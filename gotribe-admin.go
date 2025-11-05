@@ -30,7 +30,7 @@ import (
 	"embed"
 	"fmt"
 	"gotribe-admin/config"
-	_ "gotribe-admin/docs" // swagger docs
+	_ "gotribe-admin/docs/swagger" // swagger docs
 	"gotribe-admin/internal/app/jobs"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/app/routes"

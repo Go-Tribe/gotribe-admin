@@ -129,11 +129,11 @@ uninstall: # 从系统卸载
 
 .PHONY: swagger
 swagger: # 生成 Swagger 文档
-	@swag init -g ./gotribe-admin.go -o ./docs
+	@swag init -g ./gotribe-admin.go -o ./docs/swagger
 
 .PHONY: swagger-clean
 swagger-clean: # 清理 Swagger 文档
-	@-rm -vrf $(ROOT_DIR)/docs
+	@-rm -vrf $(ROOT_DIR)/docs/swagger
 
 .PHONY: help
 help: # 显示帮助信息

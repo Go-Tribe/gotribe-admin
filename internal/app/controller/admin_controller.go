@@ -49,7 +49,7 @@ func NewAdminController() IAdminController {
 // @Produce      json
 // @Success      200 {object} response.Response
 // @Failure      400 {object} response.Response
-// @Router       /admin/info [post]
+// @Router       /admin/info [get]
 // @Security     BearerAuth
 func (uc AdminController) GetAdminInfo(c *gin.Context) {
 	user, err := uc.AdminRepository.GetCurrentAdmin(c)

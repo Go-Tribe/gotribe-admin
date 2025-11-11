@@ -22,7 +22,7 @@ func InitAdminRoutes(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) g
 	// 开启casbin鉴权中间件
 	router.Use(middleware.CasbinMiddleware())
 	{
-		router.POST("/info", userController.GetAdminInfo)
+		router.GET("/info", userController.GetAdminInfo)
 		router.GET("/list", userController.GetAdmins)
 		router.PUT("/changePwd", userController.ChangePwd)
 		router.POST("/create", userController.CreateAdmin)

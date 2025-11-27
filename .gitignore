@@ -152,9 +152,9 @@ temp/
 *.crt
 *.csr
 
-# RSA key files
-rsa_private_key.pem
-rsa_public_key.pem
+# RSA key files (可按需启用忽略规则)
+# rsa_private_key.pem
+# rsa_public_key.pem
 
 # Upload files
 uploads/

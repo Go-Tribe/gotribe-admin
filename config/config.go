@@ -7,6 +7,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/fsnotify/fsnotify"
@@ -47,8 +48,11 @@ func InitConfig() {
 	viper.OnConfigChange(func(e fsnotify.Event) {
 		// 将读取的配置信息保存至全局变量Conf
 		if err := viper.Unmarshal(Conf); err != nil {
-			panic(fmt.Errorf("初始化配置文件失败:%s \n", err))
+			// 配置热更新失败时记录错误日志，但不中断服务
+			log.Printf("配置热更新失败: %v，保持使用旧配置", err)
+			return
 		}
+		log.Printf("配置文件已重新加载: %s", e.Name)
 	})
 
 	if err != nil {

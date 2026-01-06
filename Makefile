@@ -50,7 +50,7 @@ build-linux: tidy # 编译 Linux/Debian 版本（静态链接，无 CGO 依赖�
 .PHONY: build-linux-low-cpu
 build-linux-low-cpu: tidy # 编译 Linux/Debian 版本（低 CPU 使用，适合服务器环境）.
 	@echo "构建 Linux 版本（低 CPU 模式，并发数: 1）..."
-	@nice -n 19 CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOMAXPROCS=1 go build -p 1 -installsuffix cgo -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/$(PROJECT_NAME)-linux-amd64 $(ROOT_DIR)/$(PROJECT_NAME).go
+	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOMAXPROCS=1 nice -n 19 go build -p 1 -installsuffix cgo -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/$(PROJECT_NAME)-linux-amd64 $(ROOT_DIR)/$(PROJECT_NAME).go
 
 .PHONY: format
 format: # 格式化 Go 源码.

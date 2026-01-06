@@ -42,15 +42,14 @@ run: tidy  format dev
 build: tidy # 编译源码，依赖 tidy 目标自动添加/移除依赖包.
 	@CGO_ENABLED=0 go build -v -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/$(PROJECT_NAME) $(ROOT_DIR)/$(PROJECT_NAME).go
 
-.PHONY: build-linux
-build-linux: tidy # 编译 Linux/Debian 版本（静态链接，无 CGO 依赖）.
-	@echo "构建 Linux 版本（并发数: $(GO_BUILD_PARALLEL)）..."
-	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOMAXPROCS=$(GO_BUILD_PARALLEL) go build -p $(GO_BUILD_PARALLEL) -installsuffix cgo -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/$(PROJECT_NAME)-linux-amd64 $(ROOT_DIR)/$(PROJECT_NAME).go
 
-.PHONY: build-linux-low-cpu
-build-linux-low-cpu: tidy # 编译 Linux/Debian 版本（低 CPU 使用，适合服务器环境）.
-	@echo "构建 Linux 版本（低 CPU 模式，并发数: 1）..."
-	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOMAXPROCS=1 nice -n 19 go build -p 1 -installsuffix cgo -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/$(PROJECT_NAME)-linux-amd64 $(ROOT_DIR)/$(PROJECT_NAME).go
+
+.PHONY: linux
+linux: # 快速交叉编译 Linux 可执行文件（当前系统 -> Linux amd64）.
+	@mkdir -p $(OUTPUT_DIR)
+	@echo "交叉编译 Linux 版本..."
+	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/$(PROJECT_NAME)-linux $(ROOT_DIR)/$(PROJECT_NAME).go
+	@echo "构建完成: $(OUTPUT_DIR)/$(PROJECT_NAME)-linux"
 
 .PHONY: format
 format: # 格式化 Go 源码.
@@ -153,8 +152,7 @@ help: # 显示帮助信息
 	@echo "Available targets:"
 	@echo "  all                - 构建项目 (默认)"
 	@echo "  build              - 编译源码（当前平台）"
-	@echo "  build-linux        - 编译 Linux/Debian 版本（静态链接，并发数: $(GO_BUILD_PARALLEL)）"
-	@echo "  build-linux-low-cpu - 编译 Linux/Debian 版本（低 CPU 使用，适合服务器）"
+	@echo "  linux              - 快速交叉编译 Linux 可执行文件（当前系统 -> Linux amd64）"
 	@echo "  run                - 开发运行"
 	@echo "  dev          - 开发运行"
 	@echo "  test         - 运行测试"

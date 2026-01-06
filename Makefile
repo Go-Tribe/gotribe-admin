@@ -9,6 +9,9 @@ OUTPUT_DIR:= $(ROOT_DIR)/_output
 # 版本信息
 VERSION := $(shell git describe --tags --always --dirty)
 VERSION_PACKAGE := gotribe-admin/internal/pkg/common
+# Go 编译并发数限制（默认使用 CPU 核心数的一半，可通过环境变量覆盖）
+# 如果 nproc 不可用，默认使用 2
+GO_BUILD_PARALLEL ?= $(shell nproc 2>/dev/null | awk '{print int($$1/2+1)}' || echo 2)
 
 # ==============================================================================
 ## 检查代码仓库是否是 dirty（默认dirty）
@@ -41,7 +44,13 @@ build: tidy # 编译源码，依赖 tidy 目标自动添加/移除依赖包.
 
 .PHONY: build-linux
 build-linux: tidy # 编译 Linux/Debian 版本（静态链接，无 CGO 依赖）.
-	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -a -installsuffix cgo -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/$(PROJECT_NAME)-linux-amd64 $(ROOT_DIR)/$(PROJECT_NAME).go
+	@echo "构建 Linux 版本（并发数: $(GO_BUILD_PARALLEL)）..."
+	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOMAXPROCS=$(GO_BUILD_PARALLEL) go build -p $(GO_BUILD_PARALLEL) -installsuffix cgo -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/$(PROJECT_NAME)-linux-amd64 $(ROOT_DIR)/$(PROJECT_NAME).go
+
+.PHONY: build-linux-low-cpu
+build-linux-low-cpu: tidy # 编译 Linux/Debian 版本（低 CPU 使用，适合服务器环境）.
+	@echo "构建 Linux 版本（低 CPU 模式，并发数: 1）..."
+	@nice -n 19 CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOMAXPROCS=1 go build -p 1 -installsuffix cgo -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/$(PROJECT_NAME)-linux-amd64 $(ROOT_DIR)/$(PROJECT_NAME).go
 
 .PHONY: format
 format: # 格式化 Go 源码.
@@ -142,10 +151,11 @@ swagger-clean: # 清理 Swagger 文档
 .PHONY: help
 help: # 显示帮助信息
 	@echo "Available targets:"
-	@echo "  all          - 构建项目 (默认)"
-	@echo "  build        - 编译源码（当前平台）"
-	@echo "  build-linux  - 编译 Linux/Debian 版本（静态链接）"
-	@echo "  run          - 开发运行"
+	@echo "  all                - 构建项目 (默认)"
+	@echo "  build              - 编译源码（当前平台）"
+	@echo "  build-linux        - 编译 Linux/Debian 版本（静态链接，并发数: $(GO_BUILD_PARALLEL)）"
+	@echo "  build-linux-low-cpu - 编译 Linux/Debian 版本（低 CPU 使用，适合服务器）"
+	@echo "  run                - 开发运行"
 	@echo "  dev          - 开发运行"
 	@echo "  test         - 运行测试"
 	@echo "  test-all     - 运行所有测试用例（包括单元测试和基准测试）"

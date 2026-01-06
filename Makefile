@@ -37,7 +37,11 @@ run: tidy  format dev
 
 .PHONY: build
 build: tidy # 编译源码，依赖 tidy 目标自动添加/移除依赖包.
-	@go build -v -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/$(PROJECT_NAME) $(ROOT_DIR)/$(PROJECT_NAME).go
+	@CGO_ENABLED=0 go build -v -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/$(PROJECT_NAME) $(ROOT_DIR)/$(PROJECT_NAME).go
+
+.PHONY: build-linux
+build-linux: tidy # 编译 Linux/Debian 版本（静态链接，无 CGO 依赖）.
+	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -a -installsuffix cgo -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/$(PROJECT_NAME)-linux-amd64 $(ROOT_DIR)/$(PROJECT_NAME).go
 
 .PHONY: format
 format: # 格式化 Go 源码.
@@ -139,7 +143,8 @@ swagger-clean: # 清理 Swagger 文档
 help: # 显示帮助信息
 	@echo "Available targets:"
 	@echo "  all          - 构建项目 (默认)"
-	@echo "  build        - 编译源码"
+	@echo "  build        - 编译源码（当前平台）"
+	@echo "  build-linux  - 编译 Linux/Debian 版本（静态链接）"
 	@echo "  run          - 开发运行"
 	@echo "  dev          - 开发运行"
 	@echo "  test         - 运行测试"

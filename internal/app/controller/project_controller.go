@@ -224,7 +224,6 @@ func (tc ProjectController) BatchDeleteProjectByIds(c *gin.Context) {
 		response.ValidationFail(c, errStr)
 		return
 	}
-
 	// 前端传来的标签ID
 	reqProjectIds := strings.Split(req.ProjectIds, ",")
 	err := tc.ProjectRepository.BatchDeleteProjectByIds(reqProjectIds)
@@ -233,5 +232,4 @@ func (tc ProjectController) BatchDeleteProjectByIds(c *gin.Context) {
 		return
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
-
 }

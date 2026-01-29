@@ -23,6 +23,7 @@ type UserDto struct {
 	Status    uint8   `json:"status"`
 	Birthday  string  `json:"birthday"`
 	Point     float64 `json:"point"`
+	Phone     string  `json:"phone"`
 	CreatedAt string  `json:"createdAt"`
 }
 
@@ -47,6 +48,8 @@ func toUserDto(user *model.User) UserDto {
 		AvatarURL: fmt.Sprintf("%s%s", domain, user.AvatarURL),
 		CreatedAt: user.CreatedAt.Format(known.TIME_FORMAT),
 		Point:     user.Point,
+		Status:    user.Status,
+		Phone:     user.Phone,
 	}
 }
 

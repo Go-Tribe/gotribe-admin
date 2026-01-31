@@ -168,7 +168,7 @@ func (rc RoleController) UpdateRoleByID(c *gin.Context) {
 		return
 	}
 
-	// 不能更新比自己角色等级高或相等的角色
+	// 不能更新比自己角色等级高的角色
 	// 根据path中的角色ID获取该角色信息
 	roles, err := rc.RoleRepository.GetRolesByIds([]uint{uint(roleID)})
 	if err != nil {
@@ -179,15 +179,23 @@ func (rc RoleController) UpdateRoleByID(c *gin.Context) {
 		response.NotFound(c, "未获取到角色信息")
 		return
 	}
-	if minSort >= roles[0].Sort {
-		response.Forbidden(c, "不能更新比自己角色等级高或相等的角色")
+	targetRole := roles[0]
+	if targetRole.Sort < minSort {
+		response.Forbidden(c, "不能更新比自己角色等级高的角色")
 		return
 	}
 
-	// 不能把角色等级更新得比当前用户的等级高
-	if minSort >= req.Sort {
-		response.Forbidden(c, "不能把角色等级更新得比当前用户的等级高或相同")
-		return
+	// 同等级允许更新名称/描述，但不允许更改排序或状态
+	if targetRole.Sort == minSort {
+		req.Keyword = targetRole.Keyword
+		req.Sort = targetRole.Sort
+		req.Status = targetRole.Status
+	} else {
+		// 不允许将角色等级更新到比当前用户高或相同
+		if minSort >= req.Sort {
+			response.Forbidden(c, "不能把角色等级更新得比当前用户的等级高或相同")
+			return
+		}
 	}
 
 	role := model.Role{

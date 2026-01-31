@@ -38,14 +38,14 @@ func CasbinMiddleware() gin.HandlerFunc {
 
 		// 获得用户的全部角色
 		roles := admin.Roles
-		// 检查是否为超级管理员（拥有排序为1的角色或admin角色）
+		// 检查是否为超级管理员（拥有排序为1的角色）
 		isSuperAdmin := false
 		var subs []string
 		for _, role := range roles {
 			if role.Status == 1 { // 角色状态正常
 				subs = append(subs, role.Keyword)
-				// 超级管理员判断：排序为1或角色关键字为admin
-				if role.Sort == 1 || role.Keyword == "admin" {
+				// 超级管理员判断：排序为1
+				if role.Sort == 1 {
 					isSuperAdmin = true
 				}
 			}

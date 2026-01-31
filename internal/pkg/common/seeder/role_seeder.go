@@ -28,7 +28,7 @@ func (s *RoleSeeder) Run(db *gorm.DB) error {
 	roles := []*model.Role{
 		{
 			Model:   model.Model{ID: 1},
-			Name:    "管理员",
+			Name:    "超级管理员",
 			Keyword: "admin",
 			Desc:    new(string),
 			Sort:    1,

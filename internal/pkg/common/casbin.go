@@ -48,6 +48,10 @@ func databaseCasbin() (*casbin.Enforcer, error) {
 		if _, statErr := os.Stat(modelPath); statErr == nil {
 			Log.Infof("加载外部 RBAC 模型: %s", modelPath)
 			e, err = casbin.NewEnforcer(modelPath, a)
+			if err != nil {
+				Log.Warnf("加载外部 RBAC 模型失败(%s): %v，使用内置默认", modelPath, err)
+				e = nil
+			}
 		} else {
 			Log.Warnf("外部 RBAC 模型不可用(%s): %v，使用内置默认", modelPath, statErr)
 		}

@@ -15,6 +15,7 @@ type AdminInfoDto struct {
 	Avatar       string        `json:"avatar"`
 	Nickname     string        `json:"nickname"`
 	Introduction string        `json:"introduction"`
+	Status       uint          `json:"status"`
 	Roles        []*model.Role `json:"roles"`
 }
 
@@ -26,6 +27,7 @@ func ToAdminInfoDto(user model.Admin) AdminInfoDto {
 		Avatar:       user.Avatar,
 		Nickname:     *user.Nickname,
 		Introduction: *user.Introduction,
+		Status:       user.Status,
 		Roles:        user.Roles,
 	}
 }

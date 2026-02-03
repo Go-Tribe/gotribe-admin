@@ -27,6 +27,7 @@ func ToColumnInfoDto(column model.Column) ColumnDto {
 		Description: column.Description,
 		Info:        column.Info,
 		Icon:        column.Icon,
+		ProjectID:   column.ProjectID,
 		CreatedAt:   column.CreatedAt.Format(known.TIME_FORMAT),
 	}
 }

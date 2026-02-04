@@ -14,13 +14,13 @@ import (
 
 type Order struct {
 	Model
-	OrderID      string     `gorm:"type:char(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"OrderID"`
+	OrderID      string     `gorm:"type:varchar(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"OrderID"`
 	OrderNumber  string     `gorm:"type:varchar(255);uniqueIndex;not null;comment:订单号" json:"orderNumber"`
 	OrderType    uint       `gorm:"type:smallint;not null;Index;comment:订单类型：1-普通订单；2-积分订单" json:"orderType"`
-	UserID       string     `gorm:"type:char(10);not null;Index;comment:用户ID" json:"userID"`
+	UserID       string     `gorm:"type:varchar(10);not null;Index;comment:用户ID" json:"userID"`
 	Username     string     `gorm:"type:varchar(255);not null;Index;comment:用户名" json:"username"`
-	ProductID    string     `gorm:"type:char(10);not null;Index;comment:产品ID" json:"productID"`
-	ProductSku   string     `gorm:"type:char(10);not null;comment:产品SKU" json:"productSku"`
+	ProductID    string     `gorm:"type:varchar(10);not null;Index;comment:产品ID" json:"productID"`
+	ProductSku   string     `gorm:"type:varchar(10);not null;comment:产品SKU" json:"productSku"`
 	ProductName  string     `gorm:"type:varchar(255);not null;comment:产品名称" json:"productName"`
 	Status       uint       `gorm:"type:smallint;not null;Index;comment:状态1-待支付；2-已支付；3-已发货；4-已收货；5-已取消；6-待退款；7.已退款" json:"status"`
 	PayNumber    string     `gorm:"type:varchar(255);not null;comment:支付单号" json:"payNumber"`

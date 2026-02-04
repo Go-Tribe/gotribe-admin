@@ -12,9 +12,9 @@ import (
 
 type ProductCategory struct {
 	Model
-	ProductCategoryID string             `gorm:"type:char(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"productCategoryID"`
+	ProductCategoryID string             `gorm:"type:varchar(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"productCategoryID"`
 	ParentID          *uint              `gorm:"default:0;comment:父菜单编号(编号为0时表示根菜单)" json:"parentID"`
-	ProjectID         string             `gorm:"type:char(10);not null;index;comment:项目ID;" json:"projectID"`
+	ProjectID         string             `gorm:"type:varchar(10);not null;index;comment:项目ID;" json:"projectID"`
 	Sort              uint               `gorm:"default:1;comment:排序" json:"sort"`
 	Icon              string             `gorm:"type:varchar(255);comment:图标" json:"icon"`
 	Title             string             `gorm:"type:varchar(255);not null;comment:'标题'" json:"title"`

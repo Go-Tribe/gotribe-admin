@@ -10,8 +10,8 @@ type Feedback struct {
 	Title     string   `gorm:"type:varchar(255);uniqueIndex;not null;comment:标题" json:"title"`
 	Content   string   `gorm:"type:text;comment:内容" json:"content"`
 	Phone     string   `gorm:"type:varchar(20);comment:电话" json:"phone"`
-	UserID    string   `gorm:"type:char(10);Index;comment:用户ID" json:"userID"`
-	ProjectID string   `gorm:"type:char(10);Index;comment:项目 ID" json:"projectID"`
+	UserID    string   `gorm:"type:varchar(10);Index;comment:用户ID" json:"userID"`
+	ProjectID string   `gorm:"type:varchar(10);Index;comment:项目 ID" json:"projectID"`
 	User      *User    `gorm:"-" json:"user"`
 	Project   *Project `gorm:"-" json:"project"`
 }

@@ -12,7 +12,7 @@ import (
 
 type SystemConfig struct {
 	Model
-	SystemConfigID string `gorm:"type:char(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"systemConfigID"`
+	SystemConfigID string `gorm:"type:varchar(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"systemConfigID"`
 	Title          string `gorm:"type:varchar(255);uniqueIndex;not null;comment:标题" json:"title"`
 	Content        string `gorm:"type:text;not null;comment:内容" json:"content"`
 	Logo           string `gorm:"type:varchar(255);comment:logo" json:"logo"`

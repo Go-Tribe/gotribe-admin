@@ -12,8 +12,8 @@ import (
 
 type Example struct {
 	Model
-	ExampleID   string `gorm:"type:char(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"exampleID"`
-	ProjectID   string `gorm:"type:char(10);not null;index;comment:项目ID;" json:"projectID"`
+	ExampleID   string `gorm:"type:varchar(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"exampleID"`
+	ProjectID   string `gorm:"type:varchar(10);not null;index;comment:项目ID;" json:"projectID"`
 	Username    string `gorm:"type:varchar(30);not null;index:idx_username;comment:用户名" json:"username"`
 	Title       string `gorm:"type:varchar(255);not null;comment:标题" json:"title"`
 	Content     string `gorm:"not null;type:text;not null;comment:内容" json:"content"`

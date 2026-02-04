@@ -12,7 +12,7 @@ import (
 
 type ProductSpec struct {
 	Model
-	ProductSpecID string             `gorm:"type:char(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"productSpecID"`
+	ProductSpecID string             `gorm:"type:varchar(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"productSpecID"`
 	Title         string             `gorm:"type:varchar(255);not null;comment:标题" json:"title"`
 	Remark        string             `gorm:"type:varchar(50);not null;comment:备注" json:"remark"`
 	Format        uint               `gorm:"type:smallint;not null;default:1;comment:规格类型:1-文字,2-图片" json:"format"`

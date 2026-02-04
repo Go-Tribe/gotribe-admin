@@ -12,7 +12,7 @@ import (
 
 type Category struct {
 	Model
-	CategoryID  string      `gorm:"type:char(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"categoryID"`
+	CategoryID  string      `gorm:"type:varchar(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"categoryID"`
 	ParentID    *uint       `gorm:"default:0;comment:父菜单编号(编号为0时表示根菜单)" json:"parentID"`
 	Sort        uint        `gorm:"default:1;comment:排序" json:"sort"`
 	Icon        string      `gorm:"type:varchar(255);comment:图标" json:"icon"`

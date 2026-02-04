@@ -12,10 +12,10 @@ import (
 
 type ProductType struct {
 	Model
-	ProductTypeID     string `gorm:"type:char(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"productTypeID"`
+	ProductTypeID     string `gorm:"type:varchar(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"productTypeID"`
 	Title             string `gorm:"type:varchar(255);not null;comment:标题" json:"title"`
 	Remark            string `gorm:"type:varchar(50);not null;comment:备注" json:"remark"`
-	ProductCategoryID string `gorm:"type:char(10);not null;index:idx_product_category_id;comment:分类ID;" json:"productCategoryID"`
+	ProductCategoryID string `gorm:"type:varchar(10);not null;index:idx_product_category_id;comment:分类ID;" json:"productCategoryID"`
 	SpecIds           string `gorm:"type:varchar(255);not null;index:idx_spec_id;comment:规格编号;" json:"specIds"`
 }
 

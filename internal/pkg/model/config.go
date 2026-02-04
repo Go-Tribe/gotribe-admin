@@ -12,8 +12,8 @@ import (
 
 type Config struct {
 	Model
-	ConfigID    string   `gorm:"type:char(10);not null;uniqueIndex;comment:字符ID，分布式 ID;" json:"configID"`
-	ProjectID   string   `gorm:"type:char(10);not null;index;comment:项目ID;" json:"projectID"`
+	ConfigID    string   `gorm:"type:varchar(10);not null;uniqueIndex;comment:字符ID，分布式 ID;" json:"configID"`
+	ProjectID   string   `gorm:"type:varchar(10);not null;index;comment:项目ID;" json:"projectID"`
 	Alias       string   `gorm:"type:varchar(20);not null;uniqueIndex;comment:别名" json:"alias"`
 	Title       string   `gorm:"type:varchar(30);not null;comment:标题" json:"title"`
 	Description string   `gorm:"type:varchar(300);not null;comment:描述" json:"description"`

@@ -12,7 +12,7 @@ import (
 
 type OrderLog struct {
 	Model
-	OrderLogID string `gorm:"type:char(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"OrderLogID"`
+	OrderLogID string `gorm:"type:varchar(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"OrderLogID"`
 	OrderID    string `gorm:"type:varchar(255);not null;comment:订单号" json:"orderID"`
 	Remark     string `gorm:"type:varchar(255);not null;comment:操作记录" json:"remark"`
 }

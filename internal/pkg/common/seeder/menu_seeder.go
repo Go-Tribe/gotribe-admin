@@ -33,7 +33,6 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 
 	var uint0 uint = 0
 	var uint1 uint = 1
-	var uint6 uint = 6
 	var uint8 uint = 8
 	var uint10 uint = 10
 	var uint18 uint = 18
@@ -42,36 +41,48 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 
 	componentStr := "component"
 	systemUserStr := "/system/user"
-	userStr := "user"
-	peoplesStr := "peoples"
-	treeTableStr := "tree-table"
-	treeStr := "tree"
-	logOperationStr := "/log/operation-log"
-	documentationStr := "documentation"
-	education := "education"
-	tagIcon := "24gf-tags2"
-	language := "language"
-	xitongrizhi := "xitongrizhi"
-	skill := "skill"
-	yewu := "yewu"
-	xiangmu := "xiangmu"
-	nested := "nested"
-	shuju := "shuju"
-	ziyuan := "ziyuan"
-	yunyingzhongxin := "yunyingzhongxin"
-	eye := "eye"
-	message := "message"
-	jifen := "jifen"
-	shopping := "shopping"
-	list := "list"
-	theme := "theme"
-	guige := "guige"
-	shangpinliebiao := "shangpinliebiao"
-	shangpin := "shangpin-"
-	dingdanliebiao := "dingdanliebiao"
-	peizhishezhi := "peizhishezhi"
+	tableOfContents := "TableOfContents"
+	briefcaseBusiness := "BriefcaseBusiness"
+	storeIcon := "Store"
+	shoppingBag := "LucideShoppingBag"
+	shoppingBasket := "ShoppingBasket"
+	alignHorizontalJustifyEnd := "AlignHorizontalJustifyEnd"
+	lucideUsers := "LucideUsers"
+	lucideUserRound := "LucideUserRound"
+	menuSquare := "MenuSquare"
+	network := "Network"
+	lucideTableProperties := "LucideTableProperties"
+	lucideUserCog2 := "LucideUserCog2"
+	clipboardEdit := "ClipboardEdit"
+	laptopMinimalCheck := "LaptopMinimalCheck"
+	lucideHeadset := "LucideHeadset"
+	boxes := "Boxes"
+	wholeWord := "WholeWord"
+	database := "Database"
+	bookImage := "BookImage"
+	lucideColumnsSettings := "LucideColumnsSettings"
+	bookText := "BookText"
+	lucideTags := "LucideTags"
+	brickWall := "BrickWall"
+	lucideMartini := "LucideMartini"
+	lucideDatabaseZap := "LucideDatabaseZap"
+	lucideMessageSquareCode := "LucideMessageSquareCode"
+	lucideTableConfig := "LucideTableConfig"
+	lucideChartScatter := "LucideChartScatter"
 
 	menus := []model.Menu{
+		{
+			Model:     model.Model{ID: 34},
+			Name:      "Dashboard",
+			Title:     "Dashboard",
+			Icon:      &alignHorizontalJustifyEnd,
+			Path:      "/dashboard",
+			Component: "Layout",
+			Sort:      1,
+			ParentID:  &uint0,
+			Roles:     []*model.Role{&adminRole},
+			Creator:   "系统",
+		},
 		{
 			Model:     model.Model{ID: 1},
 			Name:      "System",
@@ -80,7 +91,7 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Path:      "/system",
 			Component: "Layout",
 			Redirect:  &systemUserStr,
-			Sort:      99,
+			Sort:      2,
 			ParentID:  &uint0,
 			Roles:     []*model.Role{&adminRole},
 			Creator:   "系统",
@@ -89,7 +100,7 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 2},
 			Name:      "Admin",
 			Title:     "管理员管理",
-			Icon:      &userStr,
+			Icon:      &lucideUsers,
 			Path:      "admin",
 			Component: "/system/admin/index",
 			Sort:      11,
@@ -101,7 +112,7 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 3},
 			Name:      "Role",
 			Title:     "角色管理",
-			Icon:      &peoplesStr,
+			Icon:      &lucideUserRound,
 			Path:      "role",
 			Component: "/system/role/index",
 			Sort:      12,
@@ -113,7 +124,7 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 4},
 			Name:      "Menu",
 			Title:     "菜单管理",
-			Icon:      &treeTableStr,
+			Icon:      &menuSquare,
 			Path:      "menu",
 			Component: "/system/menu/index",
 			Sort:      13,
@@ -125,7 +136,7 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 5},
 			Name:      "Api",
 			Title:     "接口管理",
-			Icon:      &treeStr,
+			Icon:      &network,
 			Path:      "api",
 			Component: "/system/api/index",
 			Sort:      14,
@@ -134,27 +145,14 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Creator:   "系统",
 		},
 		{
-			Model:     model.Model{ID: 6},
-			Name:      "Log",
-			Title:     "日志管理",
-			Icon:      &xitongrizhi,
-			Path:      "/log",
-			Component: "Layout",
-			Redirect:  &logOperationStr,
-			Sort:      98,
-			ParentID:  &uint0,
-			Roles:     []*model.Role{&adminRole},
-			Creator:   "系统",
-		},
-		{
 			Model:     model.Model{ID: 7},
 			Name:      "OperationLog",
 			Title:     "操作日志",
-			Icon:      &skill,
+			Icon:      &lucideMessageSquareCode,
 			Path:      "operation-log",
-			Component: "/log/operation-log/index",
+			Component: "/system/operation-log/index",
 			Sort:      21,
-			ParentID:  &uint6,
+			ParentID:  &uint1,
 			Roles:     []*model.Role{&adminRole},
 			Creator:   "系统",
 		},
@@ -162,10 +160,10 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 8},
 			Name:      "Business",
 			Title:     "业务管理",
-			Icon:      &yewu,
+			Icon:      &briefcaseBusiness,
 			Path:      "/business",
 			Component: "Layout",
-			Sort:      1,
+			Sort:      3,
 			ParentID:  &uint0,
 			Roles:     []*model.Role{&adminRole},
 			Creator:   "系统",
@@ -174,7 +172,7 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 9},
 			Name:      "Project",
 			Title:     "项目管理",
-			Icon:      &xiangmu,
+			Icon:      &lucideTableProperties,
 			Path:      "/business/project",
 			Component: "/business/project/index",
 			Sort:      33,
@@ -186,10 +184,10 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 10},
 			Name:      "Content",
 			Title:     "内容管理",
-			Icon:      &education,
+			Icon:      &tableOfContents,
 			Path:      "/content",
 			Component: "Layout",
-			Sort:      2,
+			Sort:      4,
 			ParentID:  &uint0,
 			Roles:     []*model.Role{&adminRole},
 			Creator:   "系统",
@@ -198,7 +196,7 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 11},
 			Name:      "Tag",
 			Title:     "标签管理",
-			Icon:      &tagIcon,
+			Icon:      &lucideTags,
 			Path:      "/content/tag",
 			Component: "/content/tag/index",
 			Sort:      33,
@@ -210,7 +208,7 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 12},
 			Name:      "Category",
 			Title:     "分类管理",
-			Icon:      &nested,
+			Icon:      &boxes,
 			Path:      "/content/category",
 			Component: "/content/category/index",
 			Sort:      33,
@@ -222,7 +220,7 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 13},
 			Name:      "Article",
 			Title:     "文章管理",
-			Icon:      &language,
+			Icon:      &wholeWord,
 			Path:      "/content/article",
 			Component: "/content/article/index",
 			Sort:      33,
@@ -234,7 +232,7 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 14},
 			Name:      "Config",
 			Title:     "数据管理",
-			Icon:      &shuju,
+			Icon:      &database,
 			Path:      "/content/config",
 			Component: "/content/config/index",
 			Sort:      33,
@@ -246,7 +244,7 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 15},
 			Name:      "Resource",
 			Title:     "资源管理",
-			Icon:      &ziyuan,
+			Icon:      &bookImage,
 			Path:      "/content/resource",
 			Component: "/content/resource/index",
 			Sort:      33,
@@ -258,7 +256,7 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 16},
 			Name:      "User",
 			Title:     "用户管理",
-			Icon:      &userStr,
+			Icon:      &lucideUserCog2,
 			Path:      "/business/user",
 			Component: "/business/user/index",
 			Sort:      33,
@@ -270,7 +268,7 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 17},
 			Name:      "Column",
 			Title:     "专栏管理",
-			Icon:      &documentationStr,
+			Icon:      &lucideColumnsSettings,
 			Path:      "/content/column",
 			Component: "/content/column/index",
 			Sort:      34,
@@ -282,22 +280,34 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 18},
 			Name:      "Operations",
 			Title:     "运营管理",
-			Icon:      &yunyingzhongxin,
+			Icon:      &clipboardEdit,
 			Path:      "/operations",
 			Component: "Layout",
-			Sort:      999,
+			Sort:      5,
 			ParentID:  &uint0,
 			Roles:     []*model.Role{&adminRole},
 			Creator:   "系统",
 		},
 		{
 			Model:     model.Model{ID: 19},
-			Name:      "promotion",
-			Title:     "广告位管理",
-			Icon:      &eye,
-			Path:      "/operation/promotion",
-			Component: "/operation/promotion/index",
-			Sort:      35,
+			Name:      "Scene",
+			Title:     "场景管理",
+			Icon:      &laptopMinimalCheck,
+			Path:      "/promotion/scene",
+			Component: "/promotion/scene/index",
+			Sort:      1,
+			ParentID:  &uint18,
+			Roles:     []*model.Role{&adminRole},
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 32},
+			Name:      "Advertising",
+			Title:     "广告管理",
+			Icon:      &lucideHeadset,
+			Path:      "/promotion/advertising",
+			Component: "/promotion/advertising/index",
+			Sort:      2,
 			ParentID:  &uint18,
 			Roles:     []*model.Role{&adminRole},
 			Creator:   "系统",
@@ -306,7 +316,7 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 20},
 			Name:      "comment",
 			Title:     "评论管理",
-			Icon:      &message,
+			Icon:      &lucideMartini,
 			Path:      "/operation/comment",
 			Component: "/operation/comment/index",
 			Sort:      999,
@@ -318,7 +328,7 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 21},
 			Name:      "point",
 			Title:     "积分管理",
-			Icon:      &jifen,
+			Icon:      &lucideDatabaseZap,
 			Path:      "/operation/point",
 			Component: "/operation/point/index",
 			Sort:      999,
@@ -330,10 +340,10 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 22},
 			Name:      "Store",
 			Title:     "商城管理",
-			Icon:      &shopping,
+			Icon:      &storeIcon,
 			Path:      "/store",
 			Component: "Layout",
-			Sort:      999,
+			Sort:      5,
 			ParentID:  &uint0,
 			Roles:     []*model.Role{&adminRole},
 			Creator:   "系统",
@@ -342,10 +352,22 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 23},
 			Name:      "ProductCategory",
 			Title:     "商品分类",
-			Icon:      &list,
+			Icon:      &shoppingBasket,
 			Path:      "/store/product-category",
 			Component: "/store/product-category/index",
-			Sort:      999,
+			Sort:      1,
+			ParentID:  &uint22,
+			Roles:     []*model.Role{&adminRole},
+			Creator:   "系统",
+		},
+		{
+			Model:     model.Model{ID: 33},
+			Name:      "SpecValue",
+			Title:     "规格属性",
+			Icon:      &bookText,
+			Path:      "/store/product-spec-value",
+			Component: "/store/product-spec-value/index",
+			Sort:      3,
 			ParentID:  &uint22,
 			Roles:     []*model.Role{&adminRole},
 			Creator:   "系统",
@@ -354,10 +376,10 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 24},
 			Name:      "ProductType",
 			Title:     "商品类型",
-			Icon:      &theme,
+			Icon:      &shoppingBag,
 			Path:      "/store/product-type",
 			Component: "/store/product-type/index",
-			Sort:      1,
+			Sort:      4,
 			ParentID:  &uint22,
 			Roles:     []*model.Role{&adminRole},
 			Creator:   "系统",
@@ -366,10 +388,10 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 25},
 			Name:      "Spec",
 			Title:     "规格管理",
-			Icon:      &guige,
+			Icon:      &lucideChartScatter,
 			Path:      "/store/product-spec",
 			Component: "/store/product-spec/index",
-			Sort:      1,
+			Sort:      2,
 			ParentID:  &uint22,
 			Roles:     []*model.Role{&adminRole},
 			Creator:   "系统",
@@ -378,10 +400,10 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 26},
 			Name:      "Product",
 			Title:     "商品列表",
-			Icon:      &shangpinliebiao,
+			Icon:      &brickWall,
 			Path:      "/store/product",
 			Component: "/store/product/index",
-			Sort:      1,
+			Sort:      5,
 			ParentID:  &uint22,
 			Roles:     []*model.Role{&adminRole},
 			Creator:   "系统",
@@ -390,10 +412,10 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 27},
 			Name:      "Order",
 			Title:     "订单管理",
-			Icon:      &shangpin,
+			Icon:      &shoppingBag,
 			Path:      "/order",
 			Component: "Layout",
-			Sort:      1,
+			Sort:      6,
 			ParentID:  &uint0,
 			Roles:     []*model.Role{&adminRole},
 			Creator:   "系统",
@@ -402,9 +424,9 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 28},
 			Name:      "OrderList",
 			Title:     "订单列表",
-			Icon:      &dingdanliebiao,
-			Path:      "/store/order",
-			Component: "/store/order/index",
+			Icon:      &shoppingBasket,
+			Path:      "/order/list",
+			Component: "/order/list",
 			Sort:      999,
 			ParentID:  &uint27,
 			Roles:     []*model.Role{&adminRole},
@@ -414,10 +436,10 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 29},
 			Name:      "AdminConfig",
 			Title:     "后台配置",
-			Icon:      &peizhishezhi,
+			Icon:      &lucideTableConfig,
 			Path:      "/system/config",
 			Component: "/system/config/index",
-			Sort:      1,
+			Sort:      22,
 			ParentID:  &uint1,
 			Roles:     []*model.Role{&adminRole},
 			Creator:   "系统",

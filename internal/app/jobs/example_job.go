@@ -9,6 +9,7 @@ import (
 	"context"
 	"time"
 
+	"gotribe-admin/config"
 	"gotribe-admin/internal/pkg/common"
 )
 
@@ -18,9 +19,9 @@ type ExampleJob struct {
 }
 
 // NewExampleJob 创建示例任务
-func NewExampleJob(config JobConfig) *ExampleJob {
+func NewExampleJob(jobConfig config.JobConfig) *ExampleJob {
 	job := &ExampleJob{}
-	job.BaseJob = NewBaseJob(config, job.execute)
+	job.BaseJob = NewBaseJob(jobConfig, job.execute)
 	return job
 }
 

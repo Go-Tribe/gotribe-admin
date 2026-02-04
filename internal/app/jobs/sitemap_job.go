@@ -8,6 +8,7 @@ package jobs
 import (
 	"context"
 
+	"gotribe-admin/config"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -21,9 +22,9 @@ type SitemapJob struct {
 }
 
 // NewSitemapJob 创建站点地图任务
-func NewSitemapJob(config JobConfig) *SitemapJob {
+func NewSitemapJob(jobConfig config.JobConfig) *SitemapJob {
 	job := &SitemapJob{}
-	job.BaseJob = NewBaseJob(config, job.execute)
+	job.BaseJob = NewBaseJob(jobConfig, job.execute)
 	return job
 }
 

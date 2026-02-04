@@ -97,3 +97,24 @@ upload-file:
 baidu:
   # 百度推送Token (请填写您的百度推送Token)
   push-token: your_baidu_push_token_here
+
+# 定时任务配置
+jobs:
+  # 全局启用开关
+  enabled: true
+  # 任务列表
+  list:
+    sitemap:
+      name: sitemap
+      description: "生成站点地图"
+      schedule: "@every 1h" # 1小时执行一次
+      enabled: true
+      timeout: 300s # 5分钟超时
+      retry-count: 3
+    example:
+      name: example
+      description: "示例任务"
+      schedule: "@every 30s"
+      enabled: false
+      timeout: 60s
+      retry-count: 1

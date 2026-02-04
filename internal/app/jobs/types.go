@@ -57,15 +57,7 @@ type Job interface {
 	IsEnabled() bool
 }
 
-// JobConfig 任务配置
-type JobConfig struct {
-	Name        string        `yaml:"name" json:"name"`
-	Description string        `yaml:"description" json:"description"`
-	Schedule    string        `yaml:"schedule" json:"schedule"`
-	Enabled     bool          `yaml:"enabled" json:"enabled"`
-	Timeout     time.Duration `yaml:"timeout" json:"timeout"`
-	RetryCount  int           `yaml:"retry_count" json:"retry_count"`
-}
+// JobConfig definition moved to config package
 
 // JobManager 任务管理器接口
 type JobManager interface {

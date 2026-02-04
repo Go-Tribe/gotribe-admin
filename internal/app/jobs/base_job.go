@@ -7,6 +7,7 @@ package jobs
 
 import (
 	"context"
+	"gotribe-admin/config"
 	"time"
 )
 
@@ -22,14 +23,14 @@ type BaseJob struct {
 }
 
 // NewBaseJob 创建基础任务
-func NewBaseJob(config JobConfig, executor func(ctx context.Context) error) *BaseJob {
+func NewBaseJob(jobConfig config.JobConfig, executor func(ctx context.Context) error) *BaseJob {
 	return &BaseJob{
-		name:        config.Name,
-		description: config.Description,
-		schedule:    config.Schedule,
-		enabled:     config.Enabled,
-		timeout:     config.Timeout,
-		retryCount:  config.RetryCount,
+		name:        jobConfig.Name,
+		description: jobConfig.Description,
+		schedule:    jobConfig.Schedule,
+		enabled:     jobConfig.Enabled,
+		timeout:     jobConfig.Timeout,
+		retryCount:  jobConfig.RetryCount,
 		executor:    executor,
 	}
 }

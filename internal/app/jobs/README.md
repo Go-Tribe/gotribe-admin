@@ -93,25 +93,20 @@ func InitJobs() error {
 
 ### 3. 配置任务
 
-在 `config.go` 中添加任务配置：
+在配置文件 `config/config.yml` (或 `config.local.yml`) 中添加任务配置：
 
-```go
-func DefaultJobsConfig() *JobsConfig {
-    return &JobsConfig{
-        Enabled: true,
-        Jobs: map[string]JobConfig{
-            // ... 其他任务配置 ...
-            "my_custom": {
-                Name:        "my_custom",
-                Description: "我的自定义任务",
-                Schedule:    "@every 30s",
-                Enabled:     true,
-                Timeout:     2 * time.Minute,
-                RetryCount:  3,
-            },
-        },
-    }
-}
+```yaml
+jobs:
+  enabled: true
+  list:
+    # ... 其他任务配置 ...
+    my_custom:
+      name: "my_custom"
+      description: "我的自定义任务"
+      schedule: "@every 30s"
+      enabled: true
+      timeout: 120s
+      retry-count: 3
 ```
 
 ## API 接口

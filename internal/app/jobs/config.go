@@ -7,24 +7,20 @@ package jobs
 
 import (
 	"time"
+
+	"gotribe-admin/config"
 )
 
-// JobsConfig 任务配置
-type JobsConfig struct {
-	Enabled bool                 `yaml:"enabled" json:"enabled"`
-	Jobs    map[string]JobConfig `yaml:"jobs" json:"jobs"`
-}
-
 // DefaultJobsConfig 默认任务配置
-func DefaultJobsConfig() *JobsConfig {
-	return &JobsConfig{
-		Enabled: true,
-		Jobs: map[string]JobConfig{
+func DefaultJobsConfig() *config.JobsConfig {
+	return &config.JobsConfig{
+		Enabled: false,
+		List: map[string]config.JobConfig{
 			"sitemap": {
 				Name:        "sitemap",
 				Description: "生成站点地图",
-				Schedule:    "@every 1m", // 改为24小时执行一次
-				Enabled:     true,
+				Schedule:    "@every 1h",
+				Enabled:     false,
 				Timeout:     5 * time.Minute,
 				RetryCount:  3,
 			},
@@ -32,7 +28,7 @@ func DefaultJobsConfig() *JobsConfig {
 				Name:        "example",
 				Description: "示例任务",
 				Schedule:    "@every 30s",
-				Enabled:     false, // 默认禁用
+				Enabled:     false,
 				Timeout:     1 * time.Minute,
 				RetryCount:  1,
 			},
@@ -41,17 +37,20 @@ func DefaultJobsConfig() *JobsConfig {
 }
 
 // GetJobConfig 获取任务配置
-func (c *JobsConfig) GetJobConfig(jobName string) (JobConfig, bool) {
-	config, exists := c.Jobs[jobName]
-	return config, exists
+func GetJobConfig(c *config.JobsConfig, jobName string) (config.JobConfig, bool) {
+	if c == nil || c.List == nil {
+		return config.JobConfig{}, false
+	}
+	conf, exists := c.List[jobName]
+	return conf, exists
 }
 
 // IsJobEnabled 检查任务是否启用
-func (c *JobsConfig) IsJobEnabled(jobName string) bool {
-	if !c.Enabled {
+func IsJobEnabled(c *config.JobsConfig, jobName string) bool {
+	if c == nil || !c.Enabled {
 		return false
 	}
 
-	config, exists := c.GetJobConfig(jobName)
-	return exists && config.Enabled
+	conf, exists := GetJobConfig(c, jobName)
+	return exists && conf.Enabled
 }

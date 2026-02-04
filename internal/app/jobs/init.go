@@ -6,6 +6,7 @@
 package jobs
 
 import (
+	"gotribe-admin/config"
 	"gotribe-admin/internal/pkg/common"
 )
 
@@ -13,12 +14,15 @@ import (
 func InitJobs() error {
 	common.Log.Info("Initializing jobs...")
 
-	// 获取默认配置
-	config := DefaultJobsConfig()
+	// 获取配置
+	jobsConfig := config.Conf.Jobs
+	if jobsConfig == nil {
+		jobsConfig = DefaultJobsConfig()
+	}
 
 	// 注册站点地图任务
-	if config.IsJobEnabled("sitemap") {
-		sitemapConfig, _ := config.GetJobConfig("sitemap")
+	if IsJobEnabled(jobsConfig, "sitemap") {
+		sitemapConfig, _ := GetJobConfig(jobsConfig, "sitemap")
 		sitemapJob := NewSitemapJob(sitemapConfig)
 		if err := RegisterJob(sitemapJob); err != nil {
 			common.Log.Errorf("Failed to register sitemap job: %v", err)
@@ -27,8 +31,8 @@ func InitJobs() error {
 	}
 
 	// 注册示例任务
-	if config.IsJobEnabled("example") {
-		exampleConfig, _ := config.GetJobConfig("example")
+	if IsJobEnabled(jobsConfig, "example") {
+		exampleConfig, _ := GetJobConfig(jobsConfig, "example")
 		exampleJob := NewExampleJob(exampleConfig)
 		if err := RegisterJob(exampleJob); err != nil {
 			common.Log.Errorf("Failed to register example job: %v", err)

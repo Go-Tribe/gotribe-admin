@@ -72,7 +72,7 @@ func (cr ProductCategoryRepository) CreateProductCategory(productCategory *model
 
 // 更新分类
 func (cr ProductCategoryRepository) UpdateProductCategoryByID(productCategoryID string, productCategory *model.ProductCategory) error {
-	err := common.DB.Model(productCategory).Where("productCategory_id = ?", productCategoryID).Updates(productCategory).Error
+	err := common.DB.Model(productCategory).Where("product_category_id = ?", productCategoryID).Updates(productCategory).Error
 	return err
 }
 

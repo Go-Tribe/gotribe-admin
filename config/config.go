@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
@@ -29,6 +30,7 @@ type config struct {
 	Jwt        *JwtConfig       `mapstructure:"jwt" json:"jwt"`
 	RateLimit  *RateLimitConfig `mapstructure:"rate-limit" json:"rateLimit"`
 	UploadFile *UploadFile      `mapstructure:"upload-file" json:"uploadFile"`
+	Jobs       *JobsConfig      `mapstructure:"jobs" json:"jobs"`
 }
 
 // 设置读取配置信息
@@ -119,4 +121,18 @@ type UploadFile struct {
 	Secretkey string `mapstructure:"secret-key" json:"secretkey"`
 	Bucket    string `mapstructure:"bucket" json:"bucket"`
 	Endpoint  string `mapstructure:"endpoint" json:"endpoint"`
+}
+
+type JobsConfig struct {
+	Enabled bool                 `mapstructure:"enabled" json:"enabled"`
+	List    map[string]JobConfig `mapstructure:"list" json:"list"`
+}
+
+type JobConfig struct {
+	Name        string        `mapstructure:"name" json:"name"`
+	Description string        `mapstructure:"description" json:"description"`
+	Schedule    string        `mapstructure:"schedule" json:"schedule"`
+	Enabled     bool          `mapstructure:"enabled" json:"enabled"`
+	Timeout     time.Duration `mapstructure:"timeout" json:"timeout"`
+	RetryCount  int           `mapstructure:"retry-count" json:"retryCount"`
 }

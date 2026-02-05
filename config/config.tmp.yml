@@ -101,7 +101,7 @@ baidu:
 # 定时任务配置
 jobs:
   # 全局启用开关
-  enabled: true
+  enabled: false
   # 任务列表
   list:
     sitemap:

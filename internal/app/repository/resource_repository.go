@@ -97,12 +97,13 @@ func (rr ResourceRepository) DeleteResourceByID(id string) error {
 		return err
 	}
 	// 删除 cdn 文件
-	upload, err := upload.NewUploadFile(
+	provider := config.Conf.UploadFile.GetUploadProvider(config.Conf.System.EnableOss)
+	upload, err := upload.NewService(
+		provider,
 		config.Conf.UploadFile.Endpoint,
 		config.Conf.UploadFile.Accesskey,
 		config.Conf.UploadFile.Secretkey,
 		config.Conf.UploadFile.Bucket,
-		config.Conf.System.EnableOss,
 	)
 	if err != nil {
 		return err

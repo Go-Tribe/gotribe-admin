@@ -117,10 +117,23 @@ type RateLimitConfig struct {
 }
 
 type UploadFile struct {
+	// Provider 上传服务商: qiniu(七牛), oss(阿里云OSS), s3(亚马逊S3，预留)
+	Provider  string `mapstructure:"provider" json:"provider"`
 	Accesskey string `mapstructure:"access-key" json:"accesskey"`
 	Secretkey string `mapstructure:"secret-key" json:"secretkey"`
 	Bucket    string `mapstructure:"bucket" json:"bucket"`
 	Endpoint  string `mapstructure:"endpoint" json:"endpoint"`
+}
+
+// GetUploadProvider 返回当前生效的上传服务商。若未配置 provider 则按 system.enable-oss 兼容：true=oss, false=qiniu
+func (u *UploadFile) GetUploadProvider(enableOss bool) string {
+	if u != nil && u.Provider != "" {
+		return u.Provider
+	}
+	if enableOss {
+		return "oss"
+	}
+	return "qiniu"
 }
 
 type JobsConfig struct {

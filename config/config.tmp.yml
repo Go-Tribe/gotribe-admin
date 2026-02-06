@@ -18,8 +18,7 @@ system:
   cdn-domain: https://cdn.example.com/
   # 是否启动数据迁移
   enable-migrate: true
-  # 文件上传默认使用oss
-  enable-oss: false
+
 
 logs:
   # 日志等级(-1:Debug, 0:Info, 1:Warn, 2:Error, 3:DPanic, 4:Panic, 5:Fatal, -1<=level<=5, 参照zap.level源码)
@@ -84,11 +83,13 @@ rate-limit:
 
 # 上传文件配置
 upload-file:
-  # 访问密钥 (请填写您的OSS访问密钥)
+  # 上传服务商: qiniu(七牛) / oss(阿里云OSS) / s3(亚马逊S3，预留)
+  provider: qiniu
+  # 访问密钥 (请填写您的OSS/七牛/S3访问密钥)
   access-key: your_access_key_here
-  # 秘密密钥 (请填写您的OSS秘密密钥)
+  # 秘密密钥 (请填写您的OSS/七牛/S3秘密密钥)
   secret-key: your_secret_key_here
-  # 端点 (七牛云不用填写)
+  # 端点 (七牛云可不填；OSS/S3 填写对应 endpoint)
   endpoint: your_endpoint_here
   # 存储桶名称
   bucket: your_bucket_name_here

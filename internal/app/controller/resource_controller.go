@@ -166,12 +166,13 @@ func (pc ResourceController) UploadResources(c *gin.Context) {
 		response.ValidationFail(c, "上传资源过大")
 		return
 	}
-	upload, err := upload.NewUploadFile(
+	provider := config.Conf.UploadFile.GetUploadProvider(config.Conf.System.EnableOss)
+	upload, err := upload.NewService(
+		provider,
 		config.Conf.UploadFile.Endpoint,
 		config.Conf.UploadFile.Accesskey,
 		config.Conf.UploadFile.Secretkey,
 		config.Conf.UploadFile.Bucket,
-		config.Conf.System.EnableOss,
 	)
 	if err != nil {
 		response.InternalServerError(c, "初始化上传服务失败："+err.Error())

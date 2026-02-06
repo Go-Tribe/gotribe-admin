@@ -81,17 +81,17 @@ func (pr PostRepository) GetPosts(req *vo.PostListRequest) ([]*model.Post, int64
 
 func GetPostOther(posts []*model.Post) ([]*model.Post, error) {
 	// 收集所有需要查询的 CategoryID, Tag, ProjectID
-	categoryIDs := make([]string, 0, len(posts))
-	projectIDs := make([]string, 0, len(posts))
+	categoryIDSet := make(map[string]struct{})
+	projectIDSet := make(map[string]struct{})
 	tagsMap := make(map[uint][]string)
 	allTagsSet := make(map[string]bool)
 
 	for _, m := range posts {
 		if m.CategoryID != "" {
-			categoryIDs = append(categoryIDs, m.CategoryID)
+			categoryIDSet[m.CategoryID] = struct{}{}
 		}
 		if m.ProjectID != "" {
-			projectIDs = append(projectIDs, m.ProjectID)
+			projectIDSet[m.ProjectID] = struct{}{}
 		}
 		if m.Tag != "" {
 			strs := strings.Split(m.Tag, ",")
@@ -105,10 +105,23 @@ func GetPostOther(posts []*model.Post) ([]*model.Post, error) {
 		}
 	}
 
+	// 转换为切片
+	categoryIDs := make([]string, 0, len(categoryIDSet))
+	for id := range categoryIDSet {
+		categoryIDs = append(categoryIDs, id)
+	}
+
+	projectIDs := make([]string, 0, len(projectIDSet))
+	for id := range projectIDSet {
+		projectIDs = append(projectIDs, id)
+	}
+
 	// 批量查询 Category
 	var categories []*model.Category
-	if err := common.DB.Where("category_id IN (?)", categoryIDs).Find(&categories).Error; err != nil {
-		return nil, err
+	if len(categoryIDs) > 0 {
+		if err := common.DB.Where("category_id IN (?)", categoryIDs).Find(&categories).Error; err != nil {
+			return nil, err
+		}
 	}
 	// 批量查询 Tag
 	var allTags []*model.Tag
@@ -116,14 +129,18 @@ func GetPostOther(posts []*model.Post) ([]*model.Post, error) {
 	for tag := range allTagsSet {
 		tagIDs = append(tagIDs, tag)
 	}
-	if err := common.DB.Where("tag_id IN (?)", tagIDs).Find(&allTags).Error; err != nil {
-		return nil, err
+	if len(tagIDs) > 0 {
+		if err := common.DB.Where("tag_id IN (?)", tagIDs).Find(&allTags).Error; err != nil {
+			return nil, err
+		}
 	}
 
 	// 批量查询 Project
 	var projects []*model.Project
-	if err := common.DB.Where("project_id IN (?)", projectIDs).Find(&projects).Error; err != nil {
-		return nil, err
+	if len(projectIDs) > 0 {
+		if err := common.DB.Where("project_id IN (?)", projectIDs).Find(&projects).Error; err != nil {
+			return nil, err
+		}
 	}
 
 	// 将查询结果赋值给 posts

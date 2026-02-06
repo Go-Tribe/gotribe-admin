@@ -45,7 +45,7 @@ import (
 	"github.com/fatih/color"
 )
 
-//go:embed web/admin/dist/*
+//go:embed all:web/admin/dist
 var content embed.FS
 
 func main() {

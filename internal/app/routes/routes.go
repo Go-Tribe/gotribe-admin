@@ -12,6 +12,7 @@ import (
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/middleware"
 	"net/http"
+	"strings"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
@@ -90,10 +91,32 @@ func setupStaticFiles(r *gin.Engine, fs embed.FS) {
 		return
 	}
 
+	// 1. 尝试从 embed.FS 中读取 index.html 内容
+	// 注意：这里需要使用完整的嵌入路径
+	indexData, err := fs.ReadFile("web/admin/dist/index.html")
+	if err != nil {
+		common.Log.Errorf("读取 index.html 失败：%v", err)
+	}
+
+	// 2. 静态资源服务 (处理 /assets, /favicon.ico 等)
 	r.Use(static.Serve("/", embedFS))
+
+	// 3. SPA 兜底处理
 	r.NoRoute(func(c *gin.Context) {
-		common.Log.Infof("A 404 error occurred, but the specific URL path is not logged to prevent log injection.")
-		c.Redirect(http.StatusMovedPermanently, "/")
+		path := c.Request.URL.Path
+		// 如果是静态资源请求（以/assets/开头）或API请求，返回404
+		if strings.HasPrefix(path, "/assets/") || strings.HasPrefix(path, "/api/") || strings.HasPrefix(path, "/swagger/") {
+			c.AbortWithStatus(http.StatusNotFound)
+			return
+		}
+
+		// 对于前端路由，直接返回内存中的 index.html 内容
+		if len(indexData) > 0 {
+			c.Header("Content-Type", "text/html; charset=utf-8")
+			c.String(http.StatusOK, string(indexData))
+		} else {
+			c.String(http.StatusNotFound, "Index file not found")
+		}
 	})
 }
 

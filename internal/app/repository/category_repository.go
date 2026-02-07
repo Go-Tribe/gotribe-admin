@@ -84,15 +84,16 @@ func (cr CategoryRepository) BatchDeleteCategoryByIds(categoryIds []string) erro
 	if err != nil {
 		return err
 	}
-	j := 0
+	// 校验分类是否可以删除
 	for _, category := range categorys {
-		if category.ID != known.DEFAULT_ID && !isPID(int64((category.ID))) {
-			categorys[j] = category
-			j++
+		if category.ID == known.DEFAULT_ID {
+			return errors.New("默认分类不允许删除")
+		}
+		if isPID(int64(category.ID)) {
+			return errors.New("该分类下包含子分类，请先删除子分类")
 		}
 	}
-	// Slice categorys to new size.
-	categorys = categorys[:j]
+
 	err = common.DB.Unscoped().Delete(&categorys).Error
 	return err
 }

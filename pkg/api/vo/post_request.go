@@ -23,6 +23,7 @@ type CreatePostRequest struct {
 	IsTop       uint     `form:"isTop" json:"isTop"`
 	IsPasswd    uint     `form:"isPasswd" json:"isPasswd"`
 	Password    string   `form:"password" json:"password"`
+	Status      uint     `form:"status" json:"status"`
 	Location    string   `form:"location" json:"location"`
 	People      string   `form:"people" json:"people"`
 	Time        string   `form:"time" json:"time"`

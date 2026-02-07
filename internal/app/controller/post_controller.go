@@ -142,6 +142,7 @@ func (pc PostController) CreatePost(c *gin.Context) {
 		IsPasswd:    req.IsPasswd,
 		ColumnID:    req.ColumnID,
 		PassWord:    req.Password,
+		Status:      req.Status,
 		Time:        req.Time,
 		UnitPrice:   uint(util.MoneyUtil.YuanToCents(req.UnitPrice)),
 		People:      req.People,

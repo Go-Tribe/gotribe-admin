@@ -36,6 +36,7 @@ type Post struct {
 	People      string    `gorm:"type:varchar(255);comment:人物" json:"people"`
 	Time        string    `gorm:"type:varchar(255);comment:时间" json:"time"`
 	Images      string    `gorm:"type:varchar(1000);comment:图片" json:"images"`
+	ShowTime    string    `gorm:"type:varchar(255);comment:展示时间" json:"showTime"`
 	Video       string    `gorm:"type:varchar(255);not null;comment:产品视频" json:"video"`
 	Category    *Category `gorm:"-" json:"category"`
 	Tags        []*Tag    `gorm:"-" json:"tags"`

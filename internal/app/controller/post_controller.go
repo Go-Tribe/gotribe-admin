@@ -148,6 +148,7 @@ func (pc PostController) CreatePost(c *gin.Context) {
 		People:      req.People,
 		Location:    req.Location,
 		Images:      imageStr,
+		ShowTime:    req.ShowTime,
 		Video:       req.Video,
 	}
 
@@ -216,6 +217,7 @@ func (pc PostController) UpdatePostByID(c *gin.Context) {
 	oldPost.Location = req.Location
 	oldPost.Images = imageStr
 	oldPost.Video = req.Video
+	oldPost.ShowTime = req.ShowTime
 	// 更新内容
 	err = pc.PostRepository.UpdatePost(&oldPost)
 	if err != nil {

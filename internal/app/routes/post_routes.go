@@ -6,10 +6,11 @@
 package routes
 
 import (
-	jwt "github.com/appleboy/gin-jwt/v2"
-	"github.com/gin-gonic/gin"
 	"gotribe-admin/internal/app/controller"
 	"gotribe-admin/internal/pkg/middleware"
+
+	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
 )
 
 // 注册内容管理路由

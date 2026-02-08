@@ -40,6 +40,7 @@ type PostsDto struct {
 	Time        string          `json:"time"`
 	Images      []string        `json:"images"`
 	UnitPrice   float64         `json:"unitPrice"`
+	ShowTime    string          `json:"showTime"`
 	Video       string          `json:"video"`
 }
 
@@ -80,6 +81,7 @@ func ToPostInfoDto(post *model.Post) PostsDto {
 		Images:      imageList,
 		UnitPrice:   util.MoneyUtil.CentsToYuan(int64(post.UnitPrice)),
 		Video:       post.Video,
+		ShowTime:    post.ShowTime,
 	}
 }
 

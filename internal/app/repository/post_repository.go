@@ -7,11 +7,12 @@ package repository
 
 import (
 	"fmt"
-	"github.com/dengmengmian/ghelper/gconvert"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/vo"
 	"strings"
+
+	"github.com/dengmengmian/ghelper/gconvert"
 )
 
 type IPostRepository interface {

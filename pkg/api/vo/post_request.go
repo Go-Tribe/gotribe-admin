@@ -30,6 +30,7 @@ type CreatePostRequest struct {
 	Images      []string `form:"images" json:"images"`
 	UnitPrice   float64  `form:"unitPrice" json:"unitPrice"`
 	Video       string   `form:"video" json:"video"`
+	ShowTime    string   `form:"showTime" json:"showTime"`
 }
 
 // 更新内容结构体
@@ -56,6 +57,7 @@ type UpdatePostRequest struct {
 	Time        string   `form:"time" json:"time"`
 	Images      []string `form:"images" json:"images"`
 	UnitPrice   float64  `form:"unitPrice" json:"unitPrice"`
+	ShowTime    string   `form:"showTime" json:"showTime"`
 	Video       string   `form:"video" json:"video"`
 }
 

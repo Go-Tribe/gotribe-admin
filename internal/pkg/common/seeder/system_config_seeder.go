@@ -29,9 +29,9 @@ func (s *SystemConfigSeeder) Run(db *gorm.DB) error {
 		{
 			Model:          model.Model{ID: 1},
 			SystemConfigID: "245eko",
-			Title:          "GoTribe",
-			Logo:           "https://raw.gitcode.com/Go-Tribe/gotribe/raw/5ae01df24c556094f74a9b23086f35c3929fe0f3/106083123.png",
-			Icon:           "https://raw.gitcode.com/Go-Tribe/gotribe/raw/5ae01df24c556094f74a9b23086f35c3929fe0f3/106083123.png",
+			Title:          "GoTribe管理后台",
+			Logo:           "https://static.gotribe.cn/20260210/1770708060536349000.png",
+			Icon:           "https://static.gotribe.cn/20260210/1770708060536349000.png",
 		},
 	}
 

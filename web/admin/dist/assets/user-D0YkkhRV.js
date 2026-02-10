@@ -1,0 +1,1 @@
+import{m as t}from"./index-Pe1Nv6hH.js";async function r(e){return(await t.get(`/api/user/${e}`)).user}const n=async e=>t.get("/api/user",{params:e});async function u(e){return t.post("/api/user",e)}async function c(e){return t.patch(`/api/user/${e.userID}`,e)}export{r as a,u as c,n as g,c as u};

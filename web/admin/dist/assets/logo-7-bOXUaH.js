@@ -1,0 +1,1 @@
+import{j as t,f as o}from"./index-Pe1Nv6hH.js";function r({className:s,...a}){return t.jsx("img",{className:o("size-6",s),src:"https://avatars.githubusercontent.com/u/106083123?s=400&u=985e6fbd108c676fe8a72743d675a047ae4785ba&v=4",alt:"Go-Gribe Logo",...a})}export{r as L};

@@ -1,0 +1,1 @@
+import{m as t}from"./index-Pe1Nv6hH.js";const s=async a=>t.get("/api/tag",{params:a});async function r(a){return t.post("/api/tag",a)}async function g(a,e){return t.patch(`/api/tag/${a}`,e)}async function c(a){return t.delete("/api/tag",{data:{tagIds:a}})}export{r as c,c as d,s as g,g as u};

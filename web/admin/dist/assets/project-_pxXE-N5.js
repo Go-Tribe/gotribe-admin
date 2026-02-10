@@ -1,0 +1,1 @@
+import{m as e}from"./index-Pe1Nv6hH.js";const c=async t=>e.get("/api/project",{params:t});async function o(t){return e.post("/api/project",t)}async function a(t){return e.patch(`/api/project/${t.projectID}`,t)}async function n(t){return e.delete("/api/project",{data:{projectIds:t}})}export{o as c,n as d,c as g,a as u};

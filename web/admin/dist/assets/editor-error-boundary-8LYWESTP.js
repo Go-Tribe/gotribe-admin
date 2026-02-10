@@ -1,0 +1,1 @@
+import{r}from"./index-Pe1Nv6hH.js";class s extends r.Component{state={hasError:!1};static getDerivedStateFromError(){return{hasError:!0}}componentDidCatch(e){}render(){return this.state.hasError?this.props.fallback:this.props.children}}export{s as E};

@@ -1,0 +1,1 @@
+import{m as s}from"./index-Pe1Nv6hH.js";const o=async t=>s.get("/api/post",{params:t}),n=async t=>(await s.get(`/api/post/${t}`)).post;async function p(t){return s.post("/api/post",t)}async function r(t,a){return s.patch(`/api/post/${t}`,a)}async function c(t){return s.delete("/api/post",{data:{postIds:[t]}})}export{n as a,p as c,c as d,o as g,r as u};

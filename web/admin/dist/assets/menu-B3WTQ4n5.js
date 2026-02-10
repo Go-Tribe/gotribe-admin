@@ -1,0 +1,1 @@
+import{m as t}from"./index-Pe1Nv6hH.js";async function u(){return t.get("/api/menu/tree")}async function r(){return t.get("/api/menu/list")}async function c(e){return t.post("/api/menu/create",e)}async function s(e,n){return t.patch(`/api/menu/update/${e}`,n)}async function i(e){return t.delete("/api/menu/delete/batch",{data:e})}export{u as a,i as b,c,r as g,s as u};

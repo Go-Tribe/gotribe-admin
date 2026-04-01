@@ -9,7 +9,7 @@ package vo
 type OrderListRequest struct {
 	OrderNumber string `form:"orderNumber" json:"orderNumber"`
 	Title       string `form:"title" json:"title"`
-	UserID      string `form:"userID" json:"userID"`
+	UserID      uint   `form:"userID" json:"userID"`
 	StartTime   string `form:"startTime" json:"startTime"`
 	EndTime     string `form:"endTime" json:"endTime"`
 	Status      uint   `json:"status" form:"status"`

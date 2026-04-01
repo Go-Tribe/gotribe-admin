@@ -17,8 +17,8 @@ import (
 )
 
 type IPointLogRepository interface {
-	CreatePoint(userID, types, reason, eventID, ProjectID string, points float64) error // 新增积分
-	GetPointLogs(req *vo.PointLogListRequest) ([]*model.PointLog, int64, error)         // 获取积分列表
+	CreatePoint(userID uint, types, reason, eventID, ProjectID string, points float64) error // 新增积分
+	GetPointLogs(req *vo.PointLogListRequest) ([]*model.PointLog, int64, error)              // 获取积分列表
 }
 
 type PointLogRepository struct {
@@ -38,7 +38,7 @@ func (cr PointLogRepository) GetPointLogs(req *vo.PointLogListRequest) ([]*model
 	if !gconvert.IsEmpty(projectID) {
 		db = db.Where("project_id = ?", projectID)
 	}
-	if !gconvert.IsEmpty(req.UserID) {
+	if req.UserID > 0 {
 		db = db.Where("user_id =  ?", req.UserID)
 	}
 	if !gconvert.IsEmpty(req.Nickname) {
@@ -47,7 +47,7 @@ func (cr PointLogRepository) GetPointLogs(req *vo.PointLogListRequest) ([]*model
 		if result := common.DB.Model(&model.User{}).Where("nickname like ?", fmt.Sprintf("%%%s%%", req.Nickname)).First(&user); result.Error != nil {
 			return nil, 0, common.ErrUserNotFound
 		}
-		db = db.Where("user_id = ?", user.UserID)
+		db = db.Where("user_id = ?", user.ID)
 	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数
@@ -70,14 +70,14 @@ func (cr PointLogRepository) GetPointLogs(req *vo.PointLogListRequest) ([]*model
 func GetPointLogOther(pointLogs []*model.PointLog) []*model.PointLog {
 	for _, m := range pointLogs {
 		var user *model.User
-		_ = common.DB.Where("user_id = ?", m.UserID).First(&user).Error
+		_ = common.DB.Where("id = ?", m.UserID).First(&user).Error
 		m.User = user
 	}
 	return pointLogs
 }
 
 // 创建推广场景
-func (cr PointLogRepository) CreatePoint(userID, types, reason, eventID, ProjectID string, points float64) error {
+func (cr PointLogRepository) CreatePoint(userID uint, types, reason, eventID, ProjectID string, points float64) error {
 	// 将元转换为分
 	pointsCents := int64(points * 100)
 

@@ -15,7 +15,7 @@ type CommentDto struct {
 	CommentID   string `json:"commentID"`
 	ProjectID   string `json:"projectID"`
 	Status      uint   `json:"status"`
-	UserID      string `json:"userID"`
+	UserID      uint   `json:"userID"`
 	ObjectID    string `json:"objectID"`
 	ObjectType  uint   `json:"objectType"`
 	Content     string `json:"comment"`

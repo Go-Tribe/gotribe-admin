@@ -22,7 +22,7 @@ type ProductDto struct {
 	Image         []string        `json:"images"`
 	Video         string          `json:"video"`
 	BuyLimit      uint            `json:"buyLimit"`
-	CategoryID    string          `json:"categoryID"`
+	CategoryID    uint            `json:"categoryID"`
 	SpecIds       string          `json:"specIds"`
 	Content       string          `json:"content"`
 	HtmlContent   string          `json:"Htmlcontent"`

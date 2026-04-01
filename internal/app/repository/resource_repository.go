@@ -12,15 +12,14 @@ import (
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/vo"
 	"gotribe-admin/pkg/util/upload"
-	"strings"
 )
 
 type IResourceRepository interface {
 	CreateResource(resource *model.Resource) error                              // 创建资源
-	GetResourceByResourceID(resourceID string) (model.Resource, error)          // 获取单个资源
+	GetResourceByID(id uint) (model.Resource, error)                            // 获取单个资源
 	GetResources(req *vo.ResourceListRequest) ([]*model.Resource, int64, error) // 获取资源列表
 	UpdateResource(resource *model.Resource) error                              // 更新资源
-	DeleteResourceByID(id string) error                                         // 删除资源
+	DeleteResourceByID(id uint) error                                           // 删除资源
 }
 
 type ResourceRepository struct {
@@ -32,9 +31,9 @@ func NewResourceRepository() IResourceRepository {
 }
 
 // 获取单个资源
-func (rr ResourceRepository) GetResourceByResourceID(resourceID string) (model.Resource, error) {
+func (rr ResourceRepository) GetResourceByID(id uint) (model.Resource, error) {
 	var resource model.Resource
-	err := common.DB.Where("resource_id = ?", resourceID).First(&resource).Error
+	err := common.DB.Where("id = ?", id).First(&resource).Error
 	return resource, err
 }
 
@@ -47,9 +46,8 @@ func (rr ResourceRepository) GetResources(req *vo.ResourceListRequest) ([]*model
 		db = db.Where("file_type = ?", req.Type)
 	}
 
-	resourceID := strings.TrimSpace(req.ResourceID)
-	if req.ResourceID != "" {
-		db = db.Where("resource_id = ?", resourceID)
+	if req.ID > 0 {
+		db = db.Where("id = ?", req.ID)
 	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数
@@ -85,10 +83,10 @@ func (rr ResourceRepository) UpdateResource(resource *model.Resource) error {
 }
 
 // 删除文件
-func (rr ResourceRepository) DeleteResourceByID(id string) error {
-	project, err := rr.GetResourceByResourceID(id)
+func (rr ResourceRepository) DeleteResourceByID(id uint) error {
+	project, err := rr.GetResourceByID(id)
 	if err != nil {
-		return fmt.Errorf("未获取到ID为%s的项目", id)
+		return fmt.Errorf("未获取到ID为%d的项目", id)
 	}
 
 	// 硬删除

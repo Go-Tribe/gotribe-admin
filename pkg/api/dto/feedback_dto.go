@@ -12,7 +12,7 @@ type FeedbackDto struct {
 	ProjectID string     `json:"projectID"`
 	Title     string     `json:"title"`
 	Content   string     `json:"content"`
-	UserID    string     `json:"userID"`
+	UserID    uint       `json:"userID"`
 	User      UserDto    `json:"user"`
 	Phone     string     `json:"phone"`
 	Project   ProjectDto `json:"project"`

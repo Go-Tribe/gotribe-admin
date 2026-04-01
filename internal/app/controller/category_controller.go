@@ -11,7 +11,7 @@ import (
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
-	"strings"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -42,13 +42,18 @@ func NewCategoryController() ICategoryController {
 // @Tags         分类管理
 // @Accept       json
 // @Produce      json
-// @Param        categoryID path string true "分类ID"
+// @Param        id path int true "分类ID"
 // @Success      200 {object} response.Response
 // @Failure      400 {object} response.Response
-// @Router       /category/{categoryID} [get]
+// @Router       /category/{id} [get]
 // @Security     BearerAuth
 func (cc CategoryController) GetCategoryInfo(c *gin.Context) {
-	category, err := cc.CategoryRepository.GetConfigByCategoryID(c.Param("categoryID"))
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ValidationFail(c, "分类ID格式错误")
+		return
+	}
+	category, err := cc.CategoryRepository.GetCategoryByID(uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -123,6 +128,7 @@ func (cc CategoryController) CreateCategory(c *gin.Context) {
 
 	category := model.Category{
 		Title:       req.Title,
+		Slug:        req.Slug,
 		Icon:        req.Icon,
 		Path:        req.Path,
 		Sort:        req.Sort,
@@ -165,18 +171,23 @@ func (cc CategoryController) UpdateCategoryByID(c *gin.Context) {
 		response.ValidationFail(c, errStr)
 		return
 	}
-	categoryID := c.Param("categoryID")
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ValidationFail(c, "分类ID格式错误")
+		return
+	}
 	// 校验父级分类ID
-	category, err := cc.CategoryRepository.GetConfigByCategoryID(categoryID)
+	category, err := cc.CategoryRepository.GetCategoryByID(uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
-	if req.ParentID == &category.ID {
+	if req.ParentID == category.ID {
 		response.ValidationFail(c, "不能把自己设为父分类")
 		return
 	}
 	category.Title = req.Title
+	category.Slug = req.Slug
 	category.Icon = req.Icon
 	category.Path = req.Path
 	category.Sort = req.Sort
@@ -184,7 +195,7 @@ func (cc CategoryController) UpdateCategoryByID(c *gin.Context) {
 	category.Hidden = req.Hidden
 	category.ParentID = req.ParentID
 	category.Description = req.Description
-	err = cc.CategoryRepository.UpdateCategoryByID(categoryID, &category)
+	err = cc.CategoryRepository.UpdateCategoryByID(uint(id), &category)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
@@ -218,8 +229,7 @@ func (cc CategoryController) BatchDeleteCategoryByIds(c *gin.Context) {
 		response.ValidationFail(c, errStr)
 		return
 	}
-	reqCategoryIds := strings.Split(req.CategoryIds, ",")
-	err := cc.CategoryRepository.BatchDeleteCategoryByIds(reqCategoryIds)
+	err := cc.CategoryRepository.BatchDeleteCategoryByIds(req.Ids)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return

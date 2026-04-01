@@ -8,13 +8,16 @@ package vo
 // 创建标签结构体
 type CreateTagRequest struct {
 	Title       string `form:"title" json:"title" validate:"required,min=2,max=20"`
+	Slug        string `form:"slug" json:"slug" validate:"required,min=2,max=30"`
 	Description string `form:"description" json:"description"`
 	Color       string `form:"color" json:"color"`
+	Sort        uint   `form:"sort" json:"sort"`
+	Status      uint8  `form:"status" json:"status"`
 }
 
 // 获取标签列表结构体
 type TagListRequest struct {
-	TagID    string `form:"tagID" json:"tagID"`
+	ID       uint   `form:"id" json:"id"`
 	Title    string `form:"title" json:"title"`
 	PageNum  uint   `json:"pageNum" form:"pageNum"`
 	PageSize uint   `json:"pageSize" form:"pageSize"`
@@ -22,5 +25,5 @@ type TagListRequest struct {
 
 // 批量删除标签结构体
 type DeleteTagsRequest struct {
-	TagIds string `json:"tagIds" form:"tagIds"`
+	Ids []uint `json:"ids" form:"ids"`
 }

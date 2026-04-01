@@ -11,10 +11,14 @@ import (
 )
 
 type TagDto struct {
-	TagID       string `json:"tagID"`
+	ID          uint   `json:"id"`
 	Title       string `json:"title"`
+	Slug        string `json:"slug"`
 	Color       string `json:"color"`
 	Description string `json:"description"`
+	Sort        uint   `json:"sort"`
+	Count       uint   `json:"count"`
+	Status      uint8  `json:"status"`
 	CreatedAt   string `json:"createdAt"`
 }
 
@@ -23,10 +27,14 @@ func toTagDto(tag *model.Tag) TagDto {
 		return TagDto{}
 	}
 	return TagDto{
-		TagID:       tag.TagID,
+		ID:          tag.ID,
 		Title:       tag.Title,
+		Slug:        tag.Slug,
 		Color:       tag.Color,
 		Description: tag.Description,
+		Sort:        tag.Sort,
+		Count:       tag.Count,
+		Status:      tag.Status,
 		CreatedAt:   tag.CreatedAt.Format(known.TIME_FORMAT),
 	}
 }

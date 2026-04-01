@@ -10,6 +10,7 @@ import (
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/vo"
+	"strconv"
 	"strings"
 
 	"github.com/dengmengmian/ghelper/gconvert"
@@ -82,13 +83,13 @@ func (pr PostRepository) GetPosts(req *vo.PostListRequest) ([]*model.Post, int64
 
 func GetPostOther(posts []*model.Post) ([]*model.Post, error) {
 	// 收集所有需要查询的 CategoryID, Tag, ProjectID
-	categoryIDSet := make(map[string]struct{})
+	categoryIDSet := make(map[uint]struct{})
 	projectIDSet := make(map[string]struct{})
 	tagsMap := make(map[uint][]string)
 	allTagsSet := make(map[string]bool)
 
 	for _, m := range posts {
-		if m.CategoryID != "" {
+		if m.CategoryID > 0 {
 			categoryIDSet[m.CategoryID] = struct{}{}
 		}
 		if m.ProjectID != "" {
@@ -107,7 +108,7 @@ func GetPostOther(posts []*model.Post) ([]*model.Post, error) {
 	}
 
 	// 转换为切片
-	categoryIDs := make([]string, 0, len(categoryIDSet))
+	categoryIDs := make([]uint, 0, len(categoryIDSet))
 	for id := range categoryIDSet {
 		categoryIDs = append(categoryIDs, id)
 	}
@@ -120,7 +121,7 @@ func GetPostOther(posts []*model.Post) ([]*model.Post, error) {
 	// 批量查询 Category
 	var categories []*model.Category
 	if len(categoryIDs) > 0 {
-		if err := common.DB.Where("category_id IN (?)", categoryIDs).Find(&categories).Error; err != nil {
+		if err := common.DB.Where("id IN (?)", categoryIDs).Find(&categories).Error; err != nil {
 			return nil, err
 		}
 	}
@@ -131,7 +132,7 @@ func GetPostOther(posts []*model.Post) ([]*model.Post, error) {
 		tagIDs = append(tagIDs, tag)
 	}
 	if len(tagIDs) > 0 {
-		if err := common.DB.Where("tag_id IN (?)", tagIDs).Find(&allTags).Error; err != nil {
+		if err := common.DB.Where("id IN (?)", tagIDs).Find(&allTags).Error; err != nil {
 			return nil, err
 		}
 	}
@@ -145,15 +146,15 @@ func GetPostOther(posts []*model.Post) ([]*model.Post, error) {
 	}
 
 	// 将查询结果赋值给 posts
-	categoryMap := make(map[string]*model.Category)
+	categoryMap := make(map[uint]*model.Category)
 	for _, category := range categories {
-		common.Log.Info("category", "category", category.CategoryID)
-		categoryMap[category.CategoryID] = category
+		common.Log.Info("category", "category", category.ID)
+		categoryMap[category.ID] = category
 	}
 
 	tagMap := make(map[string]*model.Tag)
 	for _, tag := range allTags {
-		tagMap[tag.TagID] = tag
+		tagMap[strconv.FormatUint(uint64(tag.ID), 10)] = tag
 	}
 
 	projectMap := make(map[string]*model.Project)
@@ -166,8 +167,8 @@ func GetPostOther(posts []*model.Post) ([]*model.Post, error) {
 			m.Category = category
 		}
 		var tags []*model.Tag
-		for _, tagID := range tagsMap[m.ID] {
-			if tag, ok := tagMap[tagID]; ok {
+		for _, tagIDStr := range tagsMap[m.ID] {
+			if tag, ok := tagMap[tagIDStr]; ok {
 				tags = append(tags, tag)
 			}
 		}

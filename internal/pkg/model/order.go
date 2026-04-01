@@ -17,7 +17,7 @@ type Order struct {
 	OrderID      string     `gorm:"type:varchar(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"OrderID"`
 	OrderNumber  string     `gorm:"type:varchar(255);uniqueIndex;not null;comment:订单号" json:"orderNumber"`
 	OrderType    uint       `gorm:"type:smallint;not null;Index;comment:订单类型：1-普通订单；2-积分订单" json:"orderType"`
-	UserID       string     `gorm:"type:varchar(10);not null;Index;comment:用户ID" json:"userID"`
+	UserID       uint       `gorm:"not null;index;comment:用户ID" json:"userID"`
 	Username     string     `gorm:"type:varchar(255);not null;Index;comment:用户名" json:"username"`
 	ProductID    string     `gorm:"type:varchar(10);not null;Index;comment:产品ID" json:"productID"`
 	ProductSku   string     `gorm:"type:varchar(10);not null;comment:产品SKU" json:"productSku"`

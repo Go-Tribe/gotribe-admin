@@ -12,7 +12,7 @@ import (
 	"gotribe-admin/pkg/api/dto"
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
-	"strings"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -43,13 +43,18 @@ func NewTagController() ITagController {
 // @Tags         标签管理
 // @Accept       json
 // @Produce      json
-// @Param        tagID path string true "标签ID"
+// @Param        id path int true "标签ID"
 // @Success      200 {object} response.Response
 // @Failure      400 {object} response.Response
-// @Router       /tag/{tagID} [get]
+// @Router       /tag/{id} [get]
 // @Security     BearerAuth
 func (tc TagController) GetTagInfo(c *gin.Context) {
-	tag, err := tc.TagRepository.GetTagByTagID(c.Param("tagID"))
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ValidationFail(c, "标签ID格式错误")
+		return
+	}
+	tag, err := tc.TagRepository.GetTagByID(uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -121,6 +126,7 @@ func (tc TagController) CreateTag(c *gin.Context) {
 
 	tag := model.Tag{
 		Title:       req.Title,
+		Slug:        req.Slug,
 		Description: req.Description,
 		Color:       req.Color,
 	}
@@ -139,12 +145,12 @@ func (tc TagController) CreateTag(c *gin.Context) {
 // @Tags         标签管理
 // @Accept       json
 // @Produce      json
-// @Param        tagID path string true "标签ID"
+// @Param        id path int true "标签ID"
 // @Param        request body vo.CreateTagRequest true "标签信息"
 // @Success      200 {object} response.Response
 // @Failure      400 {object} response.Response
 // @Failure      500 {object} response.Response
-// @Router       /tag/{tagID} [patch]
+// @Router       /tag/{id} [patch]
 // @Security     BearerAuth
 func (tc TagController) UpdateTagByID(c *gin.Context) {
 	var req vo.CreateTagRequest
@@ -160,15 +166,23 @@ func (tc TagController) UpdateTagByID(c *gin.Context) {
 		return
 	}
 
-	// 根据path中的TagID获取标签信息
-	oldTag, err := tc.TagRepository.GetTagByTagID(c.Param("tagID"))
+	// 根据path中的ID获取标签信息
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ValidationFail(c, "标签ID格式错误")
+		return
+	}
+	oldTag, err := tc.TagRepository.GetTagByID(uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	oldTag.Title = req.Title
+	oldTag.Slug = req.Slug
 	oldTag.Description = req.Description
 	oldTag.Color = req.Color
+	oldTag.Sort = req.Sort
+	oldTag.Status = req.Status
 	// 更新标签
 	err = tc.TagRepository.UpdateTag(&oldTag)
 	if err != nil {
@@ -204,9 +218,7 @@ func (tc TagController) BatchDeleteTagByIds(c *gin.Context) {
 		return
 	}
 
-	// 前端传来的标签ID
-	reqTagIds := strings.Split(req.TagIds, ",")
-	err := tc.TagRepository.BatchDeleteTagByIds(reqTagIds)
+	err := tc.TagRepository.BatchDeleteTagByIds(req.Ids)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return

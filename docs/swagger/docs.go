@@ -754,7 +754,7 @@ const docTemplate = `{
             }
         },
         "/admin/info": {
-            "post": {
+            "get": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -1813,17 +1813,17 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "name": "pageNum",
                         "in": "query"
                     },
                     {
                         "type": "integer",
                         "name": "pageSize",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "resourceID",
                         "in": "query"
                     },
                     {
@@ -1992,7 +1992,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/{resourceID}": {
+        "/api/v1/resources/{id}": {
             "get": {
                 "security": [
                     {
@@ -2012,9 +2012,9 @@ const docTemplate = `{
                 "summary": "获取资源信息",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "资源ID",
-                        "name": "resourceID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -2076,9 +2076,9 @@ const docTemplate = `{
                 "summary": "更新资源",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "资源ID",
-                        "name": "resourceID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     },
@@ -2446,47 +2446,6 @@ const docTemplate = `{
             }
         },
         "/category/{categoryID}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "根据分类ID获取分类详细信息",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "分类管理"
-                ],
-                "summary": "获取分类详情",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "分类ID",
-                        "name": "categoryID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            },
             "patch": {
                 "security": [
                     {
@@ -2520,6 +2479,49 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/vo.UpdateCategoryRequest"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/category/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "根据分类ID获取分类详细信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "分类管理"
+                ],
+                "summary": "获取分类详情",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "分类ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2721,7 +2723,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/column/{columnID}": {
+        "/column/{id}": {
             "get": {
                 "security": [
                     {
@@ -2741,9 +2743,9 @@ const docTemplate = `{
                 "summary": "获取专栏详情",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "专栏ID",
-                        "name": "columnID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -4767,7 +4769,7 @@ const docTemplate = `{
                 "summary": "获取产品列表",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "name": "categoryID",
                         "in": "query"
                     },
@@ -6284,17 +6286,17 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "name": "pageNum",
                         "in": "query"
                     },
                     {
                         "type": "integer",
                         "name": "pageSize",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "tagID",
                         "in": "query"
                     },
                     {
@@ -6411,7 +6413,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/tag/{tagID}": {
+        "/tag/{id}": {
             "get": {
                 "security": [
                     {
@@ -6431,9 +6433,9 @@ const docTemplate = `{
                 "summary": "获取标签信息",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "标签ID",
-                        "name": "tagID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -6472,9 +6474,9 @@ const docTemplate = `{
                 "summary": "更新标签",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "标签ID",
-                        "name": "tagID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     },
@@ -6545,7 +6547,7 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "string",
+                        "type": "integer",
                         "name": "userID",
                         "in": "query"
                     },
@@ -6700,7 +6702,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/{userID}": {
+        "/user/{id}": {
             "get": {
                 "security": [
                     {
@@ -6720,9 +6722,9 @@ const docTemplate = `{
                 "summary": "获取用户信息",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "用户ID",
-                        "name": "userID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -6761,9 +6763,9 @@ const docTemplate = `{
                 "summary": "更新用户",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "用户ID",
-                        "name": "userID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     },
@@ -6871,9 +6873,6 @@ const docTemplate = `{
         "dto.ColumnDto": {
             "type": "object",
             "properties": {
-                "columnID": {
-                    "type": "string"
-                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -6882,6 +6881,9 @@ const docTemplate = `{
                 },
                 "icon": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "info": {
                     "type": "string"
@@ -6991,7 +6993,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/dto.UserDto"
                 },
                 "userID": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "username": {
                     "type": "string"
@@ -7097,10 +7099,10 @@ const docTemplate = `{
                 "file_extension": {
                     "type": "string"
                 },
-                "path": {
-                    "type": "string"
+                "id": {
+                    "type": "integer"
                 },
-                "resourceID": {
+                "path": {
                     "type": "string"
                 },
                 "size": {
@@ -7146,7 +7148,13 @@ const docTemplate = `{
                 "email": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "integer"
+                },
                 "nickname": {
+                    "type": "string"
+                },
+                "phone": {
                     "type": "string"
                 },
                 "point": {
@@ -7160,9 +7168,6 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "integer"
-                },
-                "userID": {
-                    "type": "string"
                 },
                 "username": {
                     "type": "string"
@@ -7357,6 +7362,7 @@ const docTemplate = `{
         "vo.CreateCategoryRequest": {
             "type": "object",
             "required": [
+                "slug",
                 "title"
             ],
             "properties": {
@@ -7379,6 +7385,11 @@ const docTemplate = `{
                 "path": {
                     "type": "string"
                 },
+                "slug": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 1
+                },
                 "sort": {
                     "type": "integer",
                     "maximum": 999,
@@ -7389,7 +7400,7 @@ const docTemplate = `{
                 },
                 "title": {
                     "type": "string",
-                    "maxLength": 50,
+                    "maxLength": 30,
                     "minLength": 1
                 }
             }
@@ -7610,7 +7621,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "userID": {
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },
@@ -7632,10 +7643,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "categoryID": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "columnID": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "content": {
                     "type": "string"
@@ -7678,6 +7689,12 @@ const docTemplate = `{
                 "projectID": {
                     "type": "string"
                 },
+                "showTime": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
                 "tag": {
                     "type": "string"
                 },
@@ -7696,7 +7713,7 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "userID": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "video": {
                     "type": "string"
@@ -7765,7 +7782,7 @@ const docTemplate = `{
                     "minimum": 1
                 },
                 "categoryID": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "content": {
                     "type": "string"
@@ -8030,6 +8047,7 @@ const docTemplate = `{
         "vo.CreateTagRequest": {
             "type": "object",
             "required": [
+                "slug",
                 "title"
             ],
             "properties": {
@@ -8038,6 +8056,17 @@ const docTemplate = `{
                 },
                 "description": {
                     "type": "string"
+                },
+                "slug": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 2
+                },
+                "sort": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
                 },
                 "title": {
                     "type": "string",
@@ -8124,21 +8153,30 @@ const docTemplate = `{
         "vo.DeleteCategoryRequest": {
             "type": "object",
             "properties": {
-                "categoryIds": {
-                    "type": "string"
+                "ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },
         "vo.DeleteColumnsRequest": {
             "type": "object",
             "properties": {
-                "columnIds": {
-                    "type": "string"
+                "ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },
         "vo.DeleteConfigsRequest": {
             "type": "object",
+            "required": [
+                "configIds"
+            ],
             "properties": {
                 "configIds": {
                     "type": "string"
@@ -8234,8 +8272,11 @@ const docTemplate = `{
         "vo.DeleteResourcesRequest": {
             "type": "object",
             "properties": {
-                "resourceID": {
-                    "type": "string"
+                "ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },
@@ -8253,16 +8294,22 @@ const docTemplate = `{
         "vo.DeleteTagsRequest": {
             "type": "object",
             "properties": {
-                "tagIds": {
-                    "type": "string"
+                "ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },
         "vo.DeleteUsersRequest": {
             "type": "object",
             "properties": {
-                "userIds": {
-                    "type": "string"
+                "ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },
@@ -8421,7 +8468,7 @@ const docTemplate = `{
         "vo.UpdateCategoryRequest": {
             "type": "object",
             "required": [
-                "parentID",
+                "slug",
                 "title"
             ],
             "properties": {
@@ -8444,6 +8491,11 @@ const docTemplate = `{
                 "path": {
                     "type": "string"
                 },
+                "slug": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 1
+                },
                 "sort": {
                     "type": "integer",
                     "maximum": 999,
@@ -8454,7 +8506,7 @@ const docTemplate = `{
                 },
                 "title": {
                     "type": "string",
-                    "maxLength": 50,
+                    "maxLength": 30,
                     "minLength": 1
                 }
             }
@@ -8625,10 +8677,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "categoryID": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "columnID": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "content": {
                     "type": "string"
@@ -8671,6 +8723,9 @@ const docTemplate = `{
                 "projectID": {
                     "type": "string"
                 },
+                "showTime": {
+                    "type": "string"
+                },
                 "status": {
                     "type": "integer"
                 },
@@ -8692,7 +8747,7 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "userID": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "video": {
                     "type": "string"

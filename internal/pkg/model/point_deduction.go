@@ -9,7 +9,7 @@ package model
 type PointDeduction struct {
 	Model
 	ProjectID         string `gorm:"type:varchar(10);not null;index;comment:项目ID;" json:"projectID"`
-	UserID            string `gorm:"type:varchar(10);Index;comment:用户ID" json:"userID"`
+	UserID            uint   `gorm:"index;comment:用户ID" json:"userID"`
 	Points            int64  `gorm:"type:bigint;NOT NULL;comment:积分数值(分)"`
 	PointsDetailID    int    `gorm:"type:integer;comment:'积分明细ID'"`
 	AvailablePointsID int    `gorm:"type:integer;NOT NULL;comment:'可用积分表ID'"`

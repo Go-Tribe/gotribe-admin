@@ -13,7 +13,7 @@ import (
 )
 
 type UserDto struct {
-	UserID    string  `json:"userID"`
+	ID        uint    `json:"id"`
 	Username  string  `json:"username"`
 	Nickname  string  `json:"nickname"`
 	Email     string  `json:"email"`
@@ -33,7 +33,7 @@ func toUserDto(user *model.User) UserDto {
 	}
 	domain := config.Conf.System.CDNDomain
 	return UserDto{
-		UserID:    user.UserID,
+		ID:        user.ID,
 		Username:  user.Username,
 		Nickname:  user.Nickname,
 		Email:     user.Email,

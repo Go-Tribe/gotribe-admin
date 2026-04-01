@@ -70,22 +70,25 @@ func (tc FeedbackController) GetFeedbacks(c *gin.Context) {
 
 func getFeedbackOther(feedbacks []*model.Feedback) ([]*model.Feedback, error) {
 	// 遍历feedback获取所有用户ID,查询用户信息并加进去
-	userIds := make([]string, 0)
+	userIdSet := make(map[uint]struct{})
 	for _, feedback := range feedbacks {
-		userIds = append(userIds, feedback.UserID)
+		userIdSet[feedback.UserID] = struct{}{}
 	}
-	userIds = funk.UniqString(userIds)
+	userIds := make([]uint, 0, len(userIdSet))
+	for id := range userIdSet {
+		userIds = append(userIds, id)
+	}
 	var users []model.User
 	if len(userIds) > 0 {
-		if err := common.DB.Where("user_id in (?)", userIds).Find(&users).Error; err != nil {
+		if err := common.DB.Where("id in (?)", userIds).Find(&users).Error; err != nil {
 			return feedbacks, err
 		}
 	}
 
 	// 创建用户映射以提高查找效率
-	userMap := make(map[string]*model.User)
+	userMap := make(map[uint]*model.User)
 	for _, user := range users {
-		userMap[user.UserID] = &user
+		userMap[user.ID] = &user
 	}
 
 	// 将用户信息附加到反馈中

@@ -5,28 +5,18 @@
 
 package model
 
-import (
-	"github.com/dengmengmian/ghelper/gid"
-	"gorm.io/gorm"
-)
-
 type Category struct {
 	Model
-	CategoryID  string      `gorm:"type:varchar(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"categoryID"`
-	ParentID    *uint       `gorm:"default:0;comment:父菜单编号(编号为0时表示根菜单)" json:"parentID"`
-	Sort        uint        `gorm:"default:1;comment:排序" json:"sort"`
+	ParentID    uint        `gorm:"default:0;index:idx_category_parent_id;comment:父分类ID，0表示根分类" json:"parentID"`
+	Sort        uint        `gorm:"default:1;index:idx_category_sort;comment:排序" json:"sort"`
 	Icon        string      `gorm:"type:varchar(255);comment:图标" json:"icon"`
-	Title       string      `gorm:"type:varchar(255);not null;comment:'标题'" json:"title"`
-	Path        string      `gorm:"type:varchar(100);comment:url" json:"path"`
-	Hidden      uint        `gorm:"type:smallint;default:1;comment:1显示，2隐藏" json:"hidden"`
-	Description string      `gorm:"type:varchar(300);not null;comment:描述" json:"description"`
+	Title       string      `gorm:"type:varchar(30);not null;comment:标题" json:"title"`
+	Slug        string      `gorm:"type:varchar(30);not null;uniqueIndex:idx_category_slug;comment:URL别名" json:"slug"`
+	Path        string      `gorm:"type:varchar(255);comment:自定义url路径" json:"path"`
+	Hidden      uint8       `gorm:"type:smallint;default:1;comment:1显示，2隐藏" json:"hidden"`
+	Description string      `gorm:"type:varchar(300);comment:描述" json:"description,omitempty"`
 	Ext         string      `gorm:"type:text;comment:扩展字段" json:"ext"`
-	Status      uint        `gorm:"type:smallint;not null;default:1;comment:状态，1-正常；2-禁用" json:"status,omitempty"`
+	Status      uint8       `gorm:"type:smallint;not null;default:1;comment:状态，1-正常；2-禁用" json:"status,omitempty"`
+	Count       uint        `gorm:"default:0;comment:内容数量" json:"count"`
 	Children    []*Category `gorm:"-" json:"children"`
-}
-
-func (c *Category) BeforeCreate(tx *gorm.DB) error {
-	c.CategoryID = gid.GenShortID()
-
-	return nil
 }

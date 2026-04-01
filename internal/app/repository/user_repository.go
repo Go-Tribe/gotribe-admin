@@ -18,10 +18,10 @@ import (
 
 type IUserRepository interface {
 	CreateUser(user *model.User) error                              // 创建用户
-	GetUserByUserID(userID string) (model.User, error)              // 获取单个用户
+	GetUserByID(id uint) (model.User, error)                        // 获取单个用户
 	GetUsers(req *vo.UserListRequest) ([]*model.User, int64, error) // 获取用户列表
 	UpdateUser(user *model.User) error                              // 更新用户
-	BatchDeleteUserByIds(ids []string) error                        // 批量删除用户
+	BatchDeleteUserByIds(ids []uint) error                          // 批量删除用户
 	SearchUserByNickname(nickname string) ([]*model.User, error)
 }
 
@@ -34,9 +34,9 @@ func NewUserRepository() IUserRepository {
 }
 
 // 获取单个用户
-func (ur UserRepository) GetUserByUserID(userID string) (model.User, error) {
+func (ur UserRepository) GetUserByID(id uint) (model.User, error) {
 	var user model.User
-	err := common.DB.Where("user_id = ?", userID).First(&user).Error
+	err := common.DB.Where("id = ?", id).First(&user).Error
 	return user, err
 }
 
@@ -53,9 +53,8 @@ func (ur UserRepository) GetUsers(req *vo.UserListRequest) ([]*model.User, int64
 	if nickname != "" {
 		db = db.Where("nickname LIKE ?", fmt.Sprintf("%%%s%%", nickname))
 	}
-	userID := strings.TrimSpace(req.UserID)
-	if req.UserID != "" {
-		db = db.Where("user_id = ?", userID)
+	if req.UserID > 0 {
+		db = db.Where("id = ?", req.UserID)
 	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数
@@ -76,13 +75,13 @@ func (ur UserRepository) GetUsers(req *vo.UserListRequest) ([]*model.User, int64
 
 func GetUserOther(user []*model.User) []*model.User {
 	for _, m := range user {
-		userPoint := GetUserPoint(m.UserID)
+		userPoint := GetUserPoint(m.ID)
 		m.Point = userPoint
 	}
 	return user
 }
 
-func GetUserPoint(userID string) float64 {
+func GetUserPoint(userID uint) float64 {
 	var sum sql.NullFloat64
 	var pointAvailable *model.PointAvailable
 	row := common.DB.Model(&pointAvailable).Select("SUM(points)").Where("user_id = ?", userID).Row()
@@ -118,13 +117,13 @@ func (ur UserRepository) UpdateUser(user *model.User) error {
 }
 
 // 批量删除
-func (ur UserRepository) BatchDeleteUserByIds(ids []string) error {
+func (ur UserRepository) BatchDeleteUserByIds(ids []uint) error {
 	var users []model.User
 	for _, id := range ids {
 		// 根据ID获取用户
-		user, err := ur.GetUserByUserID(id)
+		user, err := ur.GetUserByID(id)
 		if err != nil {
-			return fmt.Errorf("未获取到ID为%s的用户", id)
+			return fmt.Errorf("未获取到ID为%d的用户", id)
 		}
 		users = append(users, user)
 	}

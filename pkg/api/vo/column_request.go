@@ -23,7 +23,7 @@ type UpdateColumnRequest struct {
 
 // 获取专栏列表结构体
 type ColumnListRequest struct {
-	ColumnID  string `form:"columnID" json:"columnID"`
+	ID        uint   `form:"id" json:"id"`
 	ProjectID string `form:"projectID" json:"projectID"`
 	Title     string `form:"title" json:"title"`
 	PageNum   uint   `json:"pageNum" form:"pageNum"`
@@ -32,5 +32,5 @@ type ColumnListRequest struct {
 
 // 批量删除专栏结构体
 type DeleteColumnsRequest struct {
-	ColumnIds string `json:"columnIds" form:"columnIds"`
+	Ids []uint `json:"ids" form:"ids"`
 }

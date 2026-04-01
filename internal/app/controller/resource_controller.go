@@ -16,6 +16,7 @@ import (
 	"gotribe-admin/pkg/api/vo"
 	"gotribe-admin/pkg/util"
 	"gotribe-admin/pkg/util/upload"
+	"strconv"
 
 	"github.com/dengmengmian/ghelper/gconvert"
 	"github.com/gin-gonic/gin"
@@ -47,14 +48,19 @@ func NewResourceController() IResourceController {
 // @Tags 资源管理
 // @Accept json
 // @Produce json
-// @Param resourceID path string true "资源ID"
+// @Param id path int true "资源ID"
 // @Success 200 {object} response.Response{data=object{resource=dto.ResourceDto}} "获取成功"
 // @Failure 400 {object} response.Response "请求参数错误"
 // @Failure 500 {object} response.Response "服务器内部错误"
-// @Router /api/v1/resources/{resourceID} [get]
+// @Router /api/v1/resources/{id} [get]
 // @Security BearerAuth
 func (pc ResourceController) GetResourceInfo(c *gin.Context) {
-	resource, err := pc.ResourceRepository.GetResourceByResourceID(c.Param("resourceID"))
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ValidationFail(c, "资源ID格式错误")
+		return
+	}
+	resource, err := pc.ResourceRepository.GetResourceByID(uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -106,12 +112,12 @@ func (pc ResourceController) GetResources(c *gin.Context) {
 // @Tags 资源管理
 // @Accept json
 // @Produce json
-// @Param resourceID path string true "资源ID"
+// @Param id path int true "资源ID"
 // @Param request body vo.CreateResourceRequest true "更新资源请求参数"
 // @Success 200 {object} response.Response "更新成功"
 // @Failure 400 {object} response.Response "请求参数错误"
 // @Failure 500 {object} response.Response "服务器内部错误"
-// @Router /api/v1/resources/{resourceID} [put]
+// @Router /api/v1/resources/{id} [put]
 // @Security BearerAuth
 func (pc ResourceController) UpdateResourceByID(c *gin.Context) {
 	var req vo.CreateResourceRequest
@@ -126,9 +132,14 @@ func (pc ResourceController) UpdateResourceByID(c *gin.Context) {
 		response.ValidationFail(c, errStr)
 		return
 	}
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ValidationFail(c, "资源ID格式错误")
+		return
+	}
 
-	// 根据path中的ResourceID获取资源信息
-	oldResource, err := pc.ResourceRepository.GetResourceByResourceID(c.Param("resourceID"))
+	// 根据path中的ID获取资源信息
+	oldResource, err := pc.ResourceRepository.GetResourceByID(uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -235,10 +246,11 @@ func (pc ResourceController) DeleteResourceByID(c *gin.Context) {
 		return
 	}
 
-	err := pc.ResourceRepository.DeleteResourceByID(req.ResourceID)
-	if err != nil {
-		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
-		return
+	for _, id := range req.Ids {
+		if err := pc.ResourceRepository.DeleteResourceByID(id); err != nil {
+			response.HandleDatabaseError(c, err, common.MsgDeleteFail)
+			return
+		}
 	}
 
 	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))

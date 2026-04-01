@@ -5,20 +5,13 @@
 
 package model
 
-import (
-	"github.com/dengmengmian/ghelper/gid"
-	"gorm.io/gorm"
-)
-
 type Tag struct {
 	Model
-	TagID       string `gorm:"type:varchar(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"tagID"`
-	Title       string `gorm:"type:varchar(255);uniqueIndex;not null;comment:标题" json:"title"`
-	Description string `gorm:"not null;size:300;comment:描述" json:"description"`
-	Color       string `gorm:"type:varchar(20);comment:颜色" json:"color"`
-}
-
-func (t *Tag) BeforeCreate(tx *gorm.DB) error {
-	t.TagID = gid.GenShortID()
-	return nil
+	Title       string `gorm:"type:varchar(30);not null;uniqueIndex;comment:标题" json:"title"`
+	Slug        string `gorm:"type:varchar(30);not null;uniqueIndex:idx_tag_slug;comment:URL别名" json:"slug"`
+	Description string `gorm:"type:varchar(300);comment:描述" json:"description,omitempty"`
+	Color       string `gorm:"type:varchar(20);comment:展示颜色" json:"color,omitempty"`
+	Sort        uint   `gorm:"default:1;comment:排序，越大越靠前" json:"sort"`
+	Count       uint   `gorm:"default:0;comment:引用次数" json:"count"`
+	Status      uint8  `gorm:"type:smallint;not null;default:1;comment:状态，1-正常；2-禁用" json:"status,omitempty"`
 }

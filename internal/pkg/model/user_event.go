@@ -7,7 +7,7 @@ package model
 
 type UserEvent struct {
 	Model
-	UserID      string `gorm:"type:varchar(30);not null;comment:用户ID;" json:"userID"`
+	UserID      uint   `gorm:"not null;comment:用户ID" json:"userID"`
 	ProjectID   string `gorm:"type:varchar(10);not null;index;comment:项目ID;" json:"projectID"`
 	EventType   uint8  `gorm:"type:smallint;not null;index;default:1;comment:事件类型，1-浏览事件；2-点击事件" json:"eventType"`
 	EventDetail string `gorm:"type:text;comment:事件详情" json:"eventDetail"`

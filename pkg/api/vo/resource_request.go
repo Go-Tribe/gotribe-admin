@@ -13,13 +13,13 @@ type CreateResourceRequest struct {
 
 // 获取资源列表结构体
 type ResourceListRequest struct {
-	ResourceID string `form:"resourceID" json:"resourceID"`
-	Type       uint   `form:"type" json:"type"`
-	PageNum    uint   `json:"pageNum" form:"pageNum"`
-	PageSize   uint   `json:"pageSize" form:"pageSize"`
+	ID       uint `form:"id" json:"id"`
+	Type     uint `form:"type" json:"type"`
+	PageNum  uint `json:"pageNum" form:"pageNum"`
+	PageSize uint `json:"pageSize" form:"pageSize"`
 }
 
 // 批量删除资源结构体
 type DeleteResourcesRequest struct {
-	ResourceID string `json:"resourceID" form:"resourceID"`
+	Ids []uint `json:"ids" form:"ids"`
 }

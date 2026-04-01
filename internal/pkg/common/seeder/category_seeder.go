@@ -29,8 +29,8 @@ func (s *CategorySeeder) Run(db *gorm.DB) error {
 		{
 			Model:       model.Model{ID: 1},
 			Title:       "默认分类",
+			Slug:        "default",
 			Description: "默认分类",
-			CategoryID:  "24ejga",
 			Status:      1,
 		},
 	}

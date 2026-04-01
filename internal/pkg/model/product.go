@@ -20,7 +20,7 @@ type Product struct {
 	Image         string `gorm:"type:varchar(255);not null;comment:产品主图" json:"image"`
 	Video         string `gorm:"type:varchar(255);not null;comment:产品视频" json:"video"`
 	BuyLimit      uint   `gorm:"type:smallint;not null;default:1;comment:购买限制" json:"buyLimit"`
-	CategoryID    string `gorm:"type:varchar(10);not null;index;comment:分类ID" json:"categoryID"`
+	CategoryID    uint   `gorm:"not null;index;comment:分类ID" json:"categoryID"`
 	ProductSpec   string `gorm:"type:varchar(2048);not null;comment:产品规格" json:"productSpec"`
 	Content       string `gorm:"type:text;comment:内容" json:"content"`
 	HtmlContent   string `gorm:"type:text;comment:html内容" json:"Htmlcontent"`

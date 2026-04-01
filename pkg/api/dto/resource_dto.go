@@ -12,7 +12,7 @@ import (
 )
 
 type ResourceDto struct {
-	ResourceID    string `json:"resourceID"`
+	ID            uint   `json:"id"`
 	Title         string `json:"title"`
 	Description   string `json:"description"`
 	URL           string `json:"url"`
@@ -25,7 +25,7 @@ type ResourceDto struct {
 
 func ToResourceInfoDto(resource model.Resource) ResourceDto {
 	return ResourceDto{
-		ResourceID:    resource.ResourceID,
+		ID:            resource.ID,
 		Title:         resource.Title,
 		Description:   resource.Description,
 		URL:           resource.URL,
@@ -41,7 +41,7 @@ func ToResourcesDto(resourceList []*model.Resource) []ResourceDto {
 	var resources []ResourceDto
 	for _, resource := range resourceList {
 		resourceDto := ResourceDto{
-			ResourceID:    resource.ResourceID,
+			ID:            resource.ID,
 			Title:         resource.Title,
 			Description:   resource.Description,
 			URL:           resource.URL,

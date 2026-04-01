@@ -11,7 +11,7 @@ import (
 )
 
 type ColumnDto struct {
-	ColumnID    string `json:"columnID"`
+	ID          uint   `json:"id"`
 	Title       string `json:"title"`
 	Info        string `json:"info"`
 	ProjectID   string `json:"projectID"`
@@ -22,7 +22,7 @@ type ColumnDto struct {
 
 func ToColumnInfoDto(column model.Column) ColumnDto {
 	return ColumnDto{
-		ColumnID:    column.ColumnID,
+		ID:          column.ID,
 		Title:       column.Title,
 		Description: column.Description,
 		Info:        column.Info,
@@ -36,7 +36,7 @@ func ToColumnsDto(columnList []*model.Column) []ColumnDto {
 	var columns []ColumnDto
 	for _, column := range columnList {
 		columnDto := ColumnDto{
-			ColumnID:    column.ColumnID,
+			ID:          column.ID,
 			Title:       column.Title,
 			ProjectID:   column.ProjectID,
 			Description: column.Description,

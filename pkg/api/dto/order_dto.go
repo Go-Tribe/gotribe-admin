@@ -28,7 +28,7 @@ type OrderDto struct {
 	RemarkAdmin       string  `json:"remarkAdmin"`
 	Status            uint    `json:"status"`
 	UnitPrice         float64 `json:"unitPrice"`
-	UserID            string  `json:"userID"`
+	UserID            uint    `json:"userID"`
 	Username          string  `json:"username"`
 	Amount            float64 `json:"amount"`
 	AmountPay         float64 `json:"amountPay"`

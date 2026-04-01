@@ -13,7 +13,7 @@ import (
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
 	"gotribe-admin/pkg/util"
-	"strings"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -45,13 +45,18 @@ func NewUserController() IUserController {
 // @Tags         用户管理
 // @Accept       json
 // @Produce      json
-// @Param        userID path string true "用户ID"
+// @Param        id path int true "用户ID"
 // @Success      200 {object} response.Response
 // @Failure      400 {object} response.Response
-// @Router       /user/{userID} [get]
+// @Router       /user/{id} [get]
 // @Security     BearerAuth
 func (pc UserController) GetUserInfo(c *gin.Context) {
-	user, err := pc.UserRepository.GetUserByUserID(c.Param("userID"))
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ValidationFail(c, "用户ID格式错误")
+		return
+	}
+	user, err := pc.UserRepository.GetUserByID(uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -121,15 +126,22 @@ func (pc UserController) CreateUser(c *gin.Context) {
 		return
 	}
 
+	encryptedPwd, err := util.PasswordUtil.Encrypt(req.Password)
+	if err != nil {
+		response.InternalServerError(c, "密码加密失败")
+		return
+	}
+
 	user := model.User{
 		Username:  req.Username,
 		Nickname:  req.Nickname,
 		Phone:     req.Phone,
 		Email:     req.Email,
 		ProjectID: req.ProjectID,
+		Password:  encryptedPwd,
 	}
 
-	err := pc.UserRepository.CreateUser(&user)
+	err = pc.UserRepository.CreateUser(&user)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
@@ -144,11 +156,11 @@ func (pc UserController) CreateUser(c *gin.Context) {
 // @Tags         用户管理
 // @Accept       json
 // @Produce      json
-// @Param        userID path string true "用户ID"
+// @Param        id path int true "用户ID"
 // @Param        request body vo.UpdateUserRequest true "更新用户请求"
 // @Success      200 {object} response.Response
 // @Failure      400 {object} response.Response
-// @Router       /user/{userID} [patch]
+// @Router       /user/{id} [patch]
 // @Security     BearerAuth
 func (pc UserController) UpdateUserByID(c *gin.Context) {
 	var req vo.UpdateUserRequest
@@ -163,9 +175,14 @@ func (pc UserController) UpdateUserByID(c *gin.Context) {
 		response.ValidationFail(c, errStr)
 		return
 	}
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ValidationFail(c, "用户ID格式错误")
+		return
+	}
 
-	// 根据path中的UserID获取用户信息
-	oldUser, err := pc.UserRepository.GetUserByUserID(c.Param("userID"))
+	// 根据path中的ID获取用户信息
+	oldUser, err := pc.UserRepository.GetUserByID(uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -212,9 +229,7 @@ func (tc UserController) BatchDeleteUserByIds(c *gin.Context) {
 		return
 	}
 
-	// 前端传来的标签ID
-	reqUserIds := strings.Split(req.UserIds, ",")
-	err := tc.UserRepository.BatchDeleteUserByIds(reqUserIds)
+	err := tc.UserRepository.BatchDeleteUserByIds(req.Ids)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return
@@ -235,7 +250,7 @@ func (tc UserController) BatchDeleteUserByIds(c *gin.Context) {
 // @Router       /user/search [get]
 // @Security     BearerAuth
 func (tc UserController) SearchUserByUsername(c *gin.Context) {
-	user, err := tc.UserRepository.SearchUserByNickname(c.Param("nickname"))
+	user, err := tc.UserRepository.SearchUserByNickname(c.Query("nickname"))
 	if err != nil {
 		response.InternalServerError(c, "获取需要更新的用户信息失败: "+err.Error())
 		return

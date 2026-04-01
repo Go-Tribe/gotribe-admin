@@ -5,14 +5,8 @@
 
 package model
 
-import (
-	"github.com/dengmengmian/ghelper/gid"
-	"gorm.io/gorm"
-)
-
 type Resource struct {
 	Model
-	ResourceID    string `gorm:"type:varchar(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"resourceID"`
 	Title         string `gorm:"type:varchar(255);not null;comment:标题" json:"title"`
 	Path          string `gorm:"not null;type:varchar(255);not null;comment:路径" json:"path"`
 	URL           string `gorm:"not null;type:varchar(255);not null;comment:当前域名" json:"url"`
@@ -21,10 +15,4 @@ type Resource struct {
 	Description   string `gorm:"not null;size:300;not null;comment:描述" json:"description"`
 	Size          int64  `gorm:"not null;type:integer;not null;default:0;comment:文件大小" json:"size"`
 	Status        uint   `gorm:"type:smallint;not null;default:1;comment:状态，1-正常；2-禁用" json:"status,omitempty"`
-}
-
-func (r *Resource) BeforeCreate(tx *gorm.DB) error {
-	r.ResourceID = gid.GenShortID()
-
-	return nil
 }

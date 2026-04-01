@@ -28,7 +28,7 @@ func (s *TagSeeder) Run(db *gorm.DB) error {
 	tags := []*model.Tag{
 		{
 			Model:       model.Model{ID: 1},
-			TagID:       "default",
+			Slug:        "default",
 			Title:       "默认标签",
 			Description: "默认标签",
 		},

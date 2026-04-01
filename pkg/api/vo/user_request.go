@@ -17,7 +17,7 @@ type CreateUserRequest struct {
 
 // 获取用户列表结构体
 type UserListRequest struct {
-	UserID   string `form:"userID" json:"userID"`
+	UserID   uint   `form:"userID" json:"userID"`
 	Nickname string `form:"nickname" json:"nickname"`
 	Username string `form:"username" json:"username"`
 	PageNum  uint   `json:"pageNum" form:"pageNum"`
@@ -26,7 +26,7 @@ type UserListRequest struct {
 
 // 批量删除用户结构体
 type DeleteUsersRequest struct {
-	UserIds string `json:"userIds" form:"userIds"`
+	Ids []uint `json:"ids" form:"ids"`
 }
 
 // 更新用户结构体

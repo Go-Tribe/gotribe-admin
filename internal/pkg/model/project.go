@@ -31,7 +31,7 @@ type Project struct {
 }
 
 func (p *Project) BeforeCreate(tx *gorm.DB) error {
-	p.ProjectID = gid.GenShortID()
+	p.ProjectID = gid.GenShortID(gid.WithNumber(10))
 
 	return nil
 }

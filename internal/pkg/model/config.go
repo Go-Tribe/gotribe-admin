@@ -25,7 +25,7 @@ type Config struct {
 }
 
 func (c *Config) BeforeCreate(tx *gorm.DB) error {
-	c.ConfigID = gid.GenShortID()
+	c.ConfigID = gid.GenShortID(gid.WithNumber(10))
 
 	return nil
 }

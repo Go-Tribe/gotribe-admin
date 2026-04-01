@@ -58,7 +58,7 @@ func (cr CommentRepository) GetComments(req *vo.CommentListRequest) ([]*model.Co
 		if result := common.DB.Model(&model.User{}).Where("nickname like ?", fmt.Sprintf("%%%s%%", req.Nickname)).First(&user); result.Error != nil {
 			return nil, 0, result.Error
 		}
-		db = db.Where("user_id = ?", user.UserID)
+		db = db.Where("user_id = ?", user.ID)
 	}
 
 	// 当pageNum > 0 且 pageSize > 0 才分页
@@ -82,7 +82,7 @@ func (cr CommentRepository) GetComments(req *vo.CommentListRequest) ([]*model.Co
 func GetCommentOther(comments []*model.Comment) []*model.Comment {
 	for _, m := range comments {
 		var user *model.User
-		_ = common.DB.Where("user_id = ?", m.UserID).First(&user).Error
+		_ = common.DB.Where("id = ?", m.UserID).First(&user).Error
 		m.User = user
 	}
 	return comments

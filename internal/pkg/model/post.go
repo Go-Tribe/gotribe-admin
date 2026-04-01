@@ -13,10 +13,10 @@ import (
 type Post struct {
 	Model
 	PostID      string    `gorm:"type:varchar(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"postID"`
-	CategoryID  string    `gorm:"type:varchar(10);Index;comment:分类 ID" json:"categoryID"`
+	CategoryID  uint      `gorm:"index;comment:分类 ID" json:"categoryID"`
 	ProjectID   string    `gorm:"type:varchar(10);Index;comment:项目 ID" json:"projectID"`
-	ColumnID    string    `gorm:"type:varchar(10);Index;comment:专栏ID" json:"columnID"`
-	UserID      string    `gorm:"type:varchar(10);Index;comment:用户ID" json:"userID"`
+	ColumnID    uint      `gorm:"index;comment:专栏ID" json:"columnID"`
+	UserID      uint      `gorm:"index;comment:用户ID" json:"userID"`
 	Author      string    `gorm:"type:varchar(30);not null;index:idx_username;comment:作者" json:"author"`
 	Title       string    `gorm:"type:varchar(255);not null;comment:标题" json:"title"`
 	Content     string    `gorm:"not null;type:text;comment:内容" json:"content"`
@@ -44,7 +44,7 @@ type Post struct {
 }
 
 func (p *Post) BeforeCreate(tx *gorm.DB) error {
-	p.PostID = gid.GenShortID()
+	p.PostID = gid.GenShortID(gid.WithNumber(10))
 
 	return nil
 }

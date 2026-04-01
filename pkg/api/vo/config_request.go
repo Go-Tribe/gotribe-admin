@@ -37,5 +37,5 @@ type UpdateConfigRequest struct {
 
 // 批量删除项目结构体
 type DeleteConfigsRequest struct {
-	ConfigIds string `json:"configIds" form:"configIds"`
+	ConfigIds string `json:"configIds" form:"configIds" validate:"required"`
 }

@@ -8,7 +8,7 @@ package vo
 // 创建产品结构体
 type CreateProductRequest struct {
 	Title         string   `form:"title" json:"title" validate:"required,min=2,max=60"`
-	CategoryID    string   `form:"categoryID" json:"categoryID" validate:"required"`
+	CategoryID    uint     `form:"categoryID" json:"categoryID" validate:"required"`
 	ProductNumber string   `form:"productNumber" json:"productNumber"`
 	ProjectID     string   `form:"projectID" json:"projectID"  validate:"required"`
 	Description   string   `form:"description" json:"description"`
@@ -25,7 +25,7 @@ type CreateProductRequest struct {
 
 // 获取产品列表结构体
 type ProductListRequest struct {
-	CategoryID string `form:"categoryID" json:"categoryID"`
+	CategoryID uint   `form:"categoryID" json:"categoryID"`
 	ProjectID  string `form:"projectID" json:"projectID"`
 	Title      string `form:"title" json:"title"`
 	PageNum    uint   `json:"pageNum" form:"pageNum"`

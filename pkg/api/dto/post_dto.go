@@ -14,13 +14,13 @@ import (
 
 // 返回给前端的内容列表
 type PostsDto struct {
-	ColumnID    string          `json:"columnID,omitempty"`
+	ColumnID    uint            `json:"columnID,omitempty"`
 	PostID      string          `json:"postID"`
 	Title       string          `json:"title"`
 	Description string          `json:"description"`
-	CategoryID  string          `json:"categoryID"`
+	CategoryID  uint            `json:"categoryID"`
 	ProjectID   string          `json:"projectID"`
-	UserID      string          `json:"userID" `
+	UserID      uint            `json:"userID"`
 	Author      string          `json:"author" `
 	Content     string          `json:"content" `
 	HtmlContent string          `json:"htmlContent"`

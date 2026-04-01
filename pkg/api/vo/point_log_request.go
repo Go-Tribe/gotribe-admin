@@ -8,13 +8,13 @@ package vo
 // 创建积分结构体
 type CreatePointLogRequest struct {
 	ProjectID string  `form:"projectID" json:"projectID" validate:"required"`
-	UserID    string  `form:"userID" json:"userID" validate:"required"`
+	UserID    uint    `form:"userID" json:"userID" validate:"required"`
 	Point     float64 `form:"point" json:"point" validate:"required"`
 }
 
 // 获取积分列表结构体
 type PointLogListRequest struct {
-	UserID    string `form:"userID" json:"userID"`
+	UserID    uint   `form:"userID" json:"userID"`
 	Nickname  string `form:"nickname" json:"nickname"`
 	ProjectID string `form:"projectID" json:"projectID"`
 	PageNum   uint   `json:"pageNum" form:"pageNum"`

@@ -50,14 +50,14 @@ definitions:
     type: object
   dto.ColumnDto:
     properties:
-      columnID:
-        type: string
       createdAt:
         type: string
       description:
         type: string
       icon:
         type: string
+      id:
+        type: integer
       info:
         type: string
       projectID:
@@ -130,7 +130,7 @@ definitions:
       user:
         $ref: '#/definitions/dto.UserDto'
       userID:
-        type: string
+        type: integer
       username:
         type: string
     type: object
@@ -199,9 +199,9 @@ definitions:
         type: string
       fileType:
         type: integer
+      id:
+        type: integer
       path:
-        type: string
-      resourceID:
         type: string
       size:
         type: integer
@@ -231,7 +231,11 @@ definitions:
         type: string
       email:
         type: string
+      id:
+        type: integer
       nickname:
+        type: string
+      phone:
         type: string
       point:
         type: number
@@ -241,8 +245,6 @@ definitions:
         type: string
       status:
         type: integer
-      userID:
-        type: string
       username:
         type: string
     type: object
@@ -396,6 +398,10 @@ definitions:
         type: integer
       path:
         type: string
+      slug:
+        maxLength: 30
+        minLength: 1
+        type: string
       sort:
         maximum: 999
         minimum: 1
@@ -403,10 +409,11 @@ definitions:
       status:
         type: integer
       title:
-        maxLength: 50
+        maxLength: 30
         minLength: 1
         type: string
     required:
+    - slug
     - title
     type: object
   vo.CreateColumnRequest:
@@ -566,7 +573,7 @@ definitions:
       projectID:
         type: string
       userID:
-        type: string
+        type: integer
     required:
     - point
     - projectID
@@ -577,9 +584,9 @@ definitions:
       author:
         type: string
       categoryID:
-        type: string
+        type: integer
       columnID:
-        type: string
+        type: integer
       content:
         type: string
       description:
@@ -608,6 +615,10 @@ definitions:
         type: string
       projectID:
         type: string
+      showTime:
+        type: string
+      status:
+        type: integer
       tag:
         type: string
       time:
@@ -621,7 +632,7 @@ definitions:
       unitPrice:
         type: number
       userID:
-        type: string
+        type: integer
       video:
         type: string
     required:
@@ -674,7 +685,7 @@ definitions:
         minimum: 1
         type: integer
       categoryID:
-        type: string
+        type: integer
       content:
         type: string
       description:
@@ -870,11 +881,20 @@ definitions:
         type: string
       description:
         type: string
+      slug:
+        maxLength: 30
+        minLength: 2
+        type: string
+      sort:
+        type: integer
+      status:
+        type: integer
       title:
         maxLength: 20
         minLength: 2
         type: string
     required:
+    - slug
     - title
     type: object
   vo.CreateUserRequest:
@@ -931,18 +951,24 @@ definitions:
     type: object
   vo.DeleteCategoryRequest:
     properties:
-      categoryIds:
-        type: string
+      ids:
+        items:
+          type: integer
+        type: array
     type: object
   vo.DeleteColumnsRequest:
     properties:
-      columnIds:
-        type: string
+      ids:
+        items:
+          type: integer
+        type: array
     type: object
   vo.DeleteConfigsRequest:
     properties:
       configIds:
         type: string
+    required:
+    - configIds
     type: object
   vo.DeleteMenuRequest:
     properties:
@@ -1000,8 +1026,10 @@ definitions:
     type: object
   vo.DeleteResourcesRequest:
     properties:
-      resourceID:
-        type: string
+      ids:
+        items:
+          type: integer
+        type: array
     type: object
   vo.DeleteRoleRequest:
     properties:
@@ -1012,13 +1040,17 @@ definitions:
     type: object
   vo.DeleteTagsRequest:
     properties:
-      tagIds:
-        type: string
+      ids:
+        items:
+          type: integer
+        type: array
     type: object
   vo.DeleteUsersRequest:
     properties:
-      userIds:
-        type: string
+      ids:
+        items:
+          type: integer
+        type: array
     type: object
   vo.RegisterAndLoginRequest:
     properties:
@@ -1145,6 +1177,10 @@ definitions:
         type: integer
       path:
         type: string
+      slug:
+        maxLength: 30
+        minLength: 1
+        type: string
       sort:
         maximum: 999
         minimum: 1
@@ -1152,11 +1188,11 @@ definitions:
       status:
         type: integer
       title:
-        maxLength: 50
+        maxLength: 30
         minLength: 1
         type: string
     required:
-    - parentID
+    - slug
     - title
     type: object
   vo.UpdateColumnRequest:
@@ -1275,9 +1311,9 @@ definitions:
       author:
         type: string
       categoryID:
-        type: string
+        type: integer
       columnID:
-        type: string
+        type: integer
       content:
         type: string
       description:
@@ -1306,6 +1342,8 @@ definitions:
         type: string
       projectID:
         type: string
+      showTime:
+        type: string
       status:
         type: integer
       tag:
@@ -1321,7 +1359,7 @@ definitions:
       unitPrice:
         type: number
       userID:
-        type: string
+        type: integer
       video:
         type: string
     required:
@@ -1859,7 +1897,7 @@ paths:
       tags:
       - 管理员管理
   /admin/info:
-    post:
+    get:
       consumes:
       - application/json
       description: 获取当前登录管理员详细信息
@@ -2531,14 +2569,14 @@ paths:
       description: 获取资源列表，支持分页和筛选
       parameters:
       - in: query
+        name: id
+        type: integer
+      - in: query
         name: pageNum
         type: integer
       - in: query
         name: pageSize
         type: integer
-      - in: query
-        name: resourceID
-        type: string
       - in: query
         name: type
         type: integer
@@ -2574,7 +2612,7 @@ paths:
       summary: 获取资源列表
       tags:
       - 资源管理
-  /api/v1/resources/{resourceID}:
+  /api/v1/resources/{id}:
     get:
       consumes:
       - application/json
@@ -2582,9 +2620,9 @@ paths:
       parameters:
       - description: 资源ID
         in: path
-        name: resourceID
+        name: id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
@@ -2620,9 +2658,9 @@ paths:
       parameters:
       - description: 资源ID
         in: path
-        name: resourceID
+        name: id
         required: true
-        type: string
+        type: integer
       - description: 更新资源请求参数
         in: body
         name: request
@@ -2871,32 +2909,6 @@ paths:
       tags:
       - 分类管理
   /category/{categoryID}:
-    get:
-      consumes:
-      - application/json
-      description: 根据分类ID获取分类详细信息
-      parameters:
-      - description: 分类ID
-        in: path
-        name: categoryID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.Response'
-      security:
-      - BearerAuth: []
-      summary: 获取分类详情
-      tags:
-      - 分类管理
     patch:
       consumes:
       - application/json
@@ -2927,6 +2939,33 @@ paths:
       security:
       - BearerAuth: []
       summary: 更新分类
+      tags:
+      - 分类管理
+  /category/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 根据分类ID获取分类详细信息
+      parameters:
+      - description: 分类ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取分类详情
       tags:
       - 分类管理
   /category/tree:
@@ -3064,7 +3103,7 @@ paths:
       summary: 创建专栏
       tags:
       - 专栏管理
-  /column/{columnID}:
+  /column/{id}:
     get:
       consumes:
       - application/json
@@ -3072,9 +3111,9 @@ paths:
       parameters:
       - description: 专栏ID
         in: path
-        name: columnID
+        name: id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
@@ -4361,7 +4400,7 @@ paths:
       parameters:
       - in: query
         name: categoryID
-        type: string
+        type: integer
       - in: query
         name: pageNum
         type: integer
@@ -5309,14 +5348,14 @@ paths:
       description: 获取所有标签的列表
       parameters:
       - in: query
+        name: id
+        type: integer
+      - in: query
         name: pageNum
         type: integer
       - in: query
         name: pageSize
         type: integer
-      - in: query
-        name: tagID
-        type: string
       - in: query
         name: title
         type: string
@@ -5363,7 +5402,7 @@ paths:
       summary: 创建标签
       tags:
       - 标签管理
-  /tag/{tagID}:
+  /tag/{id}:
     get:
       consumes:
       - application/json
@@ -5371,9 +5410,9 @@ paths:
       parameters:
       - description: 标签ID
         in: path
-        name: tagID
+        name: id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
@@ -5397,9 +5436,9 @@ paths:
       parameters:
       - description: 标签ID
         in: path
-        name: tagID
+        name: id
         required: true
-        type: string
+        type: integer
       - description: 标签信息
         in: body
         name: request
@@ -5470,7 +5509,7 @@ paths:
         type: integer
       - in: query
         name: userID
-        type: string
+        type: integer
       - in: query
         name: username
         type: string
@@ -5517,7 +5556,7 @@ paths:
       summary: 创建用户
       tags:
       - 用户管理
-  /user/{userID}:
+  /user/{id}:
     get:
       consumes:
       - application/json
@@ -5525,9 +5564,9 @@ paths:
       parameters:
       - description: 用户ID
         in: path
-        name: userID
+        name: id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
@@ -5551,9 +5590,9 @@ paths:
       parameters:
       - description: 用户ID
         in: path
-        name: userID
+        name: id
         required: true
-        type: string
+        type: integer
       - description: 更新用户请求
         in: body
         name: request

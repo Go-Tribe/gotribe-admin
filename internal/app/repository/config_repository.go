@@ -78,10 +78,42 @@ func (cr ConfigRepository) GetConfigs(req *vo.ConfigListRequest) ([]*model.Confi
 
 // 获取配置其他信息
 func GetConfigOther(configs []*model.Config) []*model.Config {
+	if len(configs) == 0 {
+		return configs
+	}
+
+	// 批量收集并去重 project_id，避免 N+1 查询
+	projectIDSet := make(map[string]struct{}, len(configs))
+	projectIDs := make([]string, 0, len(configs))
+	for _, cfg := range configs {
+		if cfg.ProjectID == "" {
+			continue
+		}
+		if _, exists := projectIDSet[cfg.ProjectID]; exists {
+			continue
+		}
+		projectIDSet[cfg.ProjectID] = struct{}{}
+		projectIDs = append(projectIDs, cfg.ProjectID)
+	}
+
+	if len(projectIDs) == 0 {
+		return configs
+	}
+
+	var projects []model.Project
+	if err := common.DB.Where("project_id IN (?)", projectIDs).Find(&projects).Error; err != nil {
+		return configs
+	}
+
+	projectMap := make(map[string]*model.Project, len(projects))
+	for i := range projects {
+		projectMap[projects[i].ProjectID] = &projects[i]
+	}
+
 	for _, m := range configs {
-		var project *model.Project
-		_ = common.DB.Where("project_id = ?", m.ProjectID).First(&project).Error
-		m.Project = project
+		if project, ok := projectMap[m.ProjectID]; ok {
+			m.Project = project
+		}
 	}
 	return configs
 }

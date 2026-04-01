@@ -15,10 +15,10 @@ import (
 
 type IColumnRepository interface {
 	CreateColumn(column *model.Column) error                              // 创建专栏
-	GetColumnByColumnID(columnID string) (model.Column, error)            // 获取单个专栏
+	GetColumnByID(id uint) (model.Column, error)                          // 获取单个专栏
 	GetColumns(req *vo.ColumnListRequest) ([]*model.Column, int64, error) // 获取专栏列表
 	UpdateColumn(column *model.Column) error                              // 更新专栏
-	BatchDeleteColumnByIds(ids []string) error                            // 批量删除专栏
+	BatchDeleteColumnByIds(ids []uint) error                              // 批量删除专栏
 }
 
 type ColumnRepository struct {
@@ -30,9 +30,9 @@ func NewColumnRepository() IColumnRepository {
 }
 
 // 获取单个专栏
-func (cr ColumnRepository) GetColumnByColumnID(columnID string) (model.Column, error) {
+func (cr ColumnRepository) GetColumnByID(id uint) (model.Column, error) {
 	var column model.Column
-	err := common.DB.Where("column_id = ?", columnID).First(&column).Error
+	err := common.DB.Where("id = ?", id).First(&column).Error
 	return column, err
 }
 
@@ -45,9 +45,8 @@ func (cr ColumnRepository) GetColumns(req *vo.ColumnListRequest) ([]*model.Colum
 	if title != "" {
 		db = db.Where("title LIKE ?", fmt.Sprintf("%%%s%%", title))
 	}
-	columnID := strings.TrimSpace(req.ColumnID)
-	if req.ColumnID != "" {
-		db = db.Where("column_id = ?", columnID)
+	if req.ID > 0 {
+		db = db.Where("id = ?", req.ID)
 	}
 	projectID := strings.TrimSpace(req.ProjectID)
 	if req.ProjectID != "" {
@@ -87,13 +86,13 @@ func (cr ColumnRepository) UpdateColumn(column *model.Column) error {
 }
 
 // 批量删除
-func (cr ColumnRepository) BatchDeleteColumnByIds(ids []string) error {
+func (cr ColumnRepository) BatchDeleteColumnByIds(ids []uint) error {
 	var columns []model.Column
 	for _, id := range ids {
 		// 根据ID获取标签
-		column, err := cr.GetColumnByColumnID(id)
+		column, err := cr.GetColumnByID(id)
 		if err != nil {
-			return fmt.Errorf("未获取到ID为%s的专栏", id)
+			return fmt.Errorf("未获取到ID为%d的专栏", id)
 		}
 		columns = append(columns, column)
 	}

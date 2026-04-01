@@ -28,7 +28,6 @@ func (s *UserSeeder) Run(db *gorm.DB) error {
 	users := []*model.User{
 		{
 			Model:     model.Model{ID: 1},
-			UserID:    "gotribe",
 			Username:  "gotribe",
 			Nickname:  "gotribe",
 			ProjectID: "245eko",

@@ -6,7 +6,6 @@
 package controller
 
 import (
-	"fmt"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -211,7 +210,6 @@ func (pc ConfigController) BatchDeleteConfigByIds(c *gin.Context) {
 		response.ValidationFail(c, errStr)
 		return
 	}
-	fmt.Println(req.ConfigIds)
 	// 前端传来的配置ID
 	reqConfigIds := strings.Split(req.ConfigIds, ",")
 	err := pc.ConfigRepository.BatchDeleteConfigByIds(reqConfigIds)

@@ -9,7 +9,7 @@ package model
 type PointLog struct {
 	Model
 	ProjectID string `gorm:"type:varchar(10);not null;index;comment:项目ID;" json:"projectID"`
-	UserID    string `gorm:"type:varchar(10);Index;comment:用户ID" json:"userID"`
+	UserID    uint   `gorm:"index;comment:用户ID" json:"userID"`
 	Points    int64  `gorm:"type:bigint;NOT NULL;comment:积分数值(分)" json:"points"`
 	Reason    string `gorm:"type:varchar(255);NOT NULL;comment:加减原因" json:"reason"`
 	Type      string `gorm:"type:varchar(20);NOT NULL;comment:类型" json:"type"`

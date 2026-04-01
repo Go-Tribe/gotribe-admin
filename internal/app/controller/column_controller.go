@@ -12,7 +12,7 @@ import (
 	"gotribe-admin/pkg/api/dto"
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
-	"strings"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -43,14 +43,19 @@ func NewColumnController() IColumnController {
 // @Tags 专栏管理
 // @Accept json
 // @Produce json
-// @Param columnID path string true "专栏ID"
+// @Param id path int true "专栏ID"
 // @Success 200 {object} response.Response{data=map[string]dto.ColumnDto} "成功"
 // @Failure 400 {object} response.Response "请求参数错误"
 // @Failure 500 {object} response.Response "内部服务器错误"
-// @Router /column/{columnID} [get]
+// @Router /column/{id} [get]
 // @Security BearerAuth
 func (pc ColumnController) GetColumnInfo(c *gin.Context) {
-	column, err := pc.ColumnRepository.GetColumnByColumnID(c.Param("columnID"))
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ValidationFail(c, "专栏ID格式错误")
+		return
+	}
+	column, err := pc.ColumnRepository.GetColumnByID(uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -154,7 +159,7 @@ func (pc ColumnController) CreateColumn(c *gin.Context) {
 // @Success 200 {object} response.Response "更新成功"
 // @Failure 400 {object} response.Response "请求参数错误"
 // @Failure 500 {object} response.Response "内部服务器错误"
-// @Router /column/{columnID} [patch]
+// @Router /column/{id} [patch]
 // @Security BearerAuth
 func (pc ColumnController) UpdateColumnByID(c *gin.Context) {
 	var req vo.UpdateColumnRequest
@@ -169,9 +174,14 @@ func (pc ColumnController) UpdateColumnByID(c *gin.Context) {
 		response.ValidationFail(c, errStr)
 		return
 	}
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ValidationFail(c, "专栏ID格式错误")
+		return
+	}
 
-	// 根据path中的ColumnID获取专栏信息
-	oldColumn, err := pc.ColumnRepository.GetColumnByColumnID(c.Param("columnID"))
+	// 根据path中的ID获取专栏信息
+	oldColumn, err := pc.ColumnRepository.GetColumnByID(uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -215,9 +225,7 @@ func (pc ColumnController) BatchDeleteColumnByIds(c *gin.Context) {
 		return
 	}
 
-	// 前端传来的标签ID
-	reqColumnIds := strings.Split(req.ColumnIds, ",")
-	err := pc.ColumnRepository.BatchDeleteColumnByIds(reqColumnIds)
+	err := pc.ColumnRepository.BatchDeleteColumnByIds(req.Ids)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return

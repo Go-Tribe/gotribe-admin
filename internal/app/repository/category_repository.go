@@ -15,12 +15,12 @@ import (
 )
 
 type ICategoryRepository interface {
-	GetConfigByCategoryID(categoryID string) (model.Category, error)
-	GetCategorys() ([]*model.Category, error)                             // 获取分类列表
-	GetCategoryTree() ([]*model.Category, error)                          // 获取分类树
-	CreateCategory(category *model.Category) error                        // 创建分类
-	UpdateCategoryByID(categoryID string, category *model.Category) error // 更新分类
-	BatchDeleteCategoryByIds(categoryIds []string) error                  // 批量删除分类
+	GetCategoryByID(id uint) (model.Category, error)
+	GetCategorys() ([]*model.Category, error)                   // 获取分类列表
+	GetCategoryTree() ([]*model.Category, error)                // 获取分类树
+	CreateCategory(category *model.Category) error              // 创建分类
+	UpdateCategoryByID(id uint, category *model.Category) error // 更新分类
+	BatchDeleteCategoryByIds(ids []uint) error                  // 批量删除分类
 }
 
 type CategoryRepository struct {
@@ -31,9 +31,9 @@ func NewCategoryRepository() ICategoryRepository {
 }
 
 // 获取单个分类详情
-func (cr CategoryRepository) GetConfigByCategoryID(categoryID string) (model.Category, error) {
+func (cr CategoryRepository) GetCategoryByID(id uint) (model.Category, error) {
 	var category model.Category
-	err := common.DB.Where("category_id = ?", categoryID).First(&category).Error
+	err := common.DB.Where("id = ?", id).First(&category).Error
 	return category, err
 }
 
@@ -55,7 +55,7 @@ func GenCategoryTree(parentID uint, categorys []*model.Category) []*model.Catego
 	tree := make([]*model.Category, 0)
 
 	for _, m := range categorys {
-		if *m.ParentID == parentID {
+		if m.ParentID == parentID {
 			children := GenCategoryTree(m.ID, categorys)
 			m.Children = children
 			tree = append(tree, m)
@@ -71,16 +71,16 @@ func (cr CategoryRepository) CreateCategory(category *model.Category) error {
 }
 
 // 更新分类
-func (cr CategoryRepository) UpdateCategoryByID(categoryID string, category *model.Category) error {
-	err := common.DB.Model(category).Where("category_id = ?", categoryID).Updates(category).Error
+func (cr CategoryRepository) UpdateCategoryByID(id uint, category *model.Category) error {
+	err := common.DB.Model(category).Where("id = ?", id).Updates(category).Error
 	return err
 }
 
 // 批量删除分类
-func (cr CategoryRepository) BatchDeleteCategoryByIds(categoryIds []string) error {
+func (cr CategoryRepository) BatchDeleteCategoryByIds(ids []uint) error {
 	var categorys []*model.Category
 
-	err := common.DB.Where("category_id IN (?)", categoryIds).Find(&categorys).Error
+	err := common.DB.Where("id IN (?)", ids).Find(&categorys).Error
 	if err != nil {
 		return err
 	}

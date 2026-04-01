@@ -7,7 +7,6 @@ package repository
 
 import (
 	"fmt"
-	"github.com/thoas/go-funk"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/known"
@@ -42,7 +41,7 @@ func (tr OrderRepository) GetOrderByOrderID(orderID string) (*model.Order, error
 func getOrdertUser(order *model.Order) *model.Order {
 	// 通过 order.userID 获取用户信息
 	var user model.User
-	err := common.DB.Where("user_id = ?", order.UserID).First(&user).Error
+	err := common.DB.Where("id = ?", order.UserID).First(&user).Error
 	if err != nil {
 		return order
 	}
@@ -70,7 +69,7 @@ func (tr OrderRepository) GetOrders(req *vo.OrderListRequest) ([]*model.Order, i
 		t, _ := time.Parse(known.TIME_FORMAT_SHORT, req.StartTime)
 		db = db.Where("date(created_at) >= ?", t)
 	}
-	if req.UserID != "" {
+	if req.UserID > 0 {
 		db = db.Where("user_id = ?", req.UserID)
 	}
 	if req.Status != 0 {
@@ -95,21 +94,24 @@ func (tr OrderRepository) GetOrders(req *vo.OrderListRequest) ([]*model.Order, i
 
 func getOrdertOther(orders []*model.Order) []*model.Order {
 	// 拿出所有用户ID，去重后去 user表查出用户信息
-	var userIDs []string
+	userIdSet := make(map[uint]struct{})
 	for _, order := range orders {
-		userIDs = append(userIDs, order.UserID)
+		userIdSet[order.UserID] = struct{}{}
 	}
-	userIDs = funk.UniqString(userIDs)
+	userIDs := make([]uint, 0, len(userIdSet))
+	for id := range userIdSet {
+		userIDs = append(userIDs, id)
+	}
 	var users []model.User
-	err := common.DB.Where("user_id in (?)", userIDs).Find(&users).Error
+	err := common.DB.Where("id in (?)", userIDs).Find(&users).Error
 	if err != nil {
 		return orders
 	}
 
 	// 使用映射存储用户信息
-	userMap := make(map[string]model.User)
+	userMap := make(map[uint]model.User)
 	for _, user := range users {
-		userMap[user.UserID] = user
+		userMap[user.ID] = user
 	}
 
 	// 分配用户信息

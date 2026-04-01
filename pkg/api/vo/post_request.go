@@ -9,13 +9,13 @@ package vo
 type CreatePostRequest struct {
 	Title       string   `form:"title" json:"title" validate:"required,min=2,max=60"`
 	Description string   `form:"description" json:"description" validate:"required,min=2,max=300"`
-	CategoryID  string   `form:"categoryID" json:"categoryID" validate:"required"`
+	CategoryID  uint     `form:"categoryID" json:"categoryID" validate:"required"`
 	ProjectID   string   `form:"projectID" json:"projectID" validate:"required"`
-	UserID      string   `form:"userID" json:"userID" validate:"required"`
+	UserID      uint     `form:"userID" json:"userID" validate:"required"`
 	Author      string   `form:"author" json:"author" validate:"required"`
 	Content     string   `form:"content" json:"content" validate:"required"`
 	HtmlContent string   `form:"htmlContent" json:"htmlContent" validate:"required"`
-	ColumnID    string   `form:"columnID" json:"columnID"`
+	ColumnID    uint     `form:"columnID" json:"columnID"`
 	Tag         string   `form:"tag" json:"tag"`
 	Ext         string   `form:"ext" json:"ext"`
 	Icon        string   `form:"icon" json:"icon"`
@@ -37,13 +37,13 @@ type CreatePostRequest struct {
 type UpdatePostRequest struct {
 	Title       string   `form:"title" json:"title" validate:"required,min=2,max=60"`
 	Description string   `form:"description" json:"description" validate:"required,min=2,max=300"`
-	CategoryID  string   `form:"categoryID" json:"categoryID" validate:"required"`
+	CategoryID  uint     `form:"categoryID" json:"categoryID" validate:"required"`
 	ProjectID   string   `form:"projectID" json:"projectID" validate:"required"`
-	UserID      string   `form:"userID" json:"userID" validate:"required"`
+	UserID      uint     `form:"userID" json:"userID" validate:"required"`
 	Author      string   `form:"author" json:"author" validate:"required"`
 	Content     string   `form:"content" json:"content" validate:"required"`
 	HtmlContent string   `form:"htmlContent" json:"htmlContent" validate:"required"`
-	ColumnID    string   `form:"columnID" json:"columnID"`
+	ColumnID    uint     `form:"columnID" json:"columnID"`
 	Tag         string   `form:"tag" json:"tag"`
 	Ext         string   `form:"ext" json:"ext"`
 	Icon        string   `form:"icon" json:"icon"`

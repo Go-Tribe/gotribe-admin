@@ -17,10 +17,10 @@ import (
 
 type ITagRepository interface {
 	CreateTag(tag *model.Tag) (*model.Tag, error)                // 创建标签
-	GetTagByTagID(tagID string) (model.Tag, error)               // 获取单个标签
+	GetTagByID(id uint) (model.Tag, error)                       // 获取单个标签
 	GetTags(req *vo.TagListRequest) ([]*model.Tag, int64, error) // 获取标签列表
 	UpdateTag(tag *model.Tag) error                              // 更新标签
-	BatchDeleteTagByIds(ids []string) error                      // 批量删除
+	BatchDeleteTagByIds(ids []uint) error                        // 批量删除
 }
 
 type TagRepository struct {
@@ -32,9 +32,9 @@ func NewTagRepository() ITagRepository {
 }
 
 // 获取单个标签
-func (tr TagRepository) GetTagByTagID(tagID string) (model.Tag, error) {
+func (tr TagRepository) GetTagByID(id uint) (model.Tag, error) {
 	var tag model.Tag
-	err := common.DB.Where("tag_id = ?", tagID).First(&tag).Error
+	err := common.DB.Where("id = ?", id).First(&tag).Error
 	return tag, err
 }
 
@@ -47,9 +47,9 @@ func (tr TagRepository) GetTags(req *vo.TagListRequest) ([]*model.Tag, int64, er
 	if title != "" {
 		db = db.Where("title LIKE ?", fmt.Sprintf("%%%s%%", title))
 	}
-	tagID := strings.TrimSpace(req.TagID)
-	if req.TagID != "" {
-		db = db.Where("tag_id = ?", tagID)
+	id := req.ID
+	if id > 0 {
+		db = db.Where("id = ?", id)
 	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数
@@ -91,13 +91,13 @@ func (tr TagRepository) UpdateTag(tag *model.Tag) error {
 }
 
 // 批量删除
-func (tr TagRepository) BatchDeleteTagByIds(ids []string) error {
+func (tr TagRepository) BatchDeleteTagByIds(ids []uint) error {
 	var tags []model.Tag
 	for _, id := range ids {
 		// 根据ID获取标签
-		tag, err := tr.GetTagByTagID(id)
+		tag, err := tr.GetTagByID(id)
 		if err != nil {
-			return fmt.Errorf("未获取到ID为%s的标签", id)
+			return fmt.Errorf("未获取到ID为%d的标签", id)
 		}
 		tags = append(tags, tag)
 	}

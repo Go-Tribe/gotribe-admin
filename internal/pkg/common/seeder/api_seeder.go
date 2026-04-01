@@ -357,7 +357,7 @@ func (s *ApiSeeder) Run(db *gorm.DB) error {
 		{
 			Model:    model.Model{ID: 42},
 			Method:   "GET",
-			Path:     "/tag/:tagID",
+			Path:     "/tag/:id",
 			Category: "tag",
 			Desc:     "获取单条标签详情",
 			Creator:  "系统",
@@ -381,7 +381,7 @@ func (s *ApiSeeder) Run(db *gorm.DB) error {
 		{
 			Model:    model.Model{ID: 45},
 			Method:   "PATCH",
-			Path:     "/tag/:tagID",
+			Path:     "/tag/:id",
 			Category: "tag",
 			Desc:     "更新标签",
 			Creator:  "系统",
@@ -397,7 +397,7 @@ func (s *ApiSeeder) Run(db *gorm.DB) error {
 		{
 			Model:    model.Model{ID: 47},
 			Method:   "GET",
-			Path:     "/category/:categoryID",
+			Path:     "/category/:id",
 			Category: "category",
 			Desc:     "获取分类信息",
 			Creator:  "系统",
@@ -429,7 +429,7 @@ func (s *ApiSeeder) Run(db *gorm.DB) error {
 		{
 			Model:    model.Model{ID: 51},
 			Method:   "PATCH",
-			Path:     "/category/:categoryID",
+			Path:     "/category/:id",
 			Category: "category",
 			Desc:     "更新分类",
 			Creator:  "系统",
@@ -493,7 +493,7 @@ func (s *ApiSeeder) Run(db *gorm.DB) error {
 		{
 			Model:    model.Model{ID: 59},
 			Method:   "GET",
-			Path:     "/user/:userID",
+			Path:     "/user/:id",
 			Category: "user",
 			Desc:     "获取单个用户详情",
 			Creator:  "系统",
@@ -525,7 +525,7 @@ func (s *ApiSeeder) Run(db *gorm.DB) error {
 		{
 			Model:    model.Model{ID: 63},
 			Method:   "PATCH",
-			Path:     "/user/:userID",
+			Path:     "/user/:id",
 			Category: "user",
 			Desc:     "更新用户",
 			Creator:  "系统",
@@ -557,7 +557,7 @@ func (s *ApiSeeder) Run(db *gorm.DB) error {
 		{
 			Model:    model.Model{ID: 67},
 			Method:   "GET",
-			Path:     "/resource/:resourceID",
+			Path:     "/resource/:id",
 			Category: "resource",
 			Desc:     "获取资源详情",
 			Creator:  "系统",
@@ -565,7 +565,7 @@ func (s *ApiSeeder) Run(db *gorm.DB) error {
 		{
 			Model:    model.Model{ID: 68},
 			Method:   "PATCH",
-			Path:     "/resource/:resourceID",
+			Path:     "/resource/:id",
 			Category: "resource",
 			Desc:     "更新资源信息",
 			Creator:  "系统",
@@ -597,7 +597,7 @@ func (s *ApiSeeder) Run(db *gorm.DB) error {
 		{
 			Model:    model.Model{ID: 72},
 			Method:   "GET",
-			Path:     "/column/:columnID",
+			Path:     "/column/:id",
 			Category: "column",
 			Desc:     "获取专栏详情",
 			Creator:  "系统",
@@ -605,7 +605,7 @@ func (s *ApiSeeder) Run(db *gorm.DB) error {
 		{
 			Model:    model.Model{ID: 73},
 			Method:   "PATCH",
-			Path:     "/column/:columnID",
+			Path:     "/column/:id",
 			Category: "column",
 			Desc:     "更新专栏信息",
 			Creator:  "系统",

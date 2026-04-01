@@ -13,7 +13,7 @@ import (
 type PointDto struct {
 	ID        int64   `json:"id"`
 	Point     float64 `json:"point"`
-	UserID    string  `json:"userID"`
+	UserID    uint    `json:"userID"`
 	Reason    string  `json:"reason"`
 	Nickname  string  `json:"nickname"`
 	CreatedAt string  `json:"createdAt"`

@@ -15,8 +15,8 @@ type Comment struct {
 	ObjectID    string `gorm:"type:varchar(10);not null;index;comment:评论主题ID" json:"objectID"`
 	ObjectType  uint   `gorm:"type:smallint;not null;default:1;index;comment:评论对象类型，1-文章；2-商品" json:"objectType"`
 	Type        uint   `gorm:"type:smallint;not null;default:1;comment:评论类型，1-评论；2-回复" json:"type"`
-	UserID      string `gorm:"type:varchar(10);not null;index;comment:用户ID" json:"userID"`
-	ToUserID    string `gorm:"type:varchar(10);not null;index;comment:被评论用户ID" json:"toUserID"`
+	UserID      uint   `gorm:"not null;index;comment:用户ID" json:"userID"`
+	ToUserID    uint   `gorm:"not null;index;comment:被评论用户ID" json:"toUserID"`
 	ParentID    int    `gorm:"type:integer;not null;default:0;comment:父评论ID" json:"parentID"`
 	ReplyToID   int    `gorm:"type:integer;not null;default:0;comment:回复的评论ID" json:"ReplyToID"`
 	Hot         int    `gorm:"type:integer;default:0;comment:热度" json:"hot"`

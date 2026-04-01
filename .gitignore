@@ -175,6 +175,7 @@ tests/
 # Documentation
 docs/build/
 docs/_build/
+docs/tech-debt/
 
 # Coverage reports
 coverage.out
@@ -280,3 +281,4 @@ Temporary Items
 .apdisk
 public/*
 gotribe-admin
+AGENTS.md

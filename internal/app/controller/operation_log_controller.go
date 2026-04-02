@@ -6,12 +6,13 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type IOperationLogController interface {
@@ -53,8 +54,9 @@ func (oc OperationLogController) GetOperationLogs(c *gin.Context) {
 		response.ValidationFail(c, errStr)
 		return
 	}
+	ctx := c.Request.Context()
 	// 获取
-	logs, total, err := oc.operationLogRepository.GetOperationLogs(&req)
+	logs, total, err := oc.operationLogRepository.GetOperationLogs(ctx, &req)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
@@ -88,8 +90,9 @@ func (oc OperationLogController) BatchDeleteOperationLogByIds(c *gin.Context) {
 		return
 	}
 
+	ctx := c.Request.Context()
 	// 删除接口
-	err := oc.operationLogRepository.BatchDeleteOperationLogByIds(req.OperationLogIds)
+	err := oc.operationLogRepository.BatchDeleteOperationLogByIds(ctx, req.OperationLogIds)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return

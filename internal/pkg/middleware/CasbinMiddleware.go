@@ -24,7 +24,7 @@ var checkLock sync.RWMutex
 func CasbinMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ur := repository.NewAdminRepository()
-		admin, err := ur.GetCurrentAdmin(c)
+		admin, err := ur.GetCurrentAdmin(c.Request.Context(), c)
 		if err != nil {
 			response.Unauthorized(c, "用户未登录")
 			c.Abort()

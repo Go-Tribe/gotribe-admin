@@ -67,7 +67,7 @@ func (ac AuthController) Login(c *gin.Context) {
 	}
 
 	// 密码校验
-	user, err := ac.AdminRepository.Login(u)
+	user, err := ac.AdminRepository.Login(c.Request.Context(), u)
 	if err != nil {
 		response.PasswordIncorrect(c, "用户名或密码错误")
 		return

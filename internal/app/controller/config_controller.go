@@ -49,7 +49,8 @@ func NewConfigController() IConfigController {
 // @Router       /config/{configID} [get]
 // @Security     BearerAuth
 func (pc ConfigController) GetConfigInfo(c *gin.Context) {
-	config, err := pc.ConfigRepository.GetConfigByConfigID(c.Param("configID"))
+	ctx := c.Request.Context()
+	config, err := pc.ConfigRepository.GetConfigByConfigID(ctx, c.Param("configID"))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -72,6 +73,7 @@ func (pc ConfigController) GetConfigInfo(c *gin.Context) {
 // @Router       /config [get]
 // @Security     BearerAuth
 func (pc ConfigController) GetConfigs(c *gin.Context) {
+	ctx := c.Request.Context()
 	var req vo.ConfigListRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
@@ -86,7 +88,7 @@ func (pc ConfigController) GetConfigs(c *gin.Context) {
 	}
 
 	// 获取
-	config, total, err := pc.ConfigRepository.GetConfigs(&req)
+	config, total, err := pc.ConfigRepository.GetConfigs(ctx, &req)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
@@ -106,6 +108,7 @@ func (pc ConfigController) GetConfigs(c *gin.Context) {
 // @Router       /config [post]
 // @Security     BearerAuth
 func (pc ConfigController) CreateConfig(c *gin.Context) {
+	ctx := c.Request.Context()
 	var req vo.CreateConfigRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
@@ -129,7 +132,7 @@ func (pc ConfigController) CreateConfig(c *gin.Context) {
 		Info:        req.Info,
 	}
 
-	err := pc.ConfigRepository.CreateConfig(&config)
+	err := pc.ConfigRepository.CreateConfig(ctx, &config)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
@@ -152,6 +155,7 @@ func (pc ConfigController) CreateConfig(c *gin.Context) {
 // @Router       /config/{configID} [patch]
 // @Security     BearerAuth
 func (pc ConfigController) UpdateConfigByID(c *gin.Context) {
+	ctx := c.Request.Context()
 	var req vo.UpdateConfigRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
@@ -166,7 +170,7 @@ func (pc ConfigController) UpdateConfigByID(c *gin.Context) {
 	}
 
 	// 根据path中的ConfigID获取配置信息
-	oldConfig, err := pc.ConfigRepository.GetConfigByConfigID(c.Param("configID"))
+	oldConfig, err := pc.ConfigRepository.GetConfigByConfigID(ctx, c.Param("configID"))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -177,7 +181,7 @@ func (pc ConfigController) UpdateConfigByID(c *gin.Context) {
 	oldConfig.ProjectID = req.ProjectID
 	oldConfig.MDContent = req.MDContent
 	// 更新配置
-	err = pc.ConfigRepository.UpdateConfig(&oldConfig)
+	err = pc.ConfigRepository.UpdateConfig(ctx, &oldConfig)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
@@ -198,6 +202,7 @@ func (pc ConfigController) UpdateConfigByID(c *gin.Context) {
 // @Router       /config [delete]
 // @Security     BearerAuth
 func (pc ConfigController) BatchDeleteConfigByIds(c *gin.Context) {
+	ctx := c.Request.Context()
 	var req vo.DeleteConfigsRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
@@ -212,7 +217,7 @@ func (pc ConfigController) BatchDeleteConfigByIds(c *gin.Context) {
 	}
 	// 前端传来的配置ID
 	reqConfigIds := strings.Split(req.ConfigIds, ",")
-	err := pc.ConfigRepository.BatchDeleteConfigByIds(reqConfigIds)
+	err := pc.ConfigRepository.BatchDeleteConfigByIds(ctx, reqConfigIds)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return

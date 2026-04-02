@@ -53,7 +53,8 @@ func (cc CategoryController) GetCategoryInfo(c *gin.Context) {
 		response.ValidationFail(c, "分类ID格式错误")
 		return
 	}
-	category, err := cc.CategoryRepository.GetCategoryByID(uint(id))
+	ctx := c.Request.Context()
+	category, err := cc.CategoryRepository.GetCategoryByID(ctx, uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -74,7 +75,8 @@ func (cc CategoryController) GetCategoryInfo(c *gin.Context) {
 // @Router       /category [get]
 // @Security     BearerAuth
 func (cc CategoryController) GetCategorys(c *gin.Context) {
-	categorys, err := cc.CategoryRepository.GetCategorys()
+	ctx := c.Request.Context()
+	categorys, err := cc.CategoryRepository.GetCategorys(ctx)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
@@ -93,7 +95,8 @@ func (cc CategoryController) GetCategorys(c *gin.Context) {
 // @Router       /category/tree [get]
 // @Security     BearerAuth
 func (cc CategoryController) GetCategoryTree(c *gin.Context) {
-	categoryTree, err := cc.CategoryRepository.GetCategoryTree()
+	ctx := c.Request.Context()
+	categoryTree, err := cc.CategoryRepository.GetCategoryTree(ctx)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -138,7 +141,8 @@ func (cc CategoryController) CreateCategory(c *gin.Context) {
 		Description: req.Description,
 	}
 
-	err := cc.CategoryRepository.CreateCategory(&category)
+	ctx := c.Request.Context()
+	err := cc.CategoryRepository.CreateCategory(ctx, &category)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
@@ -176,8 +180,9 @@ func (cc CategoryController) UpdateCategoryByID(c *gin.Context) {
 		response.ValidationFail(c, "分类ID格式错误")
 		return
 	}
+	ctx := c.Request.Context()
 	// 校验父级分类ID
-	category, err := cc.CategoryRepository.GetCategoryByID(uint(id))
+	category, err := cc.CategoryRepository.GetCategoryByID(ctx, uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -195,7 +200,7 @@ func (cc CategoryController) UpdateCategoryByID(c *gin.Context) {
 	category.Hidden = req.Hidden
 	category.ParentID = req.ParentID
 	category.Description = req.Description
-	err = cc.CategoryRepository.UpdateCategoryByID(uint(id), &category)
+	err = cc.CategoryRepository.UpdateCategoryByID(ctx, uint(id), &category)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
@@ -229,7 +234,8 @@ func (cc CategoryController) BatchDeleteCategoryByIds(c *gin.Context) {
 		response.ValidationFail(c, errStr)
 		return
 	}
-	err := cc.CategoryRepository.BatchDeleteCategoryByIds(req.Ids)
+	ctx := c.Request.Context()
+	err := cc.CategoryRepository.BatchDeleteCategoryByIds(ctx, req.Ids)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return

@@ -6,20 +6,22 @@
 package repository
 
 import (
+	"context"
 	"fmt"
+	"strings"
+
 	"github.com/dengmengmian/ghelper/gconvert"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/vo"
-	"strings"
 )
 
 type IAdSceneRepository interface {
-	CreateAdScene(adScene *model.AdScene) error                              // 创建推广场景
-	GetAdSceneByID(id uint) (model.AdScene, error)                           // 获取单个推广场景
-	GetAdScenes(req *vo.AdSceneListRequest) ([]*model.AdScene, int64, error) // 获取推广场景列表
-	UpdateAdScene(adScene *model.AdScene) error                              // 更新推广场景
-	BatchDeleteAdSceneByIds(ids []uint) error                                // 批量删除
+	CreateAdScene(ctx context.Context, adScene *model.AdScene) error                              // 创建推广场景
+	GetAdSceneByID(ctx context.Context, id uint) (model.AdScene, error)                           // 获取单个推广场景
+	GetAdScenes(ctx context.Context, req *vo.AdSceneListRequest) ([]*model.AdScene, int64, error) // 获取推广场景列表
+	UpdateAdScene(ctx context.Context, adScene *model.AdScene) error                              // 更新推广场景
+	BatchDeleteAdSceneByIds(ctx context.Context, ids []uint) error                                // 批量删除
 }
 
 type AdSceneRepository struct {
@@ -31,16 +33,16 @@ func NewAdSceneRepository() IAdSceneRepository {
 }
 
 // 获取单个推广场景
-func (cr AdSceneRepository) GetAdSceneByID(id uint) (model.AdScene, error) {
+func (cr AdSceneRepository) GetAdSceneByID(ctx context.Context, id uint) (model.AdScene, error) {
 	var adScene model.AdScene
-	err := common.DB.Where("id = ?", id).First(&adScene).Error
+	err := common.WithContext(ctx).DB().Where("id = ?", id).First(&adScene).Error
 	return adScene, err
 }
 
 // 获取推广场景列表
-func (cr AdSceneRepository) GetAdScenes(req *vo.AdSceneListRequest) ([]*model.AdScene, int64, error) {
+func (cr AdSceneRepository) GetAdScenes(ctx context.Context, req *vo.AdSceneListRequest) ([]*model.AdScene, int64, error) {
 	var list []*model.AdScene
-	db := common.DB.Model(&model.AdScene{}).Order("created_at DESC")
+	db := common.WithContext(ctx).DB().Model(&model.AdScene{}).Order("created_at DESC")
 
 	projectID := strings.TrimSpace(req.ProjectID)
 	if !gconvert.IsEmpty(projectID) {
@@ -61,28 +63,58 @@ func (cr AdSceneRepository) GetAdScenes(req *vo.AdSceneListRequest) ([]*model.Ad
 	} else {
 		err = db.Find(&list).Error
 	}
-	return GetAdSceneOther(list), total, err
+	list, err = GetAdSceneOther(ctx, list)
+	return list, total, err
 }
 
 // 获取推广场景其他信息
-func GetAdSceneOther(adScenes []*model.AdScene) []*model.AdScene {
-	for _, m := range adScenes {
-		var project *model.Project
-		_ = common.DB.Where("project_id = ?", m.ProjectID).First(&project).Error
-		m.Project = project
+func GetAdSceneOther(ctx context.Context, adScenes []*model.AdScene) ([]*model.AdScene, error) {
+	if len(adScenes) == 0 {
+		return adScenes, nil
 	}
-	return adScenes
+
+	// 收集所有 ProjectID
+	projectIDs := make([]string, 0, len(adScenes))
+	for _, m := range adScenes {
+		if m.ProjectID != "" {
+			projectIDs = append(projectIDs, m.ProjectID)
+		}
+	}
+
+	if len(projectIDs) == 0 {
+		return adScenes, nil
+	}
+
+	// 批量查询
+	var projects []*model.Project
+	if err := common.WithContext(ctx).DB().Where("project_id IN ?", projectIDs).Find(&projects).Error; err != nil {
+		return adScenes, err
+	}
+
+	// 建立映射
+	projectMap := make(map[string]*model.Project)
+	for _, project := range projects {
+		projectMap[project.ProjectID] = project
+	}
+
+	// 赋值
+	for _, m := range adScenes {
+		if project, ok := projectMap[m.ProjectID]; ok {
+			m.Project = project
+		}
+	}
+	return adScenes, nil
 }
 
 // 创建推广场景
-func (cr AdSceneRepository) CreateAdScene(adScene *model.AdScene) error {
-	err := common.DB.Create(adScene).Error
+func (cr AdSceneRepository) CreateAdScene(ctx context.Context, adScene *model.AdScene) error {
+	err := common.WithContext(ctx).DB().Create(adScene).Error
 	return err
 }
 
 // 更新推广场景
-func (cr AdSceneRepository) UpdateAdScene(adScene *model.AdScene) error {
-	err := common.DB.Model(adScene).Updates(adScene).Error
+func (cr AdSceneRepository) UpdateAdScene(ctx context.Context, adScene *model.AdScene) error {
+	err := common.WithContext(ctx).DB().Model(adScene).Updates(adScene).Error
 	if err != nil {
 		return err
 	}
@@ -91,18 +123,18 @@ func (cr AdSceneRepository) UpdateAdScene(adScene *model.AdScene) error {
 }
 
 // 批量删除
-func (cr AdSceneRepository) BatchDeleteAdSceneByIds(ids []uint) error {
+func (cr AdSceneRepository) BatchDeleteAdSceneByIds(ctx context.Context, ids []uint) error {
 	var adScenes []model.AdScene
 	for _, id := range ids {
 		// 根据ID获取标签
-		adScene, err := cr.GetAdSceneByID(id)
+		adScene, err := cr.GetAdSceneByID(ctx, id)
 		if err != nil {
 			return fmt.Errorf("未获取到ID为%d的推广场景", id)
 		}
 		adScenes = append(adScenes, adScene)
 	}
 
-	err := common.DB.Unscoped().Delete(&adScenes).Error
+	err := common.WithContext(ctx).DB().Unscoped().Delete(&adScenes).Error
 
 	return err
 }

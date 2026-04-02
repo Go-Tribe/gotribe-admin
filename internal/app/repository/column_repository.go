@@ -6,6 +6,7 @@
 package repository
 
 import (
+	"context"
 	"fmt"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -14,11 +15,11 @@ import (
 )
 
 type IColumnRepository interface {
-	CreateColumn(column *model.Column) error                              // 创建专栏
-	GetColumnByID(id uint) (model.Column, error)                          // 获取单个专栏
-	GetColumns(req *vo.ColumnListRequest) ([]*model.Column, int64, error) // 获取专栏列表
-	UpdateColumn(column *model.Column) error                              // 更新专栏
-	BatchDeleteColumnByIds(ids []uint) error                              // 批量删除专栏
+	CreateColumn(ctx context.Context, column *model.Column) error                              // 创建专栏
+	GetColumnByID(ctx context.Context, id uint) (model.Column, error)                          // 获取单个专栏
+	GetColumns(ctx context.Context, req *vo.ColumnListRequest) ([]*model.Column, int64, error) // 获取专栏列表
+	UpdateColumn(ctx context.Context, column *model.Column) error                              // 更新专栏
+	BatchDeleteColumnByIds(ctx context.Context, ids []uint) error                              // 批量删除专栏
 }
 
 type ColumnRepository struct {
@@ -30,16 +31,16 @@ func NewColumnRepository() IColumnRepository {
 }
 
 // 获取单个专栏
-func (cr ColumnRepository) GetColumnByID(id uint) (model.Column, error) {
+func (cr ColumnRepository) GetColumnByID(ctx context.Context, id uint) (model.Column, error) {
 	var column model.Column
-	err := common.DB.Where("id = ?", id).First(&column).Error
+	err := common.WithContext(ctx).DB().Where("id = ?", id).First(&column).Error
 	return column, err
 }
 
 // 获取专栏列表
-func (cr ColumnRepository) GetColumns(req *vo.ColumnListRequest) ([]*model.Column, int64, error) {
+func (cr ColumnRepository) GetColumns(ctx context.Context, req *vo.ColumnListRequest) ([]*model.Column, int64, error) {
 	var list []*model.Column
-	db := common.DB.Model(&model.Column{}).Order("created_at DESC")
+	db := common.WithContext(ctx).DB().Model(&model.Column{}).Order("created_at DESC")
 
 	title := strings.TrimSpace(req.Title)
 	if title != "" {
@@ -70,14 +71,14 @@ func (cr ColumnRepository) GetColumns(req *vo.ColumnListRequest) ([]*model.Colum
 }
 
 // 创建专栏
-func (cr ColumnRepository) CreateColumn(column *model.Column) error {
-	err := common.DB.Create(column).Error
+func (cr ColumnRepository) CreateColumn(ctx context.Context, column *model.Column) error {
+	err := common.WithContext(ctx).DB().Create(column).Error
 	return err
 }
 
 // 更新专栏
-func (cr ColumnRepository) UpdateColumn(column *model.Column) error {
-	err := common.DB.Model(column).Updates(column).Error
+func (cr ColumnRepository) UpdateColumn(ctx context.Context, column *model.Column) error {
+	err := common.WithContext(ctx).DB().Model(column).Updates(column).Error
 	if err != nil {
 		return err
 	}
@@ -86,18 +87,18 @@ func (cr ColumnRepository) UpdateColumn(column *model.Column) error {
 }
 
 // 批量删除
-func (cr ColumnRepository) BatchDeleteColumnByIds(ids []uint) error {
+func (cr ColumnRepository) BatchDeleteColumnByIds(ctx context.Context, ids []uint) error {
 	var columns []model.Column
 	for _, id := range ids {
 		// 根据ID获取标签
-		column, err := cr.GetColumnByID(id)
+		column, err := cr.GetColumnByID(ctx, id)
 		if err != nil {
 			return fmt.Errorf("未获取到ID为%d的专栏", id)
 		}
 		columns = append(columns, column)
 	}
 
-	err := common.DB.Delete(&columns).Error
+	err := common.WithContext(ctx).DB().Delete(&columns).Error
 
 	return err
 }

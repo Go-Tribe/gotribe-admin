@@ -49,7 +49,8 @@ func NewProjectController() IProjectController {
 // @Router       /project/{projectID} [get]
 // @Security     BearerAuth
 func (pc ProjectController) GetProjectInfo(c *gin.Context) {
-	project, err := pc.ProjectRepository.GetProjectByProjectID(c.Param("projectID"))
+	ctx := c.Request.Context()
+	project, err := pc.ProjectRepository.GetProjectByProjectID(ctx, c.Param("projectID"))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -72,6 +73,7 @@ func (pc ProjectController) GetProjectInfo(c *gin.Context) {
 // @Router       /project [get]
 // @Security     BearerAuth
 func (pc ProjectController) GetProjects(c *gin.Context) {
+	ctx := c.Request.Context()
 	var req vo.ProjectListRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
@@ -86,7 +88,7 @@ func (pc ProjectController) GetProjects(c *gin.Context) {
 	}
 
 	// 获取
-	project, total, err := pc.ProjectRepository.GetProjects(&req)
+	project, total, err := pc.ProjectRepository.GetProjects(ctx, &req)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
@@ -106,6 +108,7 @@ func (pc ProjectController) GetProjects(c *gin.Context) {
 // @Router       /project [post]
 // @Security     BearerAuth
 func (pc ProjectController) CreateProject(c *gin.Context) {
+	ctx := c.Request.Context()
 	var req vo.CreateProjectRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
@@ -136,7 +139,7 @@ func (pc ProjectController) CreateProject(c *gin.Context) {
 		PushToken:      req.PushToken,
 	}
 
-	err := pc.ProjectRepository.CreateProject(&project)
+	err := pc.ProjectRepository.CreateProject(ctx, &project)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
@@ -158,6 +161,7 @@ func (pc ProjectController) CreateProject(c *gin.Context) {
 // @Router       /project/{projectID} [patch]
 // @Security     BearerAuth
 func (pc ProjectController) UpdateProjectByID(c *gin.Context) {
+	ctx := c.Request.Context()
 	var req vo.CreateProjectRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
@@ -172,7 +176,7 @@ func (pc ProjectController) UpdateProjectByID(c *gin.Context) {
 	}
 
 	// 根据path中的ProjectID获取项目信息
-	oldProject, err := pc.ProjectRepository.GetProjectByProjectID(c.Param("projectID"))
+	oldProject, err := pc.ProjectRepository.GetProjectByProjectID(ctx, c.Param("projectID"))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -192,7 +196,7 @@ func (pc ProjectController) UpdateProjectByID(c *gin.Context) {
 	oldProject.BaiduAnalytics = req.BaiduAnalytics
 	oldProject.PushToken = req.PushToken
 	// 更新项目
-	err = pc.ProjectRepository.UpdateProject(&oldProject)
+	err = pc.ProjectRepository.UpdateProject(ctx, &oldProject)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
@@ -212,6 +216,7 @@ func (pc ProjectController) UpdateProjectByID(c *gin.Context) {
 // @Router       /project [delete]
 // @Security     BearerAuth
 func (tc ProjectController) BatchDeleteProjectByIds(c *gin.Context) {
+	ctx := c.Request.Context()
 	var req vo.DeleteProjectsRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
@@ -226,7 +231,7 @@ func (tc ProjectController) BatchDeleteProjectByIds(c *gin.Context) {
 	}
 	// 前端传来的标签ID
 	reqProjectIds := strings.Split(req.ProjectIds, ",")
-	err := tc.ProjectRepository.BatchDeleteProjectByIds(reqProjectIds)
+	err := tc.ProjectRepository.BatchDeleteProjectByIds(ctx, reqProjectIds)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return

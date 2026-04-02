@@ -6,6 +6,7 @@
 package repository
 
 import (
+	"context"
 	"fmt"
 	"gotribe-admin/config"
 	"gotribe-admin/internal/pkg/common"
@@ -15,11 +16,11 @@ import (
 )
 
 type IResourceRepository interface {
-	CreateResource(resource *model.Resource) error                              // 创建资源
-	GetResourceByID(id uint) (model.Resource, error)                            // 获取单个资源
-	GetResources(req *vo.ResourceListRequest) ([]*model.Resource, int64, error) // 获取资源列表
-	UpdateResource(resource *model.Resource) error                              // 更新资源
-	DeleteResourceByID(id uint) error                                           // 删除资源
+	CreateResource(ctx context.Context, resource *model.Resource) error                              // 创建资源
+	GetResourceByID(ctx context.Context, id uint) (model.Resource, error)                            // 获取单个资源
+	GetResources(ctx context.Context, req *vo.ResourceListRequest) ([]*model.Resource, int64, error) // 获取资源列表
+	UpdateResource(ctx context.Context, resource *model.Resource) error                              // 更新资源
+	DeleteResourceByID(ctx context.Context, id uint) error                                           // 删除资源
 }
 
 type ResourceRepository struct {
@@ -31,16 +32,16 @@ func NewResourceRepository() IResourceRepository {
 }
 
 // 获取单个资源
-func (rr ResourceRepository) GetResourceByID(id uint) (model.Resource, error) {
+func (rr ResourceRepository) GetResourceByID(ctx context.Context, id uint) (model.Resource, error) {
 	var resource model.Resource
-	err := common.DB.Where("id = ?", id).First(&resource).Error
+	err := common.WithContext(ctx).DB().Where("id = ?", id).First(&resource).Error
 	return resource, err
 }
 
 // 获取资源列表
-func (rr ResourceRepository) GetResources(req *vo.ResourceListRequest) ([]*model.Resource, int64, error) {
+func (rr ResourceRepository) GetResources(ctx context.Context, req *vo.ResourceListRequest) ([]*model.Resource, int64, error) {
 	var list []*model.Resource
-	db := common.DB.Model(&model.Resource{}).Order("created_at DESC")
+	db := common.WithContext(ctx).DB().Model(&model.Resource{}).Order("created_at DESC")
 
 	if int(req.Type) > 0 {
 		db = db.Where("file_type = ?", req.Type)
@@ -67,14 +68,14 @@ func (rr ResourceRepository) GetResources(req *vo.ResourceListRequest) ([]*model
 }
 
 // 创建资源
-func (rr ResourceRepository) CreateResource(resource *model.Resource) error {
-	err := common.DB.Create(resource).Error
+func (rr ResourceRepository) CreateResource(ctx context.Context, resource *model.Resource) error {
+	err := common.WithContext(ctx).DB().Create(resource).Error
 	return err
 }
 
 // 更新资源
-func (rr ResourceRepository) UpdateResource(resource *model.Resource) error {
-	err := common.DB.Model(resource).Updates(resource).Error
+func (rr ResourceRepository) UpdateResource(ctx context.Context, resource *model.Resource) error {
+	err := common.WithContext(ctx).DB().Model(resource).Updates(resource).Error
 	if err != nil {
 		return err
 	}
@@ -83,14 +84,14 @@ func (rr ResourceRepository) UpdateResource(resource *model.Resource) error {
 }
 
 // 删除文件
-func (rr ResourceRepository) DeleteResourceByID(id uint) error {
-	project, err := rr.GetResourceByID(id)
+func (rr ResourceRepository) DeleteResourceByID(ctx context.Context, id uint) error {
+	project, err := rr.GetResourceByID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("未获取到ID为%d的项目", id)
 	}
 
 	// 硬删除
-	err = common.DB.Unscoped().Delete(&project).Error
+	err = common.WithContext(ctx).DB().Unscoped().Delete(&project).Error
 	if err != nil {
 		return err
 	}

@@ -6,13 +6,14 @@
 package repository
 
 import (
+	"context"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 )
 
 type ISystemConfigRepository interface {
-	GetSystemConfig() (model.SystemConfig, error)              // 获取单个标签
-	UpdateSystemConfig(systemConfig *model.SystemConfig) error // 更新标签
+	GetSystemConfig(ctx context.Context) (model.SystemConfig, error)              // 获取单个标签
+	UpdateSystemConfig(ctx context.Context, systemConfig *model.SystemConfig) error // 更新标签
 }
 
 type SystemConfigRepository struct {
@@ -24,15 +25,15 @@ func NewSystemConfigRepository() ISystemConfigRepository {
 }
 
 // 获取单个
-func (tr SystemConfigRepository) GetSystemConfig() (model.SystemConfig, error) {
+func (tr SystemConfigRepository) GetSystemConfig(ctx context.Context) (model.SystemConfig, error) {
 	var systemConfig model.SystemConfig
-	err := common.DB.First(&systemConfig).Error
+	err := common.WithContext(ctx).DB().First(&systemConfig).Error
 	return systemConfig, err
 }
 
 // 更新
-func (tr SystemConfigRepository) UpdateSystemConfig(systemConfig *model.SystemConfig) error {
-	err := common.DB.Model(systemConfig).Updates(systemConfig).Error
+func (tr SystemConfigRepository) UpdateSystemConfig(ctx context.Context, systemConfig *model.SystemConfig) error {
+	err := common.WithContext(ctx).DB().Model(systemConfig).Updates(systemConfig).Error
 	if err != nil {
 		return err
 	}

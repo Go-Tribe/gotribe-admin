@@ -6,6 +6,7 @@
 package repository
 
 import (
+	"context"
 	"fmt"
 	"github.com/dengmengmian/ghelper/gconvert"
 	"gotribe-admin/internal/pkg/common"
@@ -15,11 +16,11 @@ import (
 )
 
 type IConfigRepository interface {
-	CreateConfig(config *model.Config) error                              // 创建配置
-	GetConfigByConfigID(configID string) (model.Config, error)            // 获取单个配置
-	GetConfigs(req *vo.ConfigListRequest) ([]*model.Config, int64, error) // 获取配置列表
-	UpdateConfig(config *model.Config) error                              // 更新配置
-	BatchDeleteConfigByIds(ids []string) error                            // 批量删除
+	CreateConfig(ctx context.Context, config *model.Config) error                              // 创建配置
+	GetConfigByConfigID(ctx context.Context, configID string) (model.Config, error)            // 获取单个配置
+	GetConfigs(ctx context.Context, req *vo.ConfigListRequest) ([]*model.Config, int64, error) // 获取配置列表
+	UpdateConfig(ctx context.Context, config *model.Config) error                              // 更新配置
+	BatchDeleteConfigByIds(ctx context.Context, ids []string) error                            // 批量删除
 }
 
 type ConfigRepository struct {
@@ -31,16 +32,16 @@ func NewConfigRepository() IConfigRepository {
 }
 
 // 获取单个配置
-func (cr ConfigRepository) GetConfigByConfigID(configID string) (model.Config, error) {
+func (cr ConfigRepository) GetConfigByConfigID(ctx context.Context, configID string) (model.Config, error) {
 	var config model.Config
-	err := common.DB.Where("config_id = ?", configID).First(&config).Error
+	err := common.WithContext(ctx).DB().Where("config_id = ?", configID).First(&config).Error
 	return config, err
 }
 
 // 获取配置列表
-func (cr ConfigRepository) GetConfigs(req *vo.ConfigListRequest) ([]*model.Config, int64, error) {
+func (cr ConfigRepository) GetConfigs(ctx context.Context, req *vo.ConfigListRequest) ([]*model.Config, int64, error) {
 	var list []*model.Config
-	db := common.DB.Model(&model.Config{}).Order("created_at DESC")
+	db := common.WithContext(ctx).DB().Model(&model.Config{}).Order("created_at DESC")
 
 	title := strings.TrimSpace(req.Title)
 	if !gconvert.IsEmpty(title) {
@@ -119,14 +120,14 @@ func GetConfigOther(configs []*model.Config) []*model.Config {
 }
 
 // 创建配置
-func (cr ConfigRepository) CreateConfig(config *model.Config) error {
-	err := common.DB.Create(config).Error
+func (cr ConfigRepository) CreateConfig(ctx context.Context, config *model.Config) error {
+	err := common.WithContext(ctx).DB().Create(config).Error
 	return err
 }
 
 // 更新配置
-func (cr ConfigRepository) UpdateConfig(config *model.Config) error {
-	err := common.DB.Model(config).Updates(config).Error
+func (cr ConfigRepository) UpdateConfig(ctx context.Context, config *model.Config) error {
+	err := common.WithContext(ctx).DB().Model(config).Updates(config).Error
 	if err != nil {
 		return err
 	}
@@ -135,18 +136,18 @@ func (cr ConfigRepository) UpdateConfig(config *model.Config) error {
 }
 
 // 批量删除
-func (cr ConfigRepository) BatchDeleteConfigByIds(ids []string) error {
+func (cr ConfigRepository) BatchDeleteConfigByIds(ctx context.Context, ids []string) error {
 	var configs []model.Config
 	for _, id := range ids {
 		// 根据ID获取标签
-		config, err := cr.GetConfigByConfigID(id)
+		config, err := cr.GetConfigByConfigID(ctx, id)
 		if err != nil {
 			return fmt.Errorf("未获取到ID为%s的配置", id)
 		}
 		configs = append(configs, config)
 	}
 
-	err := common.DB.Unscoped().Delete(&configs).Error
+	err := common.WithContext(ctx).DB().Unscoped().Delete(&configs).Error
 
 	return err
 }

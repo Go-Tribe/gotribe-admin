@@ -51,12 +51,13 @@ func NewUserController() IUserController {
 // @Router       /user/{id} [get]
 // @Security     BearerAuth
 func (pc UserController) GetUserInfo(c *gin.Context) {
+	ctx := c.Request.Context()
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
 		response.ValidationFail(c, "用户ID格式错误")
 		return
 	}
-	user, err := pc.UserRepository.GetUserByID(uint(id))
+	user, err := pc.UserRepository.GetUserByID(ctx, uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -79,6 +80,7 @@ func (pc UserController) GetUserInfo(c *gin.Context) {
 // @Router       /user [get]
 // @Security     BearerAuth
 func (pc UserController) GetUsers(c *gin.Context) {
+	ctx := c.Request.Context()
 	var req vo.UserListRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
@@ -93,7 +95,7 @@ func (pc UserController) GetUsers(c *gin.Context) {
 	}
 
 	// 获取
-	user, total, err := pc.UserRepository.GetUsers(&req)
+	user, total, err := pc.UserRepository.GetUsers(ctx, &req)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
@@ -113,6 +115,7 @@ func (pc UserController) GetUsers(c *gin.Context) {
 // @Router       /user [post]
 // @Security     BearerAuth
 func (pc UserController) CreateUser(c *gin.Context) {
+	ctx := c.Request.Context()
 	var req vo.CreateUserRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
@@ -141,7 +144,7 @@ func (pc UserController) CreateUser(c *gin.Context) {
 		Password:  encryptedPwd,
 	}
 
-	err = pc.UserRepository.CreateUser(&user)
+	err = pc.UserRepository.CreateUser(ctx, &user)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
@@ -163,6 +166,7 @@ func (pc UserController) CreateUser(c *gin.Context) {
 // @Router       /user/{id} [patch]
 // @Security     BearerAuth
 func (pc UserController) UpdateUserByID(c *gin.Context) {
+	ctx := c.Request.Context()
 	var req vo.UpdateUserRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
@@ -182,7 +186,7 @@ func (pc UserController) UpdateUserByID(c *gin.Context) {
 	}
 
 	// 根据path中的ID获取用户信息
-	oldUser, err := pc.UserRepository.GetUserByID(uint(id))
+	oldUser, err := pc.UserRepository.GetUserByID(ctx, uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -196,7 +200,7 @@ func (pc UserController) UpdateUserByID(c *gin.Context) {
 	}
 
 	// 更新用户
-	err = pc.UserRepository.UpdateUser(&oldUser)
+	err = pc.UserRepository.UpdateUser(ctx, &oldUser)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
@@ -216,6 +220,7 @@ func (pc UserController) UpdateUserByID(c *gin.Context) {
 // @Router       /user [delete]
 // @Security     BearerAuth
 func (tc UserController) BatchDeleteUserByIds(c *gin.Context) {
+	ctx := c.Request.Context()
 	var req vo.DeleteUsersRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
@@ -229,7 +234,7 @@ func (tc UserController) BatchDeleteUserByIds(c *gin.Context) {
 		return
 	}
 
-	err := tc.UserRepository.BatchDeleteUserByIds(req.Ids)
+	err := tc.UserRepository.BatchDeleteUserByIds(ctx, req.Ids)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return
@@ -250,7 +255,8 @@ func (tc UserController) BatchDeleteUserByIds(c *gin.Context) {
 // @Router       /user/search [get]
 // @Security     BearerAuth
 func (tc UserController) SearchUserByUsername(c *gin.Context) {
-	user, err := tc.UserRepository.SearchUserByNickname(c.Query("nickname"))
+	ctx := c.Request.Context()
+	user, err := tc.UserRepository.SearchUserByNickname(ctx, c.Query("nickname"))
 	if err != nil {
 		response.InternalServerError(c, "获取需要更新的用户信息失败: "+err.Error())
 		return

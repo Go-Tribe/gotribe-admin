@@ -127,6 +127,9 @@ func setupSwaggerRoutes(r *gin.Engine) {
 
 // registerAPIRoutes 注册所有 API 路由
 func registerAPIRoutes(r *gin.Engine, authMiddleware *jwt.GinJWTMiddleware) {
+	// 注册健康检查路由（在 API 分组外，不需要认证）
+	InitHealthRoute(r)
+
 	apiGroup := r.Group("/" + config.Conf.System.UrlPathPrefix)
 
 	// 路由初始化器列表

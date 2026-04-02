@@ -6,6 +6,7 @@
 package repository
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"gotribe-admin/internal/pkg/common"
@@ -18,13 +19,13 @@ import (
 )
 
 type IApiRepository interface {
-	GetApis(req *vo.ApiListRequest) ([]*model.Api, int64, error) // 获取接口列表
-	GetApisByID(apiIds []uint) ([]*model.Api, error)             // 根据接口ID获取接口列表
-	GetApiTree() ([]*dto.ApiTreeDto, error)                      // 获取接口树(按接口Category字段分类)
-	CreateApi(api *model.Api) error                              // 创建接口
-	UpdateApiByID(apiID uint, api *model.Api) error              // 更新接口
-	BatchDeleteApiByIds(apiIds []uint) error                     // 批量删除接口
-	GetApiDescByPath(path string, method string) (string, error) // 根据接口路径和请求方式获取接口描述
+	GetApis(ctx context.Context, req *vo.ApiListRequest) ([]*model.Api, int64, error) // 获取接口列表
+	GetApisByID(ctx context.Context, apiIds []uint) ([]*model.Api, error)             // 根据接口ID获取接口列表
+	GetApiTree(ctx context.Context) ([]*dto.ApiTreeDto, error)                      // 获取接口树(按接口Category字段分类)
+	CreateApi(ctx context.Context, api *model.Api) error                              // 创建接口
+	UpdateApiByID(ctx context.Context, apiID uint, api *model.Api) error              // 更新接口
+	BatchDeleteApiByIds(ctx context.Context, apiIds []uint) error                     // 批量删除接口
+	GetApiDescByPath(ctx context.Context, path string, method string) (string, error) // 根据接口路径和请求方式获取接口描述
 }
 
 type ApiRepository struct {
@@ -35,9 +36,9 @@ func NewApiRepository() IApiRepository {
 }
 
 // 获取接口列表
-func (a ApiRepository) GetApis(req *vo.ApiListRequest) ([]*model.Api, int64, error) {
+func (a ApiRepository) GetApis(ctx context.Context, req *vo.ApiListRequest) ([]*model.Api, int64, error) {
 	var list []*model.Api
-	db := common.DB.Model(&model.Api{}).Order("created_at DESC")
+	db := common.WithContext(ctx).DB().Model(&model.Api{}).Order("created_at DESC")
 
 	method := strings.TrimSpace(req.Method)
 	if method != "" {
@@ -74,16 +75,16 @@ func (a ApiRepository) GetApis(req *vo.ApiListRequest) ([]*model.Api, int64, err
 }
 
 // 根据接口ID获取接口列表
-func (a ApiRepository) GetApisByID(apiIds []uint) ([]*model.Api, error) {
+func (a ApiRepository) GetApisByID(ctx context.Context, apiIds []uint) ([]*model.Api, error) {
 	var apis []*model.Api
-	err := common.DB.Where("id IN (?)", apiIds).Find(&apis).Error
+	err := common.WithContext(ctx).DB().Where("id IN (?)", apiIds).Find(&apis).Error
 	return apis, err
 }
 
 // 获取接口树(按接口Category字段分类)
-func (a ApiRepository) GetApiTree() ([]*dto.ApiTreeDto, error) {
+func (a ApiRepository) GetApiTree(ctx context.Context) ([]*dto.ApiTreeDto, error) {
 	var apiList []*model.Api
-	err := common.DB.Order("category").Order("created_at").Find(&apiList).Error
+	err := common.WithContext(ctx).DB().Order("category").Order("created_at").Find(&apiList).Error
 	// 获取所有的分类
 	var categoryList []string
 	for _, api := range apiList {
@@ -112,20 +113,20 @@ func (a ApiRepository) GetApiTree() ([]*dto.ApiTreeDto, error) {
 }
 
 // 创建接口
-func (a ApiRepository) CreateApi(api *model.Api) error {
-	err := common.DB.Create(api).Error
+func (a ApiRepository) CreateApi(ctx context.Context, api *model.Api) error {
+	err := common.WithContext(ctx).DB().Create(api).Error
 	return err
 }
 
 // 更新接口
-func (a ApiRepository) UpdateApiByID(apiID uint, api *model.Api) error {
+func (a ApiRepository) UpdateApiByID(ctx context.Context, apiID uint, api *model.Api) error {
 	// 根据id获取接口信息
 	var oldApi model.Api
-	err := common.DB.First(&oldApi, apiID).Error
+	err := common.WithContext(ctx).DB().First(&oldApi, apiID).Error
 	if err != nil {
 		return errors.New("根据接口ID获取接口信息失败")
 	}
-	err = common.DB.Model(api).Where("id = ?", apiID).Updates(api).Error
+	err = common.WithContext(ctx).DB().Model(api).Where("id = ?", apiID).Updates(api).Error
 	if err != nil {
 		return err
 	}
@@ -161,9 +162,9 @@ func (a ApiRepository) UpdateApiByID(apiID uint, api *model.Api) error {
 }
 
 // 批量删除接口
-func (a ApiRepository) BatchDeleteApiByIds(apiIds []uint) error {
+func (a ApiRepository) BatchDeleteApiByIds(ctx context.Context, apiIds []uint) error {
 
-	apis, err := a.GetApisByID(apiIds)
+	apis, err := a.GetApisByID(ctx, apiIds)
 	if err != nil {
 		return errors.New("根据接口ID获取接口列表失败")
 	}
@@ -171,7 +172,7 @@ func (a ApiRepository) BatchDeleteApiByIds(apiIds []uint) error {
 		return errors.New("根据接口ID未获取到接口列表")
 	}
 
-	err = common.DB.Where("id IN (?)", apiIds).Unscoped().Delete(&model.Api{}).Error
+	err = common.WithContext(ctx).DB().Where("id IN (?)", apiIds).Unscoped().Delete(&model.Api{}).Error
 	// 如果删除成功，删除casbin中policy
 	if err == nil {
 		for _, api := range apis {
@@ -195,9 +196,9 @@ func (a ApiRepository) BatchDeleteApiByIds(apiIds []uint) error {
 }
 
 // 根据接口路径和请求方式获取接口描述
-func (a ApiRepository) GetApiDescByPath(path string, method string) (string, error) {
+func (a ApiRepository) GetApiDescByPath(ctx context.Context, path string, method string) (string, error) {
 	var api model.Api
 
-	err := common.DB.Where("path = ?", path).Where("method = ?", method).First(&api).Error
+	err := common.WithContext(ctx).DB().Where("path = ?", path).Where("method = ?", method).First(&api).Error
 	return api.Desc, err
 }

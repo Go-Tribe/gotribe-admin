@@ -6,6 +6,7 @@
 package repository
 
 import (
+	"context"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/vo"
@@ -13,7 +14,7 @@ import (
 )
 
 type IFeedbackRepository interface {
-	GetFeedbacks(req *vo.FeedbackListRequest) ([]*model.Feedback, int64, error) // 获取标签列表
+	GetFeedbacks(ctx context.Context, req *vo.FeedbackListRequest) ([]*model.Feedback, int64, error) // 获取标签列表
 }
 
 type FeedbackRepository struct {
@@ -25,9 +26,9 @@ func NewFeedbackRepository() IFeedbackRepository {
 }
 
 // 获取标签列表
-func (tr FeedbackRepository) GetFeedbacks(req *vo.FeedbackListRequest) ([]*model.Feedback, int64, error) {
+func (tr FeedbackRepository) GetFeedbacks(ctx context.Context, req *vo.FeedbackListRequest) ([]*model.Feedback, int64, error) {
 	var list []*model.Feedback
-	db := common.DB.Model(&model.Feedback{}).Order("created_at DESC")
+	db := common.WithContext(ctx).DB().Model(&model.Feedback{}).Order("created_at DESC")
 
 	projectID := strings.TrimSpace(req.ProjectID)
 	if req.ProjectID != "" {

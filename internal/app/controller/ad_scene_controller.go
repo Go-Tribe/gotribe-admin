@@ -55,7 +55,7 @@ func (pc AdSceneController) GetAdSceneInfo(c *gin.Context) {
 		response.ValidationFail(c, "无效的ID")
 		return
 	}
-	adScene, err := pc.AdSceneRepository.GetAdSceneByID(uint(id))
+	adScene, err := pc.AdSceneRepository.GetAdSceneByID(c.Request.Context(), uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -95,7 +95,7 @@ func (pc AdSceneController) GetAdScenes(c *gin.Context) {
 	}
 
 	// 获取
-	adScene, total, err := pc.AdSceneRepository.GetAdScenes(&req)
+	adScene, total, err := pc.AdSceneRepository.GetAdScenes(c.Request.Context(), &req)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
@@ -135,7 +135,7 @@ func (pc AdSceneController) CreateAdScene(c *gin.Context) {
 		Description: req.Description,
 	}
 
-	err := pc.AdSceneRepository.CreateAdScene(&adScene)
+	err := pc.AdSceneRepository.CreateAdScene(c.Request.Context(), &adScene)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
@@ -177,7 +177,7 @@ func (pc AdSceneController) UpdateAdSceneByID(c *gin.Context) {
 		response.ValidationFail(c, "无效的ID")
 		return
 	}
-	oldAdScene, err := pc.AdSceneRepository.GetAdSceneByID(uint(id))
+	oldAdScene, err := pc.AdSceneRepository.GetAdSceneByID(c.Request.Context(), uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -185,7 +185,7 @@ func (pc AdSceneController) UpdateAdSceneByID(c *gin.Context) {
 	oldAdScene.Title = req.Title
 	oldAdScene.Description = req.Description
 	// 更新推广场景
-	err = pc.AdSceneRepository.UpdateAdScene(&oldAdScene)
+	err = pc.AdSceneRepository.UpdateAdScene(c.Request.Context(), &oldAdScene)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
@@ -220,7 +220,7 @@ func (pc AdSceneController) BatchDeleteAdSceneByIds(c *gin.Context) {
 	}
 
 	// 前端传来的推广场景ID
-	err := pc.AdSceneRepository.BatchDeleteAdSceneByIds(req.Ids)
+	err := pc.AdSceneRepository.BatchDeleteAdSceneByIds(c.Request.Context(), req.Ids)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return

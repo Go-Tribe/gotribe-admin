@@ -8,14 +8,15 @@ package controller
 import (
 	"strconv"
 
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/pkg/api/dto"
 	"gotribe-admin/pkg/api/known"
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type ICommentController interface {
@@ -59,8 +60,9 @@ func (pc CommentController) GetComments(c *gin.Context) {
 		return
 	}
 
+	ctx := c.Request.Context()
 	// 获取
-	comment, total, err := pc.CommentRepository.GetComments(&req)
+	comment, total, err := pc.CommentRepository.GetComments(ctx, &req)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
@@ -80,13 +82,14 @@ func (pc CommentController) GetComments(c *gin.Context) {
 // @Router       /comment/{id} [patch]
 // @Security     BearerAuth
 func (pc CommentController) UpdateCommentByID(c *gin.Context) {
+	ctx := c.Request.Context()
 	// 根据path中的ID获取评论信息
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
 		response.ValidationFail(c, "无效的ID")
 		return
 	}
-	oldComment, err := pc.CommentRepository.GetCommentByID(uint(id))
+	oldComment, err := pc.CommentRepository.GetCommentByID(ctx, uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -99,7 +102,7 @@ func (pc CommentController) UpdateCommentByID(c *gin.Context) {
 	}
 	oldComment.Status = reqStatus
 	// 更新评论
-	err = pc.CommentRepository.UpdateComment(&oldComment)
+	err = pc.CommentRepository.UpdateComment(ctx, &oldComment)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return

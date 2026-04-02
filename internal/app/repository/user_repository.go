@@ -6,6 +6,7 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -17,12 +18,12 @@ import (
 )
 
 type IUserRepository interface {
-	CreateUser(user *model.User) error                              // 创建用户
-	GetUserByID(id uint) (model.User, error)                        // 获取单个用户
-	GetUsers(req *vo.UserListRequest) ([]*model.User, int64, error) // 获取用户列表
-	UpdateUser(user *model.User) error                              // 更新用户
-	BatchDeleteUserByIds(ids []uint) error                          // 批量删除用户
-	SearchUserByNickname(nickname string) ([]*model.User, error)
+	CreateUser(ctx context.Context, user *model.User) error                              // 创建用户
+	GetUserByID(ctx context.Context, id uint) (model.User, error)                        // 获取单个用户
+	GetUsers(ctx context.Context, req *vo.UserListRequest) ([]*model.User, int64, error) // 获取用户列表
+	UpdateUser(ctx context.Context, user *model.User) error                              // 更新用户
+	BatchDeleteUserByIds(ctx context.Context, ids []uint) error                          // 批量删除用户
+	SearchUserByNickname(ctx context.Context, nickname string) ([]*model.User, error)
 }
 
 type UserRepository struct {
@@ -34,16 +35,16 @@ func NewUserRepository() IUserRepository {
 }
 
 // 获取单个用户
-func (ur UserRepository) GetUserByID(id uint) (model.User, error) {
+func (ur UserRepository) GetUserByID(ctx context.Context, id uint) (model.User, error) {
 	var user model.User
-	err := common.DB.Where("id = ?", id).First(&user).Error
+	err := common.WithContext(ctx).DB().Where("id = ?", id).First(&user).Error
 	return user, err
 }
 
 // 获取用户列表
-func (ur UserRepository) GetUsers(req *vo.UserListRequest) ([]*model.User, int64, error) {
+func (ur UserRepository) GetUsers(ctx context.Context, req *vo.UserListRequest) ([]*model.User, int64, error) {
 	var list []*model.User
-	db := common.DB.Model(&model.User{}).Order("created_at DESC")
+	db := common.WithContext(ctx).DB().Model(&model.User{}).Order("created_at DESC")
 
 	username := strings.TrimSpace(req.Username)
 	if username != "" {
@@ -101,14 +102,14 @@ func GetUserPoint(userID uint) float64 {
 }
 
 // 创建用户
-func (ur UserRepository) CreateUser(user *model.User) error {
-	err := common.DB.Create(user).Error
+func (ur UserRepository) CreateUser(ctx context.Context, user *model.User) error {
+	err := common.WithContext(ctx).DB().Create(user).Error
 	return err
 }
 
 // 更新用户
-func (ur UserRepository) UpdateUser(user *model.User) error {
-	err := common.DB.Model(user).Updates(user).Error
+func (ur UserRepository) UpdateUser(ctx context.Context, user *model.User) error {
+	err := common.WithContext(ctx).DB().Model(user).Updates(user).Error
 	if err != nil {
 		return err
 	}
@@ -117,26 +118,26 @@ func (ur UserRepository) UpdateUser(user *model.User) error {
 }
 
 // 批量删除
-func (ur UserRepository) BatchDeleteUserByIds(ids []uint) error {
+func (ur UserRepository) BatchDeleteUserByIds(ctx context.Context, ids []uint) error {
 	var users []model.User
 	for _, id := range ids {
 		// 根据ID获取用户
-		user, err := ur.GetUserByID(id)
+		user, err := ur.GetUserByID(ctx, id)
 		if err != nil {
 			return fmt.Errorf("未获取到ID为%d的用户", id)
 		}
 		users = append(users, user)
 	}
 
-	err := common.DB.Delete(&users).Error
+	err := common.WithContext(ctx).DB().Delete(&users).Error
 
 	return err
 }
 
 // 搜索用户
-func (ur UserRepository) SearchUserByNickname(nickname string) ([]*model.User, error) {
+func (ur UserRepository) SearchUserByNickname(ctx context.Context, nickname string) ([]*model.User, error) {
 	var list []*model.User
-	db := common.DB.Model(&model.User{}).Order("created_at DESC")
+	db := common.WithContext(ctx).DB().Model(&model.User{}).Order("created_at DESC")
 
 	if strings.TrimSpace(nickname) != "" {
 		db = db.Where("nickname LIKE ?", fmt.Sprintf("%%%s%%", nickname))

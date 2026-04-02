@@ -6,6 +6,7 @@
 package repository
 
 import (
+	"context"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/known"
 	"gotribe-admin/pkg/api/vo"
@@ -23,50 +24,50 @@ type MockAdminRepository struct {
 }
 
 // Login 模拟登录方法
-func (m *MockAdminRepository) Login(admin *model.Admin) (*model.Admin, error) {
-	args := m.Called(admin)
+func (m *MockAdminRepository) Login(ctx context.Context, admin *model.Admin) (*model.Admin, error) {
+	args := m.Called(ctx, admin)
 	return args.Get(0).(*model.Admin), args.Error(1)
 }
 
 // GetCurrentAdmin 模拟获取当前管理员方法
-func (m *MockAdminRepository) GetCurrentAdmin(c *gin.Context) (*model.Admin, error) {
-	args := m.Called(c)
-	return args.Get(0).(*model.Admin), args.Error(1)
+func (m *MockAdminRepository) GetCurrentAdmin(ctx context.Context, c *gin.Context) (model.Admin, error) {
+	args := m.Called(ctx, c)
+	return args.Get(0).(model.Admin), args.Error(1)
 }
 
-// GetAdminById 模拟根据ID获取管理员方法
-func (m *MockAdminRepository) GetAdminById(id uint) (*model.Admin, error) {
-	args := m.Called(id)
-	return args.Get(0).(*model.Admin), args.Error(1)
+// GetAdminByID 模拟根据ID获取管理员方法
+func (m *MockAdminRepository) GetAdminByID(ctx context.Context, id uint) (model.Admin, error) {
+	args := m.Called(ctx, id)
+	return args.Get(0).(model.Admin), args.Error(1)
 }
 
 // GetAdmins 模拟获取管理员列表方法
-func (m *MockAdminRepository) GetAdmins(req *vo.AdminListRequest) ([]*model.Admin, int64, error) {
-	args := m.Called(req)
+func (m *MockAdminRepository) GetAdmins(ctx context.Context, req *vo.AdminListRequest) ([]*model.Admin, int64, error) {
+	args := m.Called(ctx, req)
 	return args.Get(0).([]*model.Admin), args.Get(1).(int64), args.Error(2)
 }
 
 // CreateAdmin 模拟创建管理员方法
-func (m *MockAdminRepository) CreateAdmin(admin *model.Admin) error {
-	args := m.Called(admin)
+func (m *MockAdminRepository) CreateAdmin(ctx context.Context, admin *model.Admin) error {
+	args := m.Called(ctx, admin)
 	return args.Error(0)
 }
 
 // UpdateAdmin 模拟更新管理员方法
-func (m *MockAdminRepository) UpdateAdmin(admin *model.Admin) error {
-	args := m.Called(admin)
+func (m *MockAdminRepository) UpdateAdmin(ctx context.Context, admin *model.Admin) error {
+	args := m.Called(ctx, admin)
 	return args.Error(0)
 }
 
 // ChangePwd 模拟修改密码方法
-func (m *MockAdminRepository) ChangePwd(username string, hashNewPasswd string) error {
-	args := m.Called(username, hashNewPasswd)
+func (m *MockAdminRepository) ChangePwd(ctx context.Context, username string, hashNewPasswd string) error {
+	args := m.Called(ctx, username, hashNewPasswd)
 	return args.Error(0)
 }
 
 // BatchDeleteAdminByIds 模拟批量删除管理员方法
-func (m *MockAdminRepository) BatchDeleteAdminByIds(ids []uint) error {
-	args := m.Called(ids)
+func (m *MockAdminRepository) BatchDeleteAdminByIds(ctx context.Context, ids []uint) error {
+	args := m.Called(ctx, ids)
 	return args.Error(0)
 }
 
@@ -113,10 +114,10 @@ func TestAdminRepository_Login(t *testing.T) {
 	}
 
 	// 设置mock期望
-	mockRepo.On("Login", loginAdmin).Return(testAdmin, nil)
+	mockRepo.On("Login", mock.Anything, loginAdmin).Return(testAdmin, nil)
 
 	// 执行测试
-	result, err := mockRepo.Login(loginAdmin)
+	result, err := mockRepo.Login(context.Background(), loginAdmin)
 
 	// 验证结果
 	assert.NoError(t, err)
@@ -140,10 +141,10 @@ func TestAdminRepository_GetCurrentAdmin(t *testing.T) {
 	testAdmin := createTestAdmin()
 
 	// 设置mock期望
-	mockRepo.On("GetCurrentAdmin", c).Return(testAdmin, nil)
+	mockRepo.On("GetCurrentAdmin", mock.Anything, c).Return(*testAdmin, nil)
 
 	// 执行测试
-	result, err := mockRepo.GetCurrentAdmin(c)
+	result, err := mockRepo.GetCurrentAdmin(context.Background(), c)
 
 	// 验证结果
 	assert.NoError(t, err)
@@ -154,18 +155,18 @@ func TestAdminRepository_GetCurrentAdmin(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 }
 
-// TestAdminRepository_GetAdminById 测试根据ID获取管理员
-func TestAdminRepository_GetAdminById(t *testing.T) {
+// TestAdminRepository_GetAdminByID 测试根据ID获取管理员
+func TestAdminRepository_GetAdminByID(t *testing.T) {
 	mockRepo := new(MockAdminRepository)
 
 	// 创建测试用户
 	testAdmin := createTestAdmin()
 
 	// 设置mock期望
-	mockRepo.On("GetAdminById", uint(1)).Return(testAdmin, nil)
+	mockRepo.On("GetAdminByID", mock.Anything, uint(1)).Return(*testAdmin, nil)
 
 	// 执行测试
-	result, err := mockRepo.GetAdminById(1)
+	result, err := mockRepo.GetAdminByID(context.Background(), 1)
 
 	// 验证结果
 	assert.NoError(t, err)
@@ -224,10 +225,10 @@ func TestAdminRepository_GetAdmins(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// 设置mock期望
-			mockRepo.On("GetAdmins", tt.request).Return(testAdmins, tt.expected, nil)
+			mockRepo.On("GetAdmins", mock.Anything, tt.request).Return(testAdmins, tt.expected, nil)
 
 			// 执行测试
-			admins, total, err := mockRepo.GetAdmins(tt.request)
+			admins, total, err := mockRepo.GetAdmins(context.Background(), tt.request)
 
 			// 验证结果
 			assert.NoError(t, err)
@@ -255,10 +256,10 @@ func TestAdminRepository_CreateAdmin(t *testing.T) {
 	}
 
 	// 设置mock期望
-	mockRepo.On("CreateAdmin", newAdmin).Return(nil)
+	mockRepo.On("CreateAdmin", mock.Anything, newAdmin).Return(nil)
 
 	// 执行测试
-	err := mockRepo.CreateAdmin(newAdmin)
+	err := mockRepo.CreateAdmin(context.Background(), newAdmin)
 
 	// 验证结果
 	assert.NoError(t, err)
@@ -278,10 +279,10 @@ func TestAdminRepository_UpdateAdmin(t *testing.T) {
 	testAdmin.Mobile = "13800138999"
 
 	// 设置mock期望
-	mockRepo.On("UpdateAdmin", testAdmin).Return(nil)
+	mockRepo.On("UpdateAdmin", mock.Anything, testAdmin).Return(nil)
 
 	// 执行测试
-	err := mockRepo.UpdateAdmin(testAdmin)
+	err := mockRepo.UpdateAdmin(context.Background(), testAdmin)
 
 	// 验证结果
 	assert.NoError(t, err)
@@ -297,10 +298,10 @@ func TestAdminRepository_ChangePwd(t *testing.T) {
 	newHashedPassword, _ := util.PasswordUtil.GenPasswd("newpassword123")
 
 	// 设置mock期望
-	mockRepo.On("ChangePwd", "testuser", newHashedPassword).Return(nil)
+	mockRepo.On("ChangePwd", mock.Anything, "testuser", newHashedPassword).Return(nil)
 
 	// 执行测试
-	err := mockRepo.ChangePwd("testuser", newHashedPassword)
+	err := mockRepo.ChangePwd(context.Background(), "testuser", newHashedPassword)
 
 	// 验证结果
 	assert.NoError(t, err)
@@ -316,10 +317,10 @@ func TestAdminRepository_BatchDeleteAdminByIds(t *testing.T) {
 	ids := []uint{1, 2, 3}
 
 	// 设置mock期望
-	mockRepo.On("BatchDeleteAdminByIds", ids).Return(nil)
+	mockRepo.On("BatchDeleteAdminByIds", mock.Anything, ids).Return(nil)
 
 	// 执行测试
-	err := mockRepo.BatchDeleteAdminByIds(ids)
+	err := mockRepo.BatchDeleteAdminByIds(context.Background(), ids)
 
 	// 验证结果
 	assert.NoError(t, err)
@@ -338,11 +339,11 @@ func BenchmarkAdminRepository_Login(b *testing.B) {
 	}
 
 	// 设置mock期望
-	mockRepo.On("Login", loginAdmin).Return(testAdmin, nil)
+	mockRepo.On("Login", mock.Anything, loginAdmin).Return(testAdmin, nil)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _ = mockRepo.Login(loginAdmin)
+		_, _ = mockRepo.Login(context.Background(), loginAdmin)
 	}
 }
 
@@ -354,11 +355,11 @@ func BenchmarkAdminRepository_GetCurrentAdmin(b *testing.B) {
 	testAdmin := createTestAdmin()
 
 	// 设置mock期望
-	mockRepo.On("GetCurrentAdmin", c).Return(testAdmin, nil)
+	mockRepo.On("GetCurrentAdmin", mock.Anything, c).Return(*testAdmin, nil)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _ = mockRepo.GetCurrentAdmin(c)
+		_, _ = mockRepo.GetCurrentAdmin(context.Background(), c)
 	}
 }
 
@@ -368,8 +369,8 @@ func (m *MockAdminRepository) SetAdminInfoCache(username string, admin model.Adm
 }
 
 // UpdateAdminInfoCacheByRoleID 模拟根据角色ID更新用户信息缓存方法
-func (m *MockAdminRepository) UpdateAdminInfoCacheByRoleID(roleID uint) error {
-	args := m.Called(roleID)
+func (m *MockAdminRepository) UpdateAdminInfoCacheByRoleID(ctx context.Context, roleID uint) error {
+	args := m.Called(ctx, roleID)
 	return args.Error(0)
 }
 
@@ -424,10 +425,10 @@ func TestAdminRepository_UpdateAdminInfoCacheByRoleID(t *testing.T) {
 			}
 
 			// 设置mock期望
-			mockRepo.On("UpdateAdminInfoCacheByRoleID", tt.roleID).Return(expectedError)
+			mockRepo.On("UpdateAdminInfoCacheByRoleID", mock.Anything, tt.roleID).Return(expectedError)
 
 			// 执行测试
-			err := mockRepo.UpdateAdminInfoCacheByRoleID(tt.roleID)
+			err := mockRepo.UpdateAdminInfoCacheByRoleID(context.Background(), tt.roleID)
 
 			// 验证结果
 			if tt.hasError {
@@ -482,10 +483,10 @@ func TestAdminRepository_CacheIntegration(t *testing.T) {
 
 	t.Run("角色更新触发缓存更新", func(t *testing.T) {
 		// 设置mock期望 - 根据角色ID更新缓存
-		mockRepo.On("UpdateAdminInfoCacheByRoleID", uint(1)).Return(nil)
+		mockRepo.On("UpdateAdminInfoCacheByRoleID", mock.Anything, uint(1)).Return(nil)
 
 		// 执行测试
-		err := mockRepo.UpdateAdminInfoCacheByRoleID(1)
+		err := mockRepo.UpdateAdminInfoCacheByRoleID(context.Background(), 1)
 
 		// 验证结果
 		assert.NoError(t, err)
@@ -523,14 +524,18 @@ func BenchmarkAdminRepository_ClearAdminInfoCache(b *testing.B) {
 }
 
 // GetCurrentAdminMinRoleSort 模拟获取当前用户角色排序最小值方法
-func (m *MockAdminRepository) GetCurrentAdminMinRoleSort(c *gin.Context) (uint, *model.Admin, error) {
-	args := m.Called(c)
-	return args.Get(0).(uint), args.Get(1).(*model.Admin), args.Error(2)
+func (m *MockAdminRepository) GetCurrentAdminMinRoleSort(ctx context.Context, c *gin.Context) (uint, model.Admin, error) {
+	args := m.Called(ctx, c)
+	var admin model.Admin
+	if args.Get(1) != nil {
+		admin = args.Get(1).(model.Admin)
+	}
+	return args.Get(0).(uint), admin, args.Error(2)
 }
 
 // GetAdminMinRoleSortsByIds 模拟根据用户ID获取用户角色排序最小值方法
-func (m *MockAdminRepository) GetAdminMinRoleSortsByIds(ids []uint) ([]int, error) {
-	args := m.Called(ids)
+func (m *MockAdminRepository) GetAdminMinRoleSortsByIds(ctx context.Context, ids []uint) ([]int, error) {
+	args := m.Called(ctx, ids)
 	return args.Get(0).([]int), args.Error(1)
 }
 
@@ -566,25 +571,25 @@ func TestAdminRepository_GetCurrentAdminMinRoleSort(t *testing.T) {
 			testMockRepo := new(MockAdminRepository)
 
 			var expectedError error
-			var expectedAdmin *model.Admin
+			var expectedAdmin model.Admin
 			if tt.hasError {
 				expectedError = assert.AnError
-				expectedAdmin = nil // 错误情况下返回nil
+				expectedAdmin = model.Admin{}
 			} else {
-				expectedAdmin = testAdmin
+				expectedAdmin = *testAdmin
 			}
 
 			// 设置mock期望
-			testMockRepo.On("GetCurrentAdminMinRoleSort", c).Return(tt.expectedSort, expectedAdmin, expectedError)
+			testMockRepo.On("GetCurrentAdminMinRoleSort", mock.Anything, c).Return(tt.expectedSort, expectedAdmin, expectedError)
 
 			// 执行测试
-			sort, admin, err := testMockRepo.GetCurrentAdminMinRoleSort(c)
+			sort, admin, err := testMockRepo.GetCurrentAdminMinRoleSort(context.Background(), c)
 
 			// 验证结果
 			if tt.hasError {
 				assert.Error(t, err)
 				assert.Equal(t, tt.expectedSort, sort)
-				assert.Nil(t, admin)
+				assert.Equal(t, model.Admin{}, admin)
 			} else {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expectedSort, sort)
@@ -636,10 +641,10 @@ func TestAdminRepository_GetAdminMinRoleSortsByIds(t *testing.T) {
 			}
 
 			// 设置mock期望
-			mockRepo.On("GetAdminMinRoleSortsByIds", tt.ids).Return(tt.expectedSorts, expectedError)
+			mockRepo.On("GetAdminMinRoleSortsByIds", mock.Anything, tt.ids).Return(tt.expectedSorts, expectedError)
 
 			// 执行测试
-			sorts, err := mockRepo.GetAdminMinRoleSortsByIds(tt.ids)
+			sorts, err := mockRepo.GetAdminMinRoleSortsByIds(context.Background(), tt.ids)
 
 			// 验证结果
 			if tt.hasError {
@@ -668,27 +673,27 @@ func TestAdminRepository_RolePermissionIntegration(t *testing.T) {
 
 	t.Run("用户角色权限验证流程", func(t *testing.T) {
 		// 设置mock期望 - 获取当前用户
-		mockRepo.On("GetCurrentAdmin", c).Return(testAdmin, nil)
+		mockRepo.On("GetCurrentAdmin", mock.Anything, c).Return(*testAdmin, nil)
 
 		// 设置mock期望 - 获取当前用户角色排序
-		mockRepo.On("GetCurrentAdminMinRoleSort", c).Return(uint(1), testAdmin, nil)
+		mockRepo.On("GetCurrentAdminMinRoleSort", mock.Anything, c).Return(uint(1), *testAdmin, nil)
 
 		// 设置mock期望 - 根据ID获取用户角色排序
-		mockRepo.On("GetAdminMinRoleSortsByIds", []uint{1}).Return([]int{1}, nil)
+		mockRepo.On("GetAdminMinRoleSortsByIds", mock.Anything, []uint{1}).Return([]int{1}, nil)
 
 		// 执行测试 - 获取当前用户
-		currentAdmin, err := mockRepo.GetCurrentAdmin(c)
+		currentAdmin, err := mockRepo.GetCurrentAdmin(context.Background(), c)
 		assert.NoError(t, err)
 		assert.Equal(t, "testuser", currentAdmin.Username)
 
 		// 执行测试 - 获取当前用户角色排序
-		sort, admin, err := mockRepo.GetCurrentAdminMinRoleSort(c)
+		sort, admin, err := mockRepo.GetCurrentAdminMinRoleSort(context.Background(), c)
 		assert.NoError(t, err)
 		assert.Equal(t, uint(1), sort)
 		assert.Equal(t, "testuser", admin.Username)
 
 		// 执行测试 - 根据ID获取用户角色排序
-		sorts, err := mockRepo.GetAdminMinRoleSortsByIds([]uint{1})
+		sorts, err := mockRepo.GetAdminMinRoleSortsByIds(context.Background(), []uint{1})
 		assert.NoError(t, err)
 		assert.Equal(t, []int{1}, sorts)
 
@@ -698,10 +703,10 @@ func TestAdminRepository_RolePermissionIntegration(t *testing.T) {
 
 	t.Run("多用户角色排序比较", func(t *testing.T) {
 		// 设置mock期望 - 获取多个用户的角色排序
-		mockRepo.On("GetAdminMinRoleSortsByIds", []uint{1, 2, 3}).Return([]int{1, 2, 3}, nil)
+		mockRepo.On("GetAdminMinRoleSortsByIds", mock.Anything, []uint{1, 2, 3}).Return([]int{1, 2, 3}, nil)
 
 		// 执行测试
-		sorts, err := mockRepo.GetAdminMinRoleSortsByIds([]uint{1, 2, 3})
+		sorts, err := mockRepo.GetAdminMinRoleSortsByIds(context.Background(), []uint{1, 2, 3})
 
 		// 验证结果
 		assert.NoError(t, err)
@@ -731,10 +736,10 @@ func TestAdminRepository_RoleValidation(t *testing.T) {
 
 	t.Run("管理员角色权限验证", func(t *testing.T) {
 		// 设置mock期望 - 获取当前用户角色排序（管理员角色排序为1）
-		mockRepo.On("GetCurrentAdminMinRoleSort", c).Return(uint(1), testAdmin, nil)
+		mockRepo.On("GetCurrentAdminMinRoleSort", mock.Anything, c).Return(uint(1), *testAdmin, nil)
 
 		// 执行测试
-		sort, admin, err := mockRepo.GetCurrentAdminMinRoleSort(c)
+		sort, admin, err := mockRepo.GetCurrentAdminMinRoleSort(context.Background(), c)
 
 		// 验证结果
 		assert.NoError(t, err)
@@ -775,10 +780,10 @@ func TestAdminRepository_RoleValidation(t *testing.T) {
 		}
 
 		// 设置mock期望 - 获取当前用户角色排序（普通用户角色排序为5）
-		normalMockRepo.On("GetCurrentAdminMinRoleSort", c).Return(uint(5), normalUser, nil)
+		normalMockRepo.On("GetCurrentAdminMinRoleSort", mock.Anything, c).Return(uint(5), *normalUser, nil)
 
 		// 执行测试
-		sort, admin, err := normalMockRepo.GetCurrentAdminMinRoleSort(c)
+		sort, admin, err := normalMockRepo.GetCurrentAdminMinRoleSort(context.Background(), c)
 
 		// 验证结果
 		assert.NoError(t, err)
@@ -802,11 +807,11 @@ func BenchmarkAdminRepository_GetCurrentAdminMinRoleSort(b *testing.B) {
 	testAdmin := createTestAdmin()
 
 	// 设置mock期望
-	mockRepo.On("GetCurrentAdminMinRoleSort", c).Return(uint(1), testAdmin, nil)
+	mockRepo.On("GetCurrentAdminMinRoleSort", mock.Anything, c).Return(uint(1), *testAdmin, nil)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _, _ = mockRepo.GetCurrentAdminMinRoleSort(c)
+		_, _, _ = mockRepo.GetCurrentAdminMinRoleSort(context.Background(), c)
 	}
 }
 
@@ -817,10 +822,10 @@ func BenchmarkAdminRepository_GetAdminMinRoleSortsByIds(b *testing.B) {
 	expectedSorts := []int{1, 2, 3, 4, 5}
 
 	// 设置mock期望
-	mockRepo.On("GetAdminMinRoleSortsByIds", ids).Return(expectedSorts, nil)
+	mockRepo.On("GetAdminMinRoleSortsByIds", mock.Anything, ids).Return(expectedSorts, nil)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _ = mockRepo.GetAdminMinRoleSortsByIds(ids)
+		_, _ = mockRepo.GetAdminMinRoleSortsByIds(context.Background(), ids)
 	}
 }

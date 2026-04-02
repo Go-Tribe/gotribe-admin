@@ -49,7 +49,8 @@ func NewMenuController() IMenuController {
 // @Router       /menu/list [get]
 // @Security     BearerAuth
 func (mc MenuController) GetMenus(c *gin.Context) {
-	menus, err := mc.MenuRepository.GetMenus()
+	ctx := c.Request.Context()
+	menus, err := mc.MenuRepository.GetMenus(ctx)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
@@ -68,7 +69,8 @@ func (mc MenuController) GetMenus(c *gin.Context) {
 // @Router       /menu/tree [get]
 // @Security     BearerAuth
 func (mc MenuController) GetMenuTree(c *gin.Context) {
-	menuTree, err := mc.MenuRepository.GetMenuTree()
+	ctx := c.Request.Context()
+	menuTree, err := mc.MenuRepository.GetMenuTree(ctx)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -100,9 +102,10 @@ func (mc MenuController) CreateMenu(c *gin.Context) {
 		return
 	}
 
+	ctx := c.Request.Context()
 	// 获取当前用户
 	ur := repository.NewAdminRepository()
-	ctxUser, err := ur.GetCurrentAdmin(c)
+	ctxUser, err := ur.GetCurrentAdmin(ctx, c)
 	if err != nil {
 		response.InternalServerError(c, "获取当前用户信息失败")
 		return
@@ -126,7 +129,7 @@ func (mc MenuController) CreateMenu(c *gin.Context) {
 		Creator:    ctxUser.Username,
 	}
 
-	err = mc.MenuRepository.CreateMenu(&menu)
+	err = mc.MenuRepository.CreateMenu(ctx, &menu)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
@@ -166,9 +169,10 @@ func (mc MenuController) UpdateMenuByID(c *gin.Context) {
 		return
 	}
 
+	ctx := c.Request.Context()
 	// 获取当前用户
 	ur := repository.NewAdminRepository()
-	ctxUser, err := ur.GetCurrentAdmin(c)
+	ctxUser, err := ur.GetCurrentAdmin(ctx, c)
 	if err != nil {
 		response.InternalServerError(c, "获取当前用户信息失败")
 		return
@@ -192,7 +196,7 @@ func (mc MenuController) UpdateMenuByID(c *gin.Context) {
 		Creator:    ctxUser.Username,
 	}
 
-	err = mc.MenuRepository.UpdateMenuByID(uint(menuID), &menu)
+	err = mc.MenuRepository.UpdateMenuByID(ctx, uint(menuID), &menu)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
@@ -224,7 +228,8 @@ func (mc MenuController) BatchDeleteMenuByIds(c *gin.Context) {
 		response.HandleValidationError(c, err)
 		return
 	}
-	err := mc.MenuRepository.BatchDeleteMenuByIds(req.MenuIds)
+	ctx := c.Request.Context()
+	err := mc.MenuRepository.BatchDeleteMenuByIds(ctx, req.MenuIds)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return
@@ -251,7 +256,8 @@ func (mc MenuController) GetUserMenusByUserID(c *gin.Context) {
 		return
 	}
 
-	menus, err := mc.MenuRepository.GetUserMenusByUserID(uint(userID))
+	ctx := c.Request.Context()
+	menus, err := mc.MenuRepository.GetUserMenusByUserID(ctx, uint(userID))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
@@ -278,7 +284,8 @@ func (mc MenuController) GetUserMenuTreeByUserID(c *gin.Context) {
 		return
 	}
 
-	menuTree, err := mc.MenuRepository.GetUserMenuTreeByUserID(uint(userID))
+	ctx := c.Request.Context()
+	menuTree, err := mc.MenuRepository.GetUserMenuTreeByUserID(ctx, uint(userID))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return

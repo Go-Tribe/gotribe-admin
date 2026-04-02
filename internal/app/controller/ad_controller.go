@@ -55,7 +55,7 @@ func (pc AdController) GetAdInfo(c *gin.Context) {
 		response.ValidationFail(c, "无效的ID")
 		return
 	}
-	ad, err := pc.AdRepository.GetAdByID(uint(id))
+	ad, err := pc.AdRepository.GetAdByID(c.Request.Context(), uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -97,7 +97,7 @@ func (pc AdController) GetAds(c *gin.Context) {
 	}
 
 	// 获取
-	ad, total, err := pc.AdRepository.GetAds(&req)
+	ad, total, err := pc.AdRepository.GetAds(c.Request.Context(), &req)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
@@ -144,7 +144,7 @@ func (pc AdController) CreateAd(c *gin.Context) {
 		Description: req.Description,
 	}
 
-	err := pc.AdRepository.CreateAd(&ad)
+	err := pc.AdRepository.CreateAd(c.Request.Context(), &ad)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
@@ -186,7 +186,7 @@ func (pc AdController) UpdateAdByID(c *gin.Context) {
 		response.ValidationFail(c, "无效的ID")
 		return
 	}
-	oldAd, err := pc.AdRepository.GetAdByID(uint(id))
+	oldAd, err := pc.AdRepository.GetAdByID(c.Request.Context(), uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -202,7 +202,7 @@ func (pc AdController) UpdateAdByID(c *gin.Context) {
 	oldAd.Video = req.Video
 	oldAd.SceneID = req.SceneID
 	// 更新广告
-	err = pc.AdRepository.UpdateAd(&oldAd)
+	err = pc.AdRepository.UpdateAd(c.Request.Context(), &oldAd)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
@@ -237,7 +237,7 @@ func (pc AdController) BatchDeleteAdByIds(c *gin.Context) {
 	}
 
 	// 前端传来的广告ID
-	err := pc.AdRepository.BatchDeleteAdByIds(req.Ids)
+	err := pc.AdRepository.BatchDeleteAdByIds(c.Request.Context(), req.Ids)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return

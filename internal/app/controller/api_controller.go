@@ -58,8 +58,9 @@ func (ac ApiController) GetApis(c *gin.Context) {
 		response.HandleValidationError(c, err)
 		return
 	}
+	ctx := c.Request.Context()
 	// 获取
-	apis, total, err := ac.ApiRepository.GetApis(&req)
+	apis, total, err := ac.ApiRepository.GetApis(ctx, &req)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
@@ -80,7 +81,8 @@ func (ac ApiController) GetApis(c *gin.Context) {
 // @Router       /api/tree [get]
 // @Security     BearerAuth
 func (ac ApiController) GetApiTree(c *gin.Context) {
-	tree, err := ac.ApiRepository.GetApiTree()
+	ctx := c.Request.Context()
+	tree, err := ac.ApiRepository.GetApiTree(ctx)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -114,9 +116,10 @@ func (ac ApiController) CreateApi(c *gin.Context) {
 		return
 	}
 
+	ctx := c.Request.Context()
 	// 获取当前用户
 	ur := repository.NewAdminRepository()
-	ctxUser, err := ur.GetCurrentAdmin(c)
+	ctxUser, err := ur.GetCurrentAdmin(ctx, c)
 	if err != nil {
 		response.InternalServerError(c, "获取当前用户信息失败")
 		return
@@ -131,7 +134,7 @@ func (ac ApiController) CreateApi(c *gin.Context) {
 	}
 
 	// 创建接口
-	err = ac.ApiRepository.CreateApi(&api)
+	err = ac.ApiRepository.CreateApi(ctx, &api)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
@@ -172,9 +175,10 @@ func (ac ApiController) UpdateApiByID(c *gin.Context) {
 		return
 	}
 
+	ctx := c.Request.Context()
 	// 获取当前用户
 	ur := repository.NewAdminRepository()
-	ctxUser, err := ur.GetCurrentAdmin(c)
+	ctxUser, err := ur.GetCurrentAdmin(ctx, c)
 	if err != nil {
 		response.InternalServerError(c, "获取当前用户信息失败")
 		return
@@ -188,7 +192,7 @@ func (ac ApiController) UpdateApiByID(c *gin.Context) {
 		Creator:  ctxUser.Username,
 	}
 
-	err = ac.ApiRepository.UpdateApiByID(uint(apiID), &api)
+	err = ac.ApiRepository.UpdateApiByID(ctx, uint(apiID), &api)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
@@ -221,8 +225,9 @@ func (ac ApiController) BatchDeleteApiByIds(c *gin.Context) {
 		return
 	}
 
+	ctx := c.Request.Context()
 	// 删除接口
-	err := ac.ApiRepository.BatchDeleteApiByIds(req.ApiIds)
+	err := ac.ApiRepository.BatchDeleteApiByIds(ctx, req.ApiIds)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return

@@ -56,7 +56,7 @@ func OperationLogMiddleware() gin.HandlerFunc {
 		method := c.Request.Method
 
 		// 获取接口描述
-		apiDesc := getApiDescription(path, method)
+		apiDesc := getApiDescription(path, method, c)
 
 		log := &model.OperationLog{
 			Username:  username,
@@ -111,9 +111,9 @@ func getUsername(c *gin.Context) string {
 }
 
 // 获取API描述
-func getApiDescription(path, method string) string {
+func getApiDescription(path, method string, c *gin.Context) string {
 	apiRepository := repository.NewApiRepository()
-	apiDesc, err := apiRepository.GetApiDescByPath(path, method)
+	apiDesc, err := apiRepository.GetApiDescByPath(c.Request.Context(), path, method)
 	if err != nil {
 		return ""
 	}

@@ -6,14 +6,16 @@
 package repository
 
 import (
+	"context"
 	"fmt"
-	"gotribe-admin/internal/pkg/common"
 	"time"
+
+	"gotribe-admin/internal/pkg/common"
 )
 
 type IIndexRepository interface {
-	GetIndexData(projectID string) (map[string]interface{}, error)                             // 获取首页数据
-	GetTimeRangeData(projectID, timeRange string) (map[string][]map[string]interface{}, error) // 获取时间范围数据
+	GetIndexData(ctx context.Context, projectID string) (map[string]interface{}, error)                             // 获取首页数据
+	GetTimeRangeData(ctx context.Context, projectID, timeRange string) (map[string][]map[string]interface{}, error) // 获取时间范围数据
 }
 
 type IndexRepository struct {
@@ -25,14 +27,14 @@ func NewIndexRepository() IIndexRepository {
 }
 
 // 获取当日新增用户，访问量
-func (r IndexRepository) GetIndexData(projectID string) (map[string]interface{}, error) {
+func (r IndexRepository) GetIndexData(ctx context.Context, projectID string) (map[string]interface{}, error) {
 	// 动态生成当天的时间范围
 	today := time.Now()
 	startOfDay := time.Date(today.Year(), today.Month(), today.Day(), 0, 0, 0, 0, today.Location())
 
 	// 获取新增用户数
 	var totalUsers int64
-	err := common.DB.Table("user").
+	err := common.WithContext(ctx).DB().Table("user").
 		Select("COUNT(*)").
 		Where("created_at >= ? AND project_id = ?", startOfDay, projectID).
 		Count(&totalUsers).Error
@@ -41,7 +43,7 @@ func (r IndexRepository) GetIndexData(projectID string) (map[string]interface{},
 	}
 	// 获取浏览数据
 	var visitCount int64
-	err = common.DB.Table("user_event").
+	err = common.WithContext(ctx).DB().Table("user_event").
 		Select("COUNT(*)").
 		Where("event_type = 1 AND created_at >= ? AND project_id = ?", startOfDay, projectID).
 		Count(&visitCount).Error
@@ -68,7 +70,7 @@ func (r IndexRepository) GetIndexData(projectID string) (map[string]interface{},
 // Returns:
 // - A map with key "users", containing a slice of maps with date and corresponding statistics.
 // - An error if the time range is invalid or if there is a failure in fetching data from the database.
-func (r IndexRepository) GetTimeRangeData(projectID, timeRange string) (map[string][]map[string]interface{}, error) {
+func (r IndexRepository) GetTimeRangeData(ctx context.Context, projectID, timeRange string) (map[string][]map[string]interface{}, error) {
 	var startDate time.Time
 	today := time.Now()
 
@@ -95,7 +97,7 @@ func (r IndexRepository) GetTimeRangeData(projectID, timeRange string) (map[stri
 	} else {
 		groupByField = "DATE(created_at)"
 	}
-	err := common.DB.Table("user").
+	err := common.WithContext(ctx).DB().Table("user").
 		Select(fmt.Sprintf("%s as date, COUNT(*) as total_users", groupByField)).
 		Where("created_at >= ? AND project_id = ?", startDate, projectID).
 		Group(groupByField).

@@ -8,10 +8,11 @@ package controller
 
 // Importing necessary packages
 import (
-	"github.com/gin-gonic/gin"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/pkg/api/response"
+
+	"github.com/gin-gonic/gin"
 )
 
 // IIndexController is an interface defining the methods for index page data retrieval.
@@ -45,7 +46,7 @@ func NewIndexController() IIndexController {
 // @Router       /index/info [get]
 // @Security     BearerAuth
 func (pc IndexController) GetIndexInfo(c *gin.Context) {
-	indexInfo, err := pc.IndexRepository.GetIndexData(c.Query("projectID"))
+	indexInfo, err := pc.IndexRepository.GetIndexData(c.Request.Context(), c.Query("projectID"))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -68,7 +69,7 @@ func (pc IndexController) GetIndexInfo(c *gin.Context) {
 // @Router       /index/time-range [get]
 // @Security     BearerAuth
 func (pc IndexController) GetTimeRangeData(c *gin.Context) {
-	timeRangeData, err := pc.IndexRepository.GetTimeRangeData(c.Query("projectID"), c.Query("timeRange"))
+	timeRangeData, err := pc.IndexRepository.GetTimeRangeData(c.Request.Context(), c.Query("projectID"), c.Query("timeRange"))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return

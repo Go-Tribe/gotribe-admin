@@ -33,7 +33,7 @@ func (j *SitemapJob) execute(ctx context.Context) error {
 	common.Log.Info("Starting sitemap generation job")
 
 	// 查出 project 信息
-	projects, err := repository.NewProjectRepository().GetProjectsBySitemap()
+	projects, err := repository.NewProjectRepository().GetProjectsBySitemap(ctx)
 	if err != nil {
 		return err
 	}

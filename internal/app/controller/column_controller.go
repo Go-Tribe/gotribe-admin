@@ -55,7 +55,8 @@ func (pc ColumnController) GetColumnInfo(c *gin.Context) {
 		response.ValidationFail(c, "专栏ID格式错误")
 		return
 	}
-	column, err := pc.ColumnRepository.GetColumnByID(uint(id))
+	ctx := c.Request.Context()
+	column, err := pc.ColumnRepository.GetColumnByID(ctx, uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -96,8 +97,9 @@ func (pc ColumnController) GetColumns(c *gin.Context) {
 		return
 	}
 
+	ctx := c.Request.Context()
 	// 获取
-	column, total, err := pc.ColumnRepository.GetColumns(&req)
+	column, total, err := pc.ColumnRepository.GetColumns(ctx, &req)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
@@ -139,7 +141,8 @@ func (pc ColumnController) CreateColumn(c *gin.Context) {
 		ProjectID:   req.ProjectID,
 	}
 
-	err := pc.ColumnRepository.CreateColumn(&column)
+	ctx := c.Request.Context()
+	err := pc.ColumnRepository.CreateColumn(ctx, &column)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
@@ -180,8 +183,9 @@ func (pc ColumnController) UpdateColumnByID(c *gin.Context) {
 		return
 	}
 
+	ctx := c.Request.Context()
 	// 根据path中的ID获取专栏信息
-	oldColumn, err := pc.ColumnRepository.GetColumnByID(uint(id))
+	oldColumn, err := pc.ColumnRepository.GetColumnByID(ctx, uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -191,7 +195,7 @@ func (pc ColumnController) UpdateColumnByID(c *gin.Context) {
 	oldColumn.Info = req.Info
 	oldColumn.Icon = req.Icon
 	// 更新专栏
-	err = pc.ColumnRepository.UpdateColumn(&oldColumn)
+	err = pc.ColumnRepository.UpdateColumn(ctx, &oldColumn)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
@@ -225,7 +229,8 @@ func (pc ColumnController) BatchDeleteColumnByIds(c *gin.Context) {
 		return
 	}
 
-	err := pc.ColumnRepository.BatchDeleteColumnByIds(req.Ids)
+	ctx := c.Request.Context()
+	err := pc.ColumnRepository.BatchDeleteColumnByIds(ctx, req.Ids)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return

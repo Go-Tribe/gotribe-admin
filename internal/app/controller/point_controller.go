@@ -62,7 +62,7 @@ func (pc PointController) GetPoints(c *gin.Context) {
 	}
 
 	// 获取
-	point, total, err := pc.PointRepository.GetPointLogs(&req)
+	point, total, err := pc.PointRepository.GetPointLogs(c.Request.Context(), &req)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
@@ -96,7 +96,7 @@ func (pc PointController) CreatePoint(c *gin.Context) {
 		return
 	}
 
-	err := pc.PointRepository.CreatePoint(req.UserID, "admin", "后台添加", "0", req.ProjectID, req.Point)
+	err := pc.PointRepository.CreatePoint(c.Request.Context(), req.UserID, "admin", "后台添加", "0", req.ProjectID, req.Point)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return

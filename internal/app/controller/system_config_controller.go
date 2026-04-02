@@ -42,7 +42,8 @@ func NewSystemConfigController() ISystemConfigController {
 // @Failure      400 {object} response.Response
 // @Router       /base/config [get]
 func (tc SystemConfigController) GetSystemConfigInfo(c *gin.Context) {
-	systemConfig, err := tc.SystemConfigRepository.GetSystemConfig()
+	ctx := c.Request.Context()
+	systemConfig, err := tc.SystemConfigRepository.GetSystemConfig(ctx)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -65,6 +66,7 @@ func (tc SystemConfigController) GetSystemConfigInfo(c *gin.Context) {
 // @Router       /systemConfig/update [patch]
 // @Security     BearerAuth
 func (tc SystemConfigController) UpdateSystemConfigByID(c *gin.Context) {
+	ctx := c.Request.Context()
 	var req vo.CreateSystemConfigRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
@@ -79,7 +81,7 @@ func (tc SystemConfigController) UpdateSystemConfigByID(c *gin.Context) {
 	}
 
 	// 根据path中的SystemConfigID获取系统配置信息
-	oldSystemConfig, err := tc.SystemConfigRepository.GetSystemConfig()
+	oldSystemConfig, err := tc.SystemConfigRepository.GetSystemConfig(ctx)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -90,7 +92,7 @@ func (tc SystemConfigController) UpdateSystemConfigByID(c *gin.Context) {
 	oldSystemConfig.Icon = req.Icon
 	oldSystemConfig.Logo = req.Logo
 	// 更新系统配置
-	err = tc.SystemConfigRepository.UpdateSystemConfig(&oldSystemConfig)
+	err = tc.SystemConfigRepository.UpdateSystemConfig(ctx, &oldSystemConfig)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return

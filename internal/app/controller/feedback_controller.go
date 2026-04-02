@@ -1,15 +1,16 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
-	"github.com/thoas/go-funk"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/dto"
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+	"github.com/thoas/go-funk"
 )
 
 type IFeedbackController interface {
@@ -39,6 +40,7 @@ func NewFeedbackController() IFeedbackController {
 // @Router       /feedback [get]
 // @Security     BearerAuth
 func (tc FeedbackController) GetFeedbacks(c *gin.Context) {
+	ctx := c.Request.Context()
 	var req vo.FeedbackListRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
@@ -53,7 +55,7 @@ func (tc FeedbackController) GetFeedbacks(c *gin.Context) {
 	}
 
 	// 获取
-	feedbacks, total, err := tc.FeedbackRepository.GetFeedbacks(&req)
+	feedbacks, total, err := tc.FeedbackRepository.GetFeedbacks(ctx, &req)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return

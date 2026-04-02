@@ -6,6 +6,7 @@
 package repository
 
 import (
+	"context"
 	"fmt"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -15,8 +16,8 @@ import (
 )
 
 type IOperationLogRepository interface {
-	GetOperationLogs(req *vo.OperationLogListRequest) ([]model.OperationLog, int64, error)
-	BatchDeleteOperationLogByIds(ids []uint) error
+	GetOperationLogs(ctx context.Context, req *vo.OperationLogListRequest) ([]model.OperationLog, int64, error)
+	BatchDeleteOperationLogByIds(ctx context.Context, ids []uint) error
 	SaveOperationLogChannel(olc <-chan *model.OperationLog) //处理OperationLogChan将日志记录到数据库
 }
 
@@ -27,9 +28,9 @@ func NewOperationLogRepository() IOperationLogRepository {
 	return OperationLogRepository{}
 }
 
-func (o OperationLogRepository) GetOperationLogs(req *vo.OperationLogListRequest) ([]model.OperationLog, int64, error) {
+func (o OperationLogRepository) GetOperationLogs(ctx context.Context, req *vo.OperationLogListRequest) ([]model.OperationLog, int64, error) {
 	var list []model.OperationLog
-	db := common.DB.Model(&model.OperationLog{}).Order("start_time DESC")
+	db := common.WithContext(ctx).DB().Model(&model.OperationLog{}).Order("start_time DESC")
 
 	username := strings.TrimSpace(req.Username)
 	if username != "" {
@@ -66,8 +67,8 @@ func (o OperationLogRepository) GetOperationLogs(req *vo.OperationLogListRequest
 
 }
 
-func (o OperationLogRepository) BatchDeleteOperationLogByIds(ids []uint) error {
-	err := common.DB.Where("id IN (?)", ids).Unscoped().Delete(&model.OperationLog{}).Error
+func (o OperationLogRepository) BatchDeleteOperationLogByIds(ctx context.Context, ids []uint) error {
+	err := common.WithContext(ctx).DB().Where("id IN (?)", ids).Unscoped().Delete(&model.OperationLog{}).Error
 	return err
 }
 

@@ -6,6 +6,7 @@
 package repository
 
 import (
+	"context"
 	"fmt"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -17,11 +18,11 @@ import (
 )
 
 type IPostRepository interface {
-	CreatePost(post *model.Post) error                              // 创建内容
-	GetPostByPostID(postID string) (model.Post, error)              // 获取单个内容
-	GetPosts(req *vo.PostListRequest) ([]*model.Post, int64, error) // 获取内容列表
-	UpdatePost(post *model.Post) error                              // 更新内容
-	BatchDeletePostByIds(ids []string) error                        // 批量删除内容
+	CreatePost(ctx context.Context, post *model.Post) error                              // 创建内容
+	GetPostByPostID(ctx context.Context, postID string) (model.Post, error)              // 获取单个内容
+	GetPosts(ctx context.Context, req *vo.PostListRequest) ([]*model.Post, int64, error) // 获取内容列表
+	UpdatePost(ctx context.Context, post *model.Post) error                              // 更新内容
+	BatchDeletePostByIds(ctx context.Context, ids []string) error                        // 批量删除内容
 }
 
 type PostRepository struct {
@@ -33,9 +34,9 @@ func NewPostRepository() IPostRepository {
 }
 
 // 获取单个内容
-func (pr PostRepository) GetPostByPostID(postID string) (model.Post, error) {
+func (pr PostRepository) GetPostByPostID(ctx context.Context, postID string) (model.Post, error) {
 	var post model.Post
-	err := common.DB.Where("post_id = ?", postID).First(&post).Error
+	err := common.WithContext(ctx).DB().Where("post_id = ?", postID).First(&post).Error
 	//var category model.Category
 	//err = common.DB.Where("category_id = ?", post.CategoryID).First(&category).Error
 	//post.Category = &category
@@ -43,9 +44,9 @@ func (pr PostRepository) GetPostByPostID(postID string) (model.Post, error) {
 }
 
 // 获取内容列表
-func (pr PostRepository) GetPosts(req *vo.PostListRequest) ([]*model.Post, int64, error) {
+func (pr PostRepository) GetPosts(ctx context.Context, req *vo.PostListRequest) ([]*model.Post, int64, error) {
 	var list []*model.Post
-	db := common.DB.Model(&model.Post{}).Order("created_at DESC")
+	db := common.WithContext(ctx).DB().Model(&model.Post{}).Order("created_at DESC")
 
 	title := strings.TrimSpace(req.Title)
 	if !gconvert.IsEmpty(title) {
@@ -77,11 +78,11 @@ func (pr PostRepository) GetPosts(req *vo.PostListRequest) ([]*model.Post, int64
 		return nil, 0, err
 	}
 	// 调用 GetPostOther 并处理返回值
-	list, err = GetPostOther(list)
+	list, err = GetPostOther(ctx, list)
 	return list, total, err
 }
 
-func GetPostOther(posts []*model.Post) ([]*model.Post, error) {
+func GetPostOther(ctx context.Context, posts []*model.Post) ([]*model.Post, error) {
 	// 收集所有需要查询的 CategoryID, Tag, ProjectID
 	categoryIDSet := make(map[uint]struct{})
 	projectIDSet := make(map[string]struct{})
@@ -121,7 +122,7 @@ func GetPostOther(posts []*model.Post) ([]*model.Post, error) {
 	// 批量查询 Category
 	var categories []*model.Category
 	if len(categoryIDs) > 0 {
-		if err := common.DB.Where("id IN (?)", categoryIDs).Find(&categories).Error; err != nil {
+		if err := common.WithContext(ctx).DB().Where("id IN (?)", categoryIDs).Find(&categories).Error; err != nil {
 			return nil, err
 		}
 	}
@@ -132,7 +133,7 @@ func GetPostOther(posts []*model.Post) ([]*model.Post, error) {
 		tagIDs = append(tagIDs, tag)
 	}
 	if len(tagIDs) > 0 {
-		if err := common.DB.Where("id IN (?)", tagIDs).Find(&allTags).Error; err != nil {
+		if err := common.WithContext(ctx).DB().Where("id IN (?)", tagIDs).Find(&allTags).Error; err != nil {
 			return nil, err
 		}
 	}
@@ -140,7 +141,7 @@ func GetPostOther(posts []*model.Post) ([]*model.Post, error) {
 	// 批量查询 Project
 	var projects []*model.Project
 	if len(projectIDs) > 0 {
-		if err := common.DB.Where("project_id IN (?)", projectIDs).Find(&projects).Error; err != nil {
+		if err := common.WithContext(ctx).DB().Where("project_id IN (?)", projectIDs).Find(&projects).Error; err != nil {
 			return nil, err
 		}
 	}
@@ -181,14 +182,14 @@ func GetPostOther(posts []*model.Post) ([]*model.Post, error) {
 }
 
 // 创建内容
-func (pr PostRepository) CreatePost(post *model.Post) error {
-	err := common.DB.Create(post).Error
+func (pr PostRepository) CreatePost(ctx context.Context, post *model.Post) error {
+	err := common.WithContext(ctx).DB().Create(post).Error
 	return err
 }
 
 // 更新内容
-func (pr PostRepository) UpdatePost(post *model.Post) error {
-	err := common.DB.Model(post).Updates(post).Error
+func (pr PostRepository) UpdatePost(ctx context.Context, post *model.Post) error {
+	err := common.WithContext(ctx).DB().Model(post).Updates(post).Error
 	if err != nil {
 		return err
 	}
@@ -197,18 +198,18 @@ func (pr PostRepository) UpdatePost(post *model.Post) error {
 }
 
 // 批量删除
-func (pr PostRepository) BatchDeletePostByIds(ids []string) error {
+func (pr PostRepository) BatchDeletePostByIds(ctx context.Context, ids []string) error {
 	var posts []model.Post
 	for _, id := range ids {
 		// 根据ID获取标签
-		post, err := pr.GetPostByPostID(id)
+		post, err := pr.GetPostByPostID(ctx, id)
 		if err != nil {
 			return fmt.Errorf("未获取到ID为%s的内容", id)
 		}
 		posts = append(posts, post)
 	}
 
-	err := common.DB.Delete(&posts).Error
+	err := common.WithContext(ctx).DB().Delete(&posts).Error
 
 	return err
 }

@@ -6,6 +6,7 @@
 package repository
 
 import (
+	"context"
 	"fmt"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -21,22 +22,22 @@ import (
 )
 
 type IAdminRepository interface {
-	Login(admin *model.Admin) (*model.Admin, error)    // 登录
-	ChangePwd(username string, newPasswd string) error // 更新密码
+	Login(ctx context.Context, admin *model.Admin) (*model.Admin, error)    // 登录
+	ChangePwd(ctx context.Context, username string, newPasswd string) error // 更新密码
 
-	CreateAdmin(admin *model.Admin) error                              // 创建用户
-	GetAdminByID(id uint) (model.Admin, error)                         // 获取单个用户
-	GetAdmins(req *vo.AdminListRequest) ([]*model.Admin, int64, error) // 获取用户列表
-	UpdateAdmin(admin *model.Admin) error                              // 更新用户
-	BatchDeleteAdminByIds(ids []uint) error                            // 批量删除
+	CreateAdmin(ctx context.Context, admin *model.Admin) error                              // 创建用户
+	GetAdminByID(ctx context.Context, id uint) (model.Admin, error)                         // 获取单个用户
+	GetAdmins(ctx context.Context, req *vo.AdminListRequest) ([]*model.Admin, int64, error) // 获取用户列表
+	UpdateAdmin(ctx context.Context, admin *model.Admin) error                              // 更新用户
+	BatchDeleteAdminByIds(ctx context.Context, ids []uint) error                            // 批量删除
 
-	GetCurrentAdmin(c *gin.Context) (model.Admin, error)                  // 获取当前登录用户信息
-	GetCurrentAdminMinRoleSort(c *gin.Context) (uint, model.Admin, error) // 获取当前用户角色排序最小值（最高等级角色）以及当前用户信息
-	GetAdminMinRoleSortsByIds(ids []uint) ([]int, error)                  // 根据用户ID获取用户角色排序最小值
+	GetCurrentAdmin(ctx context.Context, c *gin.Context) (model.Admin, error)                  // 获取当前登录用户信息
+	GetCurrentAdminMinRoleSort(ctx context.Context, c *gin.Context) (uint, model.Admin, error) // 获取当前用户角色排序最小值（最高等级角色）以及当前用户信息
+	GetAdminMinRoleSortsByIds(ctx context.Context, ids []uint) ([]int, error) // 根据用户ID获取用户角色排序最小值
 
-	SetAdminInfoCache(username string, admin model.Admin) // 设置用户信息缓存
-	UpdateAdminInfoCacheByRoleID(roleID uint) error       // 根据角色ID更新拥有该角色的用户信息缓存
-	ClearAdminInfoCache()                                 // 清理所有用户信息缓存
+	SetAdminInfoCache(username string, admin model.Admin)   // 设置用户信息缓存
+	UpdateAdminInfoCacheByRoleID(ctx context.Context, roleID uint) error // 根据角色ID更新拥有该角色的用户信息缓存
+	ClearAdminInfoCache()                                   // 清理所有用户信息缓存
 }
 
 type AdminRepository struct {
@@ -51,10 +52,10 @@ func NewAdminRepository() IAdminRepository {
 }
 
 // 登录
-func (ar AdminRepository) Login(admin *model.Admin) (*model.Admin, error) {
+func (ar AdminRepository) Login(ctx context.Context, admin *model.Admin) (*model.Admin, error) {
 	// 根据用户名获取用户(正常状态:用户状态正常)
 	var firstAdmin model.Admin
-	err := common.DB.
+	err := common.WithContext(ctx).DB().
 		Where("username = ?", admin.Username).
 		Preload("Roles").
 		First(&firstAdmin).Error
@@ -93,7 +94,7 @@ func (ar AdminRepository) Login(admin *model.Admin) (*model.Admin, error) {
 
 // 获取当前登录用户信息
 // 需要缓存，减少数据库访问
-func (ar AdminRepository) GetCurrentAdmin(c *gin.Context) (model.Admin, error) {
+func (ar AdminRepository) GetCurrentAdmin(ctx context.Context, c *gin.Context) (model.Admin, error) {
 	var newAdmin model.Admin
 	ctxAdmin, exist := c.Get("user")
 	if !exist {
@@ -110,7 +111,7 @@ func (ar AdminRepository) GetCurrentAdmin(c *gin.Context) (model.Admin, error) {
 		err = nil
 	} else {
 		// 缓存中没有就获取数据库
-		admin, err = ar.GetAdminByID(u.ID)
+		admin, err = ar.GetAdminByID(ctx, u.ID)
 		// 获取成功就缓存
 		if err != nil {
 			adminInfoCache.Delete(u.Username)
@@ -122,9 +123,9 @@ func (ar AdminRepository) GetCurrentAdmin(c *gin.Context) (model.Admin, error) {
 }
 
 // 获取当前用户角色排序最小值（最高等级角色）以及当前用户信息
-func (ar AdminRepository) GetCurrentAdminMinRoleSort(c *gin.Context) (uint, model.Admin, error) {
+func (ar AdminRepository) GetCurrentAdminMinRoleSort(ctx context.Context, c *gin.Context) (uint, model.Admin, error) {
 	// 获取当前用户
-	ctxAdmin, err := ar.GetCurrentAdmin(c)
+	ctxAdmin, err := ar.GetCurrentAdmin(ctx, c)
 	if err != nil {
 		return 999, ctxAdmin, err
 	}
@@ -142,16 +143,16 @@ func (ar AdminRepository) GetCurrentAdminMinRoleSort(c *gin.Context) (uint, mode
 }
 
 // 获取单个用户
-func (ar AdminRepository) GetAdminByID(id uint) (model.Admin, error) {
+func (ar AdminRepository) GetAdminByID(ctx context.Context, id uint) (model.Admin, error) {
 	var admin model.Admin
-	err := common.DB.Where("id = ?", id).Preload("Roles").First(&admin).Error
+	err := common.WithContext(ctx).DB().Where("id = ?", id).Preload("Roles").First(&admin).Error
 	return admin, err
 }
 
 // 获取用户列表
-func (ar AdminRepository) GetAdmins(req *vo.AdminListRequest) ([]*model.Admin, int64, error) {
+func (ar AdminRepository) GetAdmins(ctx context.Context, req *vo.AdminListRequest) ([]*model.Admin, int64, error) {
 	var list []*model.Admin
-	db := common.DB.Model(&model.Admin{}).Order("created_at DESC")
+	db := common.WithContext(ctx).DB().Model(&model.Admin{}).Order("created_at DESC")
 
 	username := strings.TrimSpace(req.Username)
 	if username != "" {
@@ -187,8 +188,8 @@ func (ar AdminRepository) GetAdmins(req *vo.AdminListRequest) ([]*model.Admin, i
 }
 
 // 更新密码
-func (ar AdminRepository) ChangePwd(username string, hashNewPasswd string) error {
-	err := common.DB.Model(&model.Admin{}).Where("username = ?", username).Update("password", hashNewPasswd).Error
+func (ar AdminRepository) ChangePwd(ctx context.Context, username string, hashNewPasswd string) error {
+	err := common.WithContext(ctx).DB().Model(&model.Admin{}).Where("username = ?", username).Update("password", hashNewPasswd).Error
 	// 如果更新密码成功，则更新当前用户信息缓存
 	// 先获取缓存
 	cacheAdmin, found := adminInfoCache.Get(username)
@@ -200,7 +201,7 @@ func (ar AdminRepository) ChangePwd(username string, hashNewPasswd string) error
 		} else {
 			// 没有缓存就获取用户信息缓存
 			var admin model.Admin
-			common.DB.Where("username = ?", username).First(&admin)
+			common.WithContext(ctx).DB().Where("username = ?", username).First(&admin)
 			adminInfoCache.Set(username, admin, cache.DefaultExpiration)
 		}
 	}
@@ -209,20 +210,20 @@ func (ar AdminRepository) ChangePwd(username string, hashNewPasswd string) error
 }
 
 // 创建用户
-func (ar AdminRepository) CreateAdmin(admin *model.Admin) error {
-	err := common.DB.Create(admin).Error
+func (ar AdminRepository) CreateAdmin(ctx context.Context, admin *model.Admin) error {
+	err := common.WithContext(ctx).DB().Create(admin).Error
 	return err
 }
 
 // 更新用户
-func (ar AdminRepository) UpdateAdmin(admin *model.Admin) error {
-	err := common.DB.Model(admin).Updates(admin).Error
+func (ar AdminRepository) UpdateAdmin(ctx context.Context, admin *model.Admin) error {
+	err := common.WithContext(ctx).DB().Model(admin).Updates(admin).Error
 	if err != nil {
 		return err
 	}
-	err = common.DB.Model(admin).Association("Roles").Replace(admin.Roles)
+	err = common.WithContext(ctx).DB().Model(admin).Association("Roles").Replace(admin.Roles)
 
-	//err := common.DB.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&admin).Error
+	//err := common.WithContext(ctx).DB().Session(&gorm.Session{FullSaveAssociations: true}).Updates(&admin).Error
 
 	// 如果更新成功就更新用户信息缓存
 	if err == nil {
@@ -232,19 +233,19 @@ func (ar AdminRepository) UpdateAdmin(admin *model.Admin) error {
 }
 
 // 批量删除
-func (ar AdminRepository) BatchDeleteAdminByIds(ids []uint) error {
+func (ar AdminRepository) BatchDeleteAdminByIds(ctx context.Context, ids []uint) error {
 	// 用户和角色存在多对多关联关系
 	var admins []model.Admin
 	for _, id := range ids {
 		// 根据ID获取用户
-		admin, err := ar.GetAdminByID(id)
+		admin, err := ar.GetAdminByID(ctx, id)
 		if err != nil {
 			return common.NewUserNotFoundByIDError(id)
 		}
 		admins = append(admins, admin)
 	}
 
-	err := common.DB.Select("Roles").Unscoped().Delete(&admins).Error
+	err := common.WithContext(ctx).DB().Select("Roles").Unscoped().Delete(&admins).Error
 	// 删除用户成功，则删除用户信息缓存
 	if err == nil {
 		for _, admin := range admins {
@@ -255,10 +256,10 @@ func (ar AdminRepository) BatchDeleteAdminByIds(ids []uint) error {
 }
 
 // 根据用户ID获取用户角色排序最小值
-func (ar AdminRepository) GetAdminMinRoleSortsByIds(ids []uint) ([]int, error) {
+func (ar AdminRepository) GetAdminMinRoleSortsByIds(ctx context.Context, ids []uint) ([]int, error) {
 	// 根据用户ID获取用户信息
 	var adminList []model.Admin
-	err := common.DB.Where("id IN (?)", ids).Preload("Roles").Find(&adminList).Error
+	err := common.WithContext(ctx).DB().Where("id IN (?)", ids).Preload("Roles").Find(&adminList).Error
 	if err != nil {
 		return []int{}, err
 	}
@@ -284,10 +285,10 @@ func (ar AdminRepository) SetAdminInfoCache(username string, admin model.Admin) 
 }
 
 // 根据角色ID更新拥有该角色的用户信息缓存
-func (ar AdminRepository) UpdateAdminInfoCacheByRoleID(roleID uint) error {
+func (ar AdminRepository) UpdateAdminInfoCacheByRoleID(ctx context.Context, roleID uint) error {
 
 	var role model.Role
-	err := common.DB.Where("id = ?", roleID).Preload("Admins").First(&role).Error
+	err := common.WithContext(ctx).DB().Where("id = ?", roleID).Preload("Admins").First(&role).Error
 	if err != nil {
 		return common.ErrRoleInfoFailed
 	}

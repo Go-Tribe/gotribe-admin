@@ -6,6 +6,8 @@
 package repository
 
 import (
+	"context"
+
 	"github.com/thoas/go-funk"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -13,14 +15,14 @@ import (
 )
 
 type IMenuRepository interface {
-	GetMenus() ([]*model.Menu, error)                   // 获取菜单列表
-	GetMenuTree() ([]*model.Menu, error)                // 获取菜单树
-	CreateMenu(menu *model.Menu) error                  // 创建菜单
-	UpdateMenuByID(menuID uint, menu *model.Menu) error // 更新菜单
-	BatchDeleteMenuByIds(menuIds []uint) error          // 批量删除菜单
+	GetMenus(ctx context.Context) ([]*model.Menu, error)                   // 获取菜单列表
+	GetMenuTree(ctx context.Context) ([]*model.Menu, error)                // 获取菜单树
+	CreateMenu(ctx context.Context, menu *model.Menu) error                // 创建菜单
+	UpdateMenuByID(ctx context.Context, menuID uint, menu *model.Menu) error // 更新菜单
+	BatchDeleteMenuByIds(ctx context.Context, menuIds []uint) error        // 批量删除菜单
 
-	GetUserMenusByUserID(userID uint) ([]*model.Menu, error)    // 根据用户ID获取用户的权限(可访问)菜单列表
-	GetUserMenuTreeByUserID(userID uint) ([]*model.Menu, error) // 根据用户ID获取用户的权限(可访问)菜单树
+	GetUserMenusByUserID(ctx context.Context, userID uint) ([]*model.Menu, error)    // 根据用户ID获取用户的权限(可访问)菜单列表
+	GetUserMenuTreeByUserID(ctx context.Context, userID uint) ([]*model.Menu, error) // 根据用户ID获取用户的权限(可访问)菜单树
 }
 
 type MenuRepository struct {
@@ -31,16 +33,16 @@ func NewMenuRepository() IMenuRepository {
 }
 
 // 获取菜单列表
-func (m MenuRepository) GetMenus() ([]*model.Menu, error) {
+func (m MenuRepository) GetMenus(ctx context.Context) ([]*model.Menu, error) {
 	var menus []*model.Menu
-	err := common.DB.Order("sort").Find(&menus).Error
+	err := common.WithContext(ctx).DB().Order("sort").Find(&menus).Error
 	return menus, err
 }
 
 // 获取菜单树
-func (m MenuRepository) GetMenuTree() ([]*model.Menu, error) {
+func (m MenuRepository) GetMenuTree(ctx context.Context) ([]*model.Menu, error) {
 	var menus []*model.Menu
-	err := common.DB.Order("sort").Find(&menus).Error
+	err := common.WithContext(ctx).DB().Order("sort").Find(&menus).Error
 	// parentID为0的是根菜单
 	return GenMenuTree(0, menus), err
 }
@@ -59,33 +61,33 @@ func GenMenuTree(parentID uint, menus []*model.Menu) []*model.Menu {
 }
 
 // 创建菜单
-func (m MenuRepository) CreateMenu(menu *model.Menu) error {
-	err := common.DB.Create(menu).Error
+func (m MenuRepository) CreateMenu(ctx context.Context, menu *model.Menu) error {
+	err := common.WithContext(ctx).DB().Create(menu).Error
 	return err
 }
 
 // 更新菜单
-func (m MenuRepository) UpdateMenuByID(menuID uint, menu *model.Menu) error {
-	err := common.DB.Model(menu).Where("id = ?", menuID).Updates(menu).Error
+func (m MenuRepository) UpdateMenuByID(ctx context.Context, menuID uint, menu *model.Menu) error {
+	err := common.WithContext(ctx).DB().Model(menu).Where("id = ?", menuID).Updates(menu).Error
 	return err
 }
 
 // 批量删除菜单
-func (m MenuRepository) BatchDeleteMenuByIds(menuIds []uint) error {
+func (m MenuRepository) BatchDeleteMenuByIds(ctx context.Context, menuIds []uint) error {
 	var menus []*model.Menu
-	err := common.DB.Where("id IN (?)", menuIds).Find(&menus).Error
+	err := common.WithContext(ctx).DB().Where("id IN (?)", menuIds).Find(&menus).Error
 	if err != nil {
 		return err
 	}
-	err = common.DB.Select("Roles").Unscoped().Delete(&menus).Error
+	err = common.WithContext(ctx).DB().Select("Roles").Unscoped().Delete(&menus).Error
 	return err
 }
 
 // 根据用户ID获取用户的权限(可访问)菜单列表
-func (m MenuRepository) GetUserMenusByUserID(userID uint) ([]*model.Menu, error) {
+func (m MenuRepository) GetUserMenusByUserID(ctx context.Context, userID uint) ([]*model.Menu, error) {
 	// 获取用户
 	var user model.Admin
-	err := common.DB.Where("id = ?", userID).Preload("Roles").First(&user).Error
+	err := common.WithContext(ctx).DB().Where("id = ?", userID).Preload("Roles").First(&user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +97,7 @@ func (m MenuRepository) GetUserMenusByUserID(userID uint) ([]*model.Menu, error)
 	allRoleMenus := make([]*model.Menu, 0)
 	for _, role := range roles {
 		var userRole model.Role
-		err := common.DB.Where("id = ?", role.ID).Preload("Menus").First(&userRole).Error
+		err := common.WithContext(ctx).DB().Where("id = ?", role.ID).Preload("Menus").First(&userRole).Error
 		if err != nil {
 			return nil, err
 		}
@@ -132,8 +134,8 @@ func (m MenuRepository) GetUserMenusByUserID(userID uint) ([]*model.Menu, error)
 }
 
 // 根据用户ID获取用户的权限(可访问)菜单树
-func (m MenuRepository) GetUserMenuTreeByUserID(userID uint) ([]*model.Menu, error) {
-	menus, err := m.GetUserMenusByUserID(userID)
+func (m MenuRepository) GetUserMenuTreeByUserID(ctx context.Context, userID uint) ([]*model.Menu, error) {
+	menus, err := m.GetUserMenusByUserID(ctx, userID)
 	if err != nil {
 		return nil, err
 	}

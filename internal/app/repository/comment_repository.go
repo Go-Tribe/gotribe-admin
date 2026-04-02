@@ -6,6 +6,7 @@
 package repository
 
 import (
+	"context"
 	"fmt"
 	"github.com/dengmengmian/ghelper/gconvert"
 	"gotribe-admin/internal/pkg/common"
@@ -15,9 +16,9 @@ import (
 )
 
 type ICommentRepository interface {
-	GetCommentByID(id uint) (model.Comment, error)                           //获取单条评论
-	GetComments(req *vo.CommentListRequest) ([]*model.Comment, int64, error) // 获取评论列表
-	UpdateComment(comment *model.Comment) error                              // 更新评论
+	GetCommentByID(ctx context.Context, id uint) (model.Comment, error)                           //获取单条评论
+	GetComments(ctx context.Context, req *vo.CommentListRequest) ([]*model.Comment, int64, error) // 获取评论列表
+	UpdateComment(ctx context.Context, comment *model.Comment) error                              // 更新评论
 }
 
 type CommentRepository struct {
@@ -28,16 +29,16 @@ func NewCommentRepository() ICommentRepository {
 	return CommentRepository{}
 }
 
-func (cr CommentRepository) GetCommentByID(id uint) (model.Comment, error) {
+func (cr CommentRepository) GetCommentByID(ctx context.Context, id uint) (model.Comment, error) {
 	var comment model.Comment
-	err := common.DB.Where("id = ?", id).First(&comment).Error
+	err := common.WithContext(ctx).DB().Where("id = ?", id).First(&comment).Error
 	return comment, err
 }
 
 // 获取评论列表
-func (cr CommentRepository) GetComments(req *vo.CommentListRequest) ([]*model.Comment, int64, error) {
+func (cr CommentRepository) GetComments(ctx context.Context, req *vo.CommentListRequest) ([]*model.Comment, int64, error) {
 	var list []*model.Comment
-	db := common.DB.Model(&model.Comment{}).Order("created_at DESC")
+	db := common.WithContext(ctx).DB().Model(&model.Comment{}).Order("created_at DESC")
 
 	objectID := strings.TrimSpace(req.ObjectID)
 	if !gconvert.IsEmpty(objectID) {
@@ -55,7 +56,7 @@ func (cr CommentRepository) GetComments(req *vo.CommentListRequest) ([]*model.Co
 	if !gconvert.IsEmpty(req.Nickname) {
 		// 查出用户 ID。再用用户 ID 去筛选
 		var user model.User
-		if result := common.DB.Model(&model.User{}).Where("nickname like ?", fmt.Sprintf("%%%s%%", req.Nickname)).First(&user); result.Error != nil {
+		if result := common.WithContext(ctx).DB().Model(&model.User{}).Where("nickname like ?", fmt.Sprintf("%%%s%%", req.Nickname)).First(&user); result.Error != nil {
 			return nil, 0, result.Error
 		}
 		db = db.Where("user_id = ?", user.ID)
@@ -75,22 +76,52 @@ func (cr CommentRepository) GetComments(req *vo.CommentListRequest) ([]*model.Co
 	} else {
 		err = db.Find(&list).Error
 	}
-	return GetCommentOther(list), total, err
+	list, err = GetCommentOther(ctx, list)
+	return list, total, err
 }
 
 // 获取评论其他信息
-func GetCommentOther(comments []*model.Comment) []*model.Comment {
-	for _, m := range comments {
-		var user *model.User
-		_ = common.DB.Where("id = ?", m.UserID).First(&user).Error
-		m.User = user
+func GetCommentOther(ctx context.Context, comments []*model.Comment) ([]*model.Comment, error) {
+	if len(comments) == 0 {
+		return comments, nil
 	}
-	return comments
+
+	// 收集所有 UserID
+	userIDs := make([]uint, 0, len(comments))
+	for _, m := range comments {
+		if m.UserID > 0 {
+			userIDs = append(userIDs, m.UserID)
+		}
+	}
+
+	if len(userIDs) == 0 {
+		return comments, nil
+	}
+
+	// 批量查询
+	var users []*model.User
+	if err := common.WithContext(ctx).DB().Where("id IN ?", userIDs).Find(&users).Error; err != nil {
+		return comments, err
+	}
+
+	// 建立映射
+	userMap := make(map[uint]*model.User)
+	for _, user := range users {
+		userMap[user.ID] = user
+	}
+
+	// 赋值
+	for _, m := range comments {
+		if user, ok := userMap[m.UserID]; ok {
+			m.User = user
+		}
+	}
+	return comments, nil
 }
 
 // 更新评论
-func (cr CommentRepository) UpdateComment(comment *model.Comment) error {
-	err := common.DB.Model(comment).Updates(comment).Error
+func (cr CommentRepository) UpdateComment(ctx context.Context, comment *model.Comment) error {
+	err := common.WithContext(ctx).DB().Model(comment).Updates(comment).Error
 	if err != nil {
 		return err
 	}

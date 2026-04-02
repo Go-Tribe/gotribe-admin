@@ -54,7 +54,8 @@ func (tc TagController) GetTagInfo(c *gin.Context) {
 		response.ValidationFail(c, "标签ID格式错误")
 		return
 	}
-	tag, err := tc.TagRepository.GetTagByID(uint(id))
+	ctx := c.Request.Context()
+	tag, err := tc.TagRepository.GetTagByID(ctx, uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -90,8 +91,9 @@ func (tc TagController) GetTags(c *gin.Context) {
 		return
 	}
 
+	ctx := c.Request.Context()
 	// 获取
-	tag, total, err := tc.TagRepository.GetTags(&req)
+	tag, total, err := tc.TagRepository.GetTags(ctx, &req)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
@@ -131,7 +133,8 @@ func (tc TagController) CreateTag(c *gin.Context) {
 		Color:       req.Color,
 	}
 
-	tagInfo, err := tc.TagRepository.CreateTag(&tag)
+	ctx := c.Request.Context()
+	tagInfo, err := tc.TagRepository.CreateTag(ctx, &tag)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
@@ -172,7 +175,8 @@ func (tc TagController) UpdateTagByID(c *gin.Context) {
 		response.ValidationFail(c, "标签ID格式错误")
 		return
 	}
-	oldTag, err := tc.TagRepository.GetTagByID(uint(id))
+	ctx := c.Request.Context()
+	oldTag, err := tc.TagRepository.GetTagByID(ctx, uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -184,7 +188,7 @@ func (tc TagController) UpdateTagByID(c *gin.Context) {
 	oldTag.Sort = req.Sort
 	oldTag.Status = req.Status
 	// 更新标签
-	err = tc.TagRepository.UpdateTag(&oldTag)
+	err = tc.TagRepository.UpdateTag(ctx, &oldTag)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
@@ -218,7 +222,8 @@ func (tc TagController) BatchDeleteTagByIds(c *gin.Context) {
 		return
 	}
 
-	err := tc.TagRepository.BatchDeleteTagByIds(req.Ids)
+	ctx := c.Request.Context()
+	err := tc.TagRepository.BatchDeleteTagByIds(ctx, req.Ids)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return

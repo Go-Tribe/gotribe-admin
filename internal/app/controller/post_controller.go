@@ -55,7 +55,8 @@ func NewPostController() IPostController {
 // @Router       /post/{postID} [get]
 // @Security     BearerAuth
 func (pc PostController) GetPostInfo(c *gin.Context) {
-	post, err := pc.PostRepository.GetPostByPostID(c.Param("postID"))
+	ctx := c.Request.Context()
+	post, err := pc.PostRepository.GetPostByPostID(ctx, c.Param("postID"))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -91,8 +92,9 @@ func (pc PostController) GetPosts(c *gin.Context) {
 		return
 	}
 
+	ctx := c.Request.Context()
 	// 获取
-	post, total, err := pc.PostRepository.GetPosts(&req)
+	post, total, err := pc.PostRepository.GetPosts(ctx, &req)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
@@ -152,7 +154,8 @@ func (pc PostController) CreatePost(c *gin.Context) {
 		Video:       req.Video,
 	}
 
-	err := pc.PostRepository.CreatePost(&post)
+	ctx := c.Request.Context()
+	err := pc.PostRepository.CreatePost(ctx, &post)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
@@ -187,8 +190,9 @@ func (pc PostController) UpdatePostByID(c *gin.Context) {
 		return
 	}
 
+	ctx := c.Request.Context()
 	// 根据path中的PostID获取内容信息
-	oldPost, err := pc.PostRepository.GetPostByPostID(c.Param("postID"))
+	oldPost, err := pc.PostRepository.GetPostByPostID(ctx, c.Param("postID"))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -219,7 +223,7 @@ func (pc PostController) UpdatePostByID(c *gin.Context) {
 	oldPost.Video = req.Video
 	oldPost.ShowTime = req.ShowTime
 	// 更新内容
-	err = pc.PostRepository.UpdatePost(&oldPost)
+	err = pc.PostRepository.UpdatePost(ctx, &oldPost)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
@@ -252,9 +256,10 @@ func (tc PostController) BatchDeletePostByIds(c *gin.Context) {
 		return
 	}
 
+	ctx := c.Request.Context()
 	// 前端传来的标签ID
 	reqPostIds := strings.Split(req.PostIds, ",")
-	err := tc.PostRepository.BatchDeletePostByIds(reqPostIds)
+	err := tc.PostRepository.BatchDeletePostByIds(ctx, reqPostIds)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return
@@ -275,21 +280,22 @@ func (tc PostController) BatchDeletePostByIds(c *gin.Context) {
 // @Router       /post/{postID} [put]
 // @Security     BearerAuth
 func (pc PostController) PushPostByID(c *gin.Context) {
+	ctx := c.Request.Context()
 	// 根据path中的PostID获取内容信息
-	oldPost, err := pc.PostRepository.GetPostByPostID(c.Param("postID"))
+	oldPost, err := pc.PostRepository.GetPostByPostID(ctx, c.Param("postID"))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
 	}
 	oldPost.Status = known.POST_STATUS_PUBLIC
 	// 更新内容
-	err = pc.PostRepository.UpdatePost(&oldPost)
+	err = pc.PostRepository.UpdatePost(ctx, &oldPost)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
 	}
 	// 同步内容至百度
-	projectInfo, err := pc.ProjectRepository.GetProjectByProjectID(oldPost.ProjectID)
+	projectInfo, err := pc.ProjectRepository.GetProjectByProjectID(ctx, oldPost.ProjectID)
 	if err != nil {
 		common.Log.Errorf("获取项目信息失败: %v", err)
 	} else if !gconvert.IsEmpty(projectInfo.PushToken) {

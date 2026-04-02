@@ -6,6 +6,7 @@
 package repository
 
 import (
+	"context"
 	"fmt"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -14,12 +15,12 @@ import (
 )
 
 type IProjectRepository interface {
-	CreateProject(project *model.Project) error                              // 创建项目
-	GetProjectByProjectID(projectID string) (model.Project, error)           // 获取单个项目
-	GetProjects(req *vo.ProjectListRequest) ([]*model.Project, int64, error) // 获取项目列表
-	UpdateProject(project *model.Project) error                              // 更新项目
-	BatchDeleteProjectByIds(ids []string) error                              // 批量删除项目
-	GetProjectsBySitemap() ([]*model.Project, error)
+	CreateProject(ctx context.Context, project *model.Project) error                              // 创建项目
+	GetProjectByProjectID(ctx context.Context, projectID string) (model.Project, error)           // 获取单个项目
+	GetProjects(ctx context.Context, req *vo.ProjectListRequest) ([]*model.Project, int64, error) // 获取项目列表
+	UpdateProject(ctx context.Context, project *model.Project) error                              // 更新项目
+	BatchDeleteProjectByIds(ctx context.Context, ids []string) error                              // 批量删除项目
+	GetProjectsBySitemap(ctx context.Context) ([]*model.Project, error)
 }
 
 type ProjectRepository struct {
@@ -31,16 +32,16 @@ func NewProjectRepository() IProjectRepository {
 }
 
 // 获取单个项目
-func (pr ProjectRepository) GetProjectByProjectID(projectID string) (model.Project, error) {
+func (pr ProjectRepository) GetProjectByProjectID(ctx context.Context, projectID string) (model.Project, error) {
 	var project model.Project
-	err := common.DB.Where("project_id = ?", projectID).First(&project).Error
+	err := common.WithContext(ctx).DB().Where("project_id = ?", projectID).First(&project).Error
 	return project, err
 }
 
 // 获取项目列表
-func (pr ProjectRepository) GetProjects(req *vo.ProjectListRequest) ([]*model.Project, int64, error) {
+func (pr ProjectRepository) GetProjects(ctx context.Context, req *vo.ProjectListRequest) ([]*model.Project, int64, error) {
 	var list []*model.Project
-	db := common.DB.Model(&model.Project{}).Order("created_at DESC")
+	db := common.WithContext(ctx).DB().Model(&model.Project{}).Order("created_at DESC")
 
 	title := strings.TrimSpace(req.Title)
 	if title != "" {
@@ -68,14 +69,14 @@ func (pr ProjectRepository) GetProjects(req *vo.ProjectListRequest) ([]*model.Pr
 }
 
 // 创建项目
-func (pr ProjectRepository) CreateProject(project *model.Project) error {
-	err := common.DB.Create(project).Error
+func (pr ProjectRepository) CreateProject(ctx context.Context, project *model.Project) error {
+	err := common.WithContext(ctx).DB().Create(project).Error
 	return err
 }
 
 // 更新项目
-func (pr ProjectRepository) UpdateProject(project *model.Project) error {
-	err := common.DB.Model(project).Updates(project).Error
+func (pr ProjectRepository) UpdateProject(ctx context.Context, project *model.Project) error {
+	err := common.WithContext(ctx).DB().Model(project).Updates(project).Error
 	if err != nil {
 		return err
 	}
@@ -84,25 +85,25 @@ func (pr ProjectRepository) UpdateProject(project *model.Project) error {
 }
 
 // 批量删除
-func (pr ProjectRepository) BatchDeleteProjectByIds(ids []string) error {
+func (pr ProjectRepository) BatchDeleteProjectByIds(ctx context.Context, ids []string) error {
 	var projects []model.Project
 	for _, id := range ids {
 		// 根据ID获取标签
-		project, err := pr.GetProjectByProjectID(id)
+		project, err := pr.GetProjectByProjectID(ctx, id)
 		if err != nil {
 			return fmt.Errorf("未获取到ID为%s的项目", id)
 		}
 		projects = append(projects, project)
 	}
 
-	err := common.DB.Delete(&projects).Error
+	err := common.WithContext(ctx).DB().Delete(&projects).Error
 
 	return err
 }
 
 // 获取sitmap所需要的 projects 信息
-func (pr ProjectRepository) GetProjectsBySitemap() ([]*model.Project, error) {
+func (pr ProjectRepository) GetProjectsBySitemap(ctx context.Context) ([]*model.Project, error) {
 	var list []*model.Project
-	err := common.DB.Model(&model.Project{}).Order("created_at DESC").Find(&list).Error
+	err := common.WithContext(ctx).DB().Model(&model.Project{}).Order("created_at DESC").Find(&list).Error
 	return list, err
 }

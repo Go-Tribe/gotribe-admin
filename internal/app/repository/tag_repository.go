@@ -6,6 +6,7 @@
 package repository
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
@@ -16,11 +17,11 @@ import (
 )
 
 type ITagRepository interface {
-	CreateTag(tag *model.Tag) (*model.Tag, error)                // 创建标签
-	GetTagByID(id uint) (model.Tag, error)                       // 获取单个标签
-	GetTags(req *vo.TagListRequest) ([]*model.Tag, int64, error) // 获取标签列表
-	UpdateTag(tag *model.Tag) error                              // 更新标签
-	BatchDeleteTagByIds(ids []uint) error                        // 批量删除
+	CreateTag(ctx context.Context, tag *model.Tag) (*model.Tag, error)                // 创建标签
+	GetTagByID(ctx context.Context, id uint) (model.Tag, error)                       // 获取单个标签
+	GetTags(ctx context.Context, req *vo.TagListRequest) ([]*model.Tag, int64, error) // 获取标签列表
+	UpdateTag(ctx context.Context, tag *model.Tag) error                              // 更新标签
+	BatchDeleteTagByIds(ctx context.Context, ids []uint) error                        // 批量删除
 }
 
 type TagRepository struct {
@@ -32,16 +33,16 @@ func NewTagRepository() ITagRepository {
 }
 
 // 获取单个标签
-func (tr TagRepository) GetTagByID(id uint) (model.Tag, error) {
+func (tr TagRepository) GetTagByID(ctx context.Context, id uint) (model.Tag, error) {
 	var tag model.Tag
-	err := common.DB.Where("id = ?", id).First(&tag).Error
+	err := common.WithContext(ctx).DB().Where("id = ?", id).First(&tag).Error
 	return tag, err
 }
 
 // 获取标签列表
-func (tr TagRepository) GetTags(req *vo.TagListRequest) ([]*model.Tag, int64, error) {
+func (tr TagRepository) GetTags(ctx context.Context, req *vo.TagListRequest) ([]*model.Tag, int64, error) {
 	var list []*model.Tag
-	db := common.DB.Model(&model.Tag{}).Order("created_at DESC")
+	db := common.WithContext(ctx).DB().Model(&model.Tag{}).Order("created_at DESC")
 
 	title := strings.TrimSpace(req.Title)
 	if title != "" {
@@ -69,11 +70,11 @@ func (tr TagRepository) GetTags(req *vo.TagListRequest) ([]*model.Tag, int64, er
 }
 
 // 创建标签
-func (tr TagRepository) CreateTag(tag *model.Tag) (*model.Tag, error) {
-	if isTagExist(tag.Title) {
+func (tr TagRepository) CreateTag(ctx context.Context, tag *model.Tag) (*model.Tag, error) {
+	if isTagExist(ctx, tag.Title) {
 		return nil, fmt.Errorf("%s标签已存在", tag.Title)
 	}
-	result := common.DB.Create(tag)
+	result := common.WithContext(ctx).DB().Create(tag)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -81,8 +82,8 @@ func (tr TagRepository) CreateTag(tag *model.Tag) (*model.Tag, error) {
 }
 
 // 更新标签
-func (tr TagRepository) UpdateTag(tag *model.Tag) error {
-	err := common.DB.Model(tag).Updates(tag).Error
+func (tr TagRepository) UpdateTag(ctx context.Context, tag *model.Tag) error {
+	err := common.WithContext(ctx).DB().Model(tag).Updates(tag).Error
 	if err != nil {
 		return err
 	}
@@ -91,24 +92,24 @@ func (tr TagRepository) UpdateTag(tag *model.Tag) error {
 }
 
 // 批量删除
-func (tr TagRepository) BatchDeleteTagByIds(ids []uint) error {
+func (tr TagRepository) BatchDeleteTagByIds(ctx context.Context, ids []uint) error {
 	var tags []model.Tag
 	for _, id := range ids {
 		// 根据ID获取标签
-		tag, err := tr.GetTagByID(id)
+		tag, err := tr.GetTagByID(ctx, id)
 		if err != nil {
 			return fmt.Errorf("未获取到ID为%d的标签", id)
 		}
 		tags = append(tags, tag)
 	}
 
-	err := common.DB.Unscoped().Delete(&tags).Error
+	err := common.WithContext(ctx).DB().Unscoped().Delete(&tags).Error
 
 	return err
 }
 
-func isTagExist(title string) bool {
+func isTagExist(ctx context.Context, title string) bool {
 	var tag model.Tag
-	result := common.DB.Where("title = ?", title).First(&tag)
+	result := common.WithContext(ctx).DB().Where("title = ?", title).First(&tag)
 	return !errors.Is(result.Error, gorm.ErrRecordNotFound)
 }

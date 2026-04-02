@@ -55,12 +55,13 @@ func NewResourceController() IResourceController {
 // @Router /api/v1/resources/{id} [get]
 // @Security BearerAuth
 func (pc ResourceController) GetResourceInfo(c *gin.Context) {
+	ctx := c.Request.Context()
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
 		response.ValidationFail(c, "资源ID格式错误")
 		return
 	}
-	resource, err := pc.ResourceRepository.GetResourceByID(uint(id))
+	resource, err := pc.ResourceRepository.GetResourceByID(ctx, uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -84,6 +85,7 @@ func (pc ResourceController) GetResourceInfo(c *gin.Context) {
 // @Router /api/v1/resources [get]
 // @Security BearerAuth
 func (pc ResourceController) GetResources(c *gin.Context) {
+	ctx := c.Request.Context()
 	var req vo.ResourceListRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
@@ -98,7 +100,7 @@ func (pc ResourceController) GetResources(c *gin.Context) {
 	}
 
 	// 获取
-	resource, total, err := pc.ResourceRepository.GetResources(&req)
+	resource, total, err := pc.ResourceRepository.GetResources(ctx, &req)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgListFail)
 		return
@@ -120,6 +122,7 @@ func (pc ResourceController) GetResources(c *gin.Context) {
 // @Router /api/v1/resources/{id} [put]
 // @Security BearerAuth
 func (pc ResourceController) UpdateResourceByID(c *gin.Context) {
+	ctx := c.Request.Context()
 	var req vo.CreateResourceRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
@@ -139,7 +142,7 @@ func (pc ResourceController) UpdateResourceByID(c *gin.Context) {
 	}
 
 	// 根据path中的ID获取资源信息
-	oldResource, err := pc.ResourceRepository.GetResourceByID(uint(id))
+	oldResource, err := pc.ResourceRepository.GetResourceByID(ctx, uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -147,7 +150,7 @@ func (pc ResourceController) UpdateResourceByID(c *gin.Context) {
 	oldResource.Title = req.Title
 	oldResource.Description = req.Description
 	// 更新资源
-	err = pc.ResourceRepository.UpdateResource(&oldResource)
+	err = pc.ResourceRepository.UpdateResource(ctx, &oldResource)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgUpdateFail)
 		return
@@ -168,6 +171,7 @@ func (pc ResourceController) UpdateResourceByID(c *gin.Context) {
 // @Router /api/v1/resources/upload [post]
 // @Security BearerAuth
 func (pc ResourceController) UploadResources(c *gin.Context) {
+	ctx := c.Request.Context()
 	fileHeader, err := c.FormFile("file")
 	if err != nil {
 		response.HandleBindError(c, err)
@@ -213,7 +217,7 @@ func (pc ResourceController) UploadResources(c *gin.Context) {
 		FileType:      gconvert.Uint(uploadRes.FileType),
 	}
 
-	if err = pc.ResourceRepository.CreateResource(&resource); err != nil {
+	if err = pc.ResourceRepository.CreateResource(ctx, &resource); err != nil {
 		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
 	}
@@ -233,6 +237,7 @@ func (pc ResourceController) UploadResources(c *gin.Context) {
 // @Router /api/v1/resources [delete]
 // @Security BearerAuth
 func (pc ResourceController) DeleteResourceByID(c *gin.Context) {
+	ctx := c.Request.Context()
 	var req vo.DeleteResourcesRequest
 	// 参数绑定
 	if err := c.ShouldBind(&req); err != nil {
@@ -247,7 +252,7 @@ func (pc ResourceController) DeleteResourceByID(c *gin.Context) {
 	}
 
 	for _, id := range req.Ids {
-		if err := pc.ResourceRepository.DeleteResourceByID(id); err != nil {
+		if err := pc.ResourceRepository.DeleteResourceByID(ctx, id); err != nil {
 			response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 			return
 		}

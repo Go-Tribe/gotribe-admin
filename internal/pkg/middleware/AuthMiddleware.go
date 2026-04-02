@@ -89,7 +89,7 @@ func login(c *gin.Context) (interface{}, error) {
 
 	// 密码校验
 	userRepository := repository.NewAdminRepository()
-	user, err := userRepository.Login(u)
+	user, err := userRepository.Login(c.Request.Context(), u)
 	if err != nil {
 		// 检查是否为RepositoryError，如果是则返回本地化错误消息
 		if repoErr, ok := err.(*common.RepositoryError); ok {

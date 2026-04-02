@@ -15,7 +15,7 @@ import (
 )
 
 type ICommentRepository interface {
-	GetCommentByComentID(commentID string) (model.Comment, error)            //获取单条评论
+	GetCommentByID(id uint) (model.Comment, error)                           //获取单条评论
 	GetComments(req *vo.CommentListRequest) ([]*model.Comment, int64, error) // 获取评论列表
 	UpdateComment(comment *model.Comment) error                              // 更新评论
 }
@@ -28,9 +28,9 @@ func NewCommentRepository() ICommentRepository {
 	return CommentRepository{}
 }
 
-func (cr CommentRepository) GetCommentByComentID(commentID string) (model.Comment, error) {
+func (cr CommentRepository) GetCommentByID(id uint) (model.Comment, error) {
 	var comment model.Comment
-	err := common.DB.Where("comment_id = ?", commentID).First(&comment).Error
+	err := common.DB.Where("id = ?", id).First(&comment).Error
 	return comment, err
 }
 

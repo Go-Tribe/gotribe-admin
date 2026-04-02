@@ -148,14 +148,8 @@ func registerAPIRoutes(r *gin.Engine, authMiddleware *jwt.GinJWTMiddleware) {
 		InitAdSceneRoutes,         // 推广场景管理
 		InitAdRoutes,              // 广告位管理
 		InitCommentRoutes,         // 评论管理
-		InitPointRoutes,           // 积分管理
-		InitProductCategoryRoutes, // 商品分类管理
-		InitProductTypeRoutes,     // 商品类型管理
-		InitProductSpecRoutes,     // 商品规格管理
-		InitProductSpecItemRoutes, // 商品规格项管理
-		InitProductRoutes,         // 商品管理
-		InitOrderRoutes,           // 订单管理
-		InitSystemConfigRoutes,    // 系统配置管理
+		InitPointRoutes,        // 积分管理
+		InitSystemConfigRoutes, // 系统配置管理
 		InitFeedbackRoutes,        // 反馈管理
 		InitIndexRoutes,           // 首页数据
 	}

@@ -16,10 +16,10 @@ import (
 
 type IAdSceneRepository interface {
 	CreateAdScene(adScene *model.AdScene) error                              // 创建推广场景
-	GetAdSceneByAdSceneID(adSceneID string) (model.AdScene, error)           // 获取单个推广场景
+	GetAdSceneByID(id uint) (model.AdScene, error)                           // 获取单个推广场景
 	GetAdScenes(req *vo.AdSceneListRequest) ([]*model.AdScene, int64, error) // 获取推广场景列表
 	UpdateAdScene(adScene *model.AdScene) error                              // 更新推广场景
-	BatchDeleteAdSceneByIds(ids []string) error                              // 批量删除
+	BatchDeleteAdSceneByIds(ids []uint) error                                // 批量删除
 }
 
 type AdSceneRepository struct {
@@ -31,9 +31,9 @@ func NewAdSceneRepository() IAdSceneRepository {
 }
 
 // 获取单个推广场景
-func (cr AdSceneRepository) GetAdSceneByAdSceneID(adSceneID string) (model.AdScene, error) {
+func (cr AdSceneRepository) GetAdSceneByID(id uint) (model.AdScene, error) {
 	var adScene model.AdScene
-	err := common.DB.Where("ad_scene_id = ?", adSceneID).First(&adScene).Error
+	err := common.DB.Where("id = ?", id).First(&adScene).Error
 	return adScene, err
 }
 
@@ -91,13 +91,13 @@ func (cr AdSceneRepository) UpdateAdScene(adScene *model.AdScene) error {
 }
 
 // 批量删除
-func (cr AdSceneRepository) BatchDeleteAdSceneByIds(ids []string) error {
+func (cr AdSceneRepository) BatchDeleteAdSceneByIds(ids []uint) error {
 	var adScenes []model.AdScene
 	for _, id := range ids {
 		// 根据ID获取标签
-		adScene, err := cr.GetAdSceneByAdSceneID(id)
+		adScene, err := cr.GetAdSceneByID(id)
 		if err != nil {
-			return fmt.Errorf("未获取到ID为%s的推广场景", id)
+			return fmt.Errorf("未获取到ID为%d的推广场景", id)
 		}
 		adScenes = append(adScenes, adScene)
 	}

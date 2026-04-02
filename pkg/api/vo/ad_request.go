@@ -15,13 +15,13 @@ type CreateAdRequest struct {
 	Video       string `form:"video" json:"video"`
 	Sort        uint   `form:"sort" json:"sort" validate:"required"`
 	Status      uint   `form:"status" json:"status" validate:"oneof=1 2"`
-	SceneID     string `form:"sceneID" json:"sceneID" validate:"required"`
+	SceneID     uint   `form:"sceneID" json:"sceneID" validate:"required"`
 	Ext         string `form:"ext" json:"ext"`
 }
 
 // 获取推广位列表结构体
 type AdListRequest struct {
-	SceneID  string `form:"sceneID" json:"sceneID"`
+	SceneID  uint   `form:"sceneID" json:"sceneID"`
 	Title    string `form:"title" json:"title"`
 	Status   uint   `form:"status" json:"status"`
 	PageNum  uint   `json:"pageNum" form:"pageNum"`
@@ -34,15 +34,15 @@ type UpdateAdRequest struct {
 	Description string `form:"description" json:"description" validate:"min=0,max=150"`
 	URL         string `form:"url" json:"url" validate:"required,min=2,max=255"`
 	URLType     uint   `form:"urlType" json:"urlType" validate:"required"`
-	Image       string `form:"image" json:"image" `
+	Image       string `form:"image" json:"image"`
 	Video       string `form:"video" json:"video"`
 	Sort        uint   `form:"sort" json:"sort" validate:"required"`
 	Status      uint   `form:"status" json:"status" validate:"oneof=1 2"`
-	SceneID     string `form:"sceneID" json:"sceneID" validate:"required"`
+	SceneID     uint   `form:"sceneID" json:"sceneID" validate:"required"`
 	Ext         string `form:"ext" json:"ext"`
 }
 
 // 批量删除项目结构体
 type DeleteAdsRequest struct {
-	AdIds string `json:"adsIds" form:"adsIds"`
+	Ids []uint `json:"ids" form:"ids"`
 }

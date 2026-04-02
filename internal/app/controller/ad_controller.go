@@ -12,7 +12,7 @@ import (
 	"gotribe-admin/pkg/api/dto"
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
-	"strings"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -43,14 +43,19 @@ func NewAdController() IAdController {
 // @Tags 广告管理
 // @Accept json
 // @Produce json
-// @Param adID path string true "广告ID"
+// @Param id path int true "广告ID"
 // @Success 200 {object} response.Response{data=map[string]dto.AdDto} "成功"
 // @Failure 400 {object} response.Response "请求参数错误"
 // @Failure 500 {object} response.Response "内部服务器错误"
-// @Router /ad/{adID} [get]
+// @Router /ad/{id} [get]
 // @Security BearerAuth
 func (pc AdController) GetAdInfo(c *gin.Context) {
-	ad, err := pc.AdRepository.GetAdByAdID(c.Param("adID"))
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ValidationFail(c, "无效的ID")
+		return
+	}
+	ad, err := pc.AdRepository.GetAdByID(uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -154,12 +159,12 @@ func (pc AdController) CreateAd(c *gin.Context) {
 // @Tags 广告管理
 // @Accept json
 // @Produce json
-// @Param adID path string true "广告ID"
+// @Param id path int true "广告ID"
 // @Param ad body vo.UpdateAdRequest true "广告信息"
 // @Success 200 {object} response.Response "更新成功"
 // @Failure 400 {object} response.Response "请求参数错误"
 // @Failure 500 {object} response.Response "内部服务器错误"
-// @Router /ad/{adID} [patch]
+// @Router /ad/{id} [patch]
 // @Security BearerAuth
 func (pc AdController) UpdateAdByID(c *gin.Context) {
 	var req vo.UpdateAdRequest
@@ -175,8 +180,13 @@ func (pc AdController) UpdateAdByID(c *gin.Context) {
 		return
 	}
 
-	// 根据path中的AdID获取广告信息
-	oldAd, err := pc.AdRepository.GetAdByAdID(c.Param("adID"))
+	// 根据path中的ID获取广告信息
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ValidationFail(c, "无效的ID")
+		return
+	}
+	oldAd, err := pc.AdRepository.GetAdByID(uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -227,8 +237,7 @@ func (pc AdController) BatchDeleteAdByIds(c *gin.Context) {
 	}
 
 	// 前端传来的广告ID
-	reqAdIds := strings.Split(req.AdIds, ",")
-	err := pc.AdRepository.BatchDeleteAdByIds(reqAdIds)
+	err := pc.AdRepository.BatchDeleteAdByIds(req.Ids)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return

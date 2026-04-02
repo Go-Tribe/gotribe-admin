@@ -11,7 +11,7 @@ import (
 )
 
 type AdSceneDto struct {
-	AdSceneID    string `json:"adSceneID"`
+	ID           uint   `json:"id"`
 	Title        string `json:"title"`
 	Description  string `json:"description"`
 	ProjectID    string `json:"projectID"`
@@ -27,7 +27,7 @@ func toAdSceneDto(adScene model.AdScene) AdSceneDto {
 		projectTitle = adScene.Project.Title
 	}
 	return AdSceneDto{
-		AdSceneID:    adScene.AdSceneID,
+		ID:           adScene.ID,
 		Title:        adScene.Title,
 		Description:  adScene.Description,
 		ProjectID:    adScene.ProjectID,

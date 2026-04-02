@@ -12,7 +12,6 @@ import (
 
 type CommentDto struct {
 	ID          uint   `json:"id"`
-	CommentID   string `json:"commentID"`
 	ProjectID   string `json:"projectID"`
 	Status      uint   `json:"status"`
 	UserID      uint   `json:"userID"`
@@ -37,7 +36,6 @@ func toCommentDto(comment model.Comment) CommentDto {
 	}
 	return CommentDto{
 		ID:          comment.ID,
-		CommentID:   comment.CommentID,
 		ProjectID:   comment.ProjectID,
 		UserID:      comment.UserID,
 		ObjectID:    comment.ObjectID,

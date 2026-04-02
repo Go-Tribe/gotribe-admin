@@ -27,5 +27,5 @@ type UpdateAdSceneRequest struct {
 
 // 批量删除项目结构体
 type DeleteAdScenesRequest struct {
-	AdSceneIds string `json:"adScenesIds" form:"adScenesIds"`
+	Ids []uint `json:"ids" form:"ids"`
 }

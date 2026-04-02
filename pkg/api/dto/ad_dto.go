@@ -11,10 +11,10 @@ import (
 )
 
 type AdDto struct {
-	AdID        string `json:"adID"`
+	ID          uint   `json:"id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
-	SceneID     string `json:"sceneID"`
+	SceneID     uint   `json:"sceneID"`
 	SceneTitle  string `json:"SceneTitle"`
 	Status      uint   `json:"status"`
 	Image       string `json:"image"`
@@ -34,7 +34,7 @@ func toAdDto(ad model.Ad) AdDto {
 		sceneTitle = ad.Scene.Title
 	}
 	return AdDto{
-		AdID:        ad.AdID,
+		ID:          ad.ID,
 		Title:       ad.Title,
 		Description: ad.Description,
 		SceneID:     ad.SceneID,

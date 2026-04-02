@@ -36,16 +36,10 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 	var uint8 uint = 8
 	var uint10 uint = 10
 	var uint18 uint = 18
-	var uint22 uint = 22
-	var uint27 uint = 27
-
 	componentStr := "component"
 	systemUserStr := "/system/user"
 	tableOfContents := "TableOfContents"
 	briefcaseBusiness := "BriefcaseBusiness"
-	storeIcon := "Store"
-	shoppingBag := "LucideShoppingBag"
-	shoppingBasket := "ShoppingBasket"
 	alignHorizontalJustifyEnd := "AlignHorizontalJustifyEnd"
 	lucideUsers := "LucideUsers"
 	lucideUserRound := "LucideUserRound"
@@ -61,14 +55,11 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 	database := "Database"
 	bookImage := "BookImage"
 	lucideColumnsSettings := "LucideColumnsSettings"
-	bookText := "BookText"
 	lucideTags := "LucideTags"
-	brickWall := "BrickWall"
 	lucideMartini := "LucideMartini"
 	lucideDatabaseZap := "LucideDatabaseZap"
 	lucideMessageSquareCode := "LucideMessageSquareCode"
 	lucideTableConfig := "LucideTableConfig"
-	lucideChartScatter := "LucideChartScatter"
 
 	menus := []model.Menu{
 		{
@@ -333,102 +324,6 @@ func (s *MenuSeeder) Run(db *gorm.DB) error {
 			Component: "/operation/point/index",
 			Sort:      999,
 			ParentID:  &uint18,
-			Roles:     []*model.Role{&adminRole},
-			Creator:   "系统",
-		},
-		{
-			Model:     model.Model{ID: 22},
-			Name:      "Store",
-			Title:     "商城管理",
-			Icon:      &storeIcon,
-			Path:      "/store",
-			Component: "Layout",
-			Sort:      5,
-			ParentID:  &uint0,
-			Roles:     []*model.Role{&adminRole},
-			Creator:   "系统",
-		},
-		{
-			Model:     model.Model{ID: 23},
-			Name:      "ProductCategory",
-			Title:     "商品分类",
-			Icon:      &shoppingBasket,
-			Path:      "/store/product-category",
-			Component: "/store/product-category/index",
-			Sort:      1,
-			ParentID:  &uint22,
-			Roles:     []*model.Role{&adminRole},
-			Creator:   "系统",
-		},
-		{
-			Model:     model.Model{ID: 33},
-			Name:      "SpecValue",
-			Title:     "规格属性",
-			Icon:      &bookText,
-			Path:      "/store/product-spec-value",
-			Component: "/store/product-spec-value/index",
-			Sort:      3,
-			ParentID:  &uint22,
-			Roles:     []*model.Role{&adminRole},
-			Creator:   "系统",
-		},
-		{
-			Model:     model.Model{ID: 24},
-			Name:      "ProductType",
-			Title:     "商品类型",
-			Icon:      &shoppingBag,
-			Path:      "/store/product-type",
-			Component: "/store/product-type/index",
-			Sort:      4,
-			ParentID:  &uint22,
-			Roles:     []*model.Role{&adminRole},
-			Creator:   "系统",
-		},
-		{
-			Model:     model.Model{ID: 25},
-			Name:      "Spec",
-			Title:     "规格管理",
-			Icon:      &lucideChartScatter,
-			Path:      "/store/product-spec",
-			Component: "/store/product-spec/index",
-			Sort:      2,
-			ParentID:  &uint22,
-			Roles:     []*model.Role{&adminRole},
-			Creator:   "系统",
-		},
-		{
-			Model:     model.Model{ID: 26},
-			Name:      "Product",
-			Title:     "商品列表",
-			Icon:      &brickWall,
-			Path:      "/store/product",
-			Component: "/store/product/index",
-			Sort:      5,
-			ParentID:  &uint22,
-			Roles:     []*model.Role{&adminRole},
-			Creator:   "系统",
-		},
-		{
-			Model:     model.Model{ID: 27},
-			Name:      "Order",
-			Title:     "订单管理",
-			Icon:      &shoppingBag,
-			Path:      "/order",
-			Component: "Layout",
-			Sort:      6,
-			ParentID:  &uint0,
-			Roles:     []*model.Role{&adminRole},
-			Creator:   "系统",
-		},
-		{
-			Model:     model.Model{ID: 28},
-			Name:      "OrderList",
-			Title:     "订单列表",
-			Icon:      &shoppingBasket,
-			Path:      "/order/list",
-			Component: "/order/list",
-			Sort:      999,
-			ParentID:  &uint27,
 			Roles:     []*model.Role{&adminRole},
 			Creator:   "系统",
 		},

@@ -11,15 +11,14 @@ import (
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/vo"
-	"strings"
 )
 
 type IAdRepository interface {
 	CreateAd(ad *model.Ad) error                              // 创建推广场景
-	GetAdByAdID(adID string) (model.Ad, error)                // 获取单个推广场景
+	GetAdByID(id uint) (model.Ad, error)                      // 获取单个推广场景
 	GetAds(req *vo.AdListRequest) ([]*model.Ad, int64, error) // 获取推广场景列表
 	UpdateAd(ad *model.Ad) error                              // 更新推广场景
-	BatchDeleteAdByIds(ids []string) error                    // 批量删除
+	BatchDeleteAdByIds(ids []uint) error                      // 批量删除
 }
 
 type AdRepository struct {
@@ -31,9 +30,9 @@ func NewAdRepository() IAdRepository {
 }
 
 // 获取单个推广场景
-func (cr AdRepository) GetAdByAdID(adID string) (model.Ad, error) {
+func (cr AdRepository) GetAdByID(id uint) (model.Ad, error) {
 	var ad model.Ad
-	err := common.DB.Where("ad_id = ?", adID).First(&ad).Error
+	err := common.DB.Where("id = ?", id).First(&ad).Error
 	return ad, err
 }
 
@@ -42,9 +41,8 @@ func (cr AdRepository) GetAds(req *vo.AdListRequest) ([]*model.Ad, int64, error)
 	var list []*model.Ad
 	db := common.DB.Model(&model.Ad{}).Order("created_at DESC")
 
-	adSceneID := strings.TrimSpace(req.SceneID)
-	if !gconvert.IsEmpty(adSceneID) {
-		db = db.Where("scene_id = ?", adSceneID)
+	if req.SceneID > 0 {
+		db = db.Where("scene_id = ?", req.SceneID)
 	}
 	if !gconvert.IsEmpty(req.Title) {
 		db = db.Where("title like ?", fmt.Sprintf("%%%s%%", req.Title))
@@ -73,7 +71,7 @@ func (cr AdRepository) GetAds(req *vo.AdListRequest) ([]*model.Ad, int64, error)
 func GetAdOther(ads []*model.Ad) []*model.Ad {
 	for _, m := range ads {
 		var adScene *model.AdScene
-		_ = common.DB.Where("ad_scene_id = ?", m.SceneID).First(&adScene).Error
+		_ = common.DB.Where("id = ?", m.SceneID).First(&adScene).Error
 		m.Scene = adScene
 	}
 	return ads
@@ -96,13 +94,13 @@ func (cr AdRepository) UpdateAd(ad *model.Ad) error {
 }
 
 // 批量删除
-func (cr AdRepository) BatchDeleteAdByIds(ids []string) error {
+func (cr AdRepository) BatchDeleteAdByIds(ids []uint) error {
 	var ads []model.Ad
 	for _, id := range ids {
 		// 根据ID获取标签
-		ad, err := cr.GetAdByAdID(id)
+		ad, err := cr.GetAdByID(id)
 		if err != nil {
-			return fmt.Errorf("未获取到ID为%s的推广场景", id)
+			return fmt.Errorf("未获取到ID为%d的推广场景", id)
 		}
 		ads = append(ads, ad)
 	}

@@ -6,6 +6,8 @@
 package controller
 
 import (
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"gotribe-admin/internal/app/repository"
@@ -72,14 +74,19 @@ func (pc CommentController) GetComments(c *gin.Context) {
 // @Tags         评论管理
 // @Accept       json
 // @Produce      json
-// @Param        commentID path string true "评论ID"
+// @Param        id path int true "评论ID"
 // @Success      200 {object} response.Response
 // @Failure      400 {object} response.Response
-// @Router       /comment/{commentID} [patch]
+// @Router       /comment/{id} [patch]
 // @Security     BearerAuth
 func (pc CommentController) UpdateCommentByID(c *gin.Context) {
-	// 根据path中的CommentID获取评论信息
-	oldComment, err := pc.CommentRepository.GetCommentByComentID(c.Param("commentID"))
+	// 根据path中的ID获取评论信息
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ValidationFail(c, "无效的ID")
+		return
+	}
+	oldComment, err := pc.CommentRepository.GetCommentByID(uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return

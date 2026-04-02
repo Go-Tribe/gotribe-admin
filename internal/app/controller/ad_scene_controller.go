@@ -12,7 +12,7 @@ import (
 	"gotribe-admin/pkg/api/dto"
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
-	"strings"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -43,14 +43,19 @@ func NewAdSceneController() IAdSceneController {
 // @Tags 推广场景管理
 // @Accept json
 // @Produce json
-// @Param adSceneID path string true "推广场景ID"
+// @Param id path int true "推广场景ID"
 // @Success 200 {object} response.Response{data=map[string]dto.AdSceneDto} "成功"
 // @Failure 400 {object} response.Response "请求参数错误"
 // @Failure 500 {object} response.Response "内部服务器错误"
-// @Router /ad/scene/{adSceneID} [get]
+// @Router /ad/scene/{id} [get]
 // @Security BearerAuth
 func (pc AdSceneController) GetAdSceneInfo(c *gin.Context) {
-	adScene, err := pc.AdSceneRepository.GetAdSceneByAdSceneID(c.Param("adSceneID"))
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ValidationFail(c, "无效的ID")
+		return
+	}
+	adScene, err := pc.AdSceneRepository.GetAdSceneByID(uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -145,12 +150,12 @@ func (pc AdSceneController) CreateAdScene(c *gin.Context) {
 // @Tags 推广场景管理
 // @Accept json
 // @Produce json
-// @Param adSceneID path string true "推广场景ID"
+// @Param id path int true "推广场景ID"
 // @Param adScene body vo.UpdateAdSceneRequest true "推广场景信息"
 // @Success 200 {object} response.Response "更新成功"
 // @Failure 400 {object} response.Response "请求参数错误"
 // @Failure 500 {object} response.Response "内部服务器错误"
-// @Router /ad/scene/{adSceneID} [patch]
+// @Router /ad/scene/{id} [patch]
 // @Security BearerAuth
 func (pc AdSceneController) UpdateAdSceneByID(c *gin.Context) {
 	var req vo.UpdateAdSceneRequest
@@ -166,8 +171,13 @@ func (pc AdSceneController) UpdateAdSceneByID(c *gin.Context) {
 		return
 	}
 
-	// 根据path中的AdSceneID获取推广场景信息
-	oldAdScene, err := pc.AdSceneRepository.GetAdSceneByAdSceneID(c.Param("adSceneID"))
+	// 根据path中的ID获取推广场景信息
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ValidationFail(c, "无效的ID")
+		return
+	}
+	oldAdScene, err := pc.AdSceneRepository.GetAdSceneByID(uint(id))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -210,8 +220,7 @@ func (pc AdSceneController) BatchDeleteAdSceneByIds(c *gin.Context) {
 	}
 
 	// 前端传来的推广场景ID
-	reqAdSceneIds := strings.Split(req.AdSceneIds, ",")
-	err := pc.AdSceneRepository.BatchDeleteAdSceneByIds(reqAdSceneIds)
+	err := pc.AdSceneRepository.BatchDeleteAdSceneByIds(req.Ids)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return

@@ -33,14 +33,21 @@ replace_in_file() {
   local old="$2"
   local new="$3"
 
+  if [[ -z "$old" || "$old" == "$new" ]]; then
+    return 0
+  fi
+
   if [[ "$DRY_RUN" == "true" ]]; then
-    if grep -Fq "$old" "$file"; then
+    if grep -Fq "$old" "$file" 2>/dev/null; then
       echo "[dry-run] update $file"
     fi
     return 0
   fi
 
-  OLD_VALUE="$old" NEW_VALUE="$new" perl -0pi -e 's/\Q$ENV{OLD_VALUE}\E/$ENV{NEW_VALUE}/g' "$file"
+  # 使用 perl 进行替换，处理多行匹配
+  if grep -Fq "$old" "$file" 2>/dev/null; then
+    OLD_VALUE="$old" NEW_VALUE="$new" perl -0pi -e 's/\Q$ENV{OLD_VALUE}\E/$ENV{NEW_VALUE}/g' "$file"
+  fi
 }
 
 is_text_file() {
@@ -118,17 +125,29 @@ require_cmd sed
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 cd "$ROOT_DIR"
 
+# ==============================================================================
+# 关键修复：在修改任何文件之前，先读取并保存所有旧值
+# ==============================================================================
+
+# 从 go.mod 读取旧模块路径
 OLD_MODULE_PATH="$(sed -n '1s/^module //p' go.mod)"
 if [[ -z "$OLD_MODULE_PATH" ]]; then
   echo "failed to detect current module path from go.mod" >&2
   exit 1
 fi
 
-OLD_APP_NAME="$(sed -n 's/^PROJECT_NAME := //p' Makefile | head -n 1 | tr -d '[:space:]')"
+# 从 Makefile 读取旧应用名
+OLD_APP_NAME=""
+if [[ -f Makefile ]]; then
+  OLD_APP_NAME="$(sed -n 's/^PROJECT_NAME := //p' Makefile | head -n 1 | tr -d '[:space:]')"
+fi
+
+# 如果 Makefile 中没有，使用模块路径的最后一部分作为旧应用名
 if [[ -z "$OLD_APP_NAME" ]]; then
   OLD_APP_NAME="$(basename "$OLD_MODULE_PATH")"
 fi
 
+# 如果新旧值完全相同，直接退出
 if [[ "$OLD_APP_NAME" == "$NEW_APP_NAME" && "$OLD_MODULE_PATH" == "$NEW_MODULE_PATH" ]]; then
   echo "project already matches the requested app name and module path"
   exit 0
@@ -143,19 +162,48 @@ if [[ "$DRY_RUN" == "true" ]]; then
   echo "  mode:            dry-run"
 fi
 
+# ==============================================================================
+# 执行替换
+# ==============================================================================
+
+# 特殊处理关键文件（确保一定能替换）
+if [[ -f go.mod && "$OLD_MODULE_PATH" != "$NEW_MODULE_PATH" ]]; then
+  replace_in_file "go.mod" "$OLD_MODULE_PATH" "$NEW_MODULE_PATH"
+fi
+
+if [[ -f Makefile && "$OLD_APP_NAME" != "$NEW_APP_NAME" ]]; then
+  replace_in_file "Makefile" "$OLD_APP_NAME" "$NEW_APP_NAME"
+fi
+
+# 批量处理其他文件
 while IFS= read -r -d '' file; do
+  # 跳过 .git 目录
   if [[ "$file" == ./.git/* ]]; then
     continue
   fi
+
+  # 只处理文本文件
   if ! is_text_file "$file"; then
     continue
   fi
-  replace_in_file "$file" "$OLD_MODULE_PATH" "$NEW_MODULE_PATH"
-  replace_in_file "$file" "$OLD_APP_NAME" "$NEW_APP_NAME"
+
+  # 替换模块路径
+  if [[ "$OLD_MODULE_PATH" != "$NEW_MODULE_PATH" ]]; then
+    replace_in_file "$file" "$OLD_MODULE_PATH" "$NEW_MODULE_PATH"
+  fi
+
+  # 替换应用名
+  if [[ "$OLD_APP_NAME" != "$NEW_APP_NAME" ]]; then
+    replace_in_file "$file" "$OLD_APP_NAME" "$NEW_APP_NAME"
+  fi
 done < <(collect_files)
 
-rename_file "${OLD_APP_NAME}.go" "${NEW_APP_NAME}.go"
+# 重命名入口文件
+if [[ "$OLD_APP_NAME" != "$NEW_APP_NAME" ]]; then
+  rename_file "${OLD_APP_NAME}.go" "${NEW_APP_NAME}.go"
+fi
 
+# 格式化 Go 代码
 if [[ "$DRY_RUN" == "false" ]]; then
   if command -v go >/dev/null 2>&1; then
     gofmt -w "${NEW_APP_NAME}.go" ./internal ./pkg ./config ./docs >/dev/null 2>&1 || true

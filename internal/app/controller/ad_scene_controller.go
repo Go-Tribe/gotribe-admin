@@ -184,6 +184,7 @@ func (pc AdSceneController) UpdateAdSceneByID(c *gin.Context) {
 	}
 	oldAdScene.Title = req.Title
 	oldAdScene.Description = req.Description
+	oldAdScene.ProjectID = req.ProjectID
 	// 更新推广场景
 	err = pc.AdSceneRepository.UpdateAdScene(c.Request.Context(), &oldAdScene)
 	if err != nil {

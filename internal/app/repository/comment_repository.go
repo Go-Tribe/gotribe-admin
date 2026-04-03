@@ -54,12 +54,18 @@ func (cr CommentRepository) GetComments(ctx context.Context, req *vo.CommentList
 		db = db.Where("project_id = ?", req.ProjectID)
 	}
 	if !gconvert.IsEmpty(req.Nickname) {
-		// 查出用户 ID。再用用户 ID 去筛选
-		var user model.User
-		if result := common.WithContext(ctx).DB().Model(&model.User{}).Where("nickname like ?", fmt.Sprintf("%%%s%%", req.Nickname)).First(&user); result.Error != nil {
-			return nil, 0, result.Error
+		// 昵称不存在时返回空列表，而不是把“未命中”当成查询失败。
+		var userIDs []uint
+		if err := common.WithContext(ctx).DB().
+			Model(&model.User{}).
+			Where("nickname like ?", fmt.Sprintf("%%%s%%", req.Nickname)).
+			Pluck("id", &userIDs).Error; err != nil {
+			return nil, 0, err
 		}
-		db = db.Where("user_id = ?", user.ID)
+		if len(userIDs) == 0 {
+			return list, 0, nil
+		}
+		db = db.Where("user_id IN ?", userIDs)
 	}
 
 	// 当pageNum > 0 且 pageSize > 0 才分页

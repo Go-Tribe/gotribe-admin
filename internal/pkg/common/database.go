@@ -168,6 +168,11 @@ func InitDatabase() {
 	// 自动迁移表结构
 	if config.Conf.System.EnableMigrate {
 		migrate.DBAutoMigrate(DB)
+		if config.Conf.Database.Type == "postgres" {
+			if err := resetPostgresSequences(); err != nil {
+				Log.Errorf("重置 PostgreSQL 序列失败: %v", err)
+			}
+		}
 		Log.Infof("数据库迁移完成! dsn: %s", showDsn)
 	}
 }

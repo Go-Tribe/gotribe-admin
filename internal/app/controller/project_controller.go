@@ -183,6 +183,7 @@ func (pc ProjectController) UpdateProjectByID(c *gin.Context) {
 	}
 	oldProject.Title = req.Title
 	oldProject.Description = req.Description
+	oldProject.Name = req.Name
 	oldProject.Author = req.Author
 	oldProject.ICP = req.ICP
 	oldProject.Keywords = req.Keywords

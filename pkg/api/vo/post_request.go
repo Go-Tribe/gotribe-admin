@@ -65,6 +65,7 @@ type UpdatePostRequest struct {
 type PostListRequest struct {
 	PostID    string `form:"postID" json:"postID"`
 	Title     string `form:"title" json:"title"`
+	Status    uint   `form:"status" json:"status"`
 	ProjectID string `form:"projectID" json:"projectID"`
 	PageNum   uint   `json:"pageNum" form:"pageNum"`
 	PageSize  uint   `json:"pageSize" form:"pageSize"`

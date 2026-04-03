@@ -14,7 +14,7 @@ type CreateAdSceneRequest struct {
 
 // 获取推广位列表结构体
 type AdSceneListRequest struct {
-	ProjectID string `form:"ProjectID" json:"ProjectID"`
+	ProjectID string `form:"projectID" json:"projectID"`
 	PageNum   uint   `json:"pageNum" form:"pageNum"`
 	PageSize  uint   `json:"pageSize" form:"pageSize"`
 }
@@ -23,6 +23,7 @@ type AdSceneListRequest struct {
 type UpdateAdSceneRequest struct {
 	Title       string `form:"title" json:"title" validate:"required,min=2,max=50"`
 	Description string `form:"description" json:"description" validate:"required,min=2,max=150"`
+	ProjectID   string `form:"projectID" json:"projectID" validate:"required"`
 }
 
 // 批量删除项目结构体

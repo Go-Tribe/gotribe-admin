@@ -19,7 +19,7 @@ type CreateConfigRequest struct {
 // 获取配置列表结构体
 type ConfigListRequest struct {
 	ConfigID  string `form:"configID" json:"configID"`
-	ProjectID string `form:"ProjectID" json:"ProjectID"`
+	ProjectID string `form:"projectID" json:"projectID"`
 	Title     string `form:"title" json:"title"`
 	Type      uint   `form:"type" json:"type"`
 	PageNum   uint   `json:"pageNum" form:"pageNum"`

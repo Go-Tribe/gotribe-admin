@@ -84,6 +84,8 @@ cors:
   allowed-origins:
     - http://localhost:5173
     - http://127.0.0.1:5173
+    - http://localhost:5174
+    - http://127.0.0.1:5174
   # 仅在确有跨站 cookie 需求时开启
   allow-credentials: false
   # 预检缓存时间（秒）

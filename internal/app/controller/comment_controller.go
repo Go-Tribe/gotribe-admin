@@ -82,6 +82,19 @@ func (pc CommentController) GetComments(c *gin.Context) {
 // @Router       /comment/{id} [patch]
 // @Security     BearerAuth
 func (pc CommentController) UpdateCommentByID(c *gin.Context) {
+	var req vo.UpdateCommentRequest
+	if err := c.ShouldBind(&req); err != nil && err.Error() != "EOF" {
+		response.HandleBindError(c, err)
+		return
+	}
+	if req.Status != 0 {
+		if err := common.Validate.Struct(&req); err != nil {
+			errStr := err.(validator.ValidationErrors)[0].Translate(common.GetTransFromCtx(c))
+			response.ValidationFail(c, errStr)
+			return
+		}
+	}
+
 	ctx := c.Request.Context()
 	// 根据path中的ID获取评论信息
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
@@ -95,10 +108,14 @@ func (pc CommentController) UpdateCommentByID(c *gin.Context) {
 		return
 	}
 	var reqStatus uint
-	if oldComment.Status == known.AUDIT_STATUS_PENDING {
-		reqStatus = known.AUDIT_STATUS_PASS
+	if req.Status != 0 {
+		reqStatus = req.Status
 	} else {
-		reqStatus = known.AUDIT_STATUS_PENDING
+		if oldComment.Status == known.AUDIT_STATUS_PENDING {
+			reqStatus = known.AUDIT_STATUS_PASS
+		} else {
+			reqStatus = known.AUDIT_STATUS_PENDING
+		}
 	}
 	oldComment.Status = reqStatus
 	// 更新评论

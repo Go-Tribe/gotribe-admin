@@ -8,6 +8,7 @@ package dto
 import (
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/known"
+	"gotribe-admin/pkg/util"
 )
 
 type PointDto struct {
@@ -28,7 +29,7 @@ func toPointDto(point model.PointLog) PointDto {
 	}
 	return PointDto{
 		ID:        int64(point.ID),
-		Point:     float64(point.Points),
+		Point:     util.MoneyUtil.CentsToYuan(point.Points),
 		UserID:    point.UserID,
 		Nickname:  nickname,
 		Reason:    point.Reason,

@@ -9,6 +9,7 @@ package vo
 type CreateUserRequest struct {
 	Username  string `form:"username" json:"username" validate:"required,min=2,max=20,alphanum"`
 	Nickname  string `form:"nickname" json:"nickname" validate:"required,min=2,max=20"`
+	AvatarURL string `form:"avatarURL" json:"avatarURL"`
 	Email     string `form:"email" json:"email" validate:"omitempty,email,max=254"`
 	Phone     string `form:"phone" json:"phone" validate:"omitempty,max=32"`
 	ProjectID string `form:"projectID" json:"projectID" validate:"required,min=2,max=20"`
@@ -17,11 +18,12 @@ type CreateUserRequest struct {
 
 // 获取用户列表结构体
 type UserListRequest struct {
-	UserID   uint   `form:"userID" json:"userID"`
-	Nickname string `form:"nickname" json:"nickname"`
-	Username string `form:"username" json:"username"`
-	PageNum  uint   `json:"pageNum" form:"pageNum"`
-	PageSize uint   `json:"pageSize" form:"pageSize"`
+	UserID    uint   `form:"userID" json:"userID"`
+	ProjectID string `form:"projectID" json:"projectID"`
+	Nickname  string `form:"nickname" json:"nickname"`
+	Username  string `form:"username" json:"username"`
+	PageNum   uint   `json:"pageNum" form:"pageNum"`
+	PageSize  uint   `json:"pageSize" form:"pageSize"`
 }
 
 // 批量删除用户结构体
@@ -31,8 +33,9 @@ type DeleteUsersRequest struct {
 
 // 更新用户结构体
 type UpdateUserRequest struct {
-	Nickname string `form:"nickname" json:"nickname"`
-	Email    string `form:"email" json:"email" validate:"omitempty,email,max=254"`
-	Phone    string `form:"phone" json:"phone" validate:"omitempty,max=32"`
-	Password string `form:"password" json:"password"`
+	Nickname  string `form:"nickname" json:"nickname"`
+	AvatarURL string `form:"avatarURL" json:"avatarURL"`
+	Email     string `form:"email" json:"email" validate:"omitempty,email,max=254"`
+	Phone     string `form:"phone" json:"phone" validate:"omitempty,max=32"`
+	Password  string `form:"password" json:"password"`
 }

@@ -50,6 +50,7 @@ func DBAutoMigrate(db *gorm.DB) {
 	normalizeLegacyUserContacts(db)
 	ensureNoDuplicateAPIs(db)
 	ensureNoDuplicateUsers(db)
+	normalizeLegacyAPIDescriptions(db)
 	recreateUniqueCompositeIndex(db, &model.Api{}, "idx_api_path_method", "path", "method")
 	recreateUniqueCompositeIndex(db, &model.User{}, "idx_user_project_username", "project_id", "username")
 	recreateUniqueCompositeIndex(db, &model.User{}, "idx_user_project_email", "project_id", "email")
@@ -253,6 +254,16 @@ func ensureNoDuplicateUsers(db *gorm.DB) {
 		if duplicate.Count > 1 {
 			panic(fmt.Sprintf("duplicate user %s found for project_id=%s value=%s", check.name, duplicate.ProjectID, duplicate.Value))
 		}
+	}
+}
+
+func normalizeLegacyAPIDescriptions(db *gorm.DB) {
+	apiTable := quotedTableName(db, &model.Api{})
+	if err := db.Exec(
+		fmt.Sprintf(`UPDATE %s SET "desc" = ? WHERE path = ? AND method = ? AND "desc" <> ?`, apiTable),
+		"获取积分列表", "/point", "GET", "获取积分列表",
+	).Error; err != nil {
+		panic(fmt.Sprintf("normalize api descriptions failed: %v", err))
 	}
 }
 

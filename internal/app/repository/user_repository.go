@@ -58,6 +58,10 @@ func (ur UserRepository) GetUsers(ctx context.Context, req *vo.UserListRequest) 
 	if req.UserID > 0 {
 		db = db.Where("id = ?", req.UserID)
 	}
+	projectID := strings.TrimSpace(req.ProjectID)
+	if projectID != "" {
+		db = db.Where("project_id = ?", projectID)
+	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数
 	var total int64

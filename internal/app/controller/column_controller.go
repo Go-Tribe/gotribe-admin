@@ -194,6 +194,7 @@ func (pc ColumnController) UpdateColumnByID(c *gin.Context) {
 	oldColumn.Description = req.Description
 	oldColumn.Info = req.Info
 	oldColumn.Icon = req.Icon
+	oldColumn.ProjectID = req.ProjectID
 	// 更新专栏
 	err = pc.ColumnRepository.UpdateColumn(ctx, &oldColumn)
 	if err != nil {

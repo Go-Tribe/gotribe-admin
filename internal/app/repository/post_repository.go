@@ -71,6 +71,9 @@ func (pr PostRepository) GetPosts(ctx context.Context, req *vo.PostListRequest) 
 	if !gconvert.IsEmpty(projectID) {
 		db = db.Where("project_id = ?", projectID)
 	}
+	if req.Status > 0 {
+		db = db.Where("status = ?", req.Status)
+	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数
 	var total int64

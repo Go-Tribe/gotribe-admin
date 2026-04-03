@@ -19,6 +19,7 @@ type UpdateColumnRequest struct {
 	Description string `form:"description" json:"description" validate:"required,min=2,max=300"`
 	Icon        string `form:"icon" json:"icon" validate:"required,min=2,max=300"`
 	Info        string `form:"info" json:"info"`
+	ProjectID   string `form:"projectID" json:"projectID" validate:"required,min=2,max=10"`
 }
 
 // 获取专栏列表结构体

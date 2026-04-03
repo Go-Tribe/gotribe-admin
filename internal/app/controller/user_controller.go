@@ -139,6 +139,7 @@ func (pc UserController) CreateUser(c *gin.Context) {
 	user := model.User{
 		Username:  req.Username,
 		Nickname:  req.Nickname,
+		AvatarURL: req.AvatarURL,
 		Phone:     optionalString(req.Phone),
 		Email:     optionalString(req.Email),
 		ProjectID: req.ProjectID,
@@ -193,6 +194,7 @@ func (pc UserController) UpdateUserByID(c *gin.Context) {
 		return
 	}
 	oldUser.Nickname = req.Nickname
+	oldUser.AvatarURL = req.AvatarURL
 	oldUser.Phone = optionalString(req.Phone)
 	oldUser.Email = optionalString(req.Email)
 	if len(req.Password) > 0 {

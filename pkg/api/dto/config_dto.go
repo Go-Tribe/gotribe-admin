@@ -47,6 +47,7 @@ func ToConfigsDto(configList []*model.Config) []ConfigDto {
 			ConfigID:    config.ConfigID,
 			Title:       config.Title,
 			Description: config.Description,
+			Info:        config.Info,
 			ProjectID:   config.ProjectID,
 			MDContent:   config.MDContent,
 			CreatedAt:   config.CreatedAt.Format(known.TIME_FORMAT),

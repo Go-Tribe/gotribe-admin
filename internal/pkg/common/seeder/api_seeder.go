@@ -719,7 +719,7 @@ func (s *ApiSeeder) Run(db *gorm.DB) error {
 			Method:   "GET",
 			Path:     "/point",
 			Category: "point",
-			Desc:     "获取评论列表",
+			Desc:     "获取积分列表",
 			Creator:  "系统",
 		},
 		{

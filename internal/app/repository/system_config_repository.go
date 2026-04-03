@@ -12,7 +12,7 @@ import (
 )
 
 type ISystemConfigRepository interface {
-	GetSystemConfig(ctx context.Context) (model.SystemConfig, error)              // 获取单个标签
+	GetSystemConfig(ctx context.Context) (model.SystemConfig, error)                // 获取单个标签
 	UpdateSystemConfig(ctx context.Context, systemConfig *model.SystemConfig) error // 更新标签
 }
 

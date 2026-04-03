@@ -103,18 +103,18 @@ func TestNewService(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			service, err := NewService(tt.provider, tt.endpoint, tt.accessKeyId, tt.accessKeySecret, tt.bucketName)
-			
+
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewService() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			
+
 			if tt.wantErr && tt.errMsg != "" && err != nil {
 				if !contains(err.Error(), tt.errMsg) {
 					t.Errorf("NewService() error message = %v, should contain %v", err.Error(), tt.errMsg)
 				}
 			}
-			
+
 			if !tt.wantErr && service == nil {
 				t.Error("NewService() returned nil service without error")
 			}
@@ -188,12 +188,12 @@ func TestService_UploadFile(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_, err := tt.service.UploadFile(tt.file)
-			
+
 			if (err != nil) != tt.wantErr {
 				t.Errorf("UploadFile() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			
+
 			if tt.wantErr && tt.errType != nil && !errors.Is(err, tt.errType) {
 				// 某些情况下错误可能不是 os.ErrInvalid，而是底层错误
 				t.Logf("UploadFile() error = %v (expected type: %v)", err, tt.errType)
@@ -240,12 +240,12 @@ func TestService_DeleteFile(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.service.DeleteFile(tt.key)
-			
+
 			if (err != nil) != tt.wantErr {
 				t.Errorf("DeleteFile() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			
+
 			if tt.wantErr && tt.errType != nil && !errors.Is(err, tt.errType) {
 				t.Logf("DeleteFile() error = %v (expected type: %v)", err, tt.errType)
 			}
@@ -255,10 +255,10 @@ func TestService_DeleteFile(t *testing.T) {
 
 func TestUploadResource(t *testing.T) {
 	tests := []struct {
-		name     string
-		resource UploadResource
-		wantExt  string
-		wantKey  string
+		name       string
+		resource   UploadResource
+		wantExt    string
+		wantKey    string
 		wantDomain string
 	}{
 		{
@@ -268,8 +268,8 @@ func TestUploadResource(t *testing.T) {
 				Key:     "20240101/1234567890.jpg",
 				Domain:  "https://cdn.example.com",
 			},
-			wantExt:  ".jpg",
-			wantKey:  "20240101/1234567890.jpg",
+			wantExt:    ".jpg",
+			wantKey:    "20240101/1234567890.jpg",
 			wantDomain: "https://cdn.example.com",
 		},
 		{
@@ -279,8 +279,8 @@ func TestUploadResource(t *testing.T) {
 				Key:     "",
 				Domain:  "",
 			},
-			wantExt:  "",
-			wantKey:  "",
+			wantExt:    "",
+			wantKey:    "",
 			wantDomain: "",
 		},
 		{
@@ -290,8 +290,8 @@ func TestUploadResource(t *testing.T) {
 				Key:     "files/document",
 				Domain:  "",
 			},
-			wantExt:  "",
-			wantKey:  "files/document",
+			wantExt:    "",
+			wantKey:    "files/document",
 			wantDomain: "",
 		},
 	}

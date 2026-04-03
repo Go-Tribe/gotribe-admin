@@ -242,10 +242,10 @@ func TestCategoryController_GetCategoryTree_Success(t *testing.T) {
 
 	testTree := []*model.Category{
 		{
-			Model:       model.Model{ID: 1},
-			Title:       "Parent Category",
-			Slug:        "parent",
-			ParentID:    0,
+			Model:    model.Model{ID: 1},
+			Title:    "Parent Category",
+			Slug:     "parent",
+			ParentID: 0,
 			Children: []*model.Category{
 				{Model: model.Model{ID: 2}, Title: "Child Category", Slug: "child", ParentID: 1},
 			},
@@ -395,9 +395,9 @@ func TestCategoryController_CreateCategory_DatabaseError(t *testing.T) {
 
 	// 需要提供所有必填字段
 	createReq := vo.CreateCategoryRequest{
-		Title: "New Category",
-		Slug:  "new-category",
-		Sort:  1,
+		Title:  "New Category",
+		Slug:   "new-category",
+		Sort:   1,
 		Hidden: 1,
 	}
 

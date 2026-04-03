@@ -15,11 +15,11 @@ import (
 )
 
 type IMenuRepository interface {
-	GetMenus(ctx context.Context) ([]*model.Menu, error)                   // 获取菜单列表
-	GetMenuTree(ctx context.Context) ([]*model.Menu, error)                // 获取菜单树
-	CreateMenu(ctx context.Context, menu *model.Menu) error                // 创建菜单
+	GetMenus(ctx context.Context) ([]*model.Menu, error)                     // 获取菜单列表
+	GetMenuTree(ctx context.Context) ([]*model.Menu, error)                  // 获取菜单树
+	CreateMenu(ctx context.Context, menu *model.Menu) error                  // 创建菜单
 	UpdateMenuByID(ctx context.Context, menuID uint, menu *model.Menu) error // 更新菜单
-	BatchDeleteMenuByIds(ctx context.Context, menuIds []uint) error        // 批量删除菜单
+	BatchDeleteMenuByIds(ctx context.Context, menuIds []uint) error          // 批量删除菜单
 
 	GetUserMenusByUserID(ctx context.Context, userID uint) ([]*model.Menu, error)    // 根据用户ID获取用户的权限(可访问)菜单列表
 	GetUserMenuTreeByUserID(ctx context.Context, userID uint) ([]*model.Menu, error) // 根据用户ID获取用户的权限(可访问)菜单树

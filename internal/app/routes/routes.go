@@ -134,27 +134,27 @@ func registerAPIRoutes(r *gin.Engine, authMiddleware *jwt.GinJWTMiddleware) {
 
 	// 路由初始化器列表
 	routeInitializers := []RouteInitializer{
-		InitBaseRoutes,            // 基础路由（无需认证）
-		InitAdminRoutes,           // 管理员路由
-		InitRoleRoutes,            // 角色管理
-		InitMenuRoutes,            // 菜单管理
-		InitApiRoutes,             // 接口管理
-		InitOperationLogRoutes,    // 操作日志
-		InitProjectRoutes,         // 项目管理
-		InitConfigRoutes,          // 配置管理
-		InitTagRoutes,             // 标签管理
-		InitCategoryRoutes,        // 分类管理
-		InitPostRoutes,            // 内容管理
-		InitUserRoutes,            // 用户管理
-		InitResourceRoutes,        // 资源管理
-		InitColumnRoutes,          // 专栏管理
-		InitAdSceneRoutes,         // 推广场景管理
-		InitAdRoutes,              // 广告位管理
-		InitCommentRoutes,         // 评论管理
+		InitBaseRoutes,         // 基础路由（无需认证）
+		InitAdminRoutes,        // 管理员路由
+		InitRoleRoutes,         // 角色管理
+		InitMenuRoutes,         // 菜单管理
+		InitApiRoutes,          // 接口管理
+		InitOperationLogRoutes, // 操作日志
+		InitProjectRoutes,      // 项目管理
+		InitConfigRoutes,       // 配置管理
+		InitTagRoutes,          // 标签管理
+		InitCategoryRoutes,     // 分类管理
+		InitPostRoutes,         // 内容管理
+		InitUserRoutes,         // 用户管理
+		InitResourceRoutes,     // 资源管理
+		InitColumnRoutes,       // 专栏管理
+		InitAdSceneRoutes,      // 推广场景管理
+		InitAdRoutes,           // 广告位管理
+		InitCommentRoutes,      // 评论管理
 		InitPointRoutes,        // 积分管理
 		InitSystemConfigRoutes, // 系统配置管理
-		InitFeedbackRoutes,        // 反馈管理
-		InitIndexRoutes,           // 首页数据
+		InitFeedbackRoutes,     // 反馈管理
+		InitIndexRoutes,        // 首页数据
 	}
 
 	// 批量注册路由

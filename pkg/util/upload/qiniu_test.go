@@ -11,12 +11,12 @@ import (
 
 func TestNewQiniu(t *testing.T) {
 	tests := []struct {
-		name      string
-		ak        string
-		sk        string
-		bucket    string
-		wantAK    string
-		wantSK    string
+		name       string
+		ak         string
+		sk         string
+		bucket     string
+		wantAK     string
+		wantSK     string
 		wantBucket string
 	}{
 		{
@@ -60,7 +60,7 @@ func TestNewQiniu(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			uploader := NewQiniu(tt.ak, tt.sk, tt.bucket)
-			
+
 			if uploader.AccessKey != tt.wantAK {
 				t.Errorf("NewQiniu() AccessKey = %v, want %v", uploader.AccessKey, tt.wantAK)
 			}
@@ -77,7 +77,7 @@ func TestNewQiniu(t *testing.T) {
 func TestQiniuUploader_UploadFile_InvalidFile(t *testing.T) {
 	// 测试无效文件上传（需要真实凭证才能测试成功场景）
 	uploader := NewQiniu("test_ak", "test_sk", "test_bucket")
-	
+
 	// 注意：由于源代码没有nil检查，直接传递nil会导致panic
 	// 这里只测试结构体是否正确创建
 	t.Run("上传器创建", func(t *testing.T) {
@@ -90,7 +90,7 @@ func TestQiniuUploader_UploadFile_InvalidFile(t *testing.T) {
 func TestQiniuUploader_DeleteFile_InvalidConfig(t *testing.T) {
 	// 测试无效配置下的删除（需要真实凭证才能测试成功场景）
 	uploader := NewQiniu("invalid_ak", "invalid_sk", "invalid_bucket")
-	
+
 	tests := []struct {
 		name    string
 		key     string
@@ -149,13 +149,13 @@ func TestQiniuUploader_Integration(t *testing.T) {
 	ak := ""
 	sk := ""
 	bucket := ""
-	
+
 	if ak == "" || sk == "" || bucket == "" {
 		t.Skip("跳过集成测试：未配置真实凭证")
 	}
-	
+
 	_ = NewQiniu(ak, sk, bucket)
-	
+
 	// 注意：这里需要创建真实的 multipart.FileHeader 才能测试
 	// 实际使用时需要配合 HTTP 请求
 	t.Log("七牛云上传器集成测试跳过 - 需要真实文件上传")

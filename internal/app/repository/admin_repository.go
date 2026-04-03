@@ -33,11 +33,11 @@ type IAdminRepository interface {
 
 	GetCurrentAdmin(ctx context.Context, c *gin.Context) (model.Admin, error)                  // 获取当前登录用户信息
 	GetCurrentAdminMinRoleSort(ctx context.Context, c *gin.Context) (uint, model.Admin, error) // 获取当前用户角色排序最小值（最高等级角色）以及当前用户信息
-	GetAdminMinRoleSortsByIds(ctx context.Context, ids []uint) ([]int, error) // 根据用户ID获取用户角色排序最小值
+	GetAdminMinRoleSortsByIds(ctx context.Context, ids []uint) ([]int, error)                  // 根据用户ID获取用户角色排序最小值
 
-	SetAdminInfoCache(username string, admin model.Admin)   // 设置用户信息缓存
+	SetAdminInfoCache(username string, admin model.Admin)                // 设置用户信息缓存
 	UpdateAdminInfoCacheByRoleID(ctx context.Context, roleID uint) error // 根据角色ID更新拥有该角色的用户信息缓存
-	ClearAdminInfoCache()                                   // 清理所有用户信息缓存
+	ClearAdminInfoCache()                                                // 清理所有用户信息缓存
 }
 
 type AdminRepository struct {

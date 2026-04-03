@@ -81,7 +81,7 @@ func TestNewOSS(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			uploader := NewOSS(tt.endpoint, tt.accessKeyId, tt.accessKeySecret, tt.bucket)
-			
+
 			if uploader.Endpoint != tt.wantEndpoint {
 				t.Errorf("NewOSS() Endpoint = %v, want %v", uploader.Endpoint, tt.wantEndpoint)
 			}
@@ -101,7 +101,7 @@ func TestNewOSS(t *testing.T) {
 func TestOSSUploader_UploadFile_InvalidFile(t *testing.T) {
 	// 测试无效文件上传（需要真实凭证才能测试成功场景）
 	uploader := NewOSS("oss-cn-hangzhou.aliyuncs.com", "test_ak", "test_sk", "test_bucket")
-	
+
 	// 注意：由于源代码没有nil检查，直接传递nil会导致panic
 	// 这里只测试结构体是否正确创建
 	t.Run("上传器创建", func(t *testing.T) {
@@ -114,7 +114,7 @@ func TestOSSUploader_UploadFile_InvalidFile(t *testing.T) {
 func TestOSSUploader_DeleteFile_InvalidConfig(t *testing.T) {
 	// 测试无效配置下的删除（需要真实凭证才能测试成功场景）
 	uploader := NewOSS("invalid.endpoint", "invalid_ak", "invalid_sk", "invalid_bucket")
-	
+
 	tests := []struct {
 		name    string
 		key     string
@@ -207,13 +207,13 @@ func TestOSSUploader_Integration(t *testing.T) {
 	accessKeyId := ""
 	accessKeySecret := ""
 	bucket := ""
-	
+
 	if endpoint == "" || accessKeyId == "" || accessKeySecret == "" || bucket == "" {
 		t.Skip("跳过集成测试：未配置真实凭证")
 	}
-	
+
 	_ = NewOSS(endpoint, accessKeyId, accessKeySecret, bucket)
-	
+
 	// 注意：这里需要创建真实的 multipart.FileHeader 才能测试
 	// 实际使用时需要配合 HTTP 请求
 	t.Log("阿里云OSS上传器集成测试跳过 - 需要真实文件上传")

@@ -17,11 +17,11 @@ import (
 
 type ICategoryRepository interface {
 	GetCategoryByID(ctx context.Context, id uint) (model.Category, error)
-	GetCategorys(ctx context.Context) ([]*model.Category, error)                   // 获取分类列表
-	GetCategoryTree(ctx context.Context) ([]*model.Category, error)                // 获取分类树
-	CreateCategory(ctx context.Context, category *model.Category) error            // 创建分类
+	GetCategorys(ctx context.Context) ([]*model.Category, error)                     // 获取分类列表
+	GetCategoryTree(ctx context.Context) ([]*model.Category, error)                  // 获取分类树
+	CreateCategory(ctx context.Context, category *model.Category) error              // 创建分类
 	UpdateCategoryByID(ctx context.Context, id uint, category *model.Category) error // 更新分类
-	BatchDeleteCategoryByIds(ctx context.Context, ids []uint) error                // 批量删除分类
+	BatchDeleteCategoryByIds(ctx context.Context, ids []uint) error                  // 批量删除分类
 }
 
 type CategoryRepository struct {

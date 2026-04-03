@@ -7,6 +7,8 @@
 ### Overview
 gotribe-admin is a production-grade Go backend for admin systems. It features a clean layered architecture, Casbin-based RBAC with an external-first and built-in-fallback model strategy, Swagger-based API documentation, and practical tooling for CI/CD and containerized deployment.
 
+To bootstrap a new project from this repository template, run [`scripts/init-project.sh`](/Users/mengmian/Develop/app/go/src/github.com/gotribe/gotribe-admin/scripts/init-project.sh) once with a new app name and Go module path. More details are in [`docs/guides/TEMPLATE.md`](/Users/mengmian/Develop/app/go/src/github.com/gotribe/gotribe-admin/docs/guides/TEMPLATE.md).
+
 ### Highlights
 - Dual-track RBAC model loading: environment `RBAC_MODEL_PATH` → config `casbin.model-path` → embedded default.
 - Layered architecture: controllers, repositories, routes, middleware, common utilities, models.

@@ -25,12 +25,14 @@ type CreateAdminRequest struct {
 
 // 获取用户列表结构体
 type AdminListRequest struct {
-	Username string `json:"username" form:"username" `
-	Mobile   string `json:"mobile" form:"mobile" `
-	Nickname string `json:"nickname" form:"nickname" `
-	Status   uint   `json:"status" form:"status" `
-	PageNum  uint   `json:"pageNum" form:"pageNum"`
-	PageSize uint   `json:"pageSize" form:"pageSize"`
+	Username  string `json:"username" form:"username" `
+	Mobile    string `json:"mobile" form:"mobile" `
+	Nickname  string `json:"nickname" form:"nickname" `
+	Status    uint   `json:"status" form:"status" `
+	PageNum   uint   `json:"pageNum" form:"pageNum"`
+	PageSize  uint   `json:"pageSize" form:"pageSize"`
+	SortBy    string `json:"sortBy" form:"sortBy"`
+	SortOrder string `json:"sortOrder" form:"sortOrder"`
 }
 
 // 批量删除用户结构体

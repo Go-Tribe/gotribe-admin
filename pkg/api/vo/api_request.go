@@ -7,12 +7,14 @@ package vo
 
 // 获取接口列表结构体
 type ApiListRequest struct {
-	Method   string `json:"method" form:"method"`
-	Path     string `json:"path" form:"path"`
-	Category string `json:"category" form:"category"`
-	Creator  string `json:"creator" form:"creator"`
-	PageNum  uint   `json:"pageNum" form:"pageNum"`
-	PageSize uint   `json:"pageSize" form:"pageSize"`
+	Method    string `json:"method" form:"method"`
+	Path      string `json:"path" form:"path"`
+	Category  string `json:"category" form:"category"`
+	Creator   string `json:"creator" form:"creator"`
+	PageNum   uint   `json:"pageNum" form:"pageNum"`
+	PageSize  uint   `json:"pageSize" form:"pageSize"`
+	SortBy    string `json:"sortBy" form:"sortBy"`
+	SortOrder string `json:"sortOrder" form:"sortOrder"`
 }
 
 // 创建接口结构体

@@ -51,6 +51,30 @@ func NewAdminRepository() IAdminRepository {
 	return AdminRepository{}
 }
 
+func buildAdminOrder(req *vo.AdminListRequest) string {
+	sortByMap := map[string]string{
+		"username":   "username",
+		"nickname":   "nickname",
+		"status":     "status",
+		"mobile":     "mobile",
+		"creator":    "creator",
+		"createdAt":  "created_at",
+		"created_at": "created_at",
+	}
+
+	column, ok := sortByMap[strings.TrimSpace(req.SortBy)]
+	if !ok {
+		return "created_at DESC"
+	}
+
+	direction := "ASC"
+	if strings.EqualFold(strings.TrimSpace(req.SortOrder), "desc") {
+		direction = "DESC"
+	}
+
+	return fmt.Sprintf("%s %s", column, direction)
+}
+
 // 登录
 func (ar AdminRepository) Login(ctx context.Context, admin *model.Admin) (*model.Admin, error) {
 	// 根据用户名获取用户(正常状态:用户状态正常)
@@ -152,7 +176,7 @@ func (ar AdminRepository) GetAdminByID(ctx context.Context, id uint) (model.Admi
 // 获取用户列表
 func (ar AdminRepository) GetAdmins(ctx context.Context, req *vo.AdminListRequest) ([]*model.Admin, int64, error) {
 	var list []*model.Admin
-	db := common.WithContext(ctx).DB().Model(&model.Admin{}).Order("created_at DESC")
+	db := common.WithContext(ctx).DB().Model(&model.Admin{}).Order(buildAdminOrder(req))
 
 	username := strings.TrimSpace(req.Username)
 	if username != "" {

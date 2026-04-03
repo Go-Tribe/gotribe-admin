@@ -29,9 +29,35 @@ func NewOperationLogRepository() IOperationLogRepository {
 	return OperationLogRepository{}
 }
 
+func buildOperationLogOrder(req *vo.OperationLogListRequest) string {
+	sortByMap := map[string]string{
+		"username":   "username",
+		"ip":         "ip",
+		"path":       "path",
+		"status":     "status",
+		"startTime":  "start_time",
+		"start_time": "start_time",
+		"timeCost":   "time_cost",
+		"time_cost":  "time_cost",
+		"desc":       "\"desc\"",
+	}
+
+	column, ok := sortByMap[strings.TrimSpace(req.SortBy)]
+	if !ok {
+		return "start_time DESC"
+	}
+
+	direction := "ASC"
+	if strings.EqualFold(strings.TrimSpace(req.SortOrder), "desc") {
+		direction = "DESC"
+	}
+
+	return fmt.Sprintf("%s %s", column, direction)
+}
+
 func (o OperationLogRepository) GetOperationLogs(ctx context.Context, req *vo.OperationLogListRequest) ([]model.OperationLog, int64, error) {
 	var list []model.OperationLog
-	db := common.WithContext(ctx).DB().Model(&model.OperationLog{}).Order("start_time DESC")
+	db := common.WithContext(ctx).DB().Model(&model.OperationLog{}).Order(buildOperationLogOrder(req))
 
 	username := strings.TrimSpace(req.Username)
 	if username != "" {

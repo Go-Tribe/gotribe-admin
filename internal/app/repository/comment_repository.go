@@ -29,6 +29,30 @@ func NewCommentRepository() ICommentRepository {
 	return CommentRepository{}
 }
 
+func buildCommentOrder(req *vo.CommentListRequest) string {
+	sortByMap := map[string]string{
+		"id":         "id",
+		"comment":    "content",
+		"userID":     "user_id",
+		"user_id":    "user_id",
+		"status":     "status",
+		"createdAt":  "created_at",
+		"created_at": "created_at",
+	}
+
+	column, ok := sortByMap[strings.TrimSpace(req.SortBy)]
+	if !ok {
+		return "created_at DESC"
+	}
+
+	direction := "ASC"
+	if strings.EqualFold(strings.TrimSpace(req.SortOrder), "desc") {
+		direction = "DESC"
+	}
+
+	return fmt.Sprintf("%s %s", column, direction)
+}
+
 func (cr CommentRepository) GetCommentByID(ctx context.Context, id uint) (model.Comment, error) {
 	var comment model.Comment
 	err := common.WithContext(ctx).DB().Where("id = ?", id).First(&comment).Error
@@ -38,7 +62,7 @@ func (cr CommentRepository) GetCommentByID(ctx context.Context, id uint) (model.
 // 获取评论列表
 func (cr CommentRepository) GetComments(ctx context.Context, req *vo.CommentListRequest) ([]*model.Comment, int64, error) {
 	var list []*model.Comment
-	db := common.WithContext(ctx).DB().Model(&model.Comment{}).Order("created_at DESC")
+	db := common.WithContext(ctx).DB().Model(&model.Comment{})
 
 	objectID := strings.TrimSpace(req.ObjectID)
 	if !gconvert.IsEmpty(objectID) {
@@ -54,19 +78,14 @@ func (cr CommentRepository) GetComments(ctx context.Context, req *vo.CommentList
 		db = db.Where("project_id = ?", req.ProjectID)
 	}
 	if !gconvert.IsEmpty(req.Nickname) {
-		// 昵称不存在时返回空列表，而不是把“未命中”当成查询失败。
-		var userIDs []uint
-		if err := common.WithContext(ctx).DB().
+		nicknameIDs := common.WithContext(ctx).DB().
 			Model(&model.User{}).
-			Where("nickname like ?", fmt.Sprintf("%%%s%%", req.Nickname)).
-			Pluck("id", &userIDs).Error; err != nil {
-			return nil, 0, err
-		}
-		if len(userIDs) == 0 {
-			return list, 0, nil
-		}
-		db = db.Where("user_id IN ?", userIDs)
+			Select("id").
+			Where("nickname like ?", fmt.Sprintf("%%%s%%", req.Nickname))
+		db = db.Where("user_id IN (?)", nicknameIDs)
 	}
+
+	db = db.Order(buildCommentOrder(req))
 
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数

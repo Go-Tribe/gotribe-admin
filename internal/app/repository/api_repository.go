@@ -35,10 +35,34 @@ func NewApiRepository() IApiRepository {
 	return ApiRepository{}
 }
 
+func buildApiOrder(req *vo.ApiListRequest) string {
+	sortByMap := map[string]string{
+		"method":     "method",
+		"path":       "path",
+		"category":   "category",
+		"desc":       "\"desc\"",
+		"creator":    "creator",
+		"createdAt":  "created_at",
+		"created_at": "created_at",
+	}
+
+	column, ok := sortByMap[strings.TrimSpace(req.SortBy)]
+	if !ok {
+		return "created_at DESC"
+	}
+
+	direction := "ASC"
+	if strings.EqualFold(strings.TrimSpace(req.SortOrder), "desc") {
+		direction = "DESC"
+	}
+
+	return fmt.Sprintf("%s %s", column, direction)
+}
+
 // 获取接口列表
 func (a ApiRepository) GetApis(ctx context.Context, req *vo.ApiListRequest) ([]*model.Api, int64, error) {
 	var list []*model.Api
-	db := common.WithContext(ctx).DB().Model(&model.Api{}).Order("created_at DESC")
+	db := common.WithContext(ctx).DB().Model(&model.Api{}).Order(buildApiOrder(req))
 
 	method := strings.TrimSpace(req.Method)
 	if method != "" {

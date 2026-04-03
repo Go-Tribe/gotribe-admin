@@ -32,6 +32,28 @@ func NewTagRepository() ITagRepository {
 	return TagRepository{}
 }
 
+func buildTagOrder(req *vo.TagListRequest) string {
+	sortByMap := map[string]string{
+		"id":          "id",
+		"title":       "title",
+		"description": "description",
+		"createdAt":   "created_at",
+		"created_at":  "created_at",
+	}
+
+	column, ok := sortByMap[strings.TrimSpace(req.SortBy)]
+	if !ok {
+		return "created_at DESC"
+	}
+
+	direction := "ASC"
+	if strings.EqualFold(strings.TrimSpace(req.SortOrder), "desc") {
+		direction = "DESC"
+	}
+
+	return fmt.Sprintf("%s %s", column, direction)
+}
+
 // 获取单个标签
 func (tr TagRepository) GetTagByID(ctx context.Context, id uint) (model.Tag, error) {
 	var tag model.Tag
@@ -42,7 +64,7 @@ func (tr TagRepository) GetTagByID(ctx context.Context, id uint) (model.Tag, err
 // 获取标签列表
 func (tr TagRepository) GetTags(ctx context.Context, req *vo.TagListRequest) ([]*model.Tag, int64, error) {
 	var list []*model.Tag
-	db := common.WithContext(ctx).DB().Model(&model.Tag{}).Order("created_at DESC")
+	db := common.WithContext(ctx).DB().Model(&model.Tag{}).Order(buildTagOrder(req))
 
 	title := strings.TrimSpace(req.Title)
 	if title != "" {

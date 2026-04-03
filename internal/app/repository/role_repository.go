@@ -34,10 +34,34 @@ func NewRoleRepository() IRoleRepository {
 	return RoleRepository{}
 }
 
+func buildRoleOrder(req *vo.RoleListRequest) string {
+	sortByMap := map[string]string{
+		"name":       "name",
+		"keyword":    "keyword",
+		"sort":       "sort",
+		"status":     "status",
+		"creator":    "creator",
+		"createdAt":  "created_at",
+		"created_at": "created_at",
+	}
+
+	column, ok := sortByMap[strings.TrimSpace(req.SortBy)]
+	if !ok {
+		return "created_at DESC"
+	}
+
+	direction := "ASC"
+	if strings.EqualFold(strings.TrimSpace(req.SortOrder), "desc") {
+		direction = "DESC"
+	}
+
+	return fmt.Sprintf("%s %s", column, direction)
+}
+
 // 获取角色列表
 func (r RoleRepository) GetRoles(ctx context.Context, req *vo.RoleListRequest) ([]model.Role, int64, error) {
 	var list []model.Role
-	db := common.WithContext(ctx).DB().Model(&model.Role{}).Order("created_at DESC")
+	db := common.WithContext(ctx).DB().Model(&model.Role{}).Order(buildRoleOrder(req))
 
 	name := strings.TrimSpace(req.Name)
 	if name != "" {

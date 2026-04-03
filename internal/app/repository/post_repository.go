@@ -35,6 +35,33 @@ func NewPostRepository() IPostRepository {
 	return PostRepository{}
 }
 
+func buildPostOrder(req *vo.PostListRequest) string {
+	sortByMap := map[string]string{
+		"postID":      "post_id",
+		"post_id":     "post_id",
+		"title":       "title",
+		"author":      "author",
+		"description": "description",
+		"projectID":   "project_id",
+		"project_id":  "project_id",
+		"status":      "status",
+		"createdAt":   "created_at",
+		"created_at":  "created_at",
+	}
+
+	column, ok := sortByMap[strings.TrimSpace(req.SortBy)]
+	if !ok {
+		return "created_at DESC"
+	}
+
+	direction := "ASC"
+	if strings.EqualFold(strings.TrimSpace(req.SortOrder), "desc") {
+		direction = "DESC"
+	}
+
+	return fmt.Sprintf("%s %s", column, direction)
+}
+
 // 获取单个内容
 func (pr PostRepository) GetPostByPostID(ctx context.Context, postID string) (model.Post, error) {
 	var post model.Post
@@ -57,7 +84,7 @@ func (pr PostRepository) GetPostByPostID(ctx context.Context, postID string) (mo
 // 获取内容列表
 func (pr PostRepository) GetPosts(ctx context.Context, req *vo.PostListRequest) ([]*model.Post, int64, error) {
 	var list []*model.Post
-	db := common.WithContext(ctx).DB().Model(&model.Post{}).Order("created_at DESC")
+	db := common.WithContext(ctx).DB().Model(&model.Post{}).Order(buildPostOrder(req))
 
 	title := strings.TrimSpace(req.Title)
 	if !gconvert.IsEmpty(title) {

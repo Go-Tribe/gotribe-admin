@@ -16,11 +16,13 @@ type CreateRoleRequest struct {
 
 // 获取用户角色结构体
 type RoleListRequest struct {
-	Name     string `json:"name" form:"name"`
-	Keyword  string `json:"keyword" form:"keyword"`
-	Status   uint   `json:"status" form:"status"`
-	PageNum  uint   `json:"pageNum" form:"pageNum"`
-	PageSize uint   `json:"pageSize" form:"pageSize"`
+	Name      string `json:"name" form:"name"`
+	Keyword   string `json:"keyword" form:"keyword"`
+	Status    uint   `json:"status" form:"status"`
+	PageNum   uint   `json:"pageNum" form:"pageNum"`
+	PageSize  uint   `json:"pageSize" form:"pageSize"`
+	SortBy    string `json:"sortBy" form:"sortBy"`
+	SortOrder string `json:"sortOrder" form:"sortOrder"`
 }
 
 // 批量删除角色结构体

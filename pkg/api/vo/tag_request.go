@@ -17,10 +17,12 @@ type CreateTagRequest struct {
 
 // 获取标签列表结构体
 type TagListRequest struct {
-	ID       uint   `form:"id" json:"id"`
-	Title    string `form:"title" json:"title"`
-	PageNum  uint   `json:"pageNum" form:"pageNum"`
-	PageSize uint   `json:"pageSize" form:"pageSize"`
+	ID        uint   `form:"id" json:"id"`
+	Title     string `form:"title" json:"title"`
+	PageNum   uint   `json:"pageNum" form:"pageNum"`
+	PageSize  uint   `json:"pageSize" form:"pageSize"`
+	SortBy    string `json:"sortBy" form:"sortBy"`
+	SortOrder string `json:"sortOrder" form:"sortOrder"`
 }
 
 // 批量删除标签结构体

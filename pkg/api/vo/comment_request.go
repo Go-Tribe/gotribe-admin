@@ -14,6 +14,8 @@ type CommentListRequest struct {
 	Nickname   string `form:"nickname" json:"nickname"`
 	PageNum    uint   `json:"pageNum" form:"pageNum"`
 	PageSize   uint   `json:"pageSize" form:"pageSize"`
+	SortBy     string `json:"sortBy" form:"sortBy"`
+	SortOrder  string `json:"sortOrder" form:"sortOrder"`
 }
 
 // 更新评论

@@ -21,11 +21,13 @@ type CreateAdRequest struct {
 
 // 获取推广位列表结构体
 type AdListRequest struct {
-	SceneID  uint   `form:"sceneID" json:"sceneID"`
-	Title    string `form:"title" json:"title"`
-	Status   uint   `form:"status" json:"status"`
-	PageNum  uint   `json:"pageNum" form:"pageNum"`
-	PageSize uint   `json:"pageSize" form:"pageSize"`
+	SceneID   uint   `form:"sceneID" json:"sceneID"`
+	Title     string `form:"title" json:"title"`
+	Status    uint   `form:"status" json:"status"`
+	PageNum   uint   `json:"pageNum" form:"pageNum"`
+	PageSize  uint   `json:"pageSize" form:"pageSize"`
+	SortBy    string `json:"sortBy" form:"sortBy"`
+	SortOrder string `json:"sortOrder" form:"sortOrder"`
 }
 
 // 更新推广位内容

@@ -69,6 +69,8 @@ type PostListRequest struct {
 	ProjectID string `form:"projectID" json:"projectID"`
 	PageNum   uint   `json:"pageNum" form:"pageNum"`
 	PageSize  uint   `json:"pageSize" form:"pageSize"`
+	SortBy    string `json:"sortBy" form:"sortBy"`
+	SortOrder string `json:"sortOrder" form:"sortOrder"`
 }
 
 // 批量删除内容结构体

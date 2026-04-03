@@ -8,6 +8,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/dengmengmian/ghelper/gconvert"
 	"gotribe-admin/internal/pkg/common"
@@ -31,6 +32,29 @@ func NewAdRepository() IAdRepository {
 	return AdRepository{}
 }
 
+func buildAdOrder(req *vo.AdListRequest) string {
+	sortByMap := map[string]string{
+		"id":          "id",
+		"title":       "title",
+		"description": "description",
+		"status":      "status",
+		"createdAt":   "created_at",
+		"created_at":  "created_at",
+	}
+
+	column, ok := sortByMap[strings.TrimSpace(req.SortBy)]
+	if !ok {
+		return "created_at DESC"
+	}
+
+	direction := "ASC"
+	if strings.EqualFold(strings.TrimSpace(req.SortOrder), "desc") {
+		direction = "DESC"
+	}
+
+	return fmt.Sprintf("%s %s", column, direction)
+}
+
 // 获取单个推广场景
 func (cr AdRepository) GetAdByID(ctx context.Context, id uint) (model.Ad, error) {
 	var ad model.Ad
@@ -41,7 +65,7 @@ func (cr AdRepository) GetAdByID(ctx context.Context, id uint) (model.Ad, error)
 // 获取推广场景列表
 func (cr AdRepository) GetAds(ctx context.Context, req *vo.AdListRequest) ([]*model.Ad, int64, error) {
 	var list []*model.Ad
-	db := common.WithContext(ctx).DB().Model(&model.Ad{}).Order("created_at DESC")
+	db := common.WithContext(ctx).DB().Model(&model.Ad{}).Order(buildAdOrder(req))
 
 	if req.SceneID > 0 {
 		db = db.Where("scene_id = ?", req.SceneID)

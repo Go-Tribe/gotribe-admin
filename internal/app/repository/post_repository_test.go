@@ -11,6 +11,7 @@ import (
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/vo"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -53,6 +54,8 @@ func (m *MockPostRepository) BatchDeletePostByIds(ctx context.Context, ids []str
 
 // 创建测试内容数据
 func createTestPost() *model.Post {
+	postDate := parseTestTime("2006-01-02", "2024-01-01")
+	showTime := parseTestTime("2006-01-02 15:04:05", "2024-01-01 10:00:00")
 	return &model.Post{
 		Model: model.Model{
 			ID: 1,
@@ -79,11 +82,19 @@ func createTestPost() *model.Post {
 		UnitPrice:   0,
 		Location:    "北京",
 		People:      "测试人物",
-		Time:        "2024-01-01",
+		Time:        postDate,
 		Images:      "image1.jpg,image2.jpg",
-		ShowTime:    "2024-01-01 10:00:00",
+		ShowTime:    showTime,
 		Video:       "video.mp4",
 	}
+}
+
+func parseTestTime(layout, value string) *time.Time {
+	t, err := time.Parse(layout, value)
+	if err != nil {
+		panic(err)
+	}
+	return &t
 }
 
 // TestPostRepository_CreatePost 测试创建内容功能

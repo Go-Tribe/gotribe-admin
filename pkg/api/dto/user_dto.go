@@ -36,7 +36,7 @@ func toUserDto(user *model.User) UserDto {
 		ID:        user.ID,
 		Username:  user.Username,
 		Nickname:  user.Nickname,
-		Email:     user.Email,
+		Email:     stringValue(user.Email),
 		Sex:       user.Sex,
 		ProjectID: user.ProjectID,
 		Birthday: func() string {
@@ -49,7 +49,7 @@ func toUserDto(user *model.User) UserDto {
 		CreatedAt: user.CreatedAt.Format(known.TIME_FORMAT),
 		Point:     user.Point,
 		Status:    user.Status,
-		Phone:     user.Phone,
+		Phone:     stringValue(user.Phone),
 	}
 }
 
@@ -63,4 +63,11 @@ func ToUsersDto(userList []*model.User) []UserDto {
 		users = append(users, toUserDto(user))
 	}
 	return users
+}
+
+func stringValue(value *string) string {
+	if value == nil {
+		return ""
+	}
+	return *value
 }

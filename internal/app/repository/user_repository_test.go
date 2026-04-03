@@ -58,6 +58,8 @@ func (m *MockUserRepository) SearchUserByNickname(ctx context.Context, nickname 
 
 // createTestUser 创建测试用户数据
 func createTestUser() *model.User {
+	phone := "13800138000"
+	email := "test@example.com"
 	return &model.User{
 		Model: model.Model{
 			ID: 1,
@@ -65,8 +67,8 @@ func createTestUser() *model.User {
 		Username:  "testuser",
 		Nickname:  "测试用户",
 		AvatarURL: "avatar.jpg",
-		Phone:     "13800138000",
-		Email:     "test@example.com",
+		Phone:     &phone,
+		Email:     &email,
 		Status:    1,
 		Point:     100.0,
 		ProjectID: "test",
@@ -251,7 +253,8 @@ func TestUserRepository_UpdateUser(t *testing.T) {
 
 	testUser := createTestUser()
 	testUser.Nickname = "更新后的昵称"
-	testUser.Phone = "13800138999"
+	newPhone := "13800138999"
+	testUser.Phone = &newPhone
 
 	// 设置mock期望
 	mockRepo.On("UpdateUser", mock.Anything, testUser).Return(nil)

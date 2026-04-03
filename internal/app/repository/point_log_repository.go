@@ -129,7 +129,7 @@ func (cr PointLogRepository) CreatePoint(ctx context.Context, userID uint, types
 		ProjectID:      ProjectID,
 		UserID:         userID,
 		Points:         pointsCents,
-		PointsLogID:    int(pointLog.ID),
+		PointsLogID:    pointLog.ID,
 		ExpirationDate: time.Now().AddDate(1, 0, 0), // 当前时间往后推一年
 	}
 

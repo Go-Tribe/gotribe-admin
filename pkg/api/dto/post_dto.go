@@ -10,6 +10,7 @@ import (
 	"gotribe-admin/pkg/api/known"
 	"gotribe-admin/pkg/util"
 	"strings"
+	"time"
 )
 
 // 返回给前端的内容列表
@@ -77,11 +78,11 @@ func ToPostInfoDto(post *model.Post) PostsDto {
 		Status:      post.Status,
 		Location:    post.Location,
 		People:      post.People,
-		Time:        post.Time,
+		Time:        formatPostTime(post.Time, known.TIME_FORMAT_SHORT),
 		Images:      imageList,
 		UnitPrice:   util.MoneyUtil.CentsToYuan(int64(post.UnitPrice)),
 		Video:       post.Video,
-		ShowTime:    post.ShowTime,
+		ShowTime:    formatPostTime(post.ShowTime, known.TIME_FORMAT),
 	}
 }
 
@@ -96,4 +97,11 @@ func ToPostsDto(postList []*model.Post) []PostsDto {
 	}
 
 	return posts
+}
+
+func formatPostTime(value *time.Time, layout string) string {
+	if value == nil {
+		return ""
+	}
+	return value.Format(layout)
 }

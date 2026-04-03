@@ -15,7 +15,6 @@
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host      localhost:8088
 // @BasePath  /api
 
 // @securityDefinitions.apikey BearerAuth
@@ -94,12 +93,16 @@ func main() {
 	// 注册所有路由
 	r := routes.InitRoutes(content)
 
-	host := "localhost"
+	host := config.Conf.System.Host
 	port := config.Conf.System.Port
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf("%s:%d", host, port),
-		Handler: r,
+		Addr:              fmt.Sprintf("%s:%d", host, port),
+		Handler:           r,
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       15 * time.Second,
+		WriteTimeout:      30 * time.Second,
+		IdleTimeout:       60 * time.Second,
 	}
 
 	// Initializing the server in a goroutine so that
@@ -119,7 +122,8 @@ func main() {
 	╚██████╔╝╚█████╔╝░░░██║░░░██║░░██║██║██████╦╝███████╗
 	░╚═════╝░░╚════╝░░░░╚═╝░░░╚═╝░░╚═╝╚═╝╚═════╝░╚══════╝`)
 	fmt.Println("	App running at:")
-	fmt.Printf("	- Local: %s%s:%d\n", "http://", host, port)
+	fmt.Printf("	- Local: %s%s:%d\n", "http://", "localhost", port)
+	fmt.Printf("	- Bind: %s:%d\n", host, port)
 	// Wait for interrupt signal to gracefully shutdown the server with
 	// a timeout of 5 seconds.
 	quit := make(chan os.Signal, 1)

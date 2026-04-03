@@ -14,6 +14,7 @@ import (
 	"gotribe-admin/pkg/api/vo"
 	"gotribe-admin/pkg/util"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -138,8 +139,8 @@ func (pc UserController) CreateUser(c *gin.Context) {
 	user := model.User{
 		Username:  req.Username,
 		Nickname:  req.Nickname,
-		Phone:     req.Phone,
-		Email:     req.Email,
+		Phone:     optionalString(req.Phone),
+		Email:     optionalString(req.Email),
 		ProjectID: req.ProjectID,
 		Password:  encryptedPwd,
 	}
@@ -192,8 +193,8 @@ func (pc UserController) UpdateUserByID(c *gin.Context) {
 		return
 	}
 	oldUser.Nickname = req.Nickname
-	oldUser.Phone = req.Phone
-	oldUser.Email = req.Email
+	oldUser.Phone = optionalString(req.Phone)
+	oldUser.Email = optionalString(req.Email)
 	if len(req.Password) > 0 {
 		newPassword, _ := util.PasswordUtil.Encrypt(req.Password)
 		oldUser.Password = newPassword
@@ -262,4 +263,12 @@ func (tc UserController) SearchUserByUsername(c *gin.Context) {
 		return
 	}
 	response.Success(c, gin.H{"users": dto.ToUsersDto(user)}, common.Msg(c, common.MsgListSuccess))
+}
+
+func optionalString(value string) *string {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return nil
+	}
+	return &value
 }

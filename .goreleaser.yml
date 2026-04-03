@@ -33,14 +33,14 @@ archives:
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     files:
       - README.md
-      - README_CN.md
+      - docs/guides/README_CN.md
       - LICENSE
-      - CHANGELOG.md
-      - config.tmp.yml
+      - docs/reference/CHANGELOG.md
+      - config/config.tmp.yml
       - rbac_model.conf
       - docker-compose.yml
       - Dockerfile
-      - nginx.conf
+      - config/nginx.conf
 
 checksum:
   name_template: 'checksums.txt'
@@ -80,7 +80,7 @@ release:
   header: |
     ## Changelog
 
-    See the [CHANGELOG.md](CHANGELOG.md) file for details.
+    See the [CHANGELOG.md](docs/reference/CHANGELOG.md) file for details.
 
     ## Installation
 
@@ -107,9 +107,9 @@ release:
     ## Documentation
 
     - [README](README.md)
-    - [API Documentation](API.md)
-    - [Architecture](ARCHITECTURE.md)
-    - [Contributing](CONTRIBUTING.md)
+    - [API Documentation](docs/reference/API.md)
+    - [Architecture](docs/guides/ARCHITECTURE.md)
+    - [Contributing](.github/CONTRIBUTING.md)
     - [Security](SECURITY.md)
 
     ## Support

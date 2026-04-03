@@ -1,14 +1,16 @@
 # ==============================================================================
 # 定义全局 Makefile 变量方便后面引用
-PROJECT_NAME = "gotribe-admin"
+PROJECT_NAME := gotribe-admin
 COMMON_SELF_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 # 项目根目录
 ROOT_DIR := $(abspath $(shell cd $(COMMON_SELF_DIR)/ && pwd -P))
 # 构建产物、临时文件存放目录
-OUTPUT_DIR:= $(ROOT_DIR)/_output
+OUTPUT_DIR := $(ROOT_DIR)/_output
 # 版本信息
 VERSION := $(shell git describe --tags --always --dirty)
 VERSION_PACKAGE := gotribe-admin/internal/pkg/common
+GO ?= go
+DOCKER_COMPOSE ?= docker compose
 # Go 编译并发数限制（默认使用 CPU 核心数的一半，可通过环境变量覆盖）
 # 如果 nproc 不可用，默认使用 2
 GO_BUILD_PARALLEL ?= $(shell nproc 2>/dev/null | awk '{print int($$1/2+1)}' || echo 2)
@@ -30,17 +32,18 @@ GO_LDFLAGS += \
 # ==============================================================================
 # 定义 Makefile all 伪目标，执行 `make` 时，会默认会执行 all 伪目标
 .PHONY: all
-all: add-copyright  format build
+all: format build
 
 .PHONY: run
-run: tidy  format dev
+run: format dev
 
 # ==============================================================================
 # 定义其他需要的伪目标
 
 .PHONY: build
-build: tidy # 编译源码，依赖 tidy 目标自动添加/移除依赖包.
-	@CGO_ENABLED=0 go build -v -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/$(PROJECT_NAME) $(ROOT_DIR)/$(PROJECT_NAME).go
+build: # 编译源码
+	@mkdir -p $(OUTPUT_DIR)
+	@CGO_ENABLED=0 $(GO) build -v -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/$(PROJECT_NAME) $(ROOT_DIR)/$(PROJECT_NAME).go
 
 
 
@@ -48,7 +51,7 @@ build: tidy # 编译源码，依赖 tidy 目标自动添加/移除依赖包.
 linux: # 快速交叉编译 Linux 可执行文件（当前系统 -> Linux amd64）.
 	@mkdir -p $(OUTPUT_DIR)
 	@echo "交叉编译 Linux 版本..."
-	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/$(PROJECT_NAME)-linux $(ROOT_DIR)/$(PROJECT_NAME).go
+	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GO) build -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/$(PROJECT_NAME)-linux $(ROOT_DIR)/$(PROJECT_NAME).go
 	@echo "构建完成: $(OUTPUT_DIR)/$(PROJECT_NAME)-linux"
 
 .PHONY: format
@@ -62,7 +65,7 @@ add-copyright: # 添加版权头信息.
 
 .PHONY: tidy
 tidy: # 自动添加/移除依赖包.
-	@go mod tidy
+	@$(GO) mod tidy
 
 .PHONY: clean
 clean: # 清理构建产物、临时文件等.
@@ -70,24 +73,24 @@ clean: # 清理构建产物、临时文件等.
 
 .PHONY: dev
 dev: # 开发运行
-	@go run $(ROOT_DIR)/$(PROJECT_NAME).go
+	@$(GO) run $(ROOT_DIR)/$(PROJECT_NAME).go
 
 .PHONY: test
 test: # 运行测试
-	@go test -v ./...
+	@$(GO) test -v ./...
 
 .PHONY: test-all
 test-all: # 运行所有测试用例（包括单元测试和基准测试）
 	@echo "运行所有单元测试..."
-	@go test -v ./...
+	@$(GO) test -v ./...
 	@echo "\n运行基准测试..."
-	@go test -bench=. -v ./...
+	@$(GO) test -bench=. -v ./...
 	@echo "\n测试完成！"
 
 .PHONY: test-coverage
 test-coverage: # 运行测试并生成覆盖率报告
-	@go test -v -coverprofile=coverage.out ./...
-	@go tool cover -html=coverage.out -o coverage.html
+	@$(GO) test -v -coverprofile=coverage.out ./...
+	@$(GO) tool cover -html=coverage.out -o coverage.html
 
 .PHONY: lint
 lint: # 代码检查
@@ -95,24 +98,24 @@ lint: # 代码检查
 
 .PHONY: fmt
 fmt: # 格式化代码
-	@go fmt ./...
+	@$(GO) fmt ./...
 
 .PHONY: vet
 vet: # 静态分析
-	@go vet ./...
+	@$(GO) vet ./...
 
 .PHONY: mod
 mod: # 模块管理
-	@go mod download
-	@go mod verify
+	@$(GO) mod download
+	@$(GO) mod verify
 
 .PHONY: migrate
 migrate: # 数据库迁移
-	@go run $(ROOT_DIR)/$(PROJECT_NAME).go migrate
+	@$(GO) run $(ROOT_DIR)/$(PROJECT_NAME).go migrate
 
 .PHONY: seed
 seed: # 初始化数据
-	@go run $(ROOT_DIR)/$(PROJECT_NAME).go seed
+	@$(GO) run $(ROOT_DIR)/$(PROJECT_NAME).go seed
 
 .PHONY: docker
 docker: # 构建 Docker 镜像
@@ -120,15 +123,15 @@ docker: # 构建 Docker 镜像
 
 .PHONY: docker-run
 docker-run: # 运行 Docker 容器
-	@docker-compose up -d
+	@$(DOCKER_COMPOSE) up -d
 
 .PHONY: docker-stop
 docker-stop: # 停止 Docker 容器
-	@docker-compose down
+	@$(DOCKER_COMPOSE) down
 
 .PHONY: docker-clean
 docker-clean: # 清理 Docker 资源
-	@docker-compose down -v
+	@$(DOCKER_COMPOSE) down -v
 	@docker system prune -f
 
 .PHONY: install
@@ -143,6 +146,9 @@ uninstall: # 从系统卸载
 swagger: # 生成 Swagger 文档
 	@swag init -g ./gotribe-admin.go -o ./docs/swagger
 
+.PHONY: verify
+verify: format vet test build # 本地校验常用组合
+
 .PHONY: swagger-clean
 swagger-clean: # 清理 Swagger 文档
 	@-rm -vrf $(ROOT_DIR)/docs/swagger
@@ -154,23 +160,27 @@ help: # 显示帮助信息
 	@echo "  build              - 编译源码（当前平台）"
 	@echo "  linux              - 快速交叉编译 Linux 可执行文件（当前系统 -> Linux amd64）"
 	@echo "  run                - 开发运行"
-	@echo "  dev          - 开发运行"
-	@echo "  test         - 运行测试"
-	@echo "  test-all     - 运行所有测试用例（包括单元测试和基准测试）"
-	@echo "  test-coverage- 运行测试并生成覆盖率报告"
-	@echo "  lint         - 代码检查"
-	@echo "  fmt          - 格式化代码"
-	@echo "  vet          - 静态分析"
-	@echo "  mod          - 模块管理"
-	@echo "  migrate      - 数据库迁移"
-	@echo "  seed         - 初始化数据"
-	@echo "  docker       - 构建 Docker 镜像"
-	@echo "  docker-run   - 运行 Docker 容器"
-	@echo "  docker-stop  - 停止 Docker 容器"
-	@echo "  docker-clean - 清理 Docker 资源"
-	@echo "  install      - 安装到系统"
-	@echo "  uninstall    - 从系统卸载"
-	@echo "  clean        - 清理构建产物"
-	@echo "  swagger      - 生成 Swagger 文档"
-	@echo "  swagger-clean- 清理 Swagger 文档"
-	@echo "  help         - 显示帮助信息"
+	@echo "  dev                - 开发运行"
+	@echo "  test               - 运行测试"
+	@echo "  test-all           - 运行所有测试用例（包括单元测试和基准测试）"
+	@echo "  test-coverage      - 运行测试并生成覆盖率报告"
+	@echo "  lint               - 代码检查"
+	@echo "  fmt                - 使用 go fmt 格式化代码"
+	@echo "  format             - 使用 gofmt -s 格式化代码"
+	@echo "  vet                - 静态分析"
+	@echo "  mod                - 下载并校验模块"
+	@echo "  tidy               - 整理 go.mod/go.sum"
+	@echo "  verify             - 执行 format、vet、test、build"
+	@echo "  migrate            - 数据库迁移"
+	@echo "  seed               - 初始化数据"
+	@echo "  docker             - 构建 Docker 镜像"
+	@echo "  docker-run         - 运行 Docker 容器"
+	@echo "  docker-stop        - 停止 Docker 容器"
+	@echo "  docker-clean       - 清理 Docker 资源"
+	@echo "  install            - 安装到系统"
+	@echo "  uninstall          - 从系统卸载"
+	@echo "  clean              - 清理构建产物"
+	@echo "  swagger            - 生成 Swagger 文档"
+	@echo "  swagger-clean      - 清理 Swagger 文档"
+	@echo "  add-copyright      - 添加版权头信息"
+	@echo "  help               - 显示帮助信息"

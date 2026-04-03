@@ -6,6 +6,7 @@
 package controller
 
 import (
+	"errors"
 	"gotribe-admin/internal/app/repository"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
@@ -15,6 +16,7 @@ import (
 	"gotribe-admin/pkg/api/vo"
 	"gotribe-admin/pkg/util"
 	"strings"
+	"time"
 
 	"github.com/dengmengmian/ghelper/gconvert"
 	"github.com/gin-gonic/gin"
@@ -127,6 +129,16 @@ func (pc PostController) CreatePost(c *gin.Context) {
 		return
 	}
 	imageStr := strings.Join(req.Images, ",")
+	postTime, err := parseOptionalPostTime(req.Time, known.TIME_FORMAT_SHORT)
+	if err != nil {
+		response.ValidationFail(c, "time 格式错误，应为 2006-01-02 或 2006-01-02 15:04:05")
+		return
+	}
+	showTime, err := parseOptionalPostTime(req.ShowTime, known.TIME_FORMAT)
+	if err != nil {
+		response.ValidationFail(c, "showTime 格式错误，应为 2006-01-02 15:04:05")
+		return
+	}
 	post := model.Post{
 		CategoryID:  req.CategoryID,
 		ProjectID:   req.ProjectID,
@@ -145,17 +157,17 @@ func (pc PostController) CreatePost(c *gin.Context) {
 		ColumnID:    req.ColumnID,
 		PassWord:    req.Password,
 		Status:      req.Status,
-		Time:        req.Time,
+		Time:        postTime,
 		UnitPrice:   uint(util.MoneyUtil.YuanToCents(req.UnitPrice)),
 		People:      req.People,
 		Location:    req.Location,
 		Images:      imageStr,
-		ShowTime:    req.ShowTime,
+		ShowTime:    showTime,
 		Video:       req.Video,
 	}
 
 	ctx := c.Request.Context()
-	err := pc.PostRepository.CreatePost(ctx, &post)
+	err = pc.PostRepository.CreatePost(ctx, &post)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return
@@ -198,6 +210,16 @@ func (pc PostController) UpdatePostByID(c *gin.Context) {
 		return
 	}
 	imageStr := strings.Join(req.Images, ",")
+	postTime, err := parseOptionalPostTime(req.Time, known.TIME_FORMAT_SHORT)
+	if err != nil {
+		response.ValidationFail(c, "time 格式错误，应为 2006-01-02 或 2006-01-02 15:04:05")
+		return
+	}
+	showTime, err := parseOptionalPostTime(req.ShowTime, known.TIME_FORMAT)
+	if err != nil {
+		response.ValidationFail(c, "showTime 格式错误，应为 2006-01-02 15:04:05")
+		return
+	}
 	oldPost.Title = req.Title
 	oldPost.Description = req.Description
 	oldPost.IsTop = req.IsTop
@@ -215,13 +237,13 @@ func (pc PostController) UpdatePostByID(c *gin.Context) {
 	oldPost.Status = req.Status
 	oldPost.Tag = req.Tag
 	oldPost.ColumnID = req.ColumnID
-	oldPost.Time = req.Time
+	oldPost.Time = postTime
 	oldPost.UnitPrice = uint(util.MoneyUtil.YuanToCents(req.UnitPrice))
 	oldPost.People = req.People
 	oldPost.Location = req.Location
 	oldPost.Images = imageStr
 	oldPost.Video = req.Video
-	oldPost.ShowTime = req.ShowTime
+	oldPost.ShowTime = showTime
 	// 更新内容
 	err = pc.PostRepository.UpdatePost(ctx, &oldPost)
 	if err != nil {
@@ -266,6 +288,25 @@ func (tc PostController) BatchDeletePostByIds(c *gin.Context) {
 	}
 	response.Success(c, nil, common.Msg(c, common.MsgDeleteSuccess))
 
+}
+
+func parseOptionalPostTime(value string, primaryLayout string) (*time.Time, error) {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return nil, nil
+	}
+
+	layouts := []string{primaryLayout}
+	if primaryLayout == known.TIME_FORMAT_SHORT {
+		layouts = append(layouts, known.TIME_FORMAT)
+	}
+	for _, layout := range layouts {
+		parsed, err := time.ParseInLocation(layout, value, time.Local)
+		if err == nil {
+			return &parsed, nil
+		}
+	}
+	return nil, errors.New("invalid time format")
 }
 
 // PushPostByID 发布内容

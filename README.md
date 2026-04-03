@@ -11,7 +11,7 @@ gotribe-admin is a production-grade Go backend for admin systems. It features a 
 - Dual-track RBAC model loading: environment `RBAC_MODEL_PATH` → config `casbin.model-path` → embedded default.
 - Layered architecture: controllers, repositories, routes, middleware, common utilities, models.
 - API documentation with Swagger under `docs/swagger/`.
-- Predictable configuration via `config/config.go` and `config.tmp.yml`.
+- Predictable configuration via `config/config.go` and `config/config.tmp.yml`.
 - Shipping-friendly: `Makefile`, Docker, and GoReleaser.
 
 ### Quick Start
@@ -20,12 +20,35 @@ gotribe-admin is a production-grade Go backend for admin systems. It features a 
 - Build: `make build` (or `go build ./...`).
 - Run: `go run gotribe-admin.go`.
 - Test: `go test ./...`.
-- Optional: `docker-compose up -d` for containerized services if configured.
+- Verify locally: `make verify`.
+- Optional: `docker compose up -d` for containerized services if configured.
 
 ### Configuration
-- Base configuration file example: `config/config.tmp.yml`.
-- Environment variables override config values where applicable.
-- See `config/config.go` for programmatic loading order and defaults.
+- Base configuration template: `config/config.tmp.yml`.
+- The app can start from `config.yml`, from environment variables, or a mix of both.
+- Environment variables override file values. Common examples: `SYSTEM_MODE`, `SYSTEM_HOST`, `SYSTEM_PORT`, `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, `DATABASE_DATABASE`, `DATABASE_TYPE`, `JWT_KEY`, `JWT_TOKEN_LOOKUP`.
+- Default bind host is `0.0.0.0`; the dedicated health endpoint is `/health`.
+- See `config/config.go` for loading order and defaults.
+
+Example:
+```bash
+cp config/config.tmp.yml config.yml
+
+export SYSTEM_MODE=release
+export SYSTEM_HOST=0.0.0.0
+export DATABASE_HOST=127.0.0.1
+export DATABASE_PORT=3306
+export DATABASE_USERNAME=gotribe
+export DATABASE_PASSWORD=change_me
+export DATABASE_DATABASE=gotribe
+export DATABASE_TYPE=mysql
+export JWT_KEY=replace_with_a_random_secret
+```
+
+### Security Defaults
+- JWT tokens are read from `Authorization` header and `query` by default. Cookie-based token lookup is disabled by default.
+- CORS uses an allowlist. In non-release mode, localhost origins are allowed for development; in release mode, configure `cors.allowed-origins` explicitly.
+- Review `config/config.tmp.yml` before production use and replace all placeholder secrets.
 
 ### RBAC Model Configuration
 This project uses Casbin for RBAC with an external-first, built-in-fallback strategy:

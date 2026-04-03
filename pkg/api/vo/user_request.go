@@ -9,8 +9,8 @@ package vo
 type CreateUserRequest struct {
 	Username  string `form:"username" json:"username" validate:"required,min=2,max=20,alphanum"`
 	Nickname  string `form:"nickname" json:"nickname" validate:"required,min=2,max=20"`
-	Email     string `form:"email" json:"email"`
-	Phone     string `form:"phone" json:"phone"`
+	Email     string `form:"email" json:"email" validate:"omitempty,email,max=254"`
+	Phone     string `form:"phone" json:"phone" validate:"omitempty,max=32"`
 	ProjectID string `form:"projectID" json:"projectID" validate:"required,min=2,max=20"`
 	Password  string `form:"password" json:"password" validate:"required,min=6,max=20"`
 }
@@ -32,7 +32,7 @@ type DeleteUsersRequest struct {
 // 更新用户结构体
 type UpdateUserRequest struct {
 	Nickname string `form:"nickname" json:"nickname"`
-	Email    string `form:"email" json:"email"`
-	Phone    string `form:"phone" json:"phone"`
+	Email    string `form:"email" json:"email" validate:"omitempty,email,max=254"`
+	Phone    string `form:"phone" json:"phone" validate:"omitempty,max=32"`
 	Password string `form:"password" json:"password"`
 }

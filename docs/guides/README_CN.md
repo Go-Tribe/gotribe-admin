@@ -9,7 +9,7 @@ gotribe-admin 是一个面向生产环境的 Go 管理后台项目，提供清�
 - RBAC 双轨加载：环境变量 `RBAC_MODEL_PATH` → 配置 `casbin.model-path` → 内置默认模型。
 - 分层架构：控制器、仓储、路由、中间件、公共组件、模型等职责清晰。
 - API 文档：`docs/swagger/` 下的 Swagger 文件。
-- 配置清晰：`config/config.go` 与 `config.tmp.yml`。
+- 配置清晰：`config/config.go` 与 `config/config.tmp.yml`。
 - 交付友好：`Makefile`、Docker、GoReleaser。
 
 ### 快速开始
@@ -18,12 +18,35 @@ gotribe-admin 是一个面向生产环境的 Go 管理后台项目，提供清�
 - 构建：`make build`（或 `go build ./...`）。
 - 运行：`go run gotribe-admin.go`。
 - 测试：`go test ./...`。
-- 可选：如需容器化，执行 `docker-compose up -d`（取决于环境配置）。
+- 本地校验：`make verify`。
+- 可选：如需容器化，执行 `docker compose up -d`（取决于环境配置）。
 
 ### 配置
 - 示例配置文件：`config/config.tmp.yml`。
-- 环境变量可覆盖配置文件的相关值。
+- 应用既可以通过 `config.yml` 启动，也可以仅依赖环境变量启动，或两者混合使用。
+- 环境变量会覆盖配置文件。常用变量包括：`SYSTEM_MODE`、`SYSTEM_HOST`、`SYSTEM_PORT`、`DATABASE_HOST`、`DATABASE_PORT`、`DATABASE_USERNAME`、`DATABASE_PASSWORD`、`DATABASE_DATABASE`、`DATABASE_TYPE`、`JWT_KEY`、`JWT_TOKEN_LOOKUP`。
+- 默认监听地址为 `0.0.0.0`，健康检查端点为 `/health`。
 - 加载顺序与默认值见 `config/config.go`。
+
+示例：
+```bash
+cp config/config.tmp.yml config.yml
+
+export SYSTEM_MODE=release
+export SYSTEM_HOST=0.0.0.0
+export DATABASE_HOST=127.0.0.1
+export DATABASE_PORT=3306
+export DATABASE_USERNAME=gotribe
+export DATABASE_PASSWORD=change_me
+export DATABASE_DATABASE=gotribe
+export DATABASE_TYPE=mysql
+export JWT_KEY=replace_with_a_random_secret
+```
+
+### 安全默认值
+- JWT 默认仅从 `Authorization` 头和 `query` 中读取，不默认启用 cookie token。
+- CORS 采用白名单模式。非 `release` 模式下默认允许本地开发域名；生产环境请显式配置 `cors.allowed-origins`。
+- 上线前请检查 `config/config.tmp.yml`，替换所有占位密钥与示例值。
 
 ### RBAC 模型配置
 项目使用 Casbin 实现 RBAC，采用“外部优先 + 内置回退”的加载策略：

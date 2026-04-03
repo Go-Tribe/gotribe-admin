@@ -8,16 +8,19 @@ package middleware
 import (
 	"gotribe-admin/config"
 	"gotribe-admin/internal/app/repository"
+	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 
 	"github.com/gin-gonic/gin"
+	"github.com/patrickmn/go-cache"
 
 	"strings"
 	"time"
 )
 
 // 操作日志channel
-var OperationLogChan = make(chan *model.OperationLog, 30)
+var OperationLogChan = make(chan *model.OperationLog, 256)
+var apiDescCache = cache.New(10*time.Minute, 20*time.Minute)
 
 // 定义静态资源路径前缀
 var skipPaths = []string{
@@ -73,10 +76,10 @@ func OperationLogMiddleware() gin.HandlerFunc {
 		select {
 		case OperationLogChan <- log:
 		default:
-			// 如果channel已满，可以选择记录错误或使用非阻塞方式处理
-			go func() {
-				OperationLogChan <- log
-			}()
+			// 日志写入不应阻塞主请求链路，队列满时丢弃并记录告警。
+			if requestPath != "/health" {
+				repositoryLogDropWarn(path, method)
+			}
 		}
 	}
 }
@@ -112,10 +115,26 @@ func getUsername(c *gin.Context) string {
 
 // 获取API描述
 func getApiDescription(path, method string, c *gin.Context) string {
+	cacheKey := method + ":" + path
+	if cachedDesc, ok := apiDescCache.Get(cacheKey); ok {
+		return cachedDesc.(string)
+	}
+
 	apiRepository := repository.NewApiRepository()
 	apiDesc, err := apiRepository.GetApiDescByPath(c.Request.Context(), path, method)
 	if err != nil {
+		apiDescCache.Set(cacheKey, "", cache.DefaultExpiration)
 		return ""
 	}
+	apiDescCache.Set(cacheKey, apiDesc, cache.DefaultExpiration)
 	return apiDesc
+}
+
+func repositoryLogDropWarn(path, method string) {
+	// 使用固定文案降低告警噪音，避免在高压场景下再次放大日志量。
+	if path == "" {
+		common.Log.Warn("operation log queue is full, dropping request log")
+		return
+	}
+	common.Log.Warnf("operation log queue is full, dropping request log for %s %s", method, path)
 }

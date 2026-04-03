@@ -1,5 +1,5 @@
 # 多阶段构建
-FROM golang:1.20-alpine AS builder
+FROM golang:1.25-alpine AS builder
 
 # 设置工作目录
 WORKDIR /app
@@ -20,10 +20,10 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o gotribe-admin .
 
 # 最终镜像
-FROM alpine:latest
+FROM alpine:3.22
 
 # 安装必要的包
-RUN apk --no-cache add ca-certificates tzdata
+RUN apk --no-cache add ca-certificates tzdata wget
 
 # 设置时区
 ENV TZ=Asia/Shanghai
@@ -39,7 +39,10 @@ WORKDIR /app
 COPY --from=builder /app/gotribe-admin .
 
 # 复制配置文件模板
-COPY --from=builder /app/config.tmp.yml ./config.tmp.yml
+COPY --from=builder /app/config/config.tmp.yml ./config.tmp.yml
+
+# 复制默认 RBAC 模型
+COPY --from=builder /app/rbac_model.conf ./rbac_model.conf
 
 # 复制静态文件
 COPY --from=builder /app/public ./public
@@ -59,7 +62,7 @@ EXPOSE 8088
 
 # 健康检查
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8088/api/base/config || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8088/health || exit 1
 
 # 启动命令
 CMD ["./gotribe-admin"]

@@ -10,11 +10,12 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"gorm.io/gorm"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/vo"
 	"strings"
+
+	"gorm.io/gorm"
 )
 
 type IUserRepository interface {
@@ -103,13 +104,28 @@ func GetUserPoint(userID uint) float64 {
 
 // 创建用户
 func (ur UserRepository) CreateUser(ctx context.Context, user *model.User) error {
+	normalizeUserContactFields(user)
 	err := common.WithContext(ctx).DB().Create(user).Error
 	return err
 }
 
 // 更新用户
 func (ur UserRepository) UpdateUser(ctx context.Context, user *model.User) error {
-	err := common.WithContext(ctx).DB().Model(user).Updates(user).Error
+	normalizeUserContactFields(user)
+	err := common.WithContext(ctx).DB().Model(&model.User{}).Where("id = ?", user.ID).Updates(map[string]interface{}{
+		"username":   user.Username,
+		"project_id": user.ProjectID,
+		"password":   user.Password,
+		"nickname":   user.Nickname,
+		"email":      user.Email,
+		"phone":      user.Phone,
+		"sex":        user.Sex,
+		"status":     user.Status,
+		"birthday":   user.Birthday,
+		"background": user.Background,
+		"ext":        user.Ext,
+		"avatar_url": user.AvatarURL,
+	}).Error
 	if err != nil {
 		return err
 	}
@@ -144,4 +160,23 @@ func (ur UserRepository) SearchUserByNickname(ctx context.Context, nickname stri
 	}
 	err := db.Find(&list).Error
 	return list, err
+}
+
+func normalizeUserContactFields(user *model.User) {
+	if user == nil {
+		return
+	}
+	user.Email = trimOptionalString(user.Email)
+	user.Phone = trimOptionalString(user.Phone)
+}
+
+func trimOptionalString(value *string) *string {
+	if value == nil {
+		return nil
+	}
+	trimmed := strings.TrimSpace(*value)
+	if trimmed == "" {
+		return nil
+	}
+	return &trimmed
 }

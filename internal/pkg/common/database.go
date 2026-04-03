@@ -6,6 +6,7 @@
 package common
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"gotribe-admin/config"
@@ -152,6 +153,14 @@ func InitDatabase() {
 	sqlDB.SetConnMaxLifetime(7 * time.Hour)
 	// SetConnMaxIdleTime: 设置连接的最大空闲时间，超过此时间的空闲连接会被关闭
 	sqlDB.SetConnMaxIdleTime(1 * time.Hour)
+
+	// 启动时主动探测数据库连通性，避免延迟到首个请求才暴露配置/网络问题。
+	pingCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := sqlDB.PingContext(pingCtx); err != nil {
+		Log.Panicf("数据库连通性检查失败: %v", err)
+		panic(fmt.Errorf("数据库连通性检查失败: %v", err))
+	}
 
 	// 全局DB赋值
 	DB = db

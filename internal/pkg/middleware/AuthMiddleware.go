@@ -37,7 +37,7 @@ func InitAuth() (*jwt.GinJWTMiddleware, error) {
 		LoginResponse:   loginResponse,                                         // 登录成功后的响应
 		LogoutResponse:  logoutResponse,                                        // 登出后的响应
 		RefreshResponse: refreshResponse,                                       // 刷新token后的响应
-		TokenLookup:     "header: Authorization, query: token, cookie: jwt",    // 自动在这几个地方寻找请求中的token
+		TokenLookup:     config.Conf.Jwt.TokenLookup,                           // 自动在配置指定的位置寻找请求中的token
 		TokenHeadName:   "Bearer",                                              // header名称
 		TimeFunc:        time.Now,
 	})

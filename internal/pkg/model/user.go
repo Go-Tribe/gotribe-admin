@@ -11,12 +11,12 @@ import (
 
 type User struct {
 	Model
-	Username   string     `gorm:"type:varchar(30);not null;uniqueIndex:idx_user_project_username;comment:用户名" json:"username"`
-	ProjectID  string     `gorm:"type:varchar(10);not null;index;comment:项目ID" json:"project_id"`
+	Username   string     `gorm:"type:varchar(30);not null;uniqueIndex:idx_user_project_username,priority:2;comment:用户名" json:"username"`
+	ProjectID  string     `gorm:"type:varchar(10);not null;index;uniqueIndex:idx_user_project_username,priority:1;uniqueIndex:idx_user_project_email,priority:1;uniqueIndex:idx_user_project_phone,priority:1;comment:项目ID" json:"project_id"`
 	Password   string     `gorm:"type:varchar(255);not null;comment:密码" json:"-"`
 	Nickname   string     `gorm:"type:varchar(30);not null;comment:昵称" json:"nickname"`
-	Email      string     `gorm:"type:varchar(30);uniqueIndex:idx_user_project_email;comment:邮箱" json:"email,omitempty"`
-	Phone      string     `gorm:"type:varchar(21);uniqueIndex:idx_user_project_phone;comment:电话" json:"phone,omitempty"`
+	Email      *string    `gorm:"type:varchar(254);default:null;uniqueIndex:idx_user_project_email,priority:2;comment:邮箱" json:"email,omitempty"`
+	Phone      *string    `gorm:"type:varchar(32);default:null;uniqueIndex:idx_user_project_phone,priority:2;comment:电话" json:"phone,omitempty"`
 	Sex        string     `gorm:"type:char(1);not null;default:M;comment:M:男 F:女" json:"sex,omitempty"`
 	Point      float64    `gorm:"-" json:"point"`
 	Status     uint8      `gorm:"type:smallint;not null;default:1;comment:用户状态，1-正常；2-禁用" json:"status"`

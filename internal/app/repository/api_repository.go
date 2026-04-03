@@ -21,7 +21,7 @@ import (
 type IApiRepository interface {
 	GetApis(ctx context.Context, req *vo.ApiListRequest) ([]*model.Api, int64, error) // 获取接口列表
 	GetApisByID(ctx context.Context, apiIds []uint) ([]*model.Api, error)             // 根据接口ID获取接口列表
-	GetApiTree(ctx context.Context) ([]*dto.ApiTreeDto, error)                      // 获取接口树(按接口Category字段分类)
+	GetApiTree(ctx context.Context) ([]*dto.ApiTreeDto, error)                        // 获取接口树(按接口Category字段分类)
 	CreateApi(ctx context.Context, api *model.Api) error                              // 创建接口
 	UpdateApiByID(ctx context.Context, apiID uint, api *model.Api) error              // 更新接口
 	BatchDeleteApiByIds(ctx context.Context, apiIds []uint) error                     // 批量删除接口

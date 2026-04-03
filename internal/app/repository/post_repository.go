@@ -11,10 +11,12 @@ import (
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/vo"
+	"sort"
 	"strconv"
 	"strings"
 
 	"github.com/dengmengmian/ghelper/gconvert"
+	"gorm.io/gorm"
 )
 
 type IPostRepository interface {
@@ -37,10 +39,19 @@ func NewPostRepository() IPostRepository {
 func (pr PostRepository) GetPostByPostID(ctx context.Context, postID string) (model.Post, error) {
 	var post model.Post
 	err := common.WithContext(ctx).DB().Where("post_id = ?", postID).First(&post).Error
-	//var category model.Category
-	//err = common.DB.Where("category_id = ?", post.CategoryID).First(&category).Error
-	//post.Category = &category
-	return post, err
+	if err != nil {
+		return post, err
+	}
+
+	posts, err := GetPostOther(ctx, []*model.Post{&post})
+	if err != nil {
+		return post, err
+	}
+	if len(posts) == 0 {
+		return post, nil
+	}
+
+	return *posts[0], nil
 }
 
 // 获取内容列表
@@ -86,8 +97,7 @@ func GetPostOther(ctx context.Context, posts []*model.Post) ([]*model.Post, erro
 	// 收集所有需要查询的 CategoryID, Tag, ProjectID
 	categoryIDSet := make(map[uint]struct{})
 	projectIDSet := make(map[string]struct{})
-	tagsMap := make(map[uint][]string)
-	allTagsSet := make(map[string]bool)
+	postIDs := make([]uint, 0, len(posts))
 
 	for _, m := range posts {
 		if m.CategoryID > 0 {
@@ -96,15 +106,8 @@ func GetPostOther(ctx context.Context, posts []*model.Post) ([]*model.Post, erro
 		if m.ProjectID != "" {
 			projectIDSet[m.ProjectID] = struct{}{}
 		}
-		if m.Tag != "" {
-			strs := strings.Split(m.Tag, ",")
-			for _, str := range strs {
-				tag := strings.TrimSpace(str)
-				if tag != "" {
-					tagsMap[m.ID] = append(tagsMap[m.ID], tag)
-					allTagsSet[tag] = true
-				}
-			}
+		if m.ID > 0 {
+			postIDs = append(postIDs, m.ID)
 		}
 	}
 
@@ -126,11 +129,25 @@ func GetPostOther(ctx context.Context, posts []*model.Post) ([]*model.Post, erro
 			return nil, err
 		}
 	}
+	// 批量查询 PostTag 关联
+	postTagMap := make(map[uint][]uint)
+	tagIDSet := make(map[uint]struct{})
+	if len(postIDs) > 0 {
+		var postTags []model.PostTag
+		if err := common.WithContext(ctx).DB().Where("post_id IN (?)", postIDs).Find(&postTags).Error; err != nil {
+			return nil, err
+		}
+		for _, postTag := range postTags {
+			postTagMap[postTag.PostID] = append(postTagMap[postTag.PostID], postTag.TagID)
+			tagIDSet[postTag.TagID] = struct{}{}
+		}
+	}
+
 	// 批量查询 Tag
 	var allTags []*model.Tag
-	tagIDs := make([]string, 0, len(allTagsSet))
-	for tag := range allTagsSet {
-		tagIDs = append(tagIDs, tag)
+	tagIDs := make([]uint, 0, len(tagIDSet))
+	for tagID := range tagIDSet {
+		tagIDs = append(tagIDs, tagID)
 	}
 	if len(tagIDs) > 0 {
 		if err := common.WithContext(ctx).DB().Where("id IN (?)", tagIDs).Find(&allTags).Error; err != nil {
@@ -149,13 +166,12 @@ func GetPostOther(ctx context.Context, posts []*model.Post) ([]*model.Post, erro
 	// 将查询结果赋值给 posts
 	categoryMap := make(map[uint]*model.Category)
 	for _, category := range categories {
-		common.Log.Info("category", "category", category.ID)
 		categoryMap[category.ID] = category
 	}
 
-	tagMap := make(map[string]*model.Tag)
+	tagMap := make(map[uint]*model.Tag)
 	for _, tag := range allTags {
-		tagMap[strconv.FormatUint(uint64(tag.ID), 10)] = tag
+		tagMap[tag.ID] = tag
 	}
 
 	projectMap := make(map[string]*model.Project)
@@ -168,12 +184,13 @@ func GetPostOther(ctx context.Context, posts []*model.Post) ([]*model.Post, erro
 			m.Category = category
 		}
 		var tags []*model.Tag
-		for _, tagIDStr := range tagsMap[m.ID] {
-			if tag, ok := tagMap[tagIDStr]; ok {
+		for _, tagID := range postTagMap[m.ID] {
+			if tag, ok := tagMap[tagID]; ok {
 				tags = append(tags, tag)
 			}
 		}
 		m.Tags = tags
+		m.Tag = formatPostTagIDs(tags)
 		if project, ok := projectMap[m.ProjectID]; ok {
 			m.Project = project
 		}
@@ -183,18 +200,24 @@ func GetPostOther(ctx context.Context, posts []*model.Post) ([]*model.Post, erro
 
 // 创建内容
 func (pr PostRepository) CreatePost(ctx context.Context, post *model.Post) error {
-	err := common.WithContext(ctx).DB().Create(post).Error
-	return err
+	db := common.WithContext(ctx).DB()
+	return db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(post).Error; err != nil {
+			return err
+		}
+		return syncPostTags(tx, post.ID, post.Tag)
+	})
 }
 
 // 更新内容
 func (pr PostRepository) UpdatePost(ctx context.Context, post *model.Post) error {
-	err := common.WithContext(ctx).DB().Model(post).Updates(post).Error
-	if err != nil {
-		return err
-	}
-
-	return err
+	db := common.WithContext(ctx).DB()
+	return db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&model.Post{}).Where("id = ?", post.ID).Updates(buildPostUpdateMap(post)).Error; err != nil {
+			return err
+		}
+		return syncPostTags(tx, post.ID, post.Tag)
+	})
 }
 
 // 批量删除
@@ -209,7 +232,117 @@ func (pr PostRepository) BatchDeletePostByIds(ctx context.Context, ids []string)
 		posts = append(posts, post)
 	}
 
-	err := common.WithContext(ctx).DB().Delete(&posts).Error
+	db := common.WithContext(ctx).DB()
+	return db.Transaction(func(tx *gorm.DB) error {
+		postIDs := make([]uint, 0, len(posts))
+		for _, post := range posts {
+			postIDs = append(postIDs, post.ID)
+		}
+		if len(postIDs) > 0 {
+			if err := tx.Where("post_id IN (?)", postIDs).Delete(&model.PostTag{}).Error; err != nil {
+				return err
+			}
+		}
+		return tx.Delete(&posts).Error
+	})
+}
 
-	return err
+func syncPostTags(tx *gorm.DB, postID uint, rawTagIDs string) error {
+	tagIDs, err := parsePostTagIDs(rawTagIDs)
+	if err != nil {
+		return err
+	}
+
+	if err := tx.Where("post_id = ?", postID).Delete(&model.PostTag{}).Error; err != nil {
+		return err
+	}
+	if len(tagIDs) == 0 {
+		return nil
+	}
+
+	postTags := make([]model.PostTag, 0, len(tagIDs))
+	for _, tagID := range tagIDs {
+		postTags = append(postTags, model.PostTag{
+			PostID: postID,
+			TagID:  tagID,
+		})
+	}
+
+	return tx.Create(&postTags).Error
+}
+
+func parsePostTagIDs(raw string) ([]uint, error) {
+	if strings.TrimSpace(raw) == "" {
+		return nil, nil
+	}
+
+	values := strings.Split(raw, ",")
+	seen := make(map[uint]struct{}, len(values))
+	tagIDs := make([]uint, 0, len(values))
+	for _, value := range values {
+		value = strings.TrimSpace(value)
+		if value == "" {
+			continue
+		}
+		tagID, err := strconv.ParseUint(value, 10, 64)
+		if err != nil {
+			return nil, fmt.Errorf("无效的标签ID: %s", value)
+		}
+		id := uint(tagID)
+		if _, ok := seen[id]; ok {
+			continue
+		}
+		seen[id] = struct{}{}
+		tagIDs = append(tagIDs, id)
+	}
+
+	sort.Slice(tagIDs, func(i, j int) bool {
+		return tagIDs[i] < tagIDs[j]
+	})
+	return tagIDs, nil
+}
+
+func formatPostTagIDs(tags []*model.Tag) string {
+	if len(tags) == 0 {
+		return ""
+	}
+
+	tagIDs := make([]string, 0, len(tags))
+	for _, tag := range tags {
+		if tag == nil {
+			continue
+		}
+		tagIDs = append(tagIDs, strconv.FormatUint(uint64(tag.ID), 10))
+	}
+	return strings.Join(tagIDs, ",")
+}
+
+func buildPostUpdateMap(post *model.Post) map[string]interface{} {
+	return map[string]interface{}{
+		"post_id":      post.PostID,
+		"category_id":  post.CategoryID,
+		"project_id":   post.ProjectID,
+		"column_id":    post.ColumnID,
+		"user_id":      post.UserID,
+		"author":       post.Author,
+		"title":        post.Title,
+		"content":      post.Content,
+		"html_content": post.HtmlContent,
+		"description":  post.Description,
+		"ext":          post.Ext,
+		"icon":         post.Icon,
+		"view":         post.View,
+		"type":         post.Type,
+		"is_top":       post.IsTop,
+		"is_passwd":    post.IsPasswd,
+		"pass_word":    post.PassWord,
+		"status":       post.Status,
+		"unit_price":   post.UnitPrice,
+		"location":     post.Location,
+		"people":       post.People,
+		"time":         post.Time,
+		"images":       post.Images,
+		"show_time":    post.ShowTime,
+		"video":        post.Video,
+	}
 }

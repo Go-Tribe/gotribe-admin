@@ -11,14 +11,14 @@ import (
 
 type OperationLog struct {
 	Model
-	Username   string    `gorm:"type:varchar(20);comment:用户登录名" json:"username"`
-	Ip         string    `gorm:"type:varchar(20);comment:Ip地址" json:"ip"`
-	IpLocation string    `gorm:"type:varchar(20);comment:Ip所在地" json:"ipLocation"`
+	Username   string    `gorm:"type:varchar(20);index:idx_operation_log_username_time,priority:1;comment:用户登录名" json:"username"`
+	Ip         string    `gorm:"type:varchar(45);index:idx_operation_log_ip_time,priority:1;comment:Ip地址" json:"ip"`
+	IpLocation string    `gorm:"type:varchar(128);comment:Ip所在地" json:"ipLocation"`
 	Method     string    `gorm:"type:varchar(20);comment:请求方式" json:"method"`
-	Path       string    `gorm:"type:varchar(100);comment:访问路径" json:"path"`
+	Path       string    `gorm:"type:varchar(100);index:idx_operation_log_path_time,priority:1;comment:访问路径" json:"path"`
 	Desc       string    `gorm:"type:varchar(100);comment:说明" json:"desc"`
-	Status     int       `gorm:"type:integer;comment:响应状态码" json:"status"`
-	StartTime  time.Time `gorm:"type:timestamp;comment:发起时间" json:"startTime"`
+	Status     int       `gorm:"type:integer;index:idx_operation_log_status_time,priority:1;comment:响应状态码" json:"status"`
+	StartTime  time.Time `gorm:"type:timestamp;index:idx_operation_log_username_time,priority:2,sort:desc;index:idx_operation_log_ip_time,priority:2,sort:desc;index:idx_operation_log_path_time,priority:2,sort:desc;index:idx_operation_log_status_time,priority:2,sort:desc;comment:发起时间" json:"startTime"`
 	TimeCost   int64     `gorm:"type:integer;comment:请求耗时(ms)" json:"timeCost"`
-	UserAgent  string    `gorm:"type:varchar(20);comment:浏览器标识" json:"userAgent"`
+	UserAgent  string    `gorm:"type:varchar(255);comment:浏览器标识" json:"userAgent"`
 }

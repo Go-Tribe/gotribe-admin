@@ -10,10 +10,10 @@ import "time"
 // PointAvailable 积分记录表
 type PointAvailable struct {
 	Model
-	ProjectID      string    `gorm:"type:varchar(10);not null;index;comment:项目ID;" json:"projectID"`
-	UserID         uint      `gorm:"index;comment:用户ID" json:"userID"`
+	ProjectID      string    `gorm:"type:varchar(10);not null;index:idx_point_available_project_user_status,priority:1;comment:项目ID;" json:"projectID"`
+	UserID         uint      `gorm:"index:idx_point_available_project_user_status,priority:2;index:idx_point_available_user_status_expiration,priority:1;comment:用户ID" json:"userID"`
 	Points         int64     `gorm:"type:bigint;NOT NULL;comment:积分数值(分)"`
-	PointsLogID    int       `gorm:"type:integer;NOT NULL;comment:'积分记录表ID'"`
-	ExpirationDate time.Time `gorm:"column:expiration_date;comment:'过期时间'"`
-	Status         uint      `gorm:"type:smallint;not null;default:1;comment:状态，1-正常；2-删除" json:"status"`
+	PointsLogID    uint      `gorm:"not null;comment:'积分记录表ID'"`
+	ExpirationDate time.Time `gorm:"column:expiration_date;index:idx_point_available_user_status_expiration,priority:3;comment:'过期时间'"`
+	Status         uint      `gorm:"type:smallint;not null;default:1;index:idx_point_available_project_user_status,priority:3;index:idx_point_available_user_status_expiration,priority:2;comment:状态，1-正常；2-删除" json:"status"`
 }

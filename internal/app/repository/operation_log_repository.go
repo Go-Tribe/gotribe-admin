@@ -13,6 +13,7 @@ import (
 	"gotribe-admin/pkg/api/vo"
 
 	"strings"
+	"time"
 )
 
 type IOperationLogRepository interface {
@@ -75,16 +76,33 @@ func (o OperationLogRepository) BatchDeleteOperationLogByIds(ctx context.Context
 // var Logs []model.OperationLog //全局变量多个线程需要加锁，所以每个线程自己维护一个
 // 处理OperationLogChan将日志记录到数据库
 func (o OperationLogRepository) SaveOperationLogChannel(olc <-chan *model.OperationLog) {
-	// 只会在线程开启的时候执行一次
-	Logs := make([]model.OperationLog, 0)
+	logs := make([]model.OperationLog, 0, 10)
+	ticker := time.NewTicker(2 * time.Second)
+	defer ticker.Stop()
 
-	// 一直执行--收到olc就会执行
-	for log := range olc {
-		Logs = append(Logs, *log)
-		// 每10条记录到数据库
-		if len(Logs) > 5 {
-			common.DB.Create(&Logs)
-			Logs = make([]model.OperationLog, 0)
+	flush := func() {
+		if len(logs) == 0 {
+			return
+		}
+		if err := common.DB.Create(&logs).Error; err != nil {
+			common.Log.Errorf("批量写入操作日志失败: %v", err)
+		}
+		logs = logs[:0]
+	}
+
+	for {
+		select {
+		case log, ok := <-olc:
+			if !ok {
+				flush()
+				return
+			}
+			logs = append(logs, *log)
+			if len(logs) >= 10 {
+				flush()
+			}
+		case <-ticker.C:
+			flush()
 		}
 	}
 }

@@ -78,6 +78,8 @@ func (m *MockUserRepository) SearchUserByNickname(ctx context.Context, nickname 
 
 // 创建测试用的用户对象
 func createTestUser() model.User {
+	email := "test@example.com"
+	phone := "13800138000"
 	return model.User{
 		Model: model.Model{
 			ID:        1,
@@ -87,8 +89,8 @@ func createTestUser() model.User {
 		Username:  "testuser",
 		Password:  "$2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqQzBZN0UfGNEJF6kN7j8xQhFpO2O",
 		Nickname:  "Test User",
-		Email:     "test@example.com",
-		Phone:     "13800138000",
+		Email:     &email,
+		Phone:     &phone,
 		ProjectID: "project1",
 		Sex:       "M",
 		Status:    1,

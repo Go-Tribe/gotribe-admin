@@ -8,6 +8,8 @@
 system:
   # 设定模式(debug/release/test,正式版改为release)
   mode: debug
+  # 程序监听地址，生产环境通常设为 0.0.0.0
+  host: 0.0.0.0
   # url前缀
   url-path-prefix: api
   # 程序监听端口
@@ -73,6 +75,19 @@ jwt:
   timeout: 12
   # 刷新token最大过期时间, 小时
   max-refresh: 12
+  # token读取位置，默认仅允许 header 和 query，避免跨站 cookie 风险
+  token-lookup: "header: Authorization, query: token"
+
+# 跨域配置
+cors:
+  # 生产环境请显式填写允许访问的前端域名
+  allowed-origins:
+    - http://localhost:5173
+    - http://127.0.0.1:5173
+  # 仅在确有跨站 cookie 需求时开启
+  allow-credentials: false
+  # 预检缓存时间（秒）
+  max-age: 600
 
 # 令牌桶限流配置
 rate-limit:

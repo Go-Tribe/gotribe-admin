@@ -8,8 +8,8 @@ package model
 // PointLog 积分记录表
 type PointLog struct {
 	Model
-	ProjectID string `gorm:"type:varchar(10);not null;index;comment:项目ID;" json:"projectID"`
-	UserID    uint   `gorm:"index;comment:用户ID" json:"userID"`
+	ProjectID string `gorm:"type:varchar(10);not null;comment:项目ID;" json:"projectID"`
+	UserID    uint   `gorm:"comment:用户ID" json:"userID"`
 	Points    int64  `gorm:"type:bigint;NOT NULL;comment:积分数值(分)" json:"points"`
 	Reason    string `gorm:"type:varchar(255);NOT NULL;comment:加减原因" json:"reason"`
 	Type      string `gorm:"type:varchar(20);NOT NULL;comment:类型" json:"type"`

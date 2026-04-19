@@ -7,7 +7,7 @@ package vo
 
 // 获取评论
 type CommentListRequest struct {
-	ProjectID  string `form:"projectID" json:"projectID"`
+	ProjectId  uint   `form:"projectId" json:"projectId"`
 	ObjectID   string `form:"objectID" json:"objectID"`
 	ObjectType uint   `form:"objectType" json:"objectType"`
 	Status     uint   `form:"status" json:"status"`

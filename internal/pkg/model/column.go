@@ -7,7 +7,7 @@ package model
 
 type Column struct {
 	Model
-	ProjectID   string `gorm:"type:varchar(10);not null;index;comment:项目ID;" json:"projectID"`
+	ProjectId   uint   `gorm:"not null;index;comment:项目ID;" json:"projectId"`
 	Title       string `gorm:"type:varchar(30);not null;comment:标题" json:"title,omitempty"`
 	Description string `gorm:"type:varchar(300);comment:描述" json:"description,omitempty"`
 	Icon        string `gorm:"type:varchar(300);comment:图片" json:"icon,omitempty"`

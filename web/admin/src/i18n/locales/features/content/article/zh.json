@@ -3,7 +3,8 @@
   "description": "统一管理文章内容与发布状态",
   "createButton": "新建文章",
   "columns": {
-    "postID": "文章 ID",
+    "id": "ID",
+    "slug": "别名",
     "title": "文章标题",
     "author": "作者",
     "description": "内容摘要",
@@ -21,7 +22,7 @@
   },
   "search": {
     "title": "输入文章标题",
-    "postID": "输入文章 ID",
+    "id": "输入文章 ID",
     "allProjects": "全部项目"
   },
   "filter": {
@@ -47,6 +48,9 @@
     "createDescription": "创建新文章",
     "title": "标题",
     "titlePlaceholder": "请输入标题",
+    "slug": "别名",
+    "slugPlaceholder": "请输入英文别名（如 my-article）",
+    "slugHint": "用于 SEO 的 URL 友好名称，英文标题会自动生成",
     "description": "描述",
     "descriptionPlaceholder": "请输入描述",
     "author": "作者",

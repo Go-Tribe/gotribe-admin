@@ -148,7 +148,7 @@ export function ProjectFormDialog({
   const handleSubmit = (values: ProjectFormValues) => {
     onSubmit({
       ...values,
-      projectID: project?.projectID,
+      id: project?.id,
       // 将 metaDescription 映射到 info 字段（如果 API 期望的是 info）
       info: values.metaDescription,
     })

@@ -14,8 +14,10 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
+  FormDescription,
 } from '@/components/ui/form'
 import { Textarea } from '@/components/ui/textarea'
+import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Wand2, ImageIcon, Video, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -74,6 +76,27 @@ export function ArticleMediaSheet({
         <ScrollArea className="h-[calc(100vh-80px)] px-6 py-4">
           <div className="space-y-6 pb-8">
             {/* 摘要 */}
+            {/* Slug */}
+            <FormField
+              control={form.control}
+              name="slug"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('features.content.article.form.slug')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t('features.content.article.form.slugPlaceholder')}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription className="text-xs text-muted-foreground">
+                    {t('features.content.article.form.slugHint')}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="description"

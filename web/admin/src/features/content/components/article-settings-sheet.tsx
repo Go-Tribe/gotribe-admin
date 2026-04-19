@@ -356,12 +356,12 @@ export function ArticleSettingsSheet({
               />
               <FormField
                 control={form.control}
-                name='projectID'
+                name='projectId'
                 render={({ field }) => {
                   const projectValue = (field.value != null && field.value !== '') ? String(field.value).trim() : ''
                   const selectedProject =
                     projectValue !== ''
-                      ? projectList.find((p) => (p.projectID ?? '').trim() === projectValue)
+                      ? projectList.find((p) => String(p.id) === projectValue)
                       : undefined
                   return (
                     <FormItem>
@@ -378,7 +378,7 @@ export function ArticleSettingsSheet({
                         </FormControl>
                         <SelectContent>
                           {projectList.map((project) => (
-                            <SelectItem key={project.projectID} value={String(project.projectID ?? '').trim()}>
+                            <SelectItem key={project.id} value={String(project.id)}>
                               {project.title}
                             </SelectItem>
                           ))}

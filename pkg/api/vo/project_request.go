@@ -25,10 +25,10 @@ type CreateProjectRequest struct {
 
 // 获取项目列表结构体
 type ProjectListRequest struct {
-	ProjectID string `form:"projectID" json:"projectID"`
-	Title     string `form:"title" json:"title"`
-	PageNum   uint   `json:"pageNum" form:"pageNum"`
-	PageSize  uint   `json:"pageSize" form:"pageSize"`
+	ID       uint   `form:"id" json:"id"`
+	Title    string `form:"title" json:"title"`
+	PageNum  uint   `json:"pageNum" form:"pageNum"`
+	PageSize uint   `json:"pageSize" form:"pageSize"`
 }
 
 // 批量删除项目结构体

@@ -11,7 +11,7 @@ import (
 )
 
 type ProjectDto struct {
-	ProjectID      string `json:"projectID"`
+	ID             uint   `json:"id"`
 	Title          string `json:"title"`
 	Description    string `json:"description"`
 	CreatedAt      string `json:"createdAt"`
@@ -31,7 +31,7 @@ type ProjectDto struct {
 
 func ToProjectInfoDto(project *model.Project) ProjectDto {
 	return ProjectDto{
-		ProjectID:      project.ProjectID,
+		ID:             project.ID,
 		Title:          project.Title,
 		Description:    project.Description,
 		CreatedAt:      project.CreatedAt.Format(known.TIME_FORMAT),
@@ -54,7 +54,7 @@ func ToProjectsDto(projectList []*model.Project) []ProjectDto {
 	var projects []ProjectDto
 	for _, project := range projectList {
 		projectDto := ProjectDto{
-			ProjectID:      project.ProjectID,
+			ID:             project.ID,
 			Title:          project.Title,
 			Description:    project.Description,
 			CreatedAt:      project.CreatedAt.Format(known.TIME_FORMAT),

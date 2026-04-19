@@ -68,7 +68,7 @@ export function ContentColumn() {
 
   // 构建查询参数
   const queryParams = useMemo(() => ({
-    projectID: projectFilter && projectFilter !== '__all__' ? projectFilter.trim() || undefined : undefined,
+    projectId: projectFilter && projectFilter !== '__all__' ? Number(projectFilter) || undefined : undefined,
     title: getFilterValue('title'),
     pageNum,
     pageSize: pagination.pageSize,
@@ -83,8 +83,8 @@ export function ContentColumn() {
   const projectList = useMemo(
     () =>
       projectData?.projects?.map((p) => ({
-        projectID: p.projectID,
-        title: p.title ?? p.projectID,
+        id: p.id,
+        title: p.title ?? String(p.id),
       })) ?? [],
     [projectData?.projects]
   )
@@ -291,7 +291,7 @@ export function ContentColumn() {
                 {t('features.content.column.search.projectAll')}
               </SelectItem>
               {projectList.map((p) => (
-                <SelectItem key={p.projectID} value={(p.projectID ?? '').trim()}>
+                <SelectItem key={p.id} value={String(p.id)}>
                   {p.title}
                 </SelectItem>
               ))}

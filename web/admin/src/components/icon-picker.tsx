@@ -56,9 +56,6 @@ const ALL_ICON_NAMES = (() => {
   return iconNames.sort()
 })()
 
-/** 兼容旧 API：直接返回已缓存的图标列表 */
-export const getAllIconNames = (): string[] => ALL_ICON_NAMES
-
 type IconPickerProps = {
   value?: string
   onValueChange?: (value: string) => void

@@ -7,7 +7,7 @@ package vo
 
 // 创建配置结构体
 type CreateConfigRequest struct {
-	ProjectID   string `form:"projectID" json:"projectID" validate:"required"`
+	ProjectId   uint   `form:"projectId" json:"projectId" validate:"required"`
 	Alias       string `form:"alias" json:"alias" validate:"required,min=2,max=20"`
 	Type        uint   `form:"type" json:"type" validate:"required"`
 	Title       string `form:"title" json:"title" validate:"required,min=2,max=20"`
@@ -19,7 +19,7 @@ type CreateConfigRequest struct {
 // 获取配置列表结构体
 type ConfigListRequest struct {
 	ConfigID  string `form:"configID" json:"configID"`
-	ProjectID string `form:"projectID" json:"projectID"`
+	ProjectId uint   `form:"projectId" json:"projectId"`
 	Title     string `form:"title" json:"title"`
 	Type      uint   `form:"type" json:"type"`
 	PageNum   uint   `json:"pageNum" form:"pageNum"`
@@ -28,7 +28,7 @@ type ConfigListRequest struct {
 
 // 更新配置内容
 type UpdateConfigRequest struct {
-	ProjectID   string `form:"projectID" json:"projectID" validate:"required"`
+	ProjectId   uint   `form:"projectId" json:"projectId" validate:"required"`
 	Title       string `form:"title" json:"title" validate:"required,min=2,max=20"`
 	Description string `form:"description" json:"description" validate:"required,min=2,max=150"`
 	MDContent   string `form:"mdContent" json:"mdContent" `

@@ -78,7 +78,7 @@ export function UserDetailDialog({
               <DetailRow label={t('features.business.user.detail.email')} value={user.email} />
               <DetailRow label={t('features.business.user.detail.phone')} value={user.phone} />
               <DetailRow label={t('features.business.user.detail.sex')} value={formatSex(user.sex || '')} />
-              <DetailRow label={t('features.business.user.detail.projectID')} value={user.projectID} />
+              <DetailRow label={t('features.business.user.detail.projectID')} value={user.projectId} />
               <DetailRow label={t('features.business.user.detail.status')} value={user.status} />
               <DetailRow label={t('features.business.user.detail.birthday')} value={user.birthday} />
               <DetailRow label={t('features.business.user.detail.point')} value={user.point} />

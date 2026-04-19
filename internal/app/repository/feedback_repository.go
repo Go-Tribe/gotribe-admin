@@ -10,7 +10,6 @@ import (
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/vo"
-	"strings"
 )
 
 type IFeedbackRepository interface {
@@ -30,9 +29,8 @@ func (tr FeedbackRepository) GetFeedbacks(ctx context.Context, req *vo.FeedbackL
 	var list []*model.Feedback
 	db := common.WithContext(ctx).DB().Model(&model.Feedback{}).Order("created_at DESC")
 
-	projectID := strings.TrimSpace(req.ProjectID)
-	if req.ProjectID != "" {
-		db = db.Where("project_id = ?", projectID)
+	if req.ProjectId > 0 {
+		db = db.Where("project_id = ?", req.ProjectId)
 	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数

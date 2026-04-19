@@ -101,25 +101,25 @@ func getFeedbackOther(feedbacks []*model.Feedback) ([]*model.Feedback, error) {
 	}
 
 	// 追加项目信息
-	projectIds := funk.UniqString(funk.Map(feedbacks, func(feedback *model.Feedback) string {
-		return feedback.ProjectID
-	}).([]string))
+	projectIds := funk.UniqUInt(funk.Map(feedbacks, func(feedback *model.Feedback) uint {
+		return feedback.ProjectId
+	}).([]uint))
 	var projects []model.Project
 	if len(projectIds) > 0 {
-		if err := common.DB.Where("project_id in (?)", projectIds).Find(&projects).Error; err != nil {
+		if err := common.DB.Where("id in (?)", projectIds).Find(&projects).Error; err != nil {
 			return feedbacks, err
 		}
 	}
 
 	// 创建项目映射以提高查找效率
-	projectMap := make(map[string]*model.Project)
-	for _, project := range projects {
-		projectMap[project.ProjectID] = &project
+	projectMap := make(map[uint]*model.Project)
+	for i := range projects {
+		projectMap[projects[i].ID] = &projects[i]
 	}
 
 	// 将项目信息附加到反馈中
 	for _, feedback := range feedbacks {
-		if project, ok := projectMap[feedback.ProjectID]; ok {
+		if project, ok := projectMap[feedback.ProjectId]; ok {
 			feedback.Project = project
 		}
 	}

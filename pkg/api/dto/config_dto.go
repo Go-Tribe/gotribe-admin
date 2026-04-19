@@ -18,7 +18,7 @@ type ConfigDto struct {
 	Description string `json:"description"`
 	Info        string `json:"info"`
 	MDContent   string `json:"mdContent"`
-	ProjectID   string `json:"projectID"`
+	ProjectId   uint   `json:"projectId"`
 	CreatedAt   string `json:"createdAt"`
 	UpdatedAt   string `json:"updatedAt"`
 }
@@ -30,7 +30,7 @@ func ToConfigInfoDto(config model.Config) ConfigDto {
 		Info:        config.Info,
 		ConfigID:    config.ConfigID,
 		Title:       config.Title,
-		ProjectID:   config.ProjectID,
+		ProjectId:   config.ProjectId,
 		Description: config.Description,
 		MDContent:   config.MDContent,
 		CreatedAt:   config.CreatedAt.Format(known.TIME_FORMAT),
@@ -48,7 +48,7 @@ func ToConfigsDto(configList []*model.Config) []ConfigDto {
 			Title:       config.Title,
 			Description: config.Description,
 			Info:        config.Info,
-			ProjectID:   config.ProjectID,
+			ProjectId:   config.ProjectId,
 			MDContent:   config.MDContent,
 			CreatedAt:   config.CreatedAt.Format(known.TIME_FORMAT),
 			UpdatedAt:   config.UpdatedAt.Format(known.TIME_FORMAT),

@@ -16,10 +16,10 @@ import (
 
 type IProjectRepository interface {
 	CreateProject(ctx context.Context, project *model.Project) error                              // 创建项目
-	GetProjectByProjectID(ctx context.Context, projectID string) (model.Project, error)           // 获取单个项目
+	GetProjectByID(ctx context.Context, id uint) (model.Project, error)                           // 获取单个项目
 	GetProjects(ctx context.Context, req *vo.ProjectListRequest) ([]*model.Project, int64, error) // 获取项目列表
 	UpdateProject(ctx context.Context, project *model.Project) error                              // 更新项目
-	BatchDeleteProjectByIds(ctx context.Context, ids []string) error                              // 批量删除项目
+	BatchDeleteProjectByIds(ctx context.Context, ids []uint) error                                // 批量删除项目
 	GetProjectsBySitemap(ctx context.Context) ([]*model.Project, error)
 }
 
@@ -32,9 +32,9 @@ func NewProjectRepository() IProjectRepository {
 }
 
 // 获取单个项目
-func (pr ProjectRepository) GetProjectByProjectID(ctx context.Context, projectID string) (model.Project, error) {
+func (pr ProjectRepository) GetProjectByID(ctx context.Context, id uint) (model.Project, error) {
 	var project model.Project
-	err := common.WithContext(ctx).DB().Where("project_id = ?", projectID).First(&project).Error
+	err := common.WithContext(ctx).DB().Where("id = ?", id).First(&project).Error
 	return project, err
 }
 
@@ -47,9 +47,8 @@ func (pr ProjectRepository) GetProjects(ctx context.Context, req *vo.ProjectList
 	if title != "" {
 		db = db.Where("title LIKE ?", fmt.Sprintf("%%%s%%", title))
 	}
-	projectID := strings.TrimSpace(req.ProjectID)
-	if req.ProjectID != "" {
-		db = db.Where("project_id = ?", projectID)
+	if req.ID != 0 {
+		db = db.Where("id = ?", req.ID)
 	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数
@@ -85,13 +84,13 @@ func (pr ProjectRepository) UpdateProject(ctx context.Context, project *model.Pr
 }
 
 // 批量删除
-func (pr ProjectRepository) BatchDeleteProjectByIds(ctx context.Context, ids []string) error {
+func (pr ProjectRepository) BatchDeleteProjectByIds(ctx context.Context, ids []uint) error {
 	var projects []model.Project
 	for _, id := range ids {
-		// 根据ID获取标签
-		project, err := pr.GetProjectByProjectID(ctx, id)
+		// 根据ID获取项目
+		project, err := pr.GetProjectByID(ctx, id)
 		if err != nil {
-			return fmt.Errorf("未获取到ID为%s的项目", id)
+			return fmt.Errorf("未获取到ID为%d的项目", id)
 		}
 		projects = append(projects, project)
 	}

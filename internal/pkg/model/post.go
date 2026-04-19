@@ -8,15 +8,14 @@ package model
 import (
 	"time"
 
-	"github.com/dengmengmian/ghelper/gid"
 	"gorm.io/gorm"
 )
 
 type Post struct {
 	Model
-	PostID      string     `gorm:"type:varchar(10);uniqueIndex;comment:唯一字符ID/分布式ID" json:"postID"`
+	Slug        string     `gorm:"type:varchar(255);uniqueIndex;comment:URL别名/Slug" json:"slug"`
 	CategoryID  uint       `gorm:"index;comment:分类 ID" json:"categoryID"`
-	ProjectID   string     `gorm:"type:varchar(10);Index;comment:项目 ID" json:"projectID"`
+	ProjectId   uint       `gorm:"index;comment:项目 ID" json:"projectId"`
 	ColumnID    uint       `gorm:"index;comment:专栏ID" json:"columnID"`
 	UserID      uint       `gorm:"index;comment:用户ID" json:"userID"`
 	Author      string     `gorm:"type:varchar(30);not null;index:idx_username;comment:作者" json:"author"`
@@ -46,7 +45,5 @@ type Post struct {
 }
 
 func (p *Post) BeforeCreate(tx *gorm.DB) error {
-	p.PostID = gid.GenShortID(gid.WithNumber(10))
-
 	return nil
 }

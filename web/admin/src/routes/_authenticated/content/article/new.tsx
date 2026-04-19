@@ -15,7 +15,7 @@ export const Route = createFileRoute('/_authenticated/content/article/new')({
 function ArticleNewPage() {
   return (
     <Suspense fallback={<FormPageSkeleton />}>
-      <ArticleFormPage postID={null} initialPost={null} />
+      <ArticleFormPage id={null} initialPost={null} />
     </Suspense>
   )
 }

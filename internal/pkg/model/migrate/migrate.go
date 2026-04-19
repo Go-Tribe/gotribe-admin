@@ -241,7 +241,7 @@ func ensureNoDuplicateUsers(db *gorm.DB) {
 	}
 
 	type duplicateUser struct {
-		ProjectID string
+		ProjectId uint
 		Value     string
 		Count     int64
 	}
@@ -252,7 +252,7 @@ func ensureNoDuplicateUsers(db *gorm.DB) {
 			panic(fmt.Sprintf("duplicate user %s check failed: %v", check.name, err))
 		}
 		if duplicate.Count > 1 {
-			panic(fmt.Sprintf("duplicate user %s found for project_id=%s value=%s", check.name, duplicate.ProjectID, duplicate.Value))
+			panic(fmt.Sprintf("duplicate user %s found for project_id=%d value=%s", check.name, duplicate.ProjectId, duplicate.Value))
 		}
 	}
 }

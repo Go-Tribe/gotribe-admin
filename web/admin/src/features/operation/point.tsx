@@ -57,8 +57,8 @@ export function OperationPoint() {
   const projectList = useMemo(
     () =>
       projectData?.projects?.map((p) => ({
-        projectID: p.projectID,
-        title: p.title ?? p.projectID,
+        id: p.id,
+        title: p.title ?? String(p.id),
       })) ?? [],
     [projectData?.projects]
   )
@@ -69,9 +69,9 @@ export function OperationPoint() {
     pageSize: pagination.pageSize,
     userID: getFilterValue('userID') || undefined,
     nickname: getFilterValue('nickname') || undefined,
-    projectID:
+    projectId:
       projectFilter && projectFilter !== '__all__'
-        ? projectFilter.trim() || undefined
+        ? Number(projectFilter) || undefined
         : undefined,
   }), [pageNum, pagination.pageSize, getFilterValue, projectFilter])
 
@@ -252,8 +252,8 @@ export function OperationPoint() {
               </SelectItem>
               {projectList.map((p) => (
                 <SelectItem
-                  key={p.projectID}
-                  value={(p.projectID ?? '').trim()}
+                  key={p.id}
+                  value={String(p.id)}
                 >
                   {p.title}
                 </SelectItem>

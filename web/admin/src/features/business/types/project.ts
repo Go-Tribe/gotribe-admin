@@ -1,5 +1,5 @@
 export type Project = {
-  projectID: string
+  id: number
   title: string // 项目名称
   description: string // 项目描述
   name: string // 项目别名

@@ -56,7 +56,7 @@ export function ContentConfig() {
     queryFn: () => getProjectList({ current: 1, pageNum: 1, pageSize: 1000 }),
   })
   const projectList = useMemo(
-    () => projectData?.projects?.map((p) => ({ projectID: p.projectID, title: p.title ?? p.projectID })) ?? [],
+    () => projectData?.projects?.map((p) => ({ id: p.id, title: p.title ?? String(p.id) })) ?? [],
     [projectData?.projects]
   )
 

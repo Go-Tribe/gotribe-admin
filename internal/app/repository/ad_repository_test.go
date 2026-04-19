@@ -78,7 +78,7 @@ func createTestAdScene() *model.AdScene {
 		},
 		Title:       "首页广告位",
 		Description: "首页顶部广告位",
-		ProjectID:   "proj123456",
+		ProjectId:   1,
 	}
 }
 

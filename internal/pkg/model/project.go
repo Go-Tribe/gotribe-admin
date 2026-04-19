@@ -5,14 +5,8 @@
 
 package model
 
-import (
-	"github.com/dengmengmian/ghelper/gid"
-	"gorm.io/gorm"
-)
-
 type Project struct {
 	Model
-	ProjectID      string `gorm:"type:varchar(10);not null;uniqueIndex:idx_project_project_id;comment:字符ID，分布式ID" json:"projectID"`
 	Name           string `gorm:"type:varchar(30);not null;comment:项目名" json:"name,omitempty"`
 	Title          string `gorm:"type:varchar(30);not null;comment:网站标题" json:"title,omitempty"`
 	Description    string `gorm:"type:varchar(300);comment:描述" json:"description,omitempty"`
@@ -28,10 +22,4 @@ type Project struct {
 	NavImage       string `gorm:"type:varchar(255);comment:导航图片" json:"navImage,omitempty"`
 	PushToken      string `gorm:"type:varchar(255);comment:百度推送 API token" json:"pushToken,omitempty"`
 	Status         int8   `gorm:"type:smallint;not null;default:1;comment:状态，1-正常；2-禁用" json:"status,omitempty"`
-}
-
-func (p *Project) BeforeCreate(tx *gorm.DB) error {
-	p.ProjectID = gid.GenShortID(gid.WithNumber(10))
-
-	return nil
 }

@@ -18,7 +18,7 @@ export async function getUserDetail(id: number): Promise<User> {
 export const getUserList = async (params?: {
   current?: number
   userID?: string
-  projectID?: string
+  projectId?: number
   pageNum?: number
   pageSize?: number
 }) => {

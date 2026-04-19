@@ -60,7 +60,7 @@ export function BusinessUser() {
   const queryParams = useMemo(() => ({
     current: 1,
     userID: getFilterValue('id') || undefined,
-    projectID: getFilterValue('projectID') || undefined,
+    projectId: getFilterValue('projectId') ? Number(getFilterValue('projectId')) : undefined,
     pageNum,
     pageSize: pagination.pageSize,
   }), [getFilterValue, pagination.pageSize, pageNum])
@@ -132,7 +132,7 @@ export function BusinessUser() {
   const columns = useMemo<ColumnDef<User>[]>(
     () => [
       {
-        accessorKey: 'projectID',
+        accessorKey: 'projectId',
         header: () => null,
         cell: () => null,
         enableHiding: false,
@@ -266,7 +266,7 @@ export function BusinessUser() {
       sorting,
       columnFilters,
       columnVisibility: {
-        projectID: false,
+        projectId: false,
         ...columnVisibility,
       },
       pagination,
@@ -298,12 +298,12 @@ export function BusinessUser() {
           />
           <Select
             value={
-              (table.getColumn('projectID')?.getFilterValue() as string) ||
+              (table.getColumn('projectId')?.getFilterValue() as string) ||
               'all'
             }
             onValueChange={(value) =>
               table
-                .getColumn('projectID')
+                .getColumn('projectId')
                 ?.setFilterValue(value === 'all' ? undefined : value)
             }
           >
@@ -313,7 +313,7 @@ export function BusinessUser() {
             <SelectContent>
               <SelectItem value='all'>{t('features.business.user.search.allProjects')}</SelectItem>
               {projectList.map((project) => (
-                <SelectItem key={project.projectID} value={project.projectID}>
+                <SelectItem key={project.id} value={String(project.id)}>
                   {project.title}
                 </SelectItem>
               ))}

@@ -399,7 +399,7 @@ export function AdFormDialog({
                             )}
                           >
                             {field.value
-                              ? postList.find((post) => post.postID === field.value)?.title ||
+                              ? postList.find((post) => String(post.id) === field.value)?.title ||
                                 t('features.operation.advertising.form.selectArticle')
                               : t('features.operation.advertising.form.selectArticle')}
                             <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
@@ -428,10 +428,10 @@ export function AdFormDialog({
                               <CommandGroup>
                                 {postList.map((post) => (
                                   <CommandItem
-                                    key={post.postID}
-                                    value={`${post.postID}-${post.title}`}
+                                    key={post.id}
+                                    value={`${post.id}-${post.title}`}
                                     onSelect={() => {
-                                      form.setValue('postID', post.postID, {
+                                      form.setValue('postID', String(post.id), {
                                         shouldValidate: true,
                                       })
                                       setPostSearchOpen(false)
@@ -441,7 +441,7 @@ export function AdFormDialog({
                                     <Check
                                       className={cn(
                                         'mr-2 h-4 w-4',
-                                        field.value === post.postID
+                                        field.value === String(post.id)
                                           ? 'opacity-100'
                                           : 'opacity-0'
                                       )}

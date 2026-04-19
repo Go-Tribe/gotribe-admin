@@ -71,7 +71,7 @@ func createTestUser() *model.User {
 		Email:     &email,
 		Status:    1,
 		Point:     100.0,
-		ProjectID: "test",
+		ProjectId: 1,
 	}
 }
 
@@ -158,7 +158,7 @@ func TestUserRepository_GetUsers(t *testing.T) {
 		Nickname:  "测试用户2",
 		Status:    1,
 		Point:     50.0,
-		ProjectID: "test",
+		ProjectId: 1,
 	}
 
 	testUsers := []*model.User{testUser1, testUser2}
@@ -347,7 +347,7 @@ func TestUserRepository_SearchUserByNickname(t *testing.T) {
 		Username:  "testuser2",
 		Nickname:  "测试用户2",
 		Status:    1,
-		ProjectID: "test",
+		ProjectId: 1,
 	}
 
 	testUsers := []*model.User{testUser1, testUser2}

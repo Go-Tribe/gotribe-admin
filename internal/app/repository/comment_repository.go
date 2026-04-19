@@ -74,8 +74,8 @@ func (cr CommentRepository) GetComments(ctx context.Context, req *vo.CommentList
 	if !gconvert.IsEmpty(req.Status) {
 		db = db.Where("status = ?", req.Status)
 	}
-	if !gconvert.IsEmpty(req.ProjectID) {
-		db = db.Where("project_id = ?", req.ProjectID)
+	if req.ProjectId > 0 {
+		db = db.Where("project_id = ?", req.ProjectId)
 	}
 	if !gconvert.IsEmpty(req.Nickname) {
 		nicknameIDs := common.WithContext(ctx).DB().

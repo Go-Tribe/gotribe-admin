@@ -21,10 +21,10 @@ import (
 
 type IPostRepository interface {
 	CreatePost(ctx context.Context, post *model.Post) error                              // 创建内容
-	GetPostByPostID(ctx context.Context, postID string) (model.Post, error)              // 获取单个内容
+	GetPostByID(ctx context.Context, id uint) (model.Post, error)                        // 获取单个内容
 	GetPosts(ctx context.Context, req *vo.PostListRequest) ([]*model.Post, int64, error) // 获取内容列表
 	UpdatePost(ctx context.Context, post *model.Post) error                              // 更新内容
-	BatchDeletePostByIds(ctx context.Context, ids []string) error                        // 批量删除内容
+	BatchDeletePostByIds(ctx context.Context, ids []uint) error                          // 批量删除内容
 }
 
 type PostRepository struct {
@@ -37,12 +37,10 @@ func NewPostRepository() IPostRepository {
 
 func buildPostOrder(req *vo.PostListRequest) string {
 	sortByMap := map[string]string{
-		"postID":      "post_id",
-		"post_id":     "post_id",
 		"title":       "title",
 		"author":      "author",
 		"description": "description",
-		"projectID":   "project_id",
+		"projectId":   "project_id",
 		"project_id":  "project_id",
 		"status":      "status",
 		"createdAt":   "created_at",
@@ -63,9 +61,9 @@ func buildPostOrder(req *vo.PostListRequest) string {
 }
 
 // 获取单个内容
-func (pr PostRepository) GetPostByPostID(ctx context.Context, postID string) (model.Post, error) {
+func (pr PostRepository) GetPostByID(ctx context.Context, id uint) (model.Post, error) {
 	var post model.Post
-	err := common.WithContext(ctx).DB().Where("post_id = ?", postID).First(&post).Error
+	err := common.WithContext(ctx).DB().Where("id = ?", id).First(&post).Error
 	if err != nil {
 		return post, err
 	}
@@ -90,13 +88,11 @@ func (pr PostRepository) GetPosts(ctx context.Context, req *vo.PostListRequest) 
 	if !gconvert.IsEmpty(title) {
 		db = db.Where("title LIKE ?", fmt.Sprintf("%%%s%%", title))
 	}
-	postID := strings.TrimSpace(req.PostID)
-	if !gconvert.IsEmpty(postID) {
-		db = db.Where("post_id = ?", postID)
+	if req.ID > 0 {
+		db = db.Where("id = ?", req.ID)
 	}
-	projectID := strings.TrimSpace(req.ProjectID)
-	if !gconvert.IsEmpty(projectID) {
-		db = db.Where("project_id = ?", projectID)
+	if req.ProjectId > 0 {
+		db = db.Where("project_id = ?", req.ProjectId)
 	}
 	if req.Status > 0 {
 		db = db.Where("status = ?", req.Status)
@@ -126,15 +122,15 @@ func (pr PostRepository) GetPosts(ctx context.Context, req *vo.PostListRequest) 
 func GetPostOther(ctx context.Context, posts []*model.Post) ([]*model.Post, error) {
 	// 收集所有需要查询的 CategoryID, Tag, ProjectID
 	categoryIDSet := make(map[uint]struct{})
-	projectIDSet := make(map[string]struct{})
+	projectIDSet := make(map[uint]struct{})
 	postIDs := make([]uint, 0, len(posts))
 
 	for _, m := range posts {
 		if m.CategoryID > 0 {
 			categoryIDSet[m.CategoryID] = struct{}{}
 		}
-		if m.ProjectID != "" {
-			projectIDSet[m.ProjectID] = struct{}{}
+		if m.ProjectId > 0 {
+			projectIDSet[m.ProjectId] = struct{}{}
 		}
 		if m.ID > 0 {
 			postIDs = append(postIDs, m.ID)
@@ -147,7 +143,7 @@ func GetPostOther(ctx context.Context, posts []*model.Post) ([]*model.Post, erro
 		categoryIDs = append(categoryIDs, id)
 	}
 
-	projectIDs := make([]string, 0, len(projectIDSet))
+	projectIDs := make([]uint, 0, len(projectIDSet))
 	for id := range projectIDSet {
 		projectIDs = append(projectIDs, id)
 	}
@@ -188,7 +184,7 @@ func GetPostOther(ctx context.Context, posts []*model.Post) ([]*model.Post, erro
 	// 批量查询 Project
 	var projects []*model.Project
 	if len(projectIDs) > 0 {
-		if err := common.WithContext(ctx).DB().Where("project_id IN (?)", projectIDs).Find(&projects).Error; err != nil {
+		if err := common.WithContext(ctx).DB().Where("id IN (?)", projectIDs).Find(&projects).Error; err != nil {
 			return nil, err
 		}
 	}
@@ -204,9 +200,9 @@ func GetPostOther(ctx context.Context, posts []*model.Post) ([]*model.Post, erro
 		tagMap[tag.ID] = tag
 	}
 
-	projectMap := make(map[string]*model.Project)
+	projectMap := make(map[uint]*model.Project)
 	for _, project := range projects {
-		projectMap[project.ProjectID] = project
+		projectMap[project.ID] = project
 	}
 
 	for _, m := range posts {
@@ -221,7 +217,7 @@ func GetPostOther(ctx context.Context, posts []*model.Post) ([]*model.Post, erro
 		}
 		m.Tags = tags
 		m.Tag = formatPostTagIDs(tags)
-		if project, ok := projectMap[m.ProjectID]; ok {
+		if project, ok := projectMap[m.ProjectId]; ok {
 			m.Project = project
 		}
 	}
@@ -251,13 +247,13 @@ func (pr PostRepository) UpdatePost(ctx context.Context, post *model.Post) error
 }
 
 // 批量删除
-func (pr PostRepository) BatchDeletePostByIds(ctx context.Context, ids []string) error {
+func (pr PostRepository) BatchDeletePostByIds(ctx context.Context, ids []uint) error {
 	var posts []model.Post
 	for _, id := range ids {
 		// 根据ID获取标签
-		post, err := pr.GetPostByPostID(ctx, id)
+		post, err := pr.GetPostByID(ctx, id)
 		if err != nil {
-			return fmt.Errorf("未获取到ID为%s的内容", id)
+			return fmt.Errorf("未获取到ID为%d的内容", id)
 		}
 		posts = append(posts, post)
 	}
@@ -349,9 +345,8 @@ func formatPostTagIDs(tags []*model.Tag) string {
 
 func buildPostUpdateMap(post *model.Post) map[string]interface{} {
 	return map[string]interface{}{
-		"post_id":      post.PostID,
 		"category_id":  post.CategoryID,
-		"project_id":   post.ProjectID,
+		"project_id":   post.ProjectId,
 		"column_id":    post.ColumnID,
 		"user_id":      post.UserID,
 		"author":       post.Author,

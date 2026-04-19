@@ -57,8 +57,8 @@ func createTestConfig() *model.Config {
 		Model: model.Model{
 			ID: 1,
 		},
-		ConfigID:    "cfg1234567",
-		ProjectID:   "proj123456",
+		ConfigID: "cfg1234567",
+
 		Alias:       "test_config",
 		Title:       "测试配置",
 		Description: "这是一个测试配置",
@@ -75,8 +75,8 @@ func createTestProjectForConfig() *model.Project {
 		Model: model.Model{
 			ID: 1,
 		},
-		ProjectID:   "proj123456",
-		Name:        "test_project",
+
+		Name:        "proj123456",
 		Title:       "测试项目",
 		Description: "这是一个测试项目",
 		Domain:      "https://example.com",
@@ -99,8 +99,8 @@ func TestConfigRepository_CreateConfig(t *testing.T) {
 		{
 			name: "创建配置失败-重复别名",
 			config: &model.Config{
-				ConfigID:    "cfg7654321",
-				ProjectID:   "proj123456",
+				ConfigID: "cfg7654321",
+
 				Alias:       "test_config",
 				Title:       "重复配置",
 				Description: "这是一个重复的配置",
@@ -211,8 +211,8 @@ func TestConfigRepository_GetConfigs(t *testing.T) {
 		Model: model.Model{
 			ID: 2,
 		},
-		ConfigID:    "cfg7654321",
-		ProjectID:   "proj123456",
+		ConfigID: "cfg7654321",
+
 		Alias:       "another_config",
 		Title:       "另一个配置",
 		Description: "这是另一个测试配置",
@@ -258,7 +258,7 @@ func TestConfigRepository_GetConfigs(t *testing.T) {
 		{
 			name: "按项目ID筛选",
 			request: &vo.ConfigListRequest{
-				ProjectID: "proj123456",
+				ProjectId: 1,
 				PageNum:   1,
 				PageSize:  10,
 			},
@@ -311,8 +311,8 @@ func TestConfigRepository_UpdateConfig(t *testing.T) {
 				Model: model.Model{
 					ID: 1,
 				},
-				ConfigID:    "cfg1234567",
-				ProjectID:   "proj123456",
+				ConfigID: "cfg1234567",
+
 				Alias:       "test_config",
 				Title:       "更新后的标题",
 				Description: "更新后的描述",
@@ -453,7 +453,7 @@ func BenchmarkConfigRepository_GetConfigs(b *testing.B) {
 			ID: 2,
 		},
 		ConfigID:  "cfg7654321",
-		ProjectID: "proj123456",
+		ProjectId: 1,
 		Alias:     "another_config",
 		Title:     "另一个配置",
 		Type:      2,

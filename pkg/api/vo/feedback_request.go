@@ -7,7 +7,7 @@ package vo
 
 // 获取标签列表结构体
 type FeedbackListRequest struct {
-	ProjectID string `form:"projectID" json:"projectID"`
-	PageNum   uint   `json:"pageNum" form:"pageNum"`
-	PageSize  uint   `json:"pageSize" form:"pageSize"`
+	ProjectId uint `form:"projectId" json:"projectId"`
+	PageNum   uint `json:"pageNum" form:"pageNum"`
+	PageSize  uint `json:"pageSize" form:"pageSize"`
 }

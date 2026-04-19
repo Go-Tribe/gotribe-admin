@@ -8,9 +8,7 @@ package repository
 import (
 	"context"
 	"fmt"
-	"strings"
 
-	"github.com/dengmengmian/ghelper/gconvert"
 	"gotribe-admin/internal/pkg/common"
 	"gotribe-admin/internal/pkg/model"
 	"gotribe-admin/pkg/api/vo"
@@ -44,9 +42,8 @@ func (cr AdSceneRepository) GetAdScenes(ctx context.Context, req *vo.AdSceneList
 	var list []*model.AdScene
 	db := common.WithContext(ctx).DB().Model(&model.AdScene{}).Order("created_at DESC")
 
-	projectID := strings.TrimSpace(req.ProjectID)
-	if !gconvert.IsEmpty(projectID) {
-		db = db.Where("project_id = ?", projectID)
+	if req.ProjectId > 0 {
+		db = db.Where("project_id = ?", req.ProjectId)
 	}
 
 	// 当pageNum > 0 且 pageSize > 0 才分页
@@ -73,11 +70,11 @@ func GetAdSceneOther(ctx context.Context, adScenes []*model.AdScene) ([]*model.A
 		return adScenes, nil
 	}
 
-	// 收集所有 ProjectID
-	projectIDs := make([]string, 0, len(adScenes))
+	// 收集所有 ProjectId
+	projectIDs := make([]uint, 0, len(adScenes))
 	for _, m := range adScenes {
-		if m.ProjectID != "" {
-			projectIDs = append(projectIDs, m.ProjectID)
+		if m.ProjectId > 0 {
+			projectIDs = append(projectIDs, m.ProjectId)
 		}
 	}
 
@@ -87,19 +84,19 @@ func GetAdSceneOther(ctx context.Context, adScenes []*model.AdScene) ([]*model.A
 
 	// 批量查询
 	var projects []*model.Project
-	if err := common.WithContext(ctx).DB().Where("project_id IN ?", projectIDs).Find(&projects).Error; err != nil {
+	if err := common.WithContext(ctx).DB().Where("id IN ?", projectIDs).Find(&projects).Error; err != nil {
 		return adScenes, err
 	}
 
 	// 建立映射
-	projectMap := make(map[string]*model.Project)
+	projectMap := make(map[uint]*model.Project)
 	for _, project := range projects {
-		projectMap[project.ProjectID] = project
+		projectMap[project.ID] = project
 	}
 
 	// 赋值
 	for _, m := range adScenes {
-		if project, ok := projectMap[m.ProjectID]; ok {
+		if project, ok := projectMap[m.ProjectId]; ok {
 			m.Project = project
 		}
 	}

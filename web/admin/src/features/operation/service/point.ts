@@ -3,7 +3,7 @@ import { type PointListResponse, type PointListParams, type PointCreateParams } 
 
 /**
  * 获取积分列表
- * GET /api/point?pageNum=1&pageSize=3&userID=&nickname=&projectID=
+ * GET /api/point?pageNum=1&pageSize=3&userID=&nickname=&projectId=
  */
 export async function getPointList(
   params?: PointListParams
@@ -20,8 +20,8 @@ export async function getPointList(
   if (params?.nickname != null && params.nickname !== '') {
     requestParams.nickname = params.nickname
   }
-  if (params?.projectID != null && params.projectID !== '') {
-    requestParams.projectID = params.projectID
+  if (params?.projectId != null && params.projectId !== 0) {
+    requestParams.projectId = params.projectId
   }
 
   const data = await request.get<PointListResponse>('/api/point', {

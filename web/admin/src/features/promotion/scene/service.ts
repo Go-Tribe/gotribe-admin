@@ -8,7 +8,7 @@ import type {
 
 /**
  * 获取广告场景列表
- * GET /api/ad/scene?pageNum=1&pageSize=10&projectID=
+ * GET /api/ad/scene?pageNum=1&pageSize=10&projectId=
  */
 export async function getSceneList(
   params?: SceneListParams
@@ -17,8 +17,8 @@ export async function getSceneList(
     pageNum: params?.pageNum ?? 1,
     pageSize: params?.pageSize ?? 10,
   }
-  if (params?.projectID != null && params.projectID !== '') {
-    requestParams.projectID = params.projectID
+  if (params?.projectId != null && params.projectId !== 0) {
+    requestParams.projectId = params.projectId
   }
   const data = await request.get<SceneListResponse>('/api/ad/scene', {
     params: requestParams,
@@ -28,7 +28,7 @@ export async function getSceneList(
 
 /**
  * 新建广告场景
- * POST /api/ad/scene?project_id=  body: title, description, projectID
+ * POST /api/ad/scene?project_id=  body: title, description, projectId
  */
 export async function createScene(
   data: SceneCreateParams

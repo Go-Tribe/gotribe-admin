@@ -79,7 +79,7 @@ function isAuthApi(url: string): boolean {
  * 但是，认证相关的 API（登录、注册等）的 401 错误不应该触发这些操作
  */
 service.interceptors.response.use(
-  (response: AxiosResponse<ApiResponse>): AxiosResponse => {
+  (response: AxiosResponse<ApiResponse>): AxiosResponse | Promise<never> => {
     const res = response.data
     const requestUrl = response.config.url || ''
 

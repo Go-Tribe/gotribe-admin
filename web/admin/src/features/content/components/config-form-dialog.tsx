@@ -41,7 +41,7 @@ const createConfigFormSchema = (t: (key: string) => string) =>
   z.object({
     title: z.string().min(1, t('features.content.config.form.validation.titleRequired')),
     description: z.string().min(1, t('features.content.config.form.validation.descriptionRequired')),
-    projectID: z.string().min(1, t('features.content.config.form.validation.projectRequired')),
+    projectId: z.number().min(1, t('features.content.config.form.validation.projectRequired')),
     alias: z.string().min(1, t('features.content.config.form.validation.aliasRequired')),
     type: z.union([z.literal(1), z.literal(2)]),
     mdContent: z.string().optional(),
@@ -57,7 +57,7 @@ type ConfigFormDialogProps = {
   /** 编辑时提交，configID 由传入的 config 带出 */
   onSubmitUpdate?: (configID: string, data: ConfigUpdateParams) => void
   isLoading?: boolean
-  projectList: { projectID: string; title: string }[]
+  projectList: { id: number; title: string }[]
   /** 编辑时的配置详情（由父组件拉取后传入），有值即为编辑模式 */
   editConfig?: Config | null
 }
@@ -81,7 +81,7 @@ export function ConfigFormDialog({
     defaultValues: {
       title: '',
       description: '',
-      projectID: '',
+      projectId: undefined,
       alias: '',
       type: 1,
       mdContent: '',
@@ -100,7 +100,7 @@ export function ConfigFormDialog({
       form.reset({
         title: editConfig.title ?? '',
         description: editConfig.description ?? '',
-        projectID: (editConfig.projectID ?? '').trim() || '',
+        projectId: editConfig.projectId ?? undefined,
         alias: (editConfig.alias ?? '').trim(),
         type: (editConfig.type === 2 ? 2 : 1) as 1 | 2,
         mdContent: editConfig.info ?? editConfig.mdContent ?? '',
@@ -115,7 +115,7 @@ export function ConfigFormDialog({
       form.reset({
         title: '',
         description: '',
-        projectID: '',
+        projectId: undefined,
         alias: '',
         type: 1,
         mdContent: '',
@@ -140,7 +140,7 @@ export function ConfigFormDialog({
       onSubmitUpdate(editConfig.configID.trim(), {
         title: values.title,
         description: values.description,
-        projectID: values.projectID || undefined,
+        projectId: values.projectId || undefined,
         info: mdContent,
         mdContent,
       })
@@ -148,7 +148,7 @@ export function ConfigFormDialog({
       onSubmit({
         title: values.title,
         description: values.description,
-        projectID: values.projectID,
+        projectId: values.projectId,
         alias: values.alias,
         type: values.type,
         mdContent,
@@ -199,11 +199,11 @@ export function ConfigFormDialog({
             />
             <FormField
               control={form.control}
-              name='projectID'
+              name='projectId'
               render={({ field }) => (
                 <FormItem className='space-y-2'>
                   <FormLabel>{t('features.content.config.form.project')}</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select onValueChange={(v) => field.onChange(Number(v))} value={field.value != null ? String(field.value) : ''}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder={t('features.content.config.form.projectPlaceholder')} />
@@ -211,7 +211,7 @@ export function ConfigFormDialog({
                     </FormControl>
                     <SelectContent>
                       {projectList.map((p) => (
-                        <SelectItem key={p.projectID} value={p.projectID}>
+                        <SelectItem key={p.id} value={String(p.id)}>
                           {p.title}
                         </SelectItem>
                       ))}

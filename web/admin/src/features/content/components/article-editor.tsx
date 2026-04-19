@@ -50,7 +50,7 @@ export function ArticleEditor({ form }: ArticleEditorProps) {
       />
 
       {/* 标题与正文之间的留白 */}
-      <div className='h-2' aria-hidden />
+      <div className='h-4' aria-hidden />
 
       {/* Slate 编辑器 */}
       <FormField

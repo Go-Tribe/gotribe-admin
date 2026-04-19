@@ -7,7 +7,7 @@ package model
 
 type Comment struct {
 	Model
-	ProjectID   string `gorm:"type:varchar(10);not null;index;comment:项目ID;" json:"projectID"`
+	ProjectId   uint   `gorm:"not null;index;comment:项目ID;" json:"projectId"`
 	Content     string `gorm:"not null;type:text;not null;comment:内容" json:"content"`
 	HtmlContent string `gorm:"not null;type:text;not null;comment:HTML内容" json:"htmlContent"`
 	Status      uint   `gorm:"type:smallint;not null;index;default:1;comment:状态，1-待审核；2-审核通过" json:"status,omitempty"`

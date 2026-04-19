@@ -91,7 +91,7 @@ func createTestUser() model.User {
 		Nickname:  "Test User",
 		Email:     &email,
 		Phone:     &phone,
-		ProjectID: "project1",
+		ProjectId: 1,
 		Sex:       "M",
 		Status:    1,
 		Point:     100.5,
@@ -262,7 +262,7 @@ func TestUserController_CreateUser(t *testing.T) {
 				Nickname:  "New User",
 				Email:     "new@example.com",
 				Phone:     "13900139000",
-				ProjectID: "project1",
+				ProjectId: 1,
 			},
 			mockSetup: func(m *MockUserRepository) {
 				m.On("CreateUser", mock.Anything, mock.Anything).Return(nil)
@@ -287,7 +287,7 @@ func TestUserController_CreateUser(t *testing.T) {
 				Nickname:  "New User",
 				Email:     "new@example.com",
 				Phone:     "13900139000",
-				ProjectID: "project1",
+				ProjectId: 1,
 			},
 			mockSetup: func(m *MockUserRepository) {
 				m.On("CreateUser", mock.Anything, mock.Anything).Return(errors.New("database error"))

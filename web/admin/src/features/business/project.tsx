@@ -27,7 +27,7 @@ import { useCrudMutations } from '@/hooks/use-crud-mutations'
 export function BusinessProject() {
   const { t } = useI18n()
   const [dialogOpen, setDialogOpen] = useState<'create' | 'edit' | null>(null)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState<string | null>(null)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<number | null>(null)
   const [editingProject, setEditingProject] = useState<Project | null>(null)
 
   // 使用统一的表格状态管理
@@ -48,7 +48,7 @@ export function BusinessProject() {
   const queryParams = useMemo(() => ({
     current: 1,
     title: getFilterValue('title'),
-    projectID: getFilterValue('projectID'),
+    id: getFilterValue('id') ? Number(getFilterValue('id')) : undefined,
     pageNum,
     pageSize: pagination.pageSize,
   }), [getFilterValue, pagination.pageSize, pageNum])
@@ -66,7 +66,7 @@ export function BusinessProject() {
   const pageCount = Math.ceil(total / pagination.pageSize)
 
   // 使用统一的 CRUD mutations
-  const { createMutation, updateMutation, deleteMutation } = useCrudMutations<Project, string>({
+  const { createMutation, updateMutation, deleteMutation } = useCrudMutations<Project, number>({
     queryKey: ['projectList'],
     createFn: createProject,
     updateFn: updateProject,
@@ -106,12 +106,23 @@ export function BusinessProject() {
   const columns = useMemo<ColumnDef<Project>[]>(
     () => [
       {
-        accessorKey: 'projectID',
+        accessorKey: 'id',
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title={t('features.business.project.columns.id')} />
         ),
         cell: ({ row }) => (
-          <div className='font-medium'>{row.getValue('projectID')}</div>
+          <div className='font-mono text-muted-foreground'>{row.getValue('id') as number}</div>
+        ),
+      },
+      {
+        accessorKey: 'name',
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title={t('features.business.project.columns.name')} />
+        ),
+        cell: ({ row }) => (
+          <div className='max-w-[200px] truncate text-muted-foreground' title={row.getValue('name') as string}>
+            {row.getValue('name') as string || '-'}
+          </div>
         ),
       },
       {
@@ -141,7 +152,7 @@ export function BusinessProject() {
         cell: ({ row }) => (
           <DataTableActions
             onEdit={() => handleEdit(row.original)}
-            onDelete={() => setDeleteDialogOpen(row.original.projectID)}
+            onDelete={() => setDeleteDialogOpen(row.original.id)}
             deleteConfirmTitle={t('features.business.project.confirmDelete')}
             useDropdown={false}
           />
@@ -178,10 +189,10 @@ export function BusinessProject() {
   })
 
   const projectToDelete = projectData.find(
-    (p: Project) => p.projectID === deleteDialogOpen,
+    (p: Project) => p.id === deleteDialogOpen,
   )
-  const isDialogLoading = dialogOpen === 'create' 
-    ? createMutation.isPending 
+  const isDialogLoading = dialogOpen === 'create'
+    ? createMutation.isPending
     : updateMutation.isPending
 
   return (
@@ -207,12 +218,12 @@ export function BusinessProject() {
           />
           <Input
             type='text'
-            placeholder={t('features.business.project.search.projectID')}
+            placeholder={t('features.business.project.search.id')}
             value={
-              (table.getColumn('projectID')?.getFilterValue() as string) ?? ''
+              (table.getColumn('id')?.getFilterValue() as string) ?? ''
             }
             onChange={(e) =>
-              table.getColumn('projectID')?.setFilterValue(e.target.value)
+              table.getColumn('id')?.setFilterValue(e.target.value)
             }
             className='h-8 w-[150px]'
           />

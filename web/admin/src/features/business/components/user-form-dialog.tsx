@@ -53,9 +53,9 @@ const createUserFormSchema = (t: (key: string) => string, isEdit: boolean) =>
       : z.string().min(6, t('features.business.user.form.validation.passwordLength')).max(20, t('features.business.user.form.validation.passwordLength')),
     phone: z.string().min(1, t('features.business.user.form.validation.phoneRequired')),
     email: z.string().min(1, t('features.business.user.form.validation.emailRequired')),
-    projectID: isEdit
-      ? z.string().optional()
-      : z.string().min(2, t('features.business.user.form.validation.projectIDLength')).max(20, t('features.business.user.form.validation.projectIDLength')),
+    projectId: isEdit
+      ? z.number().optional()
+      : z.number().min(1, t('features.business.user.form.validation.projectIDRequired')),
   })
 
 type UserFormValues = {
@@ -65,7 +65,7 @@ type UserFormValues = {
   password?: string
   phone?: string
   email?: string
-  projectID?: string
+  projectId?: number
 }
 
 type UserFormDialogProps = {
@@ -109,7 +109,7 @@ export function UserFormDialog({
       password: '',
       phone: '',
       email: '',
-      projectID: '',
+      projectId: undefined,
     },
   })
 
@@ -124,7 +124,7 @@ export function UserFormDialog({
           password: '',
           phone: u.phone,
           email: u.email,
-          projectID: u.projectID || '',
+          projectId: u.projectId,
         })
       } else {
         form.reset({
@@ -134,7 +134,7 @@ export function UserFormDialog({
           password: '',
           phone: '',
           email: '',
-          projectID: '',
+          projectId: undefined,
         })
       }
     }
@@ -159,7 +159,7 @@ export function UserFormDialog({
         nickname: values.nickname.trim(),
         email: values.email?.trim() || undefined,
         phone: values.phone?.trim() || undefined,
-        projectID: values.projectID!.trim(),
+        projectId: values.projectId!,
         password: values.password!.trim(),
         avatarURL: values.avatarURL?.trim(),
       })
@@ -289,15 +289,14 @@ export function UserFormDialog({
             />
             <FormField
               control={form.control}
-              name='projectID'
+              name='projectId'
               render={({ field }) => (
                 <FormItem className='space-y-2'>
                   <FormLabel>{t('features.business.user.form.fields.project')}
                   </FormLabel>
                   <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    value={field.value}
+                    onValueChange={(v) => field.onChange(Number(v))}
+                    value={field.value != null ? String(field.value) : ''}
                     disabled={isEdit}
                   >
                     <FormControl>
@@ -307,7 +306,7 @@ export function UserFormDialog({
                     </FormControl>
                     <SelectContent>
                       {projectList.map((project) => (
-                        <SelectItem key={project.projectID} value={project.projectID}>
+                        <SelectItem key={project.id} value={String(project.id)}>
                           {project.title}
                         </SelectItem>
                       ))}

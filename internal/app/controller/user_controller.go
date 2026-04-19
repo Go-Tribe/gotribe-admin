@@ -142,7 +142,7 @@ func (pc UserController) CreateUser(c *gin.Context) {
 		AvatarURL: req.AvatarURL,
 		Phone:     optionalString(req.Phone),
 		Email:     optionalString(req.Email),
-		ProjectID: req.ProjectID,
+		ProjectId: req.ProjectId,
 		Password:  encryptedPwd,
 	}
 

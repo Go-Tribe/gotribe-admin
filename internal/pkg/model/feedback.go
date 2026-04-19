@@ -11,7 +11,7 @@ type Feedback struct {
 	Content   string   `gorm:"type:text;comment:内容" json:"content"`
 	Phone     string   `gorm:"type:varchar(20);comment:电话" json:"phone"`
 	UserID    uint     `gorm:"index;comment:用户ID" json:"userID"`
-	ProjectID string   `gorm:"type:varchar(10);Index;comment:项目 ID" json:"projectID"`
+	ProjectId uint     `gorm:"index;comment:项目 ID" json:"projectId"`
 	User      *User    `gorm:"-" json:"user"`
 	Project   *Project `gorm:"-" json:"project"`
 }

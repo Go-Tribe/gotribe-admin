@@ -12,7 +12,7 @@ import (
 type User struct {
 	Model
 	Username   string     `gorm:"type:varchar(30);not null;uniqueIndex:idx_user_project_username,priority:2;comment:用户名" json:"username"`
-	ProjectID  string     `gorm:"type:varchar(10);not null;index;uniqueIndex:idx_user_project_username,priority:1;uniqueIndex:idx_user_project_email,priority:1;uniqueIndex:idx_user_project_phone,priority:1;comment:项目ID" json:"project_id"`
+	ProjectId  uint       `gorm:"not null;index;uniqueIndex:idx_user_project_username,priority:1;uniqueIndex:idx_user_project_email,priority:1;uniqueIndex:idx_user_project_phone,priority:1;comment:项目ID" json:"projectId"`
 	Password   string     `gorm:"type:varchar(255);not null;comment:密码" json:"-"`
 	Nickname   string     `gorm:"type:varchar(30);not null;comment:昵称" json:"nickname"`
 	Email      *string    `gorm:"type:varchar(254);default:null;uniqueIndex:idx_user_project_email,priority:2;comment:邮箱" json:"email,omitempty"`

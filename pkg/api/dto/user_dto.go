@@ -19,7 +19,7 @@ type UserDto struct {
 	Email     string  `json:"email"`
 	AvatarURL string  `json:"avatarURL"`
 	Sex       string  `json:"sex"`
-	ProjectID string  `json:"projectID"`
+	ProjectId uint    `json:"projectId"`
 	Status    uint8   `json:"status"`
 	Birthday  string  `json:"birthday"`
 	Point     float64 `json:"point"`
@@ -38,7 +38,7 @@ func toUserDto(user *model.User) UserDto {
 		Nickname:  user.Nickname,
 		Email:     stringValue(user.Email),
 		Sex:       user.Sex,
-		ProjectID: user.ProjectID,
+		ProjectId: user.ProjectId,
 		Birthday: func() string {
 			if user.Birthday != nil {
 				return user.Birthday.Format(known.TIME_FORMAT)

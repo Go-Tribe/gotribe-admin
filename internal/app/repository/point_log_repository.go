@@ -8,7 +8,6 @@ package repository
 import (
 	"context"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/dengmengmian/ghelper/gconvert"
@@ -18,8 +17,8 @@ import (
 )
 
 type IPointLogRepository interface {
-	CreatePoint(ctx context.Context, userID uint, types, reason, eventID, ProjectID string, points float64) error // 新增积分
-	GetPointLogs(ctx context.Context, req *vo.PointLogListRequest) ([]*model.PointLog, int64, error)              // 获取积分列表
+	CreatePoint(ctx context.Context, userID uint, types, reason, eventID string, ProjectId uint, points float64) error // 新增积分
+	GetPointLogs(ctx context.Context, req *vo.PointLogListRequest) ([]*model.PointLog, int64, error)                   // 获取积分列表
 }
 
 type PointLogRepository struct {
@@ -35,9 +34,8 @@ func (cr PointLogRepository) GetPointLogs(ctx context.Context, req *vo.PointLogL
 	var list []*model.PointLog
 	db := common.WithContext(ctx).DB().Model(&model.PointLog{}).Order("created_at DESC")
 
-	projectID := strings.TrimSpace(req.ProjectID)
-	if !gconvert.IsEmpty(projectID) {
-		db = db.Where("project_id = ?", projectID)
+	if req.ProjectId > 0 {
+		db = db.Where("project_id = ?", req.ProjectId)
 	}
 	if req.UserID > 0 {
 		db = db.Where("user_id =  ?", req.UserID)
@@ -108,7 +106,7 @@ func GetPointLogOther(ctx context.Context, pointLogs []*model.PointLog) ([]*mode
 }
 
 // 创建推广场景
-func (cr PointLogRepository) CreatePoint(ctx context.Context, userID uint, types, reason, eventID, ProjectID string, points float64) error {
+func (cr PointLogRepository) CreatePoint(ctx context.Context, userID uint, types, reason, eventID string, ProjectId uint, points float64) error {
 	// 将元转换为分
 	pointsCents := int64(points * 100)
 
@@ -118,7 +116,7 @@ func (cr PointLogRepository) CreatePoint(ctx context.Context, userID uint, types
 		Reason:    reason,
 		EventID:   eventID,
 		Points:    pointsCents,
-		ProjectID: ProjectID,
+		ProjectId: ProjectId,
 	}
 	result := common.WithContext(ctx).DB().Create(pointLog)
 	if result.Error != nil {
@@ -126,7 +124,7 @@ func (cr PointLogRepository) CreatePoint(ctx context.Context, userID uint, types
 	}
 	// 新增可用积分
 	userPoint := &model.PointAvailable{
-		ProjectID:      ProjectID,
+		ProjectId:      ProjectId,
 		UserID:         userID,
 		Points:         pointsCents,
 		PointsLogID:    pointLog.ID,

@@ -30,7 +30,6 @@ func (s *ProjectSeeder) Run(db *gorm.DB) error {
 			Model:       model.Model{ID: 1},
 			Name:        "default",
 			Title:       "默认项目",
-			ProjectID:   "245eko",
 			Description: "默认项目",
 		},
 	}

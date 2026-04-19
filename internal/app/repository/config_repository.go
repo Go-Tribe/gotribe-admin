@@ -51,9 +51,8 @@ func (cr ConfigRepository) GetConfigs(ctx context.Context, req *vo.ConfigListReq
 	if !gconvert.IsEmpty(configID) {
 		db = db.Where("config_id = ?", configID)
 	}
-	projectID := strings.TrimSpace(req.ProjectID)
-	if !gconvert.IsEmpty(projectID) {
-		db = db.Where("project_id = ?", projectID)
+	if req.ProjectId > 0 {
+		db = db.Where("project_id = ?", req.ProjectId)
 	}
 	reqType := req.Type
 	if reqType != 0 {
@@ -84,17 +83,17 @@ func GetConfigOther(configs []*model.Config) []*model.Config {
 	}
 
 	// 批量收集并去重 project_id，避免 N+1 查询
-	projectIDSet := make(map[string]struct{}, len(configs))
-	projectIDs := make([]string, 0, len(configs))
+	projectIDSet := make(map[uint]struct{}, len(configs))
+	projectIDs := make([]uint, 0, len(configs))
 	for _, cfg := range configs {
-		if cfg.ProjectID == "" {
+		if cfg.ProjectId == 0 {
 			continue
 		}
-		if _, exists := projectIDSet[cfg.ProjectID]; exists {
+		if _, exists := projectIDSet[cfg.ProjectId]; exists {
 			continue
 		}
-		projectIDSet[cfg.ProjectID] = struct{}{}
-		projectIDs = append(projectIDs, cfg.ProjectID)
+		projectIDSet[cfg.ProjectId] = struct{}{}
+		projectIDs = append(projectIDs, cfg.ProjectId)
 	}
 
 	if len(projectIDs) == 0 {
@@ -102,17 +101,17 @@ func GetConfigOther(configs []*model.Config) []*model.Config {
 	}
 
 	var projects []model.Project
-	if err := common.DB.Where("project_id IN (?)", projectIDs).Find(&projects).Error; err != nil {
+	if err := common.DB.Where("id IN (?)", projectIDs).Find(&projects).Error; err != nil {
 		return configs
 	}
 
-	projectMap := make(map[string]*model.Project, len(projects))
+	projectMap := make(map[uint]*model.Project, len(projects))
 	for i := range projects {
-		projectMap[projects[i].ProjectID] = &projects[i]
+		projectMap[projects[i].ID] = &projects[i]
 	}
 
 	for _, m := range configs {
-		if project, ok := projectMap[m.ProjectID]; ok {
+		if project, ok := projectMap[m.ProjectId]; ok {
 			m.Project = project
 		}
 	}

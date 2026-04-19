@@ -10,7 +10,7 @@ import "time"
 // PointAvailable 积分记录表
 type PointAvailable struct {
 	Model
-	ProjectID      string    `gorm:"type:varchar(10);not null;index:idx_point_available_project_user_status,priority:1;comment:项目ID;" json:"projectID"`
+	ProjectId      uint      `gorm:"not null;index:idx_point_available_project_user_status,priority:1;comment:项目ID;" json:"projectId"`
 	UserID         uint      `gorm:"index:idx_point_available_project_user_status,priority:2;index:idx_point_available_user_status_expiration,priority:1;comment:用户ID" json:"userID"`
 	Points         int64     `gorm:"type:bigint;NOT NULL;comment:积分数值(分)"`
 	PointsLogID    uint      `gorm:"not null;comment:'积分记录表ID'"`

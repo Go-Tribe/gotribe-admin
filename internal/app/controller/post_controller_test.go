@@ -38,8 +38,8 @@ func (m *MockPostRepository) CreatePost(ctx context.Context, post *model.Post) e
 	return args.Error(0)
 }
 
-func (m *MockPostRepository) GetPostByPostID(ctx context.Context, postID string) (model.Post, error) {
-	args := m.Called(ctx, postID)
+func (m *MockPostRepository) GetPostByID(ctx context.Context, id uint) (model.Post, error) {
+	args := m.Called(ctx, id)
 	return args.Get(0).(model.Post), args.Error(1)
 }
 
@@ -53,7 +53,7 @@ func (m *MockPostRepository) UpdatePost(ctx context.Context, post *model.Post) e
 	return args.Error(0)
 }
 
-func (m *MockPostRepository) BatchDeletePostByIds(ctx context.Context, ids []string) error {
+func (m *MockPostRepository) BatchDeletePostByIds(ctx context.Context, ids []uint) error {
 	args := m.Called(ctx, ids)
 	return args.Error(0)
 }
@@ -68,8 +68,8 @@ func (m *MockProjectRepository) CreateProject(ctx context.Context, project *mode
 	return args.Error(0)
 }
 
-func (m *MockProjectRepository) GetProjectByProjectID(ctx context.Context, projectID string) (model.Project, error) {
-	args := m.Called(ctx, projectID)
+func (m *MockProjectRepository) GetProjectByID(ctx context.Context, id uint) (model.Project, error) {
+	args := m.Called(ctx, id)
 	return args.Get(0).(model.Project), args.Error(1)
 }
 
@@ -83,7 +83,7 @@ func (m *MockProjectRepository) UpdateProject(ctx context.Context, project *mode
 	return args.Error(0)
 }
 
-func (m *MockProjectRepository) BatchDeleteProjectByIds(ctx context.Context, ids []string) error {
+func (m *MockProjectRepository) BatchDeleteProjectByIds(ctx context.Context, ids []uint) error {
 	args := m.Called(ctx, ids)
 	return args.Error(0)
 }
@@ -124,7 +124,7 @@ func createTestPost() model.Post {
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
-		PostID:      "abc123",
+		Slug:        "abc123",
 		Title:       "Test Post",
 		Description: "Test Description",
 		Content:     "Test Content",
@@ -132,7 +132,7 @@ func createTestPost() model.Post {
 		Author:      "testuser",
 		UserID:      1,
 		CategoryID:  1,
-		ProjectID:   "proj123",
+		ProjectId:   1,
 		Status:      known.POST_STATUS_DRAFT,
 		Type:        known.POST_TYPE_POST,
 	}
@@ -142,12 +142,12 @@ func TestPostController_GetPostInfo_Success(t *testing.T) {
 	router, mockPostRepo, _, controller := setupPostTest()
 
 	testPost := createTestPost()
-	mockPostRepo.On("GetPostByPostID", mock.Anything, "abc123").Return(testPost, nil)
+	mockPostRepo.On("GetPostByID", mock.Anything, uint(1)).Return(testPost, nil)
 
-	router.GET("/post/:postID", controller.GetPostInfo)
+	router.GET("/post/:id", controller.GetPostInfo)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/post/abc123", nil)
+	req, _ := http.NewRequest("GET", "/post/1", nil)
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -167,12 +167,12 @@ func TestPostController_GetPostInfo_Success(t *testing.T) {
 func TestPostController_GetPostInfo_NotFound(t *testing.T) {
 	router, mockPostRepo, _, controller := setupPostTest()
 
-	mockPostRepo.On("GetPostByPostID", mock.Anything, "nonexistent").Return(model.Post{}, gorm.ErrRecordNotFound)
+	mockPostRepo.On("GetPostByID", mock.Anything, uint(999)).Return(model.Post{}, gorm.ErrRecordNotFound)
 
-	router.GET("/post/:postID", controller.GetPostInfo)
+	router.GET("/post/:id", controller.GetPostInfo)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/post/nonexistent", nil)
+	req, _ := http.NewRequest("GET", "/post/999", nil)
 	router.ServeHTTP(w, req)
 
 	// HandleDatabaseError 将错误映射为 CodeDatabaseError (1009)
@@ -188,8 +188,8 @@ func TestPostController_GetPosts_Success(t *testing.T) {
 	router, mockPostRepo, _, controller := setupPostTest()
 
 	testPosts := []*model.Post{
-		{Model: model.Model{ID: 1}, PostID: "post1", Title: "Post 1"},
-		{Model: model.Model{ID: 2}, PostID: "post2", Title: "Post 2"},
+		{Model: model.Model{ID: 1}, Slug: "post1", Title: "Post 1"},
+		{Model: model.Model{ID: 2}, Slug: "post2", Title: "Post 2"},
 	}
 	mockPostRepo.On("GetPosts", mock.Anything, mock.AnythingOfType("*vo.PostListRequest")).Return(testPosts, int64(2), nil)
 
@@ -243,7 +243,7 @@ func TestPostController_CreatePost_Success(t *testing.T) {
 		Author:      "testuser",
 		UserID:      1,
 		CategoryID:  1,
-		ProjectID:   "proj123",
+		ProjectId:   1,
 		Type:        known.POST_TYPE_POST,
 	}
 
@@ -307,10 +307,10 @@ func TestPostController_UpdatePostByID_Success(t *testing.T) {
 	router, mockPostRepo, _, controller := setupPostTest()
 
 	testPost := createTestPost()
-	mockPostRepo.On("GetPostByPostID", mock.Anything, "abc123").Return(testPost, nil)
+	mockPostRepo.On("GetPostByID", mock.Anything, uint(1)).Return(testPost, nil)
 	mockPostRepo.On("UpdatePost", mock.Anything, mock.AnythingOfType("*model.Post")).Return(nil)
 
-	router.PATCH("/post/:postID", controller.UpdatePostByID)
+	router.PATCH("/post/:id", controller.UpdatePostByID)
 
 	updateReq := vo.UpdatePostRequest{
 		Title:       "Updated Post",
@@ -320,13 +320,13 @@ func TestPostController_UpdatePostByID_Success(t *testing.T) {
 		Author:      "testuser",
 		UserID:      1,
 		CategoryID:  1,
-		ProjectID:   "proj123",
+		ProjectId:   1,
 		Type:        known.POST_TYPE_POST,
 	}
 
 	jsonData, _ := json.Marshal(updateReq)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("PATCH", "/post/abc123", bytes.NewBuffer(jsonData))
+	req, _ := http.NewRequest("PATCH", "/post/1", bytes.NewBuffer(jsonData))
 	req.Header.Set("Content-Type", "application/json")
 	router.ServeHTTP(w, req)
 
@@ -343,9 +343,9 @@ func TestPostController_UpdatePostByID_Success(t *testing.T) {
 func TestPostController_UpdatePostByID_NotFound(t *testing.T) {
 	router, mockPostRepo, _, controller := setupPostTest()
 
-	mockPostRepo.On("GetPostByPostID", mock.Anything, "nonexistent").Return(model.Post{}, gorm.ErrRecordNotFound)
+	mockPostRepo.On("GetPostByID", mock.Anything, uint(999)).Return(model.Post{}, gorm.ErrRecordNotFound)
 
-	router.PATCH("/post/:postID", controller.UpdatePostByID)
+	router.PATCH("/post/:id", controller.UpdatePostByID)
 
 	updateReq := vo.UpdatePostRequest{
 		Title:       "Updated Post",
@@ -355,13 +355,13 @@ func TestPostController_UpdatePostByID_NotFound(t *testing.T) {
 		Author:      "testuser",
 		UserID:      1,
 		CategoryID:  1,
-		ProjectID:   "proj123",
+		ProjectId:   1,
 		Type:        known.POST_TYPE_POST,
 	}
 
 	jsonData, _ := json.Marshal(updateReq)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("PATCH", "/post/nonexistent", bytes.NewBuffer(jsonData))
+	req, _ := http.NewRequest("PATCH", "/post/999", bytes.NewBuffer(jsonData))
 	req.Header.Set("Content-Type", "application/json")
 	router.ServeHTTP(w, req)
 
@@ -377,7 +377,7 @@ func TestPostController_UpdatePostByID_NotFound(t *testing.T) {
 func TestPostController_UpdatePostByID_ValidationFail(t *testing.T) {
 	router, _, _, controller := setupPostTest()
 
-	router.PATCH("/post/:postID", controller.UpdatePostByID)
+	router.PATCH("/post/:id", controller.UpdatePostByID)
 
 	// 缺少必填字段
 	invalidReq := map[string]interface{}{
@@ -387,7 +387,7 @@ func TestPostController_UpdatePostByID_ValidationFail(t *testing.T) {
 
 	jsonData, _ := json.Marshal(invalidReq)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("PATCH", "/post/abc123", bytes.NewBuffer(jsonData))
+	req, _ := http.NewRequest("PATCH", "/post/1", bytes.NewBuffer(jsonData))
 	req.Header.Set("Content-Type", "application/json")
 	router.ServeHTTP(w, req)
 
@@ -400,12 +400,12 @@ func TestPostController_UpdatePostByID_ValidationFail(t *testing.T) {
 func TestPostController_BatchDeletePostByIds_Success(t *testing.T) {
 	router, mockPostRepo, _, controller := setupPostTest()
 
-	mockPostRepo.On("BatchDeletePostByIds", mock.Anything, []string{"post1", "post2"}).Return(nil)
+	mockPostRepo.On("BatchDeletePostByIds", mock.Anything, []uint{1, 2}).Return(nil)
 
 	router.DELETE("/posts", controller.BatchDeletePostByIds)
 
 	deleteReq := vo.DeletePostsRequest{
-		PostIds: "post1,post2",
+		PostIds: "1,2",
 	}
 
 	jsonData, _ := json.Marshal(deleteReq)
@@ -427,7 +427,7 @@ func TestPostController_BatchDeletePostByIds_Success(t *testing.T) {
 func TestPostController_BatchDeletePostByIds_EmptyIds(t *testing.T) {
 	router, mockPostRepo, _, controller := setupPostTest()
 
-	mockPostRepo.On("BatchDeletePostByIds", mock.Anything, []string{""}).Return(nil)
+	mockPostRepo.On("BatchDeletePostByIds", mock.Anything, []uint(nil)).Return(nil)
 
 	router.DELETE("/posts", controller.BatchDeletePostByIds)
 
@@ -447,12 +447,12 @@ func TestPostController_BatchDeletePostByIds_EmptyIds(t *testing.T) {
 func TestPostController_BatchDeletePostByIds_DatabaseError(t *testing.T) {
 	router, mockPostRepo, _, controller := setupPostTest()
 
-	mockPostRepo.On("BatchDeletePostByIds", mock.Anything, []string{"post1"}).Return(errors.New("database error"))
+	mockPostRepo.On("BatchDeletePostByIds", mock.Anything, []uint{1}).Return(errors.New("database error"))
 
 	router.DELETE("/posts", controller.BatchDeletePostByIds)
 
 	deleteReq := vo.DeletePostsRequest{
-		PostIds: "post1",
+		PostIds: "1",
 	}
 
 	jsonData, _ := json.Marshal(deleteReq)
@@ -473,17 +473,17 @@ func TestPostController_PushPostByID_Success(t *testing.T) {
 	router, mockPostRepo, mockProjectRepo, controller := setupPostTest()
 
 	testPost := createTestPost()
-	mockPostRepo.On("GetPostByPostID", mock.Anything, "abc123").Return(testPost, nil)
+	mockPostRepo.On("GetPostByID", mock.Anything, uint(1)).Return(testPost, nil)
 	mockPostRepo.On("UpdatePost", mock.Anything, mock.AnythingOfType("*model.Post")).Return(nil)
-	mockProjectRepo.On("GetProjectByProjectID", mock.Anything, "proj123").Return(model.Project{
-		ProjectID: "proj123",
-		Title:     "Test Project",
+	mockProjectRepo.On("GetProjectByID", mock.Anything, uint(1)).Return(model.Project{
+		Name:  "proj123",
+		Title: "Test Project",
 	}, nil)
 
-	router.PUT("/post/:postID", controller.PushPostByID)
+	router.PUT("/post/:id", controller.PushPostByID)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("PUT", "/post/abc123", nil)
+	req, _ := http.NewRequest("PUT", "/post/1", nil)
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -500,12 +500,12 @@ func TestPostController_PushPostByID_Success(t *testing.T) {
 func TestPostController_PushPostByID_NotFound(t *testing.T) {
 	router, mockPostRepo, _, controller := setupPostTest()
 
-	mockPostRepo.On("GetPostByPostID", mock.Anything, "nonexistent").Return(model.Post{}, gorm.ErrRecordNotFound)
+	mockPostRepo.On("GetPostByID", mock.Anything, uint(999)).Return(model.Post{}, gorm.ErrRecordNotFound)
 
-	router.PUT("/post/:postID", controller.PushPostByID)
+	router.PUT("/post/:id", controller.PushPostByID)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("PUT", "/post/nonexistent", nil)
+	req, _ := http.NewRequest("PUT", "/post/999", nil)
 	router.ServeHTTP(w, req)
 
 	// HandleDatabaseError 返回 CodeDatabaseError (1009)
@@ -521,13 +521,13 @@ func TestPostController_PushPostByID_UpdateError(t *testing.T) {
 	router, mockPostRepo, _, controller := setupPostTest()
 
 	testPost := createTestPost()
-	mockPostRepo.On("GetPostByPostID", mock.Anything, "abc123").Return(testPost, nil)
+	mockPostRepo.On("GetPostByID", mock.Anything, uint(1)).Return(testPost, nil)
 	mockPostRepo.On("UpdatePost", mock.Anything, mock.AnythingOfType("*model.Post")).Return(errors.New("update error"))
 
-	router.PUT("/post/:postID", controller.PushPostByID)
+	router.PUT("/post/:id", controller.PushPostByID)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("PUT", "/post/abc123", nil)
+	req, _ := http.NewRequest("PUT", "/post/1", nil)
 	router.ServeHTTP(w, req)
 
 	var resp response.Response

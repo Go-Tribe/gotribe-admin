@@ -41,16 +41,16 @@ type SceneRow = {
 
 function mapSceneToRow(
   s: Scene,
-  projectList: { projectID: string; title: string }[]
+  projectList: { id: number; title: string }[]
 ): SceneRow {
   const id = String(s.id ?? '')
-  const projectID = (s.projectID ?? '').trim()
+  const projectId = s.projectId ?? 0
   const projectTitle = (s.projectTitle ?? '').trim()
   const project =
     projectTitle ||
-    (projectList.find((p) => (p.projectID ?? '').trim() === projectID)?.title ??
+    (projectList.find((p) => p.id === projectId)?.title ??
       '') ||
-    projectID ||
+    String(projectId) ||
     '-'
   return {
     id,
@@ -87,8 +87,8 @@ export function OperationScene() {
   const projectList = useMemo(
     () =>
       projectData?.projects?.map((p) => ({
-        projectID: p.projectID,
-        title: p.title ?? p.projectID,
+        id: p.id,
+        title: p.title ?? String(p.id),
       })) ?? [],
     [projectData?.projects]
   )
@@ -98,9 +98,9 @@ export function OperationScene() {
     () => ({
       pageNum,
       pageSize: pagination.pageSize,
-      projectID:
+      projectId:
         projectFilter && projectFilter !== '__all__'
-          ? projectFilter.trim() || undefined
+          ? Number(projectFilter) || undefined
           : undefined,
     }),
     [pageNum, pagination.pageSize, projectFilter]
@@ -326,8 +326,8 @@ export function OperationScene() {
               </SelectItem>
               {projectList.map((p) => (
                 <SelectItem
-                  key={p.projectID}
-                  value={(p.projectID ?? '').trim()}
+                  key={p.id}
+                  value={String(p.id)}
                 >
                   {p.title}
                 </SelectItem>

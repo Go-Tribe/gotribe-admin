@@ -3,7 +3,7 @@ export interface Column {
   id: number
   title: string
   info: string
-  projectID: string
+  projectId: number
   icon: string
   description: string
   createdAt: string
@@ -11,7 +11,7 @@ export interface Column {
 
 /** 列表查询参数（与接口 snake_case 一致） */
 export interface ColumnListParams {
-  projectID?: string
+  projectId?: number
   title?: string
   pageNum?: number
   pageSize?: number
@@ -28,7 +28,7 @@ export interface ColumnCreateParams {
   title: string
   description: string
   info: string
-  projectID: string
+  projectId: number
   icon: string
 }
 
@@ -38,5 +38,5 @@ export interface ColumnUpdateParams {
   info?: string
   description?: string
   icon?: string
-  projectID?: string
+  projectId?: number
 }

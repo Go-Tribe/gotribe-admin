@@ -1,10 +1,11 @@
 /** 文章（接口 /api/post 返回项） */
 export interface Post {
-  postID: string
+  id: number
+  slug: string
   title: string
   description: string
   categoryID: number
-  projectID: string
+  projectId: number
   userID: number
   author: string
   content: string
@@ -32,10 +33,10 @@ export interface Post {
 
 /** 文章列表查询参数 */
 export interface PostListParams {
-  postID?: string
+  id?: number
   title?: string
   status?: string
-  projectID?: string
+  projectId?: number
   pageNum?: number
   pageSize?: number
   sortBy?: string
@@ -45,6 +46,7 @@ export interface PostListParams {
 /** 创建/更新文章请求参数 */
 export interface PostParams {
   title: string
+  slug?: string
   description?: string
   author?: string
   userID?: number
@@ -56,7 +58,7 @@ export interface PostParams {
   tag?: string
   // 新增字段
   type?: number
-  projectID?: string
+  projectId?: number
   isPasswd?: number
   video?: string
   images?: string[]

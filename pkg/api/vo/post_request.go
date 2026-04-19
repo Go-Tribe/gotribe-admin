@@ -8,9 +8,10 @@ package vo
 // 创建内容结构体
 type CreatePostRequest struct {
 	Title       string   `form:"title" json:"title" validate:"required,min=2,max=60"`
+	Slug        string   `form:"slug" json:"slug"`
 	Description string   `form:"description" json:"description" validate:"required,min=2,max=300"`
 	CategoryID  uint     `form:"categoryID" json:"categoryID" validate:"required"`
-	ProjectID   string   `form:"projectID" json:"projectID" validate:"required"`
+	ProjectId   uint     `form:"projectId" json:"projectId" validate:"required"`
 	UserID      uint     `form:"userID" json:"userID" validate:"required"`
 	Author      string   `form:"author" json:"author" validate:"required"`
 	Content     string   `form:"content" json:"content" validate:"required"`
@@ -36,9 +37,10 @@ type CreatePostRequest struct {
 // 更新内容结构体
 type UpdatePostRequest struct {
 	Title       string   `form:"title" json:"title" validate:"required,min=2,max=60"`
+	Slug        string   `form:"slug" json:"slug"`
 	Description string   `form:"description" json:"description" validate:"required,min=2,max=300"`
 	CategoryID  uint     `form:"categoryID" json:"categoryID" validate:"required"`
-	ProjectID   string   `form:"projectID" json:"projectID" validate:"required"`
+	ProjectId   uint     `form:"projectId" json:"projectId" validate:"required"`
 	UserID      uint     `form:"userID" json:"userID" validate:"required"`
 	Author      string   `form:"author" json:"author" validate:"required"`
 	Content     string   `form:"content" json:"content" validate:"required"`
@@ -63,10 +65,10 @@ type UpdatePostRequest struct {
 
 // 获取内容列表结构体
 type PostListRequest struct {
-	PostID    string `form:"postID" json:"postID"`
+	ID        uint   `form:"id" json:"id"`
 	Title     string `form:"title" json:"title"`
 	Status    uint   `form:"status" json:"status"`
-	ProjectID string `form:"projectID" json:"projectID"`
+	ProjectId uint   `form:"projectId" json:"projectId"`
 	PageNum   uint   `json:"pageNum" form:"pageNum"`
 	PageSize  uint   `json:"pageSize" form:"pageSize"`
 	SortBy    string `json:"sortBy" form:"sortBy"`

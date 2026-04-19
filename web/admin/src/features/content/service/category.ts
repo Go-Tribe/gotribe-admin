@@ -16,10 +16,10 @@ export function getCategoryTree() {
  */
 export function createCategory(
   data: CategoryParams,
-  options?: { projectID?: string },
+  options?: { projectId?: number },
 ) {
   const params = new URLSearchParams()
-  if (options?.projectID) params.set('projectID', options.projectID)
+  if (options?.projectId != null) params.set('projectID', String(options.projectId))
   const query = params.toString()
   const url = query ? `/api/category?${query}` : '/api/category'
   const body = {

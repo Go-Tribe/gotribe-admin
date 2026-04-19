@@ -5,7 +5,7 @@ import type { Project, ProjectListResponse } from '../types/project'
 export const getProjectList = async (params?: {
   current?: number
   title?: string
-  projectID?: string
+  id?: number
   pageNum?: number
   pageSize?: number
 }) => {
@@ -13,7 +13,7 @@ export const getProjectList = async (params?: {
 }
 
 // 获取单个项目
-export async function getProject(id: string): Promise<Project> {
+export async function getProject(id: number): Promise<Project> {
   return request.get<Project>(`/api/project/${id}`)
 }
 
@@ -29,16 +29,16 @@ export async function updateProject(
   params: Partial<Project>,
 ): Promise<{ success: boolean }> {
   return request.patch<{ success: boolean }>(
-    `/api/project/${params.projectID}`,
+    `/api/project/${params.id}`,
     params,
   )
 }
 
 // 删除项目
 export async function deleteProject(
-  projectID: string,
+  id: number,
 ): Promise<{ success: boolean }> {
   return request.delete<{ success: boolean }>('/api/project', {
-    data: { projectIds: projectID },
+    data: { projectIds: String(id) },
   })
 }

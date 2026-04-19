@@ -7,7 +7,7 @@ package vo
 
 // 创建积分结构体
 type CreatePointLogRequest struct {
-	ProjectID string  `form:"projectID" json:"projectID" validate:"required"`
+	ProjectId uint    `form:"projectId" json:"projectId" validate:"required"`
 	UserID    uint    `form:"userID" json:"userID" validate:"required"`
 	Point     float64 `form:"point" json:"point" validate:"required"`
 }
@@ -16,7 +16,7 @@ type CreatePointLogRequest struct {
 type PointLogListRequest struct {
 	UserID    uint   `form:"userID" json:"userID"`
 	Nickname  string `form:"nickname" json:"nickname"`
-	ProjectID string `form:"projectID" json:"projectID"`
+	ProjectId uint   `form:"projectId" json:"projectId"`
 	PageNum   uint   `json:"pageNum" form:"pageNum"`
 	PageSize  uint   `json:"pageSize" form:"pageSize"`
 }

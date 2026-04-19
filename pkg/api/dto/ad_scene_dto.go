@@ -14,7 +14,7 @@ type AdSceneDto struct {
 	ID           uint   `json:"id"`
 	Title        string `json:"title"`
 	Description  string `json:"description"`
-	ProjectID    string `json:"projectID"`
+	ProjectId    uint   `json:"projectId"`
 	ProjectTitle string `json:"projectTitle"`
 	CreatedAt    string `json:"createdAt"`
 	UpdatedAt    string `json:"updatedAt"`
@@ -30,7 +30,7 @@ func toAdSceneDto(adScene model.AdScene) AdSceneDto {
 		ID:           adScene.ID,
 		Title:        adScene.Title,
 		Description:  adScene.Description,
-		ProjectID:    adScene.ProjectID,
+		ProjectId:    adScene.ProjectId,
 		CreatedAt:    adScene.CreatedAt.Format(known.TIME_FORMAT),
 		UpdatedAt:    adScene.UpdatedAt.Format(known.TIME_FORMAT),
 		ProjectTitle: projectTitle,

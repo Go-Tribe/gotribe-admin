@@ -3,7 +3,7 @@ import type { CommentListParams, CommentListResponse } from '../types/comment'
 
 /**
  * 获取评论列表
- * GET /api/comment?pageNum=1&pageSize=10&status=&nickname=&projectID=
+ * GET /api/comment?pageNum=1&pageSize=10&status=&nickname=&projectId=
  */
 export async function getCommentList(
   params?: CommentListParams
@@ -19,8 +19,8 @@ export async function getCommentList(
   if (params?.nickname != null && params.nickname !== '') {
     requestParams.nickname = params.nickname
   }
-  if (params?.projectID != null && params.projectID !== '') {
-    requestParams.projectID = params.projectID
+  if (params?.projectId != null && params.projectId !== 0) {
+    requestParams.projectId = params.projectId
   }
   if (params?.sortBy) {
     requestParams.sortBy = params.sortBy

@@ -123,7 +123,7 @@ func (pc ConfigController) CreateConfig(c *gin.Context) {
 	}
 
 	config := model.Config{
-		ProjectID:   req.ProjectID,
+		ProjectId:   req.ProjectId,
 		Alias:       req.Alias,
 		Title:       req.Title,
 		MDContent:   req.MDContent,
@@ -178,7 +178,7 @@ func (pc ConfigController) UpdateConfigByID(c *gin.Context) {
 	oldConfig.Title = req.Title
 	oldConfig.Description = req.Description
 	oldConfig.Info = req.Info
-	oldConfig.ProjectID = req.ProjectID
+	oldConfig.ProjectId = req.ProjectId
 	oldConfig.MDContent = req.MDContent
 	// 更新配置
 	err = pc.ConfigRepository.UpdateConfig(ctx, &oldConfig)

@@ -72,7 +72,7 @@ func (pc AdSceneController) GetAdSceneInfo(c *gin.Context) {
 // @Tags 推广场景管理
 // @Accept json
 // @Produce json
-// @Param ProjectID query string false "项目ID"
+// @Param ProjectId query uint false "项目ID"
 // @Param pageNum query int false "页码"
 // @Param pageSize query int false "每页数量"
 // @Success 200 {object} response.Response{data=map[string]interface{}} "成功"
@@ -130,7 +130,7 @@ func (pc AdSceneController) CreateAdScene(c *gin.Context) {
 	}
 
 	adScene := model.AdScene{
-		ProjectID:   req.ProjectID,
+		ProjectId:   req.ProjectId,
 		Title:       req.Title,
 		Description: req.Description,
 	}
@@ -184,7 +184,7 @@ func (pc AdSceneController) UpdateAdSceneByID(c *gin.Context) {
 	}
 	oldAdScene.Title = req.Title
 	oldAdScene.Description = req.Description
-	oldAdScene.ProjectID = req.ProjectID
+	oldAdScene.ProjectId = req.ProjectId
 	// 更新推广场景
 	err = pc.AdSceneRepository.UpdateAdScene(c.Request.Context(), &oldAdScene)
 	if err != nil {

@@ -28,7 +28,7 @@ func (s *PostSeeder) Run(db *gorm.DB) error {
 	posts := []*model.Post{
 		{
 			Model:       model.Model{ID: 1},
-			PostID:      "243x9",
+			Slug:        "welcome-gotribe",
 			Title:       "欢迎使用GoTribe",
 			Description: "这是一篇示例文章",
 			Content:     "# 这是一篇示例文章",
@@ -37,7 +37,7 @@ func (s *PostSeeder) Run(db *gorm.DB) error {
 			UserID:      1,
 			CategoryID:  1,
 			Author:      "GoTribe",
-			ProjectID:   "245eko",
+			ProjectId:   1,
 		},
 	}
 

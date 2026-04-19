@@ -11,6 +11,7 @@ import { ResourceUpload, type ResourceItem } from '@/components/resource-upload'
 import { ArrowLeft } from 'lucide-react'
 import { format } from 'date-fns'
 import { slateContentToHtml } from '@/lib/slate-markdown'
+import { generateSlug } from '@/lib/slug'
 import { ArticleSettingsSheet } from './components/article-settings-sheet'
 import { ArticleMediaSheet } from './components/article-media-sheet'
 import { ArticleEditor } from './components/article-editor'
@@ -58,6 +59,7 @@ function flattenExtToKeyValue(obj: Record<string, unknown>, prefix = ''): Array<
 const createArticleFormSchema = (t: (key: string) => string) =>
   z.object({
     title: z.string().min(1, t('features.content.article.form.validation.titleRequired')),
+    slug: z.string().optional(),
     description: z.string().min(1, t('features.content.article.form.validation.descriptionRequired')),
     author: z.string().min(1, t('features.content.article.form.validation.authorRequired')),
     userID: z.string().min(1, t('features.content.article.form.validation.authorRequired')),
@@ -68,7 +70,7 @@ const createArticleFormSchema = (t: (key: string) => string) =>
     type: z.coerce.number().min(1, t('features.content.article.form.validation.typeRequired')),
     status: z.coerce.number().default(1),
     categoryID: z.string().min(1, t('features.content.article.form.validation.categoryRequired')),
-    projectID: z.string().min(1, t('features.content.article.form.validation.projectRequired')),
+    projectId: z.string().min(1, t('features.content.article.form.validation.projectRequired')),
     isTop: z.coerce.number().optional(),
     isPasswd: z.coerce.number().optional(),
     password: z.string().optional(),
@@ -79,15 +81,15 @@ const createArticleFormSchema = (t: (key: string) => string) =>
 export type ArticleFormValues = z.infer<ReturnType<typeof createArticleFormSchema>>
 
 type ArticleFormPageProps = {
-  postID?: string | null
+  id?: number | null
   initialPost?: Post | null
 }
 
-export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
+export function ArticleFormPage({ id, initialPost }: ArticleFormPageProps) {
   const { t } = useI18n()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const isEdit = !!postID
+  const isEdit = !!id
   const articleFormSchema = useMemo(() => createArticleFormSchema(t), [t])
 
   const [resourceOpen, setResourceOpen] = useState(false)
@@ -141,6 +143,7 @@ export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
     resolver: zodResolver(articleFormSchema) as Resolver<ArticleFormValues>,
     defaultValues: {
       title: '',
+      slug: '',
       description: '',
       author: '',
       userID: '',
@@ -151,7 +154,7 @@ export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
       type: 1,
       status: 1,
       categoryID: '',
-      projectID: '',
+      projectId: '',
       isTop: 1,
       isPasswd: 1,
       password: '',
@@ -165,13 +168,13 @@ export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
   formRef.current = form
 
   const { data: postDataRes, isLoading: postLoading } = useQuery({
-    queryKey: ['post', postID],
-    queryFn: () => getPostDetail(postID!),
-    enabled: !!isEdit && !!postID && !initialPost,
+    queryKey: ['post', id],
+    queryFn: () => getPostDetail(id!),
+    enabled: !!isEdit && !!id && !initialPost,
   })
-  const post = postID ? (initialPost ?? postDataRes ?? null) : null
-  const isLoadingPost = isEdit && !!postID && !initialPost && postLoading
-  const loadFinishedNoPost = isEdit && !!postID && !initialPost && !postLoading && !post
+  const post = id ? (initialPost ?? postDataRes ?? null) : null
+  const isLoadingPost = isEdit && !!id && !initialPost && postLoading
+  const loadFinishedNoPost = isEdit && !!id && !initialPost && !postLoading && !post
 
   // 同步 post 数据到表单
   useEffect(() => {
@@ -183,14 +186,15 @@ export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
           ? String((post.category as { id: string | number }).id)
           : '')
       const categoryID = rawCategoryID.trim()
-      const rawProjectID =
-        post.projectID ||
-        (post.project && typeof post.project === 'object' && 'projectID' in post.project
-          ? String((post.project as { projectID: string }).projectID)
+      const rawProjectId =
+        (post.projectId != null ? String(post.projectId) : '') ||
+        (post.project && typeof post.project === 'object' && 'id' in post.project
+          ? String((post.project as { id: number }).id)
           : '')
-      const projectID = rawProjectID.trim()
+      const projectId = rawProjectId.trim()
       const values = {
         title: post.title || '',
+        slug: post.slug || '',
         description: post.description || '',
         author: post.author || '',
         userID: post.userID ? String(post.userID) : '',
@@ -201,7 +205,7 @@ export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
         type: post.type || 1,
         status: [1, 2].includes(Number(post.status)) ? Number(post.status) : 1,
         categoryID: categoryID || '',
-        projectID: projectID || '',
+        projectId: projectId || '',
         isTop: post.isTop ?? 1,
         isPasswd: post.isPasswd ?? 1,
         password: post.password || '',
@@ -226,13 +230,14 @@ export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
       const tid = setTimeout(() => {
         setExtFields(newExtFields)
         if (categoryID) currentForm.setValue('categoryID', categoryID)
-        if (projectID) currentForm.setValue('projectID', projectID)
+        if (projectId) currentForm.setValue('projectId', projectId)
         currentForm.setValue('status', values.status)
       }, 0)
       return () => clearTimeout(tid)
     } else if (!isEdit) {
       currentForm.reset({
         title: '',
+        slug: '',
         description: '',
         author: '', // Will be set by useEffect
         userID: '',
@@ -243,7 +248,7 @@ export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
         type: 1, // Default Article
         status: 1,
         categoryID: '',
-        projectID: '', // 由 useEffect 在 projectList 加载后设为第一项
+        projectId: '', // 由 useEffect 在 projectList 加载后设为第一项
         isTop: 1,
         isPasswd: 1,
         password: '',
@@ -254,6 +259,22 @@ export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
       return () => clearTimeout(tid)
     }
   }, [post, isEdit])
+
+  // 标题变化时自动生成 slug（仅当 slug 为空时）
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === 'title' && value.title) {
+        const currentSlug = form.getValues('slug')
+        if (!currentSlug) {
+          const generated = generateSlug(value.title)
+          if (generated) {
+            form.setValue('slug', generated, { shouldValidate: false })
+          }
+        }
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [form])
 
   // Set default author for new posts
   useEffect(() => {
@@ -280,9 +301,9 @@ export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
   // Set default project for new posts
   useEffect(() => {
     if (!isEdit && projectList.length > 0) {
-      const currentProject = formRef.current.getValues('projectID')
+      const currentProject = formRef.current.getValues('projectId')
       if (!currentProject) {
-        formRef.current.setValue('projectID', projectList[0].projectID)
+        formRef.current.setValue('projectId', String(projectList[0].id))
       }
     }
   }, [isEdit, projectList])
@@ -299,7 +320,7 @@ export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
   })
 
   const updateMutation = useMutation({
-    mutationFn: ({ postID, ...params }: PostParams & { postID: string }) => updatePost(postID, params),
+    mutationFn: ({ id: postId, ...params }: PostParams & { id: number }) => updatePost(postId, params),
     onSuccess: () => {
       toast.success(t('features.content.article.updateSuccess'), {
         description: t('features.content.article.form.returnToListAfterUpdate'),
@@ -314,7 +335,7 @@ export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
 
   const onInvalid = useCallback((errors: FieldErrors<ArticleFormValues>) => {
     const mediaFields = ['description', 'icon', 'video', 'images']
-    const settingsFields = ['type', 'status', 'categoryID', 'projectID', 'tag', 'showTime', 'isTop', 'isPasswd', 'password', 'author', 'userID']
+    const settingsFields = ['type', 'status', 'categoryID', 'projectId', 'tag', 'showTime', 'isTop', 'isPasswd', 'password', 'author', 'userID']
 
     const hasMediaError = Object.keys(errors).some(key => mediaFields.includes(key))
     if (hasMediaError) {
@@ -343,6 +364,7 @@ export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
     // 显式构造 payload，确保 status 等字段正确传递
     const payload = {
       title: values.title,
+      slug: values.slug,
       description: values.description,
       author: values.author,
       userID: values.userID ? Number(values.userID) : undefined,
@@ -355,7 +377,7 @@ export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
       type: values.type,
       status: values.status ?? 1,
       categoryID: values.categoryID ? Number(values.categoryID) : undefined,
-      projectID: values.projectID,
+      projectId: values.projectId ? Number(values.projectId) : undefined,
       isTop: values.isTop,
       isPasswd: values.isPasswd,
       password: values.password,
@@ -363,12 +385,12 @@ export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
       showTime: values.showTime ? format(values.showTime, 'yyyy-MM-dd HH:mm:ss') : undefined,
     }
 
-    if (isEdit && postID) {
-      updatePostMutate({ ...payload, postID })
+    if (isEdit && id) {
+      updatePostMutate({ ...payload, id })
     } else {
       createPostMutate(payload)
     }
-  }, [extFields, isEdit, postID, createPostMutate, updatePostMutate, createMutation.isPending, updateMutation.isPending])
+  }, [extFields, isEdit, id, createPostMutate, updatePostMutate, createMutation.isPending, updateMutation.isPending])
 
   // Keyboard shortcuts
   useEffect(() => {

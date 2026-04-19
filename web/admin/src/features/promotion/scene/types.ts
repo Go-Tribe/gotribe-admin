@@ -3,7 +3,7 @@ export interface Scene {
   id: number
   title: string
   description?: string
-  projectID: string
+  projectId: number
   projectTitle?: string
   createdAt?: string
   updatedAt?: string
@@ -13,7 +13,7 @@ export interface Scene {
 export interface SceneListParams {
   pageNum?: number
   pageSize?: number
-  projectID?: string
+  projectId?: number
 }
 
 /** 列表接口返回 data 结构 */
@@ -26,12 +26,12 @@ export interface SceneListResponse {
 export interface SceneCreateParams {
   title: string
   description: string
-  projectID: string
+  projectId: number
 }
 
 /** 更新广告场景请求参数（PATCH body） */
 export interface SceneUpdateParams {
   title: string
   description: string
-  projectID?: string
+  projectId?: number
 }

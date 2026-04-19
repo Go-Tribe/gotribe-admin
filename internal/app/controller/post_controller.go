@@ -15,6 +15,7 @@ import (
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
 	"gotribe-admin/pkg/util"
+	"strconv"
 	"strings"
 	"time"
 
@@ -51,14 +52,19 @@ func NewPostController() IPostController {
 // @Tags         内容管理
 // @Accept       json
 // @Produce      json
-// @Param        postID path string true "内容ID"
+// @Param        id path uint true "内容ID"
 // @Success      200 {object} response.Response
 // @Failure      400 {object} response.Response
-// @Router       /post/{postID} [get]
+// @Router       /post/{id} [get]
 // @Security     BearerAuth
 func (pc PostController) GetPostInfo(c *gin.Context) {
 	ctx := c.Request.Context()
-	post, err := pc.PostRepository.GetPostByPostID(ctx, c.Param("postID"))
+	postID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ValidationFail(c, "无效的 id")
+		return
+	}
+	post, err := pc.PostRepository.GetPostByID(ctx, uint(postID))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -128,6 +134,10 @@ func (pc PostController) CreatePost(c *gin.Context) {
 		response.ValidationFail(c, errStr)
 		return
 	}
+	slug := req.Slug
+	if slug == "" {
+		slug = util.GenerateSlug(req.Title)
+	}
 	imageStr := strings.Join(req.Images, ",")
 	postTime, err := parseOptionalPostTime(req.Time, known.TIME_FORMAT_SHORT)
 	if err != nil {
@@ -140,8 +150,9 @@ func (pc PostController) CreatePost(c *gin.Context) {
 		return
 	}
 	post := model.Post{
+		Slug:        slug,
 		CategoryID:  req.CategoryID,
-		ProjectID:   req.ProjectID,
+		ProjectId:   req.ProjectId,
 		UserID:      req.UserID,
 		Author:      req.Author,
 		Title:       req.Title,
@@ -182,11 +193,11 @@ func (pc PostController) CreatePost(c *gin.Context) {
 // @Tags         内容管理
 // @Accept       json
 // @Produce      json
-// @Param        postID path string true "内容ID"
+// @Param        id path uint true "内容ID"
 // @Param        request body vo.UpdatePostRequest true "更新内容请求"
 // @Success      200 {object} response.Response
 // @Failure      400 {object} response.Response
-// @Router       /post/{postID} [patch]
+// @Router       /post/{id} [patch]
 // @Security     BearerAuth
 func (pc PostController) UpdatePostByID(c *gin.Context) {
 	var req vo.UpdatePostRequest
@@ -204,7 +215,12 @@ func (pc PostController) UpdatePostByID(c *gin.Context) {
 
 	ctx := c.Request.Context()
 	// 根据path中的PostID获取内容信息
-	oldPost, err := pc.PostRepository.GetPostByPostID(ctx, c.Param("postID"))
+	postID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ValidationFail(c, "无效的 id")
+		return
+	}
+	oldPost, err := pc.PostRepository.GetPostByID(ctx, uint(postID))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -220,11 +236,16 @@ func (pc PostController) UpdatePostByID(c *gin.Context) {
 		response.ValidationFail(c, "showTime 格式错误，应为 2006-01-02 15:04:05")
 		return
 	}
+	slug := req.Slug
+	if slug == "" {
+		slug = util.GenerateSlug(req.Title)
+	}
+	oldPost.Slug = slug
 	oldPost.Title = req.Title
 	oldPost.Description = req.Description
 	oldPost.IsTop = req.IsTop
 	oldPost.IsPasswd = req.IsPasswd
-	oldPost.ProjectID = req.ProjectID
+	oldPost.ProjectId = req.ProjectId
 	oldPost.PassWord = req.Password
 	oldPost.Type = req.Type
 	oldPost.Icon = req.Icon
@@ -279,8 +300,20 @@ func (tc PostController) BatchDeletePostByIds(c *gin.Context) {
 	}
 
 	ctx := c.Request.Context()
-	// 前端传来的标签ID
-	reqPostIds := strings.Split(req.PostIds, ",")
+	// 前端传来的内容ID
+	reqPostIdStrs := strings.Split(req.PostIds, ",")
+	var reqPostIds []uint
+	for _, idStr := range reqPostIdStrs {
+		if idStr == "" {
+			continue
+		}
+		id, err := strconv.ParseUint(idStr, 10, 64)
+		if err != nil {
+			response.ValidationFail(c, "无效的 id: "+idStr)
+			return
+		}
+		reqPostIds = append(reqPostIds, uint(id))
+	}
 	err := tc.PostRepository.BatchDeletePostByIds(ctx, reqPostIds)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
@@ -315,15 +348,20 @@ func parseOptionalPostTime(value string, primaryLayout string) (*time.Time, erro
 // @Tags         内容管理
 // @Accept       json
 // @Produce      json
-// @Param        postID path string true "内容ID"
+// @Param        id path uint true "内容ID"
 // @Success      200 {object} response.Response
 // @Failure      400 {object} response.Response
-// @Router       /post/{postID} [put]
+// @Router       /post/{id} [put]
 // @Security     BearerAuth
 func (pc PostController) PushPostByID(c *gin.Context) {
 	ctx := c.Request.Context()
 	// 根据path中的PostID获取内容信息
-	oldPost, err := pc.PostRepository.GetPostByPostID(ctx, c.Param("postID"))
+	postID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ValidationFail(c, "无效的 id")
+		return
+	}
+	oldPost, err := pc.PostRepository.GetPostByID(ctx, uint(postID))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -336,12 +374,12 @@ func (pc PostController) PushPostByID(c *gin.Context) {
 		return
 	}
 	// 同步内容至百度
-	projectInfo, err := pc.ProjectRepository.GetProjectByProjectID(ctx, oldPost.ProjectID)
+	projectInfo, err := pc.ProjectRepository.GetProjectByID(ctx, oldPost.ProjectId)
 	if err != nil {
 		common.Log.Errorf("获取项目信息失败: %v", err)
 	} else if !gconvert.IsEmpty(projectInfo.PushToken) {
 		// 处理 url
-		postURLWithID := projectInfo.PostURL + oldPost.PostID
+		postURLWithID := projectInfo.PostURL + oldPost.Slug
 		go func() {
 			if _, err := util.SEOUtil.PushBaidu(projectInfo.Domain, projectInfo.PushToken, postURLWithID); err != nil {
 				common.Log.Errorf("推送百度失败: %v", err)

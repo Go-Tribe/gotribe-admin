@@ -9,7 +9,7 @@ export type User = {
   password?: string
   avatarURL: string // 头像URL
   sex: 'M' | 'F' | '' | 'U' // 性别：M-男，F-女，U-未知
-  projectID: string // 项目ID
+  projectId: number // 项目ID
   status: number // 状态
   birthday: string // 生日
   point: number // 积分

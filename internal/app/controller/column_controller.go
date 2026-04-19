@@ -138,7 +138,7 @@ func (pc ColumnController) CreateColumn(c *gin.Context) {
 		Description: req.Description,
 		Info:        req.Info,
 		Icon:        req.Icon,
-		ProjectID:   req.ProjectID,
+		ProjectId:   req.ProjectId,
 	}
 
 	ctx := c.Request.Context()
@@ -194,7 +194,7 @@ func (pc ColumnController) UpdateColumnByID(c *gin.Context) {
 	oldColumn.Description = req.Description
 	oldColumn.Info = req.Info
 	oldColumn.Icon = req.Icon
-	oldColumn.ProjectID = req.ProjectID
+	oldColumn.ProjectId = req.ProjectId
 	// 更新专栏
 	err = pc.ColumnRepository.UpdateColumn(ctx, &oldColumn)
 	if err != nil {

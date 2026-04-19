@@ -42,7 +42,7 @@ import { Route as AuthenticatedBusinessProjectRouteImport } from './routes/_auth
 import { Route as AuthenticatedContentArticleRouteRouteImport } from './routes/_authenticated/content/article/route'
 import { Route as AuthenticatedContentArticleIndexRouteImport } from './routes/_authenticated/content/article/index'
 import { Route as AuthenticatedContentArticleNewRouteImport } from './routes/_authenticated/content/article/new'
-import { Route as AuthenticatedContentArticlePostIDEditRouteImport } from './routes/_authenticated/content/article/$postID.edit'
+import { Route as AuthenticatedContentArticleIdEditRouteImport } from './routes/_authenticated/content/article/$id.edit'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -226,10 +226,10 @@ const AuthenticatedContentArticleNewRoute =
     path: '/new',
     getParentRoute: () => AuthenticatedContentArticleRouteRoute,
   } as any)
-const AuthenticatedContentArticlePostIDEditRoute =
-  AuthenticatedContentArticlePostIDEditRouteImport.update({
-    id: '/$postID/edit',
-    path: '/$postID/edit',
+const AuthenticatedContentArticleIdEditRoute =
+  AuthenticatedContentArticleIdEditRouteImport.update({
+    id: '/$id/edit',
+    path: '/$id/edit',
     getParentRoute: () => AuthenticatedContentArticleRouteRoute,
   } as any)
 
@@ -266,7 +266,7 @@ export interface FileRoutesByFullPath {
   '/personal-center/': typeof AuthenticatedPersonalCenterIndexRoute
   '/content/article/new': typeof AuthenticatedContentArticleNewRoute
   '/content/article/': typeof AuthenticatedContentArticleIndexRoute
-  '/content/article/$postID/edit': typeof AuthenticatedContentArticlePostIDEditRoute
+  '/content/article/$id/edit': typeof AuthenticatedContentArticleIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -299,7 +299,7 @@ export interface FileRoutesByTo {
   '/personal-center': typeof AuthenticatedPersonalCenterIndexRoute
   '/content/article/new': typeof AuthenticatedContentArticleNewRoute
   '/content/article': typeof AuthenticatedContentArticleIndexRoute
-  '/content/article/$postID/edit': typeof AuthenticatedContentArticlePostIDEditRoute
+  '/content/article/$id/edit': typeof AuthenticatedContentArticleIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -336,7 +336,7 @@ export interface FileRoutesById {
   '/_authenticated/personal-center/': typeof AuthenticatedPersonalCenterIndexRoute
   '/_authenticated/content/article/new': typeof AuthenticatedContentArticleNewRoute
   '/_authenticated/content/article/': typeof AuthenticatedContentArticleIndexRoute
-  '/_authenticated/content/article/$postID/edit': typeof AuthenticatedContentArticlePostIDEditRoute
+  '/_authenticated/content/article/$id/edit': typeof AuthenticatedContentArticleIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -373,7 +373,7 @@ export interface FileRouteTypes {
     | '/personal-center/'
     | '/content/article/new'
     | '/content/article/'
-    | '/content/article/$postID/edit'
+    | '/content/article/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -406,7 +406,7 @@ export interface FileRouteTypes {
     | '/personal-center'
     | '/content/article/new'
     | '/content/article'
-    | '/content/article/$postID/edit'
+    | '/content/article/$id/edit'
   id:
     | '__root__'
     | '/'
@@ -442,7 +442,7 @@ export interface FileRouteTypes {
     | '/_authenticated/personal-center/'
     | '/_authenticated/content/article/new'
     | '/_authenticated/content/article/'
-    | '/_authenticated/content/article/$postID/edit'
+    | '/_authenticated/content/article/$id/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -691,11 +691,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedContentArticleNewRouteImport
       parentRoute: typeof AuthenticatedContentArticleRouteRoute
     }
-    '/_authenticated/content/article/$postID/edit': {
-      id: '/_authenticated/content/article/$postID/edit'
-      path: '/$postID/edit'
-      fullPath: '/content/article/$postID/edit'
-      preLoaderRoute: typeof AuthenticatedContentArticlePostIDEditRouteImport
+    '/_authenticated/content/article/$id/edit': {
+      id: '/_authenticated/content/article/$id/edit'
+      path: '/$id/edit'
+      fullPath: '/content/article/$id/edit'
+      preLoaderRoute: typeof AuthenticatedContentArticleIdEditRouteImport
       parentRoute: typeof AuthenticatedContentArticleRouteRoute
     }
   }
@@ -719,7 +719,7 @@ const AuthenticatedPersonalCenterRouteRouteWithChildren =
 interface AuthenticatedContentArticleRouteRouteChildren {
   AuthenticatedContentArticleNewRoute: typeof AuthenticatedContentArticleNewRoute
   AuthenticatedContentArticleIndexRoute: typeof AuthenticatedContentArticleIndexRoute
-  AuthenticatedContentArticlePostIDEditRoute: typeof AuthenticatedContentArticlePostIDEditRoute
+  AuthenticatedContentArticleIdEditRoute: typeof AuthenticatedContentArticleIdEditRoute
 }
 
 const AuthenticatedContentArticleRouteRouteChildren: AuthenticatedContentArticleRouteRouteChildren =
@@ -727,8 +727,8 @@ const AuthenticatedContentArticleRouteRouteChildren: AuthenticatedContentArticle
     AuthenticatedContentArticleNewRoute: AuthenticatedContentArticleNewRoute,
     AuthenticatedContentArticleIndexRoute:
       AuthenticatedContentArticleIndexRoute,
-    AuthenticatedContentArticlePostIDEditRoute:
-      AuthenticatedContentArticlePostIDEditRoute,
+    AuthenticatedContentArticleIdEditRoute:
+      AuthenticatedContentArticleIdEditRoute,
   }
 
 const AuthenticatedContentArticleRouteRouteWithChildren =

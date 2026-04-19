@@ -9,14 +9,14 @@ import type {
 
 /**
  * 获取专栏列表
- * GET /api/column?projectID=&title=&pageNum=1&pageSize=3
+ * GET /api/column?projectId=&title=&pageNum=1&pageSize=3
  */
 export async function getColumnList(
   params?: ColumnListParams
 ): Promise<ColumnListResponse> {
   const data = await request.get<ColumnListResponse>('/api/column', {
     params: {
-      projectID: params?.projectID ?? '',
+      projectId: params?.projectId ?? 0,
       title: params?.title ?? '',
       pageNum: params?.pageNum ?? 1,
       pageSize: params?.pageSize ?? 10,
@@ -28,7 +28,7 @@ export async function getColumnList(
 /**
  * 获取专栏详情（编辑时用于回显）
  * GET /api/column/:columnID
- * 响应: { code, message, data: { column: { columnID, title, info, projectID, icon, description, createdAt } } }
+ * 响应: { code, message, data: { column: { columnID, title, info, projectId, icon, description, createdAt } } }
  */
 export async function getColumn(columnID: string): Promise<Column> {
   const id = columnID.trim()
@@ -38,7 +38,7 @@ export async function getColumn(columnID: string): Promise<Column> {
 
 /**
  * 新增专栏
- * POST /api/column?projectID=xxx  body: title, description, info, projectID, icon
+ * POST /api/column?projectId=xxx  body: title, description, info, projectId, icon
  */
 export async function createColumn(
   data: ColumnCreateParams

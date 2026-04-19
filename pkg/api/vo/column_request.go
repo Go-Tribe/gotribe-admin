@@ -11,7 +11,7 @@ type CreateColumnRequest struct {
 	Description string `form:"description" json:"description" validate:"required,min=2,max=300"`
 	Info        string `form:"info" json:"info"`
 	Icon        string `form:"icon" json:"icon" validate:"required,min=2,max=300"`
-	ProjectID   string `form:"projectID" json:"projectID" validate:"required,min=2,max=10"`
+	ProjectId   uint   `form:"projectId" json:"projectId" validate:"required"`
 }
 
 type UpdateColumnRequest struct {
@@ -19,13 +19,13 @@ type UpdateColumnRequest struct {
 	Description string `form:"description" json:"description" validate:"required,min=2,max=300"`
 	Icon        string `form:"icon" json:"icon" validate:"required,min=2,max=300"`
 	Info        string `form:"info" json:"info"`
-	ProjectID   string `form:"projectID" json:"projectID" validate:"required,min=2,max=10"`
+	ProjectId   uint   `form:"projectId" json:"projectId" validate:"required"`
 }
 
 // 获取专栏列表结构体
 type ColumnListRequest struct {
 	ID        uint   `form:"id" json:"id"`
-	ProjectID string `form:"projectID" json:"projectID"`
+	ProjectId uint   `form:"projectId" json:"projectId"`
 	Title     string `form:"title" json:"title"`
 	PageNum   uint   `json:"pageNum" form:"pageNum"`
 	PageSize  uint   `json:"pageSize" form:"pageSize"`

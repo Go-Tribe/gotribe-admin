@@ -9,7 +9,7 @@ import type {
 
 /**
  * 获取配置列表
- * GET /api/config?configID=&title=&pageNum=1&pageSize=3&projectID=&type=
+ * GET /api/config?configID=&title=&pageNum=1&pageSize=3&projectId=&type=
  */
 export async function getConfigList(
   params?: ConfigListParams
@@ -20,7 +20,7 @@ export async function getConfigList(
       title: params?.title ?? '',
       pageNum: params?.pageNum ?? 1,
       pageSize: params?.pageSize ?? 10,
-      projectID: params?.projectID,
+      projectId: params?.projectId,
       type: params?.type,
     },
   })
@@ -29,7 +29,7 @@ export async function getConfigList(
 
 /**
  * 新增配置
- * POST /api/config?project_id=  body: title, description, info, projectID, alias, type, mdContent
+ * POST /api/config?projectId=  body: title, description, info, projectId, alias, type, mdContent
  */
 export async function createConfig(
   data: ConfigCreateParams
@@ -50,7 +50,7 @@ export async function getConfig(configID: string): Promise<Config> {
 
 /**
  * 更新配置
- * PATCH /api/config/:configID  body: title, description, projectID, info, mdContent
+ * PATCH /api/config/:configID  body: title, description, projectId, info, mdContent
  */
 export async function updateConfig(
   configID: string,

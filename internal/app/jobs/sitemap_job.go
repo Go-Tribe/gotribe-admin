@@ -52,16 +52,16 @@ func (j *SitemapJob) execute(ctx context.Context) error {
 		}
 
 		// 使用固定的文件名，确保每次都是覆盖
-		st.SetFilename(project.ProjectID + ".xml")
+		st.SetFilename(project.Name + ".xml")
 
-		if err := common.DB.Model(&model.Post{}).Where("status = ? and type != ? and project_id = ?", 2, 2, project.ProjectID).Find(&posts).Error; err != nil {
-			common.Log.Errorf("Failed to query posts for project %s: %v", project.ProjectID, err)
+		if err := common.DB.Model(&model.Post{}).Where("status = ? and type != ? and project_id = ?", 2, 2, project.Name).Find(&posts).Error; err != nil {
+			common.Log.Errorf("Failed to query posts for project %s: %v", project.Name, err)
 			continue
 		}
 
 		for _, post := range posts {
 			url := gositemap.NewUrl()
-			url.SetLoc(project.PostURL + post.PostID)
+			url.SetLoc(project.PostURL + post.Slug)
 			url.SetLastmod(post.UpdatedAt)
 			url.SetChangefreq(gositemap.Daily)
 			url.SetPriority(1)

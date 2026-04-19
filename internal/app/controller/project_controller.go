@@ -12,6 +12,7 @@ import (
 	"gotribe-admin/pkg/api/dto"
 	"gotribe-admin/pkg/api/response"
 	"gotribe-admin/pkg/api/vo"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -43,14 +44,19 @@ func NewProjectController() IProjectController {
 // @Tags         项目管理
 // @Accept       json
 // @Produce      json
-// @Param        projectID path string true "项目ID"
+// @Param        id path uint true "项目ID"
 // @Success      200 {object} response.Response
 // @Failure      400 {object} response.Response
-// @Router       /project/{projectID} [get]
+// @Router       /project/{id} [get]
 // @Security     BearerAuth
 func (pc ProjectController) GetProjectInfo(c *gin.Context) {
 	ctx := c.Request.Context()
-	project, err := pc.ProjectRepository.GetProjectByProjectID(ctx, c.Param("projectID"))
+	projectID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ValidationFail(c, "无效的 id")
+		return
+	}
+	project, err := pc.ProjectRepository.GetProjectByID(ctx, uint(projectID))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -154,11 +160,11 @@ func (pc ProjectController) CreateProject(c *gin.Context) {
 // @Tags         项目管理
 // @Accept       json
 // @Produce      json
-// @Param        projectID path string true "项目ID"
+// @Param        id path uint true "项目ID"
 // @Param        request body vo.CreateProjectRequest true "更新项目请求"
 // @Success      200 {object} response.Response
 // @Failure      400 {object} response.Response
-// @Router       /project/{projectID} [patch]
+// @Router       /project/{id} [patch]
 // @Security     BearerAuth
 func (pc ProjectController) UpdateProjectByID(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -176,7 +182,12 @@ func (pc ProjectController) UpdateProjectByID(c *gin.Context) {
 	}
 
 	// 根据path中的ProjectID获取项目信息
-	oldProject, err := pc.ProjectRepository.GetProjectByProjectID(ctx, c.Param("projectID"))
+	projectID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ValidationFail(c, "无效的 id")
+		return
+	}
+	oldProject, err := pc.ProjectRepository.GetProjectByID(ctx, uint(projectID))
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgGetFail)
 		return
@@ -230,9 +241,21 @@ func (tc ProjectController) BatchDeleteProjectByIds(c *gin.Context) {
 		response.ValidationFail(c, errStr)
 		return
 	}
-	// 前端传来的标签ID
+	// 前端传来的项目ID
 	reqProjectIds := strings.Split(req.ProjectIds, ",")
-	err := tc.ProjectRepository.BatchDeleteProjectByIds(ctx, reqProjectIds)
+	var ids []uint
+	for _, idStr := range reqProjectIds {
+		if idStr == "" {
+			continue
+		}
+		id, err := strconv.ParseUint(idStr, 10, 64)
+		if err != nil {
+			response.ValidationFail(c, "项目ID格式错误")
+			return
+		}
+		ids = append(ids, uint(id))
+	}
+	err := tc.ProjectRepository.BatchDeleteProjectByIds(ctx, ids)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgDeleteFail)
 		return

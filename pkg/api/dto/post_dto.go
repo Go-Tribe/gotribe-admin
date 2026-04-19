@@ -15,12 +15,13 @@ import (
 
 // 返回给前端的内容列表
 type PostsDto struct {
+	ID          uint            `json:"id"`
+	Slug        string          `json:"slug"`
 	ColumnID    uint            `json:"columnID,omitempty"`
-	PostID      string          `json:"postID"`
 	Title       string          `json:"title"`
 	Description string          `json:"description"`
 	CategoryID  uint            `json:"categoryID"`
-	ProjectID   string          `json:"projectID"`
+	ProjectId   uint            `json:"projectId"`
 	UserID      uint            `json:"userID"`
 	Author      string          `json:"author" `
 	Content     string          `json:"content" `
@@ -55,12 +56,13 @@ func ToPostInfoDto(post *model.Post) PostsDto {
 		imageList = strings.Split(post.Images, ",")
 	}
 	return PostsDto{
+		ID:          post.ID,
+		Slug:        post.Slug,
 		ColumnID:    post.ColumnID,
-		PostID:      post.PostID,
 		Title:       post.Title,
 		Description: post.Description,
 		CategoryID:  post.CategoryID,
-		ProjectID:   post.ProjectID,
+		ProjectId:   post.ProjectId,
 		UserID:      post.UserID,
 		Author:      post.Author,
 		Content:     post.Content,

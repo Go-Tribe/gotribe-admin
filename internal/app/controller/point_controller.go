@@ -96,7 +96,7 @@ func (pc PointController) CreatePoint(c *gin.Context) {
 		return
 	}
 
-	err := pc.PointRepository.CreatePoint(c.Request.Context(), req.UserID, "admin", "后台添加", "0", req.ProjectID, req.Point)
+	err := pc.PointRepository.CreatePoint(c.Request.Context(), req.UserID, "admin", "后台添加", "0", req.ProjectId, req.Point)
 	if err != nil {
 		response.HandleDatabaseError(c, err, common.MsgCreateFail)
 		return

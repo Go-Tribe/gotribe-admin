@@ -30,7 +30,7 @@ func (s *UserSeeder) Run(db *gorm.DB) error {
 			Model:     model.Model{ID: 1},
 			Username:  "gotribe",
 			Nickname:  "gotribe",
-			ProjectID: "245eko",
+			ProjectId: 1,
 		},
 	}
 

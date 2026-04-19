@@ -14,7 +14,7 @@ type ColumnDto struct {
 	ID          uint   `json:"id"`
 	Title       string `json:"title"`
 	Info        string `json:"info"`
-	ProjectID   string `json:"projectID"`
+	ProjectId   uint   `json:"projectId"`
 	Icon        string `json:"icon"`
 	Description string `json:"description"`
 	CreatedAt   string `json:"createdAt"`
@@ -27,7 +27,7 @@ func ToColumnInfoDto(column model.Column) ColumnDto {
 		Description: column.Description,
 		Info:        column.Info,
 		Icon:        column.Icon,
-		ProjectID:   column.ProjectID,
+		ProjectId:   column.ProjectId,
 		CreatedAt:   column.CreatedAt.Format(known.TIME_FORMAT),
 	}
 }
@@ -38,7 +38,7 @@ func ToColumnsDto(columnList []*model.Column) []ColumnDto {
 		columnDto := ColumnDto{
 			ID:          column.ID,
 			Title:       column.Title,
-			ProjectID:   column.ProjectID,
+			ProjectId:   column.ProjectId,
 			Description: column.Description,
 			Info:        column.Info,
 			Icon:        column.Icon,

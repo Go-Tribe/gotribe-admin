@@ -9,7 +9,7 @@ import (
 
 type FeedbackDto struct {
 	ID        int        `json:"id"`
-	ProjectID string     `json:"projectID"`
+	ProjectId uint       `json:"projectId"`
 	Title     string     `json:"title"`
 	Content   string     `json:"content"`
 	UserID    uint       `json:"userID"`
@@ -22,7 +22,7 @@ type FeedbackDto struct {
 func toFeedbackDto(feedback model.Feedback) FeedbackDto {
 	dto := FeedbackDto{
 		ID:        int(feedback.ID),
-		ProjectID: feedback.ProjectID,
+		ProjectId: feedback.ProjectId,
 		Content:   feedback.Content,
 		Title:     feedback.Title,
 		UserID:    feedback.UserID,

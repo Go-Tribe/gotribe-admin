@@ -38,7 +38,7 @@ export function ContentArticle() {
   'use no memo'
   const { t } = useI18n()
   const navigate = useNavigate()
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState<string | null>(null)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<number | null>(null)
 
   const {
     columnFilters,
@@ -62,10 +62,10 @@ export function ContentArticle() {
         : undefined
 
     return {
-      postID: getFilterValue('postID'),
+      id: getFilterValue('id') ? Number(getFilterValue('id')) : undefined,
       title: getFilterValue('title'),
       status: getFilterValue('status') || undefined,
-      projectID: getFilterValue('projectID') || undefined,
+      projectId: getFilterValue('projectId') ? Number(getFilterValue('projectId')) : undefined,
       pageNum,
       pageSize: pagination.pageSize,
       sortBy,
@@ -92,12 +92,12 @@ export function ContentArticle() {
   const columns = useMemo<ColumnDef<Post>[]>(
     () => [
       {
-        accessorKey: 'postID',
+        accessorKey: 'id',
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title={t('features.content.article.columns.postID')} />
+          <DataTableColumnHeader column={column} title={t('features.content.article.columns.id')} />
         ),
         cell: ({ row }) => (
-          <div className='font-mono text-muted-foreground'>{row.getValue('postID') as string}</div>
+          <div className='font-mono text-muted-foreground'>{row.getValue('id') as number}</div>
         ),
       },
       {
@@ -105,18 +105,30 @@ export function ContentArticle() {
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title={t('features.content.article.columns.title')} />
         ),
-        cell: ({ row }) => (
-          <div className='flex items-center gap-2'>
-            {row.original.isTop === 2 && (
-              <Badge variant='destructive' className='px-1 py-0 text-[10px] h-5 whitespace-nowrap'>
-                TOP
-              </Badge>
-            )}
-            <div className='max-w-[200px] truncate font-medium' title={row.getValue('title') as string}>
-              {row.getValue('title') as string}
+        cell: ({ row }) => {
+          const post = row.original
+          const title = row.getValue('title') as string
+          const slug = post.slug
+          return (
+            <div className='flex flex-col gap-0.5'>
+              <div className='flex items-center gap-2'>
+                {post.isTop === 2 && (
+                  <Badge variant='destructive' className='px-1 py-0 text-[10px] h-5 whitespace-nowrap'>
+                    TOP
+                  </Badge>
+                )}
+                <div className='max-w-[200px] truncate font-medium' title={title}>
+                  {title}
+                </div>
+              </div>
+              {slug && (
+                <div className='text-xs text-muted-foreground truncate max-w-[200px]' title={slug}>
+                  {slug}
+                </div>
+              )}
             </div>
-          </div>
-        ),
+          )
+        },
       },
       {
         accessorKey: 'author',
@@ -140,15 +152,15 @@ export function ContentArticle() {
         },
       },
       {
-        id: 'projectID',
-        accessorKey: 'projectID',
+        id: 'projectId',
+        accessorKey: 'projectId',
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title={t('features.content.article.filter.project')} />
         ),
         cell: ({ row }) => {
-          const id = row.getValue('projectID') as string
-          const project = projectList.find((p) => p.projectID === id)
-          return <div className='text-muted-foreground'>{project?.title ?? id ?? '-'}</div>
+          const projectId = row.getValue('projectId') as number
+          const project = projectList.find((p) => p.id === projectId)
+          return <div className='text-muted-foreground'>{project?.title ?? projectId ?? '-'}</div>
         },
       },
       {
@@ -192,7 +204,7 @@ export function ContentArticle() {
                     variant='outline'
                     size='sm'
                     className='h-8 border-border/60'
-                    onClick={() => navigate({ to: '/content/article/$postID/edit', params: { postID: post.postID } })}
+                    onClick={() => navigate({ to: '/content/article/$id/edit', params: { id: String(post.id) } })}
                   >
                     <Pencil1Icon className='h-4 w-4' />
                   </Button>
@@ -205,7 +217,7 @@ export function ContentArticle() {
                     variant='ghost'
                     size='sm'
                     className='h-8 text-destructive hover:text-destructive'
-                    onClick={() => setDeleteDialogOpen(post.postID)}
+                    onClick={() => setDeleteDialogOpen(post.id)}
                   >
                     <TrashIcon className='h-4 w-4 text-destructive' />
                   </Button>
@@ -246,7 +258,7 @@ export function ContentArticle() {
     },
   })
 
-  const { deleteMutation, isLoading: isMutating } = useCrudMutations<Post, string>({
+  const { deleteMutation, isLoading: isMutating } = useCrudMutations<Post, number>({
     queryKey: ['postList'],
     createFn: async () => { throw new Error('Not implemented') },
     updateFn: async () => { throw new Error('Not implemented') },
@@ -265,7 +277,7 @@ export function ContentArticle() {
     }
   }
 
-  const postToDelete = postData.find((p) => p.postID === deleteDialogOpen)
+  const postToDelete = postData.find((p) => p.id === deleteDialogOpen)
 
   return (
     <div className='space-y-4'>
@@ -294,9 +306,9 @@ export function ContentArticle() {
         <div className='flex flex-wrap items-center gap-2 pb-4'>
           <Input
             type='text'
-            placeholder={t('features.content.article.search.postID')}
-            value={(table.getColumn('postID')?.getFilterValue() as string) ?? ''}
-            onChange={(e) => table.getColumn('postID')?.setFilterValue(e.target.value)}
+            placeholder={t('features.content.article.search.id')}
+            value={(table.getColumn('id')?.getFilterValue() as string) ?? ''}
+            onChange={(e) => table.getColumn('id')?.setFilterValue(e.target.value)}
             className='h-8 w-[160px]'
           />
           <Input
@@ -308,11 +320,11 @@ export function ContentArticle() {
           />
           <Select
             value={
-              (table.getColumn('projectID')?.getFilterValue() as string) || 'all'
+              (table.getColumn('projectId')?.getFilterValue() as string) || 'all'
             }
             onValueChange={(value) =>
               table
-                .getColumn('projectID')
+                .getColumn('projectId')
                 ?.setFilterValue(value === 'all' ? undefined : value)
             }
           >
@@ -322,7 +334,7 @@ export function ContentArticle() {
             <SelectContent>
               <SelectItem value='all'>{t('features.content.article.search.allProjects')}</SelectItem>
               {projectList.map((project) => (
-                <SelectItem key={project.projectID} value={project.projectID}>
+                <SelectItem key={project.id} value={String(project.id)}>
                   {project.title}
                 </SelectItem>
               ))}

@@ -7,7 +7,7 @@ export interface Config {
   type?: number
   info?: string
   mdContent?: string
-  projectID?: string
+  projectId?: number
   createdAt?: string
   updatedAt?: string
 }
@@ -18,7 +18,7 @@ export interface ConfigListParams {
   title?: string
   pageNum?: number
   pageSize?: number
-  projectID?: string
+  projectId?: number
   type?: number
 }
 
@@ -33,7 +33,7 @@ export interface ConfigCreateParams {
   title: string
   description: string
   info?: string
-  projectID: string
+  projectId: number
   alias: string
   type: number
   mdContent?: string
@@ -43,7 +43,7 @@ export interface ConfigCreateParams {
 export interface ConfigUpdateParams {
   title: string
   description: string
-  projectID?: string
+  projectId?: number
   info?: string
   mdContent?: string
 }

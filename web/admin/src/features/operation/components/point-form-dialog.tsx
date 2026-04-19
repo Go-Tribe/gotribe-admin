@@ -50,7 +50,7 @@ import type { PointCreateParams } from '../types/point'
 const createPointFormSchema = (t: (key: string) => string) =>
   z.object({
     userID: z.string().min(1, t('features.operation.point.form.validation.userIDRequired')),
-    projectID: z.string().min(1, t('features.operation.point.form.validation.projectIDRequired')),
+    projectId: z.number().min(1, t('features.operation.point.form.validation.projectIDRequired')),
     point: z.number().min(1, t('features.operation.point.form.validation.pointRequired')),
   })
 
@@ -61,7 +61,7 @@ type PointFormDialogProps = {
   onOpenChange: (open: boolean) => void
   onSubmit: (data: PointCreateParams) => void
   isLoading?: boolean
-  projectList: { projectID: string; title: string }[]
+  projectList: { id: number; title: string }[]
 }
 
 export function PointFormDialog({
@@ -74,23 +74,23 @@ export function PointFormDialog({
   const { t } = useI18n()
   const [userSearchOpen, setUserSearchOpen] = useState(false)
   const [userSearchKeyword, setUserSearchKeyword] = useState('')
-  const [selectedProjectID, setSelectedProjectID] = useState<string>('')
+  const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>(undefined)
 
   const pointFormSchema = useMemo(() => createPointFormSchema(t), [t])
   const form = useForm<PointFormValues>({
     resolver: zodResolver(pointFormSchema),
     defaultValues: {
       userID: '',
-      projectID: '',
+      projectId: undefined,
       point: 0,
     },
   })
 
   // 获取用户列表（支持搜索）
   const { data: userData, isLoading: isLoadingUsers } = useQuery({
-    queryKey: ['userList', { current: 1, pageNum: 1, pageSize: 1000, projectID: selectedProjectID || undefined }],
-    queryFn: () => getUserList({ current: 1, pageNum: 1, pageSize: 1000, projectID: selectedProjectID || undefined }),
-    enabled: open && selectedProjectID !== '',
+    queryKey: ['userList', { current: 1, pageNum: 1, pageSize: 1000, projectId: selectedProjectId || undefined }],
+    queryFn: () => getUserList({ current: 1, pageNum: 1, pageSize: 1000, projectId: selectedProjectId || undefined }),
+    enabled: open && selectedProjectId != null,
   })
 
   const userList = useMemo(() => {
@@ -109,28 +109,28 @@ export function PointFormDialog({
     if (!open) {
       form.reset({
         userID: '',
-        projectID: '',
+        projectId: undefined,
         point: 0,
       })
       setUserSearchKeyword('')
-      setSelectedProjectID('')
+      setSelectedProjectId(undefined)
     }
   }, [open, form])
 
   // 当项目改变时，清空用户选择
   useEffect(() => {
-    const currentProjectID = form.getValues('projectID')
-    if (selectedProjectID !== currentProjectID) {
-      setSelectedProjectID(currentProjectID)
+    const currentProjectId = form.getValues('projectId')
+    if (selectedProjectId !== currentProjectId) {
+      setSelectedProjectId(currentProjectId)
       form.setValue('userID', '')
       setUserSearchKeyword('')
     }
-  }, [form.watch('projectID'), form])
+  }, [form.watch('projectId'), form])
 
   function handleSubmit(values: PointFormValues) {
     onSubmit({
       userID: Number(values.userID),
-      projectID: values.projectID.trim(),
+      projectId: values.projectId,
       point: values.point,
     })
   }
@@ -155,9 +155,9 @@ export function PointFormDialog({
           >
             <FormField
               control={form.control}
-              name='projectID'
+              name='projectId'
               render={({ field }) => {
-                const displayValue = (field.value ?? '').trim()
+                const displayValue = field.value != null ? String(field.value) : ''
                 const selectValue = displayValue || '__empty__'
                 return (
                   <FormItem className='space-y-2'>
@@ -168,9 +168,9 @@ export function PointFormDialog({
                       key={`project-${selectValue}`}
                       value={selectValue}
                       onValueChange={(v) => {
-                        const projectID = v === '__empty__' ? '' : v
-                        field.onChange(projectID)
-                        setSelectedProjectID(projectID)
+                        const projectId = v === '__empty__' ? undefined : Number(v)
+                        field.onChange(projectId)
+                        setSelectedProjectId(projectId)
                       }}
                     >
                       <FormControl>
@@ -185,11 +185,11 @@ export function PointFormDialog({
                           {t('features.operation.point.form.projectPlaceholder')}
                         </SelectItem>
                         {projectList
-                          .filter((p) => (p.projectID ?? '').trim() !== '')
+                          .filter((p) => p.id != null)
                           .map((p) => (
                             <SelectItem
-                              key={p.projectID}
-                              value={(p.projectID ?? '').trim()}
+                              key={p.id}
+                              value={String(p.id)}
                             >
                               {p.title}
                             </SelectItem>
@@ -219,7 +219,7 @@ export function PointFormDialog({
                             'w-full justify-between',
                             !field.value && 'text-muted-foreground'
                           )}
-                          disabled={!selectedProjectID}
+                          disabled={selectedProjectId == null}
                         >
                           {field.value && selectedUser
                             ? `${selectedUser.nickname || selectedUser.username} (${selectedUser.userID})`

@@ -58,9 +58,8 @@ func (ur UserRepository) GetUsers(ctx context.Context, req *vo.UserListRequest) 
 	if req.UserID > 0 {
 		db = db.Where("id = ?", req.UserID)
 	}
-	projectID := strings.TrimSpace(req.ProjectID)
-	if projectID != "" {
-		db = db.Where("project_id = ?", projectID)
+	if req.ProjectId > 0 {
+		db = db.Where("project_id = ?", req.ProjectId)
 	}
 	// 当pageNum > 0 且 pageSize > 0 才分页
 	//记录总条数
@@ -118,7 +117,7 @@ func (ur UserRepository) UpdateUser(ctx context.Context, user *model.User) error
 	normalizeUserContactFields(user)
 	err := common.WithContext(ctx).DB().Model(&model.User{}).Where("id = ?", user.ID).Updates(map[string]interface{}{
 		"username":   user.Username,
-		"project_id": user.ProjectID,
+		"project_id": user.ProjectId,
 		"password":   user.Password,
 		"nickname":   user.Nickname,
 		"email":      user.Email,

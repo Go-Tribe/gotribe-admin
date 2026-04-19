@@ -10,30 +10,31 @@ import {
 const STORAGE_KEY = 'app_current_project_id'
 
 type ProjectContextValue = {
-  /** 当前选中的项目 ID，空字符串表示「全部」或未选 */
-  projectID: string
-  setProjectID: (id: string) => void
+  /** 当前选中的项目 ID，0 表示「全部」或未选 */
+  projectId: number
+  setProjectId: (id: number) => void
 }
 
 const ProjectContext = createContext<ProjectContextValue | null>(null)
 
-function readStored(): string {
-  if (typeof window === 'undefined') return ''
+function readStored(): number {
+  if (typeof window === 'undefined') return 0
   try {
-    return localStorage.getItem(STORAGE_KEY) ?? ''
+    const raw = localStorage.getItem(STORAGE_KEY)
+    return raw ? Number(raw) || 0 : 0
   } catch {
-    return ''
+    return 0
   }
 }
 
 export function ProjectProvider({ children }: { children: ReactNode }) {
-  const [projectID, setProjectIDState] = useState<string>(readStored)
+  const [projectId, setProjectIdState] = useState<number>(readStored)
 
-  const setProjectID = useCallback((id: string) => {
-    setProjectIDState(id)
+  const setProjectId = useCallback((id: number) => {
+    setProjectIdState(id)
     try {
-      if (id) {
-        localStorage.setItem(STORAGE_KEY, id)
+      if (id > 0) {
+        localStorage.setItem(STORAGE_KEY, String(id))
       } else {
         localStorage.removeItem(STORAGE_KEY)
       }
@@ -43,8 +44,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const value = useMemo(
-    () => ({ projectID, setProjectID }),
-    [projectID, setProjectID]
+    () => ({ projectId, setProjectId }),
+    [projectId, setProjectId]
   )
 
   return (

@@ -86,8 +86,8 @@ export function OperationComment() {
   const projectList = useMemo(
     () =>
       projectData?.projects?.map((p) => ({
-        projectID: p.projectID,
-        title: p.title ?? p.projectID,
+        id: p.id,
+        title: p.title ?? String(p.id),
       })) ?? [],
     [projectData?.projects]
   )
@@ -97,9 +97,9 @@ export function OperationComment() {
     pageSize: pagination.pageSize,
     status: getFilterValue('status') || undefined,
     nickname: getFilterValue('nickname') || undefined,
-    projectID:
+    projectId:
       projectFilter && projectFilter !== '__all__'
-        ? projectFilter.trim() || undefined
+        ? Number(projectFilter) || undefined
         : undefined,
     ...getSortingParams(),
   }), [pageNum, pagination.pageSize, getFilterValue, getSortingParams, projectFilter])
@@ -346,8 +346,8 @@ export function OperationComment() {
               </SelectItem>
               {projectList.map((p) => (
                 <SelectItem
-                  key={p.projectID}
-                  value={(p.projectID ?? '').trim()}
+                  key={p.id}
+                  value={String(p.id)}
                 >
                   {p.title}
                 </SelectItem>

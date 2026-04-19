@@ -7,23 +7,23 @@ package vo
 
 // 创建推广位结构体
 type CreateAdSceneRequest struct {
-	ProjectID   string `form:"projectID" json:"projectID" validate:"required"`
+	ProjectId   uint   `form:"projectId" json:"projectId" validate:"required"`
 	Title       string `form:"title" json:"title" validate:"required,min=2,max=50"`
 	Description string `form:"description" json:"description" validate:"min=0,max=150"`
 }
 
 // 获取推广位列表结构体
 type AdSceneListRequest struct {
-	ProjectID string `form:"projectID" json:"projectID"`
-	PageNum   uint   `json:"pageNum" form:"pageNum"`
-	PageSize  uint   `json:"pageSize" form:"pageSize"`
+	ProjectId uint `form:"projectId" json:"projectId"`
+	PageNum   uint `json:"pageNum" form:"pageNum"`
+	PageSize  uint `json:"pageSize" form:"pageSize"`
 }
 
 // 更新推广位内容
 type UpdateAdSceneRequest struct {
 	Title       string `form:"title" json:"title" validate:"required,min=2,max=50"`
 	Description string `form:"description" json:"description" validate:"required,min=2,max=150"`
-	ProjectID   string `form:"projectID" json:"projectID" validate:"required"`
+	ProjectId   uint   `form:"projectId" json:"projectId" validate:"required"`
 }
 
 // 批量删除项目结构体

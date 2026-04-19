@@ -27,9 +27,9 @@ func (m *MockProjectRepository) CreateProject(ctx context.Context, project *mode
 	return args.Error(0)
 }
 
-// GetProjectByProjectID 模拟根据项目ID获取项目方法
-func (m *MockProjectRepository) GetProjectByProjectID(ctx context.Context, projectID string) (model.Project, error) {
-	args := m.Called(ctx, projectID)
+// GetProjectByID 模拟根据项目ID获取项目方法
+func (m *MockProjectRepository) GetProjectByID(ctx context.Context, id uint) (model.Project, error) {
+	args := m.Called(ctx, id)
 	return args.Get(0).(model.Project), args.Error(1)
 }
 
@@ -46,7 +46,7 @@ func (m *MockProjectRepository) UpdateProject(ctx context.Context, project *mode
 }
 
 // BatchDeleteProjectByIds 模拟批量删除项目方法
-func (m *MockProjectRepository) BatchDeleteProjectByIds(ctx context.Context, ids []string) error {
+func (m *MockProjectRepository) BatchDeleteProjectByIds(ctx context.Context, ids []uint) error {
 	args := m.Called(ctx, ids)
 	return args.Error(0)
 }
@@ -63,7 +63,6 @@ func createTestProject() *model.Project {
 		Model: model.Model{
 			ID: 1,
 		},
-		ProjectID:      "proj123456",
 		Name:           "test_project",
 		Title:          "测试项目",
 		Description:    "这是一个测试项目",
@@ -97,7 +96,6 @@ func TestProjectRepository_CreateProject(t *testing.T) {
 		{
 			name: "创建项目失败-重复名称",
 			project: &model.Project{
-				ProjectID:   "proj765432",
 				Name:        "test_project",
 				Title:       "重复项目",
 				Description: "这是一个重复的项目",
@@ -138,26 +136,26 @@ func TestProjectRepository_CreateProject(t *testing.T) {
 	}
 }
 
-// TestProjectRepository_GetProjectByProjectID 测试根据项目ID获取项目
-func TestProjectRepository_GetProjectByProjectID(t *testing.T) {
+// TestProjectRepository_GetProjectByID 测试根据项目ID获取项目
+func TestProjectRepository_GetProjectByID(t *testing.T) {
 	testProject := createTestProject()
 
 	tests := []struct {
 		name       string
-		projectID  string
+		id         uint
 		expected   model.Project
 		hasError   bool
 		checkEmpty bool
 	}{
 		{
-			name:      "成功获取项目",
-			projectID: "proj123456",
-			expected:  *testProject,
-			hasError:  false,
+			name:     "成功获取项目",
+			id:       1,
+			expected: *testProject,
+			hasError: false,
 		},
 		{
 			name:       "项目不存在",
-			projectID:  "nonexistent",
+			id:         999,
 			expected:   model.Project{},
 			hasError:   true,
 			checkEmpty: true,
@@ -175,20 +173,20 @@ func TestProjectRepository_GetProjectByProjectID(t *testing.T) {
 			}
 
 			// 设置mock期望
-			testMockRepo.On("GetProjectByProjectID", mock.Anything, tt.projectID).Return(tt.expected, expectedError)
+			testMockRepo.On("GetProjectByID", mock.Anything, tt.id).Return(tt.expected, expectedError)
 
 			// 执行测试
-			result, err := testMockRepo.GetProjectByProjectID(context.Background(), tt.projectID)
+			result, err := testMockRepo.GetProjectByID(context.Background(), tt.id)
 
 			// 验证结果
 			if tt.hasError {
 				assert.Error(t, err)
 				if tt.checkEmpty {
-					assert.Empty(t, result.ProjectID)
+					assert.Empty(t, result.Name)
 				}
 			} else {
 				assert.NoError(t, err)
-				assert.Equal(t, tt.expected.ProjectID, result.ProjectID)
+				assert.Equal(t, tt.expected.Name, result.Name)
 				assert.Equal(t, tt.expected.Name, result.Name)
 				assert.Equal(t, tt.expected.Title, result.Title)
 			}
@@ -206,7 +204,6 @@ func TestProjectRepository_GetProjects(t *testing.T) {
 		Model: model.Model{
 			ID: 2,
 		},
-		ProjectID:   "proj765432",
 		Name:        "another_project",
 		Title:       "另一个项目",
 		Description: "这是另一个测试项目",
@@ -239,11 +236,11 @@ func TestProjectRepository_GetProjects(t *testing.T) {
 			expected: 1,
 		},
 		{
-			name: "按项目ID筛选",
+			name: "按ID筛选",
 			request: &vo.ProjectListRequest{
-				ProjectID: "proj123456",
-				PageNum:   1,
-				PageSize:  10,
+				ID:       1,
+				PageNum:  1,
+				PageSize: 10,
 			},
 			expected: 1,
 		},
@@ -285,7 +282,6 @@ func TestProjectRepository_UpdateProject(t *testing.T) {
 				Model: model.Model{
 					ID: 1,
 				},
-				ProjectID:      "proj123456",
 				Name:           "test_project",
 				Title:          "更新后的标题",
 				Description:    "更新后的描述",
@@ -307,8 +303,7 @@ func TestProjectRepository_UpdateProject(t *testing.T) {
 		{
 			name: "更新不存在的项目",
 			project: &model.Project{
-				ProjectID: "nonexistent",
-				Title:     "不存在",
+				Title: "不存在",
 			},
 			hasError: true,
 		},
@@ -347,22 +342,22 @@ func TestProjectRepository_UpdateProject(t *testing.T) {
 func TestProjectRepository_BatchDeleteProjectByIds(t *testing.T) {
 	tests := []struct {
 		name     string
-		ids      []string
+		ids      []uint
 		hasError bool
 	}{
 		{
 			name:     "成功批量删除项目",
-			ids:      []string{"proj123456", "proj765432"},
+			ids:      []uint{1, 2},
 			hasError: false,
 		},
 		{
 			name:     "删除包含不存在的项目",
-			ids:      []string{"proj123456", "nonexistent"},
+			ids:      []uint{1, 999},
 			hasError: true,
 		},
 		{
 			name:     "空ID列表",
-			ids:      []string{},
+			ids:      []uint{},
 			hasError: false,
 		},
 	}
@@ -374,7 +369,7 @@ func TestProjectRepository_BatchDeleteProjectByIds(t *testing.T) {
 
 			var expectedError error
 			if tt.hasError {
-				expectedError = errors.New("未获取到ID为nonexistent的项目")
+				expectedError = errors.New("未获取到ID为999的项目")
 			}
 
 			// 设置mock期望
@@ -404,11 +399,10 @@ func TestProjectRepository_GetProjectsBySitemap(t *testing.T) {
 		Model: model.Model{
 			ID: 2,
 		},
-		ProjectID: "proj765432",
-		Name:      "another_project",
-		Title:     "另一个项目",
-		Domain:    "https://example2.com",
-		Status:    1,
+		Name:   "another_project",
+		Title:  "另一个项目",
+		Domain: "https://example2.com",
+		Status: 1,
 	}
 
 	testProjects := []*model.Project{testProject1, testProject2}
@@ -475,17 +469,17 @@ func BenchmarkProjectRepository_CreateProject(b *testing.B) {
 	}
 }
 
-// BenchmarkProjectRepository_GetProjectByProjectID 获取单个项目性能测试
-func BenchmarkProjectRepository_GetProjectByProjectID(b *testing.B) {
+// BenchmarkProjectRepository_GetProjectByID 获取单个项目性能测试
+func BenchmarkProjectRepository_GetProjectByID(b *testing.B) {
 	mockRepo := new(MockProjectRepository)
 	testProject := createTestProject()
 
 	// 设置mock期望
-	mockRepo.On("GetProjectByProjectID", mock.Anything, "proj123456").Return(*testProject, nil)
+	mockRepo.On("GetProjectByID", mock.Anything, uint(1)).Return(*testProject, nil)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _ = mockRepo.GetProjectByProjectID(context.Background(), "proj123456")
+		_, _ = mockRepo.GetProjectByID(context.Background(), 1)
 	}
 }
 
@@ -497,10 +491,9 @@ func BenchmarkProjectRepository_GetProjects(b *testing.B) {
 		Model: model.Model{
 			ID: 2,
 		},
-		ProjectID: "proj765432",
-		Name:      "another_project",
-		Title:     "另一个项目",
-		Status:    1,
+		Name:   "another_project",
+		Title:  "另一个项目",
+		Status: 1,
 	}
 	testProjects := []*model.Project{testProject1, testProject2}
 
@@ -527,10 +520,9 @@ func BenchmarkProjectRepository_GetProjectsBySitemap(b *testing.B) {
 			Model: model.Model{
 				ID: 2,
 			},
-			ProjectID: "proj765432",
-			Name:      "another_project",
-			Title:     "另一个项目",
-			Status:    1,
+			Name:   "another_project",
+			Title:  "另一个项目",
+			Status: 1,
 		},
 	}
 

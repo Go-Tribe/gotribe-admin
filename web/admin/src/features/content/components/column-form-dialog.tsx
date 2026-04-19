@@ -48,7 +48,7 @@ const createColumnFormSchema = (t: (key: string) => string) =>
     title: z.string().min(1, t('features.content.column.form.validation.titleRequired')),
     info: z.string().min(1, t('features.content.column.form.validation.infoRequired')),
     description: z.string().min(1, t('features.content.column.form.validation.descriptionRequired')),
-    projectID: z.string(), // 允许空（编辑时可能无项目；新建时后端会校验）
+    projectId: z.number().optional(), // 允许空（编辑时可能无项目；新建时后端会校验）
     icon: z.string().min(1, t('features.content.column.form.validation.iconRequired')),
   })
 
@@ -60,7 +60,7 @@ type ColumnFormDialogProps = {
   onSubmit?: (data: ColumnCreateParams) => void
   onSubmitUpdate?: (columnID: string, data: ColumnUpdateParams) => void
   isLoading?: boolean
-  projectList: { projectID: string; title: string }[]
+  projectList: { id: number; title: string }[]
   editColumn?: Column | null
 }
 
@@ -83,7 +83,7 @@ export function ColumnFormDialog({
       title: '',
       info: '',
       description: '',
-      projectID: '',
+      projectId: undefined,
       icon: '',
     },
   })
@@ -91,12 +91,12 @@ export function ColumnFormDialog({
   useEffect(() => {
     if (!open) return
     if (editColumn) {
-      const projectID = (editColumn.projectID ?? '').trim()
+      const projectId = editColumn.projectId ?? undefined
       form.reset({
         title: editColumn.title ?? '',
         info: editColumn.info ?? '',
         description: editColumn.description ?? '',
-        projectID,
+        projectId,
         icon: editColumn.icon ?? '',
       })
     } else {
@@ -104,29 +104,28 @@ export function ColumnFormDialog({
         title: '',
         info: '',
         description: '',
-        projectID: '',
+        projectId: undefined,
         icon: '',
       })
     }
   }, [open, editColumn, form])
 
   function handleSubmit(values: ColumnFormValues) {
-    const projectID =
-      values.projectID === '__empty__' || !values.projectID?.trim() ? '' : values.projectID.trim()
+    const projectId = values.projectId ?? 0
     if (isEdit && editColumn) {
       onSubmitUpdate?.(String(editColumn.id), {
         title: values.title,
         info: values.info ?? '',
         description: values.description ?? '',
         icon: values.icon ?? '',
-        projectID,
+        projectId: projectId || undefined,
       })
     } else {
       onSubmit?.({
         title: values.title,
         description: values.description ?? '',
         info: values.info ?? '',
-        projectID,
+        projectId,
         icon: values.icon ?? '',
       })
     }
@@ -187,16 +186,16 @@ export function ColumnFormDialog({
             />
             <FormField
               control={form.control}
-              name='projectID'
+              name='projectId'
               render={({ field }) => {
-                const displayValue = (field.value ?? '').trim()
+                const displayValue = field.value != null ? String(field.value) : ''
                 const selectValue = displayValue ? displayValue : '__empty__'
                 return (
                   <FormItem className='space-y-2'>
                     <FormLabel>{t('features.content.column.form.project')}</FormLabel>
                     <Select
                       key={`project-${editColumn?.id ?? 'create'}-${projectList.length}-${selectValue}`}
-                      onValueChange={(v) => field.onChange(v === '__empty__' ? '' : v)}
+                      onValueChange={(v) => field.onChange(v === '__empty__' ? undefined : Number(v))}
                       value={selectValue}
                     >
                       <FormControl>
@@ -211,9 +210,9 @@ export function ColumnFormDialog({
                           {t('features.content.column.form.projectPlaceholder')}
                         </SelectItem>
                         {projectList
-                          .filter((p) => (p.projectID ?? '').trim() !== '')
+                          .filter((p) => p.id != null)
                           .map((p) => (
-                            <SelectItem key={p.projectID} value={(p.projectID ?? '').trim()}>
+                            <SelectItem key={p.id} value={String(p.id)}>
                               {p.title}
                             </SelectItem>
                           ))}

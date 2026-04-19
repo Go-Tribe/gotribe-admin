@@ -3,7 +3,8 @@
   "description": "Manage editorial content and publishing status",
   "createButton": "New Article",
   "columns": {
-    "postID": "Article ID",
+    "id": "ID",
+    "slug": "Slug",
     "title": "Article Title",
     "author": "Author",
     "description": "Summary",
@@ -21,7 +22,7 @@
   },
   "search": {
     "title": "Enter article title",
-    "postID": "Enter article ID",
+    "id": "Enter article ID",
     "allProjects": "All projects"
   },
   "filter": {

@@ -21,12 +21,12 @@ export interface PointListParams {
   pageSize?: number
   userID?: string
   nickname?: string
-  projectID?: string
+  projectId?: number
 }
 
 /** 创建积分请求参数 */
 export interface PointCreateParams {
   userID: number
-  projectID: string
+  projectId: number
   point: number
 }

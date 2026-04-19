@@ -4,6 +4,7 @@
   "createButton": "New",
   "columns": {
     "id": "ID",
+    "name": "Alias",
     "projectName": "Project Name",
     "projectDescription": "Project Description",
     "actions": "Actions"
@@ -14,7 +15,7 @@
   },
   "search": {
     "projectName": "Search project name",
-    "projectID": "Search ID"
+    "id": "Search ID"
   },
   "loading": "Loading...",
   "loadError": "Failed to load",

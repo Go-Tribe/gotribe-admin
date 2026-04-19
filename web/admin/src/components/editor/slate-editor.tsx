@@ -109,6 +109,30 @@ const HEADING_HOTKEYS: Record<string, (typeof HEADING_TYPES)[number]> = {
 
 const initialSlateValue: Descendant[] = [{ type: 'paragraph', children: [{ text: '' }] }]
 
+/** 判断 Slate 节点是否为「空块」（空 paragraph / 空 heading / 仅含空白字符） */
+function isEmptyBlock(node: Descendant): boolean {
+  if (Text.isText(node)) {
+    return node.text.trim() === ''
+  }
+  const el = node as SlateElement
+  // 只清洗 paragraph 与 heading 类型的前导空块；保留 list、quote、image 等结构块
+  if (el.type === 'paragraph' || (typeof el.type === 'string' && el.type.startsWith('heading-'))) {
+    if (!Array.isArray(el.children) || el.children.length === 0) return true
+    return el.children.every(isEmptyBlock)
+  }
+  return false
+}
+
+/** 删除节点数组最前面的连续空块；若全部为空则保留一个默认空 paragraph */
+function trimLeadingEmptyBlocks(nodes: Descendant[]): Descendant[] {
+  let i = 0
+  while (i < nodes.length && isEmptyBlock(nodes[i])) {
+    i++
+  }
+  const trimmed = nodes.slice(i)
+  return trimmed.length > 0 ? trimmed : initialSlateValue
+}
+
 export type SlateEditorProps = {
   value: string
   onChange: (value: string) => void
@@ -153,11 +177,12 @@ export function SlateEditor({
     (val: string) => {
       if (!val?.trim()) return initialSlateValue
       if (outputMode === 'markdown') {
-        return markdownToSlate(val)
+        return trimLeadingEmptyBlocks(markdownToSlate(val))
       }
       try {
         const parsed = JSON.parse(val)
-        return Array.isArray(parsed) && parsed.length > 0 ? parsed : initialSlateValue
+        const nodes = Array.isArray(parsed) && parsed.length > 0 ? parsed : initialSlateValue
+        return trimLeadingEmptyBlocks(nodes)
       } catch {
         return initialSlateValue
       }
@@ -499,7 +524,7 @@ export function SlateEditor({
             onPaste={handlePaste}
             placeholder={placeholder}
             className={cn(
-              'prose prose-sm dark:prose-invert max-w-none w-full pl-0 pr-3 py-3 outline-none empty:before:content-[attr(placeholder)] empty:before:text-muted-foreground block',
+              'prose prose-sm dark:prose-invert max-w-none w-full pl-0 pr-3 py-3 outline-none empty:before:content-[attr(placeholder)] empty:before:text-muted-foreground block first:[&>*]:mt-0',
               minHeight
             )}
             spellCheck

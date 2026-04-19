@@ -2,7 +2,7 @@
 export interface Comment {
   id?: number
   commentID?: string
-  projectID?: string
+  projectId?: number
   status?: number
   userID?: number
   objectID?: string
@@ -25,7 +25,7 @@ export interface CommentListParams {
   pageSize?: number
   status?: string | number
   nickname?: string
-  projectID?: string
+  projectId?: number
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
 }

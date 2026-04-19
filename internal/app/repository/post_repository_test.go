@@ -28,9 +28,9 @@ func (m *MockPostRepository) CreatePost(ctx context.Context, post *model.Post) e
 	return args.Error(0)
 }
 
-// GetPostByPostID 模拟根据PostID获取内容方法
-func (m *MockPostRepository) GetPostByPostID(ctx context.Context, postID string) (model.Post, error) {
-	args := m.Called(ctx, postID)
+// GetPostByID 模拟根据PostID获取内容方法
+func (m *MockPostRepository) GetPostByID(ctx context.Context, id uint) (model.Post, error) {
+	args := m.Called(ctx, id)
 	return args.Get(0).(model.Post), args.Error(1)
 }
 
@@ -47,7 +47,7 @@ func (m *MockPostRepository) UpdatePost(ctx context.Context, post *model.Post) e
 }
 
 // BatchDeletePostByIds 模拟批量删除内容方法
-func (m *MockPostRepository) BatchDeletePostByIds(ctx context.Context, ids []string) error {
+func (m *MockPostRepository) BatchDeletePostByIds(ctx context.Context, ids []uint) error {
 	args := m.Called(ctx, ids)
 	return args.Error(0)
 }
@@ -60,9 +60,9 @@ func createTestPost() *model.Post {
 		Model: model.Model{
 			ID: 1,
 		},
-		PostID:      "post001",
+		Slug:        "post001",
 		CategoryID:  1,
-		ProjectID:   "proj001",
+		ProjectId:   1,
 		ColumnID:    1,
 		UserID:      1,
 		Author:      "testauthor",
@@ -138,23 +138,23 @@ func TestPostRepository_CreatePost_Error(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 }
 
-// TestPostRepository_GetPostByPostID 测试根据PostID获取内容
-func TestPostRepository_GetPostByPostID(t *testing.T) {
+// TestPostRepository_GetPostByID 测试根据PostID获取内容
+func TestPostRepository_GetPostByID(t *testing.T) {
 	mockRepo := new(MockPostRepository)
 
 	// 创建测试内容
 	testPost := createTestPost()
 
 	// 设置mock期望
-	mockRepo.On("GetPostByPostID", mock.Anything, "post001").Return(*testPost, nil)
+	mockRepo.On("GetPostByID", mock.Anything, uint(1)).Return(*testPost, nil)
 
 	// 执行测试
-	result, err := mockRepo.GetPostByPostID(context.Background(), "post001")
+	result, err := mockRepo.GetPostByID(context.Background(), uint(1))
 
 	// 验证结果
 	assert.NoError(t, err)
 	assert.NotNil(t, result)
-	assert.Equal(t, "post001", result.PostID)
+	assert.Equal(t, "post001", result.Slug)
 	assert.Equal(t, "测试文章标题", result.Title)
 	assert.Equal(t, "testauthor", result.Author)
 
@@ -162,15 +162,15 @@ func TestPostRepository_GetPostByPostID(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 }
 
-// TestPostRepository_GetPostByPostID_NotFound 测试内容不存在的情况
-func TestPostRepository_GetPostByPostID_NotFound(t *testing.T) {
+// TestPostRepository_GetPostByID_NotFound 测试内容不存在的情况
+func TestPostRepository_GetPostByID_NotFound(t *testing.T) {
 	mockRepo := new(MockPostRepository)
 
 	// 设置mock期望 - 内容不存在
-	mockRepo.On("GetPostByPostID", mock.Anything, "notexist").Return(model.Post{}, errors.New("record not found"))
+	mockRepo.On("GetPostByID", mock.Anything, uint(999)).Return(model.Post{}, errors.New("record not found"))
 
 	// 执行测试
-	result, err := mockRepo.GetPostByPostID(context.Background(), "notexist")
+	result, err := mockRepo.GetPostByID(context.Background(), uint(999))
 
 	// 验证结果
 	assert.Error(t, err)
@@ -190,9 +190,9 @@ func TestPostRepository_GetPosts(t *testing.T) {
 		Model: model.Model{
 			ID: 2,
 		},
-		PostID:      "post002",
+		Slug:        "post002",
 		CategoryID:  2,
-		ProjectID:   "proj002",
+		ProjectId:   2,
 		Author:      "author2",
 		Title:       "第二篇文章",
 		Content:     "第二篇内容",
@@ -229,7 +229,7 @@ func TestPostRepository_GetPosts(t *testing.T) {
 		{
 			name: "按PostID搜索",
 			request: &vo.PostListRequest{
-				PostID:   "post001",
+				ID:       1,
 				PageNum:  1,
 				PageSize: 10,
 			},
@@ -238,7 +238,7 @@ func TestPostRepository_GetPosts(t *testing.T) {
 		{
 			name: "按ProjectID筛选",
 			request: &vo.PostListRequest{
-				ProjectID: "proj001",
+				ProjectId: 1,
 				PageNum:   1,
 				PageSize:  10,
 			},
@@ -338,7 +338,7 @@ func TestPostRepository_UpdatePost_Error(t *testing.T) {
 func TestPostRepository_BatchDeletePostByIds(t *testing.T) {
 	mockRepo := new(MockPostRepository)
 
-	ids := []string{"post001", "post002", "post003"}
+	ids := []uint{1, 2, 3}
 
 	// 设置mock期望
 	mockRepo.On("BatchDeletePostByIds", mock.Anything, ids).Return(nil)
@@ -357,7 +357,7 @@ func TestPostRepository_BatchDeletePostByIds(t *testing.T) {
 func TestPostRepository_BatchDeletePostByIds_Error(t *testing.T) {
 	mockRepo := new(MockPostRepository)
 
-	ids := []string{"post001", "notexist"}
+	ids := []uint{1, 999}
 
 	// 设置mock期望 - 部分内容不存在
 	mockRepo.On("BatchDeletePostByIds", mock.Anything, ids).Return(errors.New("未获取到ID为notexist的内容"))
@@ -377,7 +377,7 @@ func TestPostRepository_BatchDeletePostByIds_Error(t *testing.T) {
 func TestPostRepository_BatchDeletePostByIds_Empty(t *testing.T) {
 	mockRepo := new(MockPostRepository)
 
-	ids := []string{}
+	ids := []uint{}
 
 	// 设置mock期望
 	mockRepo.On("BatchDeletePostByIds", mock.Anything, ids).Return(nil)
@@ -406,17 +406,17 @@ func BenchmarkPostRepository_CreatePost(b *testing.B) {
 	}
 }
 
-// BenchmarkPostRepository_GetPostByPostID 根据PostID获取内容性能测试
-func BenchmarkPostRepository_GetPostByPostID(b *testing.B) {
+// BenchmarkPostRepository_GetPostByID 根据PostID获取内容性能测试
+func BenchmarkPostRepository_GetPostByID(b *testing.B) {
 	mockRepo := new(MockPostRepository)
 	testPost := createTestPost()
 
 	// 设置mock期望
-	mockRepo.On("GetPostByPostID", mock.Anything, "post001").Return(*testPost, nil)
+	mockRepo.On("GetPostByID", mock.Anything, uint(1)).Return(*testPost, nil)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _ = mockRepo.GetPostByPostID(context.Background(), "post001")
+		_, _ = mockRepo.GetPostByID(context.Background(), uint(1))
 	}
 }
 
@@ -456,7 +456,7 @@ func BenchmarkPostRepository_UpdatePost(b *testing.B) {
 // BenchmarkPostRepository_BatchDeletePostByIds 批量删除内容性能测试
 func BenchmarkPostRepository_BatchDeletePostByIds(b *testing.B) {
 	mockRepo := new(MockPostRepository)
-	ids := []string{"post001", "post002", "post003"}
+	ids := []uint{1, 2, 3}
 
 	// 设置mock期望
 	mockRepo.On("BatchDeletePostByIds", mock.Anything, ids).Return(nil)
@@ -479,7 +479,7 @@ func TestPostRepository_Integration(t *testing.T) {
 		mockRepo.On("CreatePost", mock.Anything, testPost).Return(nil)
 
 		// 设置mock期望 - 获取内容
-		mockRepo.On("GetPostByPostID", mock.Anything, "post001").Return(*testPost, nil)
+		mockRepo.On("GetPostByID", mock.Anything, uint(1)).Return(*testPost, nil)
 
 		// 设置mock期望 - 更新内容
 		updatedPost := *testPost
@@ -487,14 +487,14 @@ func TestPostRepository_Integration(t *testing.T) {
 		mockRepo.On("UpdatePost", mock.Anything, &updatedPost).Return(nil)
 
 		// 设置mock期望 - 删除内容
-		mockRepo.On("BatchDeletePostByIds", mock.Anything, []string{"post001"}).Return(nil)
+		mockRepo.On("BatchDeletePostByIds", mock.Anything, []uint{1}).Return(nil)
 
 		// 执行测试 - 创建
 		err := mockRepo.CreatePost(context.Background(), testPost)
 		assert.NoError(t, err)
 
 		// 执行测试 - 获取
-		result, err := mockRepo.GetPostByPostID(context.Background(), "post001")
+		result, err := mockRepo.GetPostByID(context.Background(), uint(1))
 		assert.NoError(t, err)
 		assert.Equal(t, "测试文章标题", result.Title)
 
@@ -503,7 +503,7 @@ func TestPostRepository_Integration(t *testing.T) {
 		assert.NoError(t, err)
 
 		// 执行测试 - 删除
-		err = mockRepo.BatchDeletePostByIds(context.Background(), []string{"post001"})
+		err = mockRepo.BatchDeletePostByIds(context.Background(), []uint{1})
 		assert.NoError(t, err)
 
 		// 验证mock调用

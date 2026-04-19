@@ -37,7 +37,7 @@ const createSceneFormSchema = (t: (key: string) => string) =>
     description: z
       .string()
       .min(1, t('features.operation.scene.form.validation.descriptionRequired')),
-    projectID: z.string().min(1, t('features.operation.scene.form.validation.projectRequired')),
+    projectId: z.number().min(1, t('features.operation.scene.form.validation.projectRequired')),
   })
 
 type SceneFormValues = z.infer<ReturnType<typeof createSceneFormSchema>>
@@ -48,7 +48,7 @@ type SceneFormDialogProps = {
   onSubmit?: (data: SceneCreateParams) => void
   onSubmitUpdate?: (adSceneID: string, data: SceneUpdateParams) => void
   isLoading?: boolean
-  projectList: { projectID: string; title: string }[]
+  projectList: { id: number; title: string }[]
   editScene?: Scene | null
 }
 
@@ -69,7 +69,7 @@ export function SceneFormDialog({
     defaultValues: {
       title: '',
       description: '',
-      projectID: '',
+      projectId: undefined,
     },
   })
 
@@ -79,13 +79,13 @@ export function SceneFormDialog({
       form.reset({
         title: (editScene.title ?? '').trim(),
         description: (editScene.description ?? '').trim(),
-        projectID: (editScene.projectID ?? '').trim(),
+        projectId: editScene.projectId ?? undefined,
       })
     } else {
       form.reset({
         title: '',
         description: '',
-        projectID: '',
+        projectId: undefined,
       })
     }
   }, [open, editScene, form])
@@ -95,14 +95,13 @@ export function SceneFormDialog({
       onSubmitUpdate(String(editScene.id), {
         title: values.title.trim(),
         description: values.description.trim(),
-        projectID: (values.projectID ?? '').trim() || undefined,
+        projectId: values.projectId || undefined,
       })
     } else if (onSubmit) {
-      const projectID = (values.projectID ?? '').trim()
       onSubmit({
         title: values.title.trim(),
         description: values.description.trim(),
-        projectID,
+        projectId: values.projectId,
       })
     }
   }
@@ -166,9 +165,9 @@ export function SceneFormDialog({
             />
             <FormField
               control={form.control}
-              name='projectID'
+              name='projectId'
               render={({ field }) => {
-                const displayValue = (field.value ?? '').trim()
+                const displayValue = field.value != null ? String(field.value) : ''
                 const selectValue = displayValue || '__empty__'
                 return (
                   <FormItem className='space-y-2'>
@@ -178,7 +177,7 @@ export function SceneFormDialog({
                     <Select
                       key={`project-${editScene?.id ?? 'create'}-${projectList.length}-${selectValue}`}
                       value={selectValue}
-                      onValueChange={(v) => field.onChange(v === '__empty__' ? '' : v)}
+                      onValueChange={(v) => field.onChange(v === '__empty__' ? undefined : Number(v))}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -192,11 +191,11 @@ export function SceneFormDialog({
                           {t('features.operation.scene.form.projectPlaceholder')}
                         </SelectItem>
                         {projectList
-                          .filter((p) => (p.projectID ?? '').trim() !== '')
+                          .filter((p) => p.id != null)
                           .map((p) => (
                             <SelectItem
-                              key={p.projectID}
-                              value={(p.projectID ?? '').trim()}
+                              key={p.id}
+                              value={String(p.id)}
                             >
                               {p.title}
                             </SelectItem>

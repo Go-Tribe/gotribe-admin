@@ -1,0 +1,47 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+.tanstack/
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.env
+.env.production
+
+# Go module cache (should not exist in this project)
+pkg/
+.claude/settings.local.json
+
+# OMC working directory
+.omc/
+
+# Development environment config (same as .env and .env.production)
+.env.development
+
+# AI-generated analysis reports
+duplication-analysis-report.md
+
+# ESLint cache
+.eslintcache
+
+# Test coverage
+coverage/
+*.lcov

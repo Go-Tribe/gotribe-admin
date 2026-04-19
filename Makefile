@@ -6,6 +6,10 @@ COMMON_SELF_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 ROOT_DIR := $(abspath $(shell cd $(COMMON_SELF_DIR)/ && pwd -P))
 # 构建产物、临时文件存放目录
 OUTPUT_DIR := $(ROOT_DIR)/_output
+# 前端项目目录
+WEB_DIR := $(ROOT_DIR)/web/admin
+# 包管理器
+PNPM ?= pnpm
 # 版本信息
 VERSION := $(shell git describe --tags --always --dirty)
 VERSION_PACKAGE := gotribe-admin/internal/pkg/common
@@ -35,24 +39,45 @@ GO_LDFLAGS += \
 all: format build
 
 .PHONY: run
-run: format dev
+run: format build-web # 格式化并编译前后端，然后运行（开发模式）
+	@echo ">>> Starting server..."
+	@$(GO) run $(ROOT_DIR)/$(PROJECT_NAME).go
+
+.PHONY: dev
+dev: # 直接运行 Go（不重新编译前端，假设 dist 已存在）
+	@echo ">>> Starting server..."
+	@$(GO) run $(ROOT_DIR)/$(PROJECT_NAME).go
+
+.PHONY: dev-frontend
+dev-frontend: # 启动前端开发服务器（热重载，需配合 Go 服务使用）
+	@cd $(WEB_DIR) && $(PNPM) run dev
 
 # ==============================================================================
 # 定义其他需要的伪目标
 
+.PHONY: build-web
+build-web: # 编译前端
+	@echo ">>> Building frontend..."
+	@if [ ! -d "$(WEB_DIR)/node_modules" ]; then \
+		echo ">>> Installing frontend dependencies..."; \
+		cd $(WEB_DIR) && $(PNPM) install; \
+	fi
+	@cd $(WEB_DIR) && $(PNPM) run build
+	@echo ">>> Frontend build complete."
+
 .PHONY: build
-build: # 编译源码
+build: build-web # 编译前后端
+	@echo ">>> Building Go backend..."
 	@mkdir -p $(OUTPUT_DIR)
 	@CGO_ENABLED=0 $(GO) build -v -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/$(PROJECT_NAME) $(ROOT_DIR)/$(PROJECT_NAME).go
-
-
+	@echo ">>> Build complete: $(OUTPUT_DIR)/$(PROJECT_NAME)"
 
 .PHONY: linux
-linux: # 快速交叉编译 Linux 可执行文件（当前系统 -> Linux amd64）.
+linux: build-web # 交叉编译 Linux 可执行文件（包含前端）
 	@mkdir -p $(OUTPUT_DIR)
-	@echo "交叉编译 Linux 版本..."
+	@echo ">>> Cross-compiling Linux version..."
 	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GO) build -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/$(PROJECT_NAME)-linux $(ROOT_DIR)/$(PROJECT_NAME).go
-	@echo "构建完成: $(OUTPUT_DIR)/$(PROJECT_NAME)-linux"
+	@echo ">>> Build complete: $(OUTPUT_DIR)/$(PROJECT_NAME)-linux"
 
 .PHONY: format
 format: # 格式化 Go 源码.
@@ -70,10 +95,6 @@ tidy: # 自动添加/移除依赖包.
 .PHONY: clean
 clean: # 清理构建产物、临时文件等.
 	@-rm -vrf $(OUTPUT_DIR)
-
-.PHONY: dev
-dev: # 开发运行
-	@$(GO) run $(ROOT_DIR)/$(PROJECT_NAME).go
 
 .PHONY: test
 test: # 运行测试
@@ -157,10 +178,12 @@ swagger-clean: # 清理 Swagger 文档
 help: # 显示帮助信息
 	@echo "Available targets:"
 	@echo "  all                - 构建项目 (默认)"
-	@echo "  build              - 编译源码（当前平台）"
-	@echo "  linux              - 快速交叉编译 Linux 可执行文件（当前系统 -> Linux amd64）"
-	@echo "  run                - 开发运行"
-	@echo "  dev                - 开发运行"
+	@echo "  build              - 编译前后端（先编译前端 dist，再编译 Go 二进制）"
+	@echo "  build-web          - 编译前端（输出到 web/admin/dist）"
+	@echo "  linux              - 交叉编译 Linux 可执行文件（包含前端）"
+	@echo "  run                - 格式化并编译前后端，然后运行（开发模式，推荐）"
+	@echo "  dev                - 直接运行 Go（不重新编译前端，需确保 dist 已存在）"
+	@echo "  dev-frontend       - 启动前端开发服务器（热重载，需配合 Go 服务使用）"
 	@echo "  test               - 运行测试"
 	@echo "  test-all           - 运行所有测试用例（包括单元测试和基准测试）"
 	@echo "  test-coverage      - 运行测试并生成覆盖率报告"

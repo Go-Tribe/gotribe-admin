@@ -1,0 +1,22 @@
+{
+  "title": "Sign In",
+  "description": "Please enter your email and password to sign in to your account",
+  "account": "Account",
+  "accountPlaceholder": "Please enter your account",
+  "password": "Password",
+  "passwordPlaceholder": "Please enter your password",
+  "login": "Sign In",
+  "loggingIn": "Signing in...",
+  "redirectHint": "After sign-in, we will take you back to the page you were trying to open.",
+  "securityHint": "Make sure you are using a trusted device and network before continuing.",
+  "welcomeBack": "Welcome back, {{username}}!",
+  "error": "Error",
+  "footerText": "By clicking sign in, you agree to our",
+  "termsOfService": "Terms of Service",
+  "privacyPolicy": "Privacy Policy",
+  "and": "and",
+  "signIn2": {
+    "title": "Sign in",
+    "description": "Enter your email and password below to log into your account"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "sheetTitle": "Theme Settings",
+  "sheetDescription": "Adjust the appearance and layout to suit your preferences.",
+  "openAria": "Open theme settings",
+  "resetButton": "Reset",
+  "resetAria": "Reset all settings to default values",
+  "theme": {
+    "title": "Theme",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark",
+    "ariaLabel": "Select theme preference",
+    "description": "Choose between system preference, light mode, or dark mode"
+  },
+  "themeColor": {
+    "title": "Theme color",
+    "default": "Default",
+    "violet": "Violet",
+    "sage": "Sage",
+    "rose": "Rose",
+    "mint": "Mint",
+    "ariaLabel": "Select theme color",
+    "description": "Choose theme color preset"
+  },
+  "sidebar": {
+    "title": "Sidebar",
+    "inset": "Inset",
+    "floating": "Floating",
+    "sidebar": "Sidebar",
+    "ariaLabel": "Select sidebar style",
+    "description": "Choose between inset, floating, or standard sidebar layout"
+  },
+  "layout": {
+    "title": "Layout",
+    "default": "Default",
+    "compact": "Compact",
+    "fullLayout": "Full layout",
+    "ariaLabel": "Select layout style",
+    "description": "Choose between default expanded, compact icon-only, or full layout mode"
+  },
+  "direction": {
+    "title": "Direction",
+    "ltr": "Left to Right",
+    "rtl": "Right to Left",
+    "ariaLabel": "Select site direction",
+    "description": "Choose between left-to-right or right-to-left site direction"
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "title": "广告管理",
+  "description": "统一管理广告内容与投放状态",
+  "advertising": {
+    "title": "广告",
+    "description": "广告列表",
+    "createButton": "新建广告",
+    "search": {
+      "scene": "投放场景",
+      "sceneAll": "全部场景",
+      "title": "标题",
+      "titlePlaceholder": "输入广告标题",
+      "status": "投放状态",
+      "statusAll": "全部"
+    },
+    "columns": {
+      "id": "广告 ID",
+      "title": "广告标题",
+      "description": "广告摘要",
+      "status": "投放状态",
+      "createdAt": "创建时间",
+      "actions": "操作"
+    },
+    "status": {
+      "unpublished": "未上线",
+      "published": "已上线"
+    },
+    "actions": {
+      "edit": "编辑",
+      "delete": "删除"
+    },
+    "loading": "加载中…",
+    "loadError": "加载失败",
+    "noData": "暂无数据"
+  },
+  "form": {
+    "dialogTitle": "新建广告",
+    "editTitle": "编辑广告",
+    "createDescription": "填写广告信息。",
+    "editDescription": "修改广告信息。",
+    "title": "标题",
+    "titlePlaceholder": "请输入标题",
+    "description": "描述",
+    "descriptionPlaceholder": "请输入描述",
+    "scene": "场景",
+    "scenePlaceholder": "请选择场景",
+    "urlType": {
+      "label": "类型",
+      "link": "链接",
+      "article": "文章"
+    },
+    "article": "文章",
+    "selectArticle": "选择文章",
+    "searchArticle": "搜索文章标题...",
+    "loadingArticles": "加载中...",
+    "noArticles": "未找到文章",
+    "image": "图片",
+    "selectImage": "选择图片",
+    "selectImageDialogTitle": "选择图片",
+    "selectImageDialogDesc": "上传或选择已有图片",
+    "video": "视频",
+    "selectVideo": "选择视频",
+    "selectVideoDialogTitle": "选择视频",
+    "selectVideoDialogDesc": "上传或选择已有视频",
+    "ext": "拓展内容",
+    "extPlaceholder": "请输入拓展内容",
+    "sort": "排序",
+    "sortPlaceholder": "请输入排序",
+    "url": "链接",
+    "urlPlaceholder": "请输入链接",
+    "status": "状态",
+    "submit": "确定",
+    "cancel": "取消",
+    "validation": {
+      "titleRequired": "请输入标题",
+      "descriptionRequired": "请输入描述",
+      "sceneRequired": "请选择场景",
+      "sortRequired": "请输入排序",
+      "urlOrPostRequired": "请填写链接或选择文章"
+    }
+  },
+  "createSuccess": "创建成功",
+  "createError": "创建失败",
+  "updateSuccess": "更新成功",
+  "updateError": "更新失败",
+  "deleteSuccess": "删除成功",
+  "deleteError": "删除失败",
+  "confirmDelete": "确认删除",
+  "confirmDeleteDesc": "确定要删除广告「{{name}}」吗？"
+}

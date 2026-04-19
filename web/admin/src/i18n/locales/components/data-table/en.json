@@ -1,0 +1,39 @@
+{
+  "bulkActions": {
+    "selected": "selected",
+    "clearSelection": "Clear selection",
+    "clearSelectionEscape": "Clear selection (Escape)",
+    "bulkActionsFor": "Bulk actions for",
+    "selectedItems": "items selected"
+  },
+  "pagination": {
+    "page": "Page {{current}} of {{total}}",
+    "of": "of",
+    "rowsPerPage": "Rows per page",
+    "goToFirstPage": "Go to first page",
+    "goToPreviousPage": "Go to previous page",
+    "goToPage": "Go to page {{page}}",
+    "goToNextPage": "Go to next page",
+    "goToLastPage": "Go to last page"
+  },
+  "toolbar": {
+    "filter": "Filter...",
+    "reset": "Reset"
+  },
+  "loading": "Preparing the latest records for you now.",
+  "loadingTitle": "Loading data",
+  "error": "The records could not be loaded right now. Please try again in a moment.",
+  "errorTitle": "We hit a loading issue",
+  "empty": "There is no matching data for the current filters yet.",
+  "emptyTitle": "Nothing matches yet",
+  "emptyHint": "Try adjusting filters or create a new record first.",
+  "viewOptions": {
+    "view": "View",
+    "toggleColumns": "Toggle columns"
+  },
+  "facetedFilter": {
+    "noResultsFound": "No results found.",
+    "selected": "selected",
+    "clearFilters": "Clear filters"
+  }
+}

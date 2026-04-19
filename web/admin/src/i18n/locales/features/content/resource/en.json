@@ -1,0 +1,71 @@
+{
+  "title": "Resource Management",
+  "description": "Manage images, videos, files and other resources",
+  "filter": {
+    "typeLabel": "Resource type",
+    "placeholder": "Select",
+    "all": "All",
+    "image": "Image",
+    "video": "Video",
+    "audio": "Audio",
+    "archive": "Archive",
+    "document": "Document",
+    "font": "Font",
+    "app": "Application",
+    "unknown": "Unknown"
+  },
+  "actions": {
+    "query": "Query",
+    "uploadResource": "Upload",
+    "uploadVideo": "Upload video",
+    "edit": "Edit",
+    "delete": "Delete",
+    "copyUrl": "Copy URL",
+    "copyLink": "Copy link",
+    "copy": "Copy",
+    "preview": "Preview",
+    "close": "Close"
+  },
+  "loading": "Loading",
+  "loadError": "Failed to load. Please try again.",
+  "loadFailed": "Failed to load",
+  "noData": "No resources",
+  "pagination": {
+    "total": "{{count}} items",
+    "perPage": "{{size}} per page"
+  },
+  "uploadSuccess": "Uploaded successfully",
+  "uploadError": "Upload failed",
+  "deleteSuccess": "Deleted successfully",
+  "deleteError": "Delete failed",
+  "copySuccess": "Link copied",
+  "copySuccessShort": "Copied",
+  "confirmDelete": "Confirm Delete",
+  "confirmDeleteDesc": "Are you sure you want to delete this resource? This action cannot be undone.",
+  "form": {
+    "editTitle": "Edit Resource",
+    "preview": "Preview",
+    "title": "Resource Name",
+    "titlePlaceholder": "Resource name",
+    "description": "Resource Description",
+    "descriptionPlaceholder": "Resource description",
+    "resourceType": "Resource type",
+    "uploadTime": "Uploaded at",
+    "resourceSize": "Size",
+    "links": "Links",
+    "typeFallback": "Type {{type}}",
+    "cancel": "Cancel",
+    "submit": "OK",
+    "submitting": "Saving…",
+    "saveSuccess": "Saved successfully",
+    "saveFailed": "Save failed",
+    "validation": {
+      "titleRequired": "Resource name is required",
+      "titleMin": "Resource name must be at least 2 characters",
+      "titleMax": "Resource name must be at most 20 characters",
+      "descriptionRequired": "Resource description is required",
+      "descriptionMin": "Resource description must be at least 2 characters",
+      "descriptionMax": "Resource description must be at most 150 characters"
+    }
+  }
+}

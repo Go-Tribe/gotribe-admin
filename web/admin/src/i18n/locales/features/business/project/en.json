@@ -1,0 +1,103 @@
+{
+  "title": "Project Management",
+  "description": "Manage project information and configuration scope",
+  "createButton": "New",
+  "columns": {
+    "id": "ID",
+    "projectName": "Project Name",
+    "projectDescription": "Project Description",
+    "actions": "Actions"
+  },
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "search": {
+    "projectName": "Search project name",
+    "projectID": "Search ID"
+  },
+  "loading": "Loading...",
+  "loadError": "Failed to load",
+  "noData": "No data",
+  "createSuccess": "Created successfully",
+  "updateSuccess": "Updated successfully",
+  "deleteSuccess": "Deleted successfully",
+  "confirmDelete": "Confirm Delete",
+  "confirmDeleteMessage": "Are you sure you want to delete project \"{{title}}\"? This action cannot be undone.",
+  "form": {
+    "editTitle": "Edit Project",
+    "createTitle": "Create",
+    "editDescription": "Modify project information",
+    "createDescription": "Create a new project",
+    "summaryLabel": "Project setup",
+    "summaryBasic": "Basics",
+    "summarySeo": "Content & SEO",
+    "summaryBrand": "Brand assets",
+    "summaryCompliance": "Compliance & scripts",
+    "sections": {
+      "basicTitle": "Basic information",
+      "basicDescription": "Start with the project name, internal alias and ownership details.",
+      "seoTitle": "Content & SEO",
+      "seoDescription": "Keep domain, content entry and search-facing copy aligned in one place.",
+      "brandTitle": "Brand assets",
+      "brandDescription": "Upload the visuals used in navigation and browser chrome so the project feels consistent.",
+      "complianceTitle": "Compliance & integrations",
+      "complianceDescription": "Collect filing details and third-party scripts together to reduce release-day misses."
+    },
+    "hints": {
+      "title": "This is the display name most teammates will see across the admin.",
+      "name": "Use a stable English or pinyin alias so scripts, URLs and internal docs stay readable.",
+      "description": "A short positioning summary helps the team understand the project at a glance.",
+      "author": "Set the current owner or responsible team to make handoffs easier later.",
+      "domain": "Use the main production domain so environment setup stays aligned.",
+      "postUrl": "If content has a shared entry URL, document it here for editors and developers.",
+      "metaDescription": "This maps to the project summary and is useful for search and sharing snippets.",
+      "keywords": "Comma-separated keywords are easiest to reuse across SEO settings.",
+      "favicon": "A square icon works best for browser tabs and bookmarks.",
+      "navImage": "Use a clean horizontal asset for navigation or branding areas.",
+      "icp": "Store the full filing number here so launch checks are easier.",
+      "publicSecurity": "If public security filing applies, keep it alongside the ICP record.",
+      "baiduAnalytics": "Paste analytics or third-party script snippets here, and keep only the active code."
+    },
+    "fields": {
+      "title": "Project Name",
+      "titlePlaceholder": "Please enter project name",
+      "description": "Project Description",
+      "descriptionPlaceholder": "Please enter project description",
+      "name": "Project Alias",
+      "namePlaceholder": "Please enter project alias",
+      "metaTitle": "Meta Title",
+      "metaTitlePlaceholder": "Please enter Meta title",
+      "metaDescription": "Meta Description",
+      "metaDescriptionPlaceholder": "Please enter Meta description",
+      "keywords": "Meta Keywords",
+      "keywordsPlaceholder": "Please enter Meta keywords",
+      "domain": "Project Domain",
+      "domainPlaceholder": "Please enter project domain",
+      "postUrl": "Content Link",
+      "postUrlPlaceholder": "Please enter content link",
+      "icp": "ICP License",
+      "icpPlaceholder": "Please enter ICP license",
+      "publicSecurity": "Public Security License",
+      "publicSecurityPlaceholder": "Please enter public security license",
+      "author": "Project Owner",
+      "authorPlaceholder": "Please enter project owner",
+      "favicon": "Website Icon",
+      "faviconPlaceholder": "Please enter website icon URL",
+      "selectImage": "Select image",
+      "replaceImage": "Replace image",
+      "navImage": "Nav Icon",
+      "navImagePlaceholder": "Please enter Nav icon URL",
+      "baiduAnalytics": "Third-party JS",
+      "baiduAnalyticsPlaceholder": "Please enter third-party JS code"
+    },
+    "cancel": "Cancel",
+    "submitting": "Submitting...",
+    "save": "Save",
+    "create": "Create",
+    "validation": {
+      "titleRequired": "Project name is required",
+      "nameRequired": "Project alias is required"
+    }
+  }
+}

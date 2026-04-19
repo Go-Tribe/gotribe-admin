@@ -1,0 +1,66 @@
+{
+  "title": "专栏管理",
+  "description": "统一管理专栏信息与内容归属。",
+  "createButton": "新增",
+  "columns": {
+    "id": "ID",
+    "title": "标题",
+    "info": "简介",
+    "projectID": "项目",
+    "icon": "图标",
+    "description": "描述",
+    "createdAt": "创建时间",
+    "actions": "操作"
+  },
+  "actions": {
+    "edit": "编辑",
+    "delete": "删除"
+  },
+  "search": {
+    "title": "标题",
+    "project": "项目",
+    "projectAll": "全部"
+  },
+  "loading": "加载中…",
+  "loadError": "加载失败",
+  "noData": "暂无数据",
+  "createSuccess": "新增成功",
+  "createError": "新增失败",
+  "updateSuccess": "更新成功",
+  "updateError": "更新失败",
+  "deleteSuccess": "删除成功",
+  "deleteError": "删除失败",
+  "confirmDelete": "确认删除",
+  "confirmDeleteDesc": "确定要删除专栏「{{title}}」吗？",
+  "form": {
+    "editTitle": "编辑专栏",
+    "createTitle": "新增专栏",
+    "editDescription": "编辑专栏信息。",
+    "createDescription": "填写专栏信息。",
+    "title": "标题",
+    "titlePlaceholder": "标题",
+    "info": "简介",
+    "infoPlaceholder": "简介",
+    "description": "描述",
+    "descriptionPlaceholder": "描述",
+    "project": "项目",
+    "projectPlaceholder": "请选择项目",
+    "icon": "图标",
+    "iconPlaceholder": "图标 URL",
+    "selectIcon": "选择图片",
+    "clearIcon": "清除",
+    "selectIconDialogTitle": "选择图标",
+    "selectIconDialogDesc": "从资源管理器选择图片",
+    "infoLoading": "加载中…",
+    "cancel": "取消",
+    "submit": "确定",
+    "submitting": "提交中…",
+    "validation": {
+      "titleRequired": "请填写标题",
+      "infoRequired": "请填写简介",
+      "descriptionRequired": "请填写描述",
+      "projectRequired": "请选择项目",
+      "iconRequired": "请填写图标"
+    }
+  }
+}

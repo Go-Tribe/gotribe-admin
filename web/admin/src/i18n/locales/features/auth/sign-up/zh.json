@@ -1,0 +1,26 @@
+{
+  "title": "创建账户",
+  "description": "请输入您的邮箱和密码以创建账户。已有账户？",
+  "signInLink": "登录",
+  "email": "邮箱",
+  "emailPlaceholder": "name@example.com",
+  "password": "密码",
+  "passwordPlaceholder": "********",
+  "confirmPassword": "确认密码",
+  "createAccount": "创建账户",
+  "orContinueWith": "或使用以下方式继续",
+  "github": "GitHub",
+  "facebook": "Facebook",
+  "footerText": "创建账户即表示您同意我们的",
+  "termsOfService": "服务条款",
+  "privacyPolicy": "隐私政策",
+  "and": "和",
+  "validation": {
+    "emailRequired": "请输入您的邮箱",
+    "emailInvalid": "请输入有效的邮箱地址",
+    "passwordRequired": "请输入您的密码",
+    "passwordMinLength": "密码长度至少为7个字符",
+    "confirmPasswordRequired": "请确认您的密码",
+    "passwordsDontMatch": "密码不匹配"
+  }
+}

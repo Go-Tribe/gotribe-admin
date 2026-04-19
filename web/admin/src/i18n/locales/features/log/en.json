@@ -1,0 +1,31 @@
+{
+  "operationLog": {
+    "title": "Operation Log",
+    "description": "View and manage system operation logs.",
+    "username": "Username",
+    "ip": "IP Address",
+    "path": "Request Path",
+    "status": "Status",
+    "startTime": "Start Time",
+    "timeCost": "Time Cost",
+    "desc": "Description",
+    "actions": "Actions",
+    "delete": "Delete",
+    "searchUsername": "Search username...",
+    "searchIp": "Search IP address...",
+    "searchPath": "Search request path...",
+    "loading": "Loading...",
+    "loadError": "Failed to load, please try again later",
+    "noData": "No data",
+    "deleteSuccess": "Deleted successfully",
+    "deleteError": "Delete failed",
+    "confirmDelete": "Confirm Delete",
+    "confirmDeleteMessage": "Are you sure you want to delete log ID {{id}}? This action cannot be undone.",
+    "statusOptions": {
+      "200": "200 (Success)",
+      "300": "300 (Redirect)",
+      "400": "400 (Client Error)",
+      "500": "500 (Server Error)"
+    }
+  }
+}

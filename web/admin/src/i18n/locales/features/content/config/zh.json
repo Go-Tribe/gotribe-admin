@@ -1,0 +1,63 @@
+{
+  "title": "数据管理",
+  "description": "统一管理内容配置项与业务参数。",
+  "createButton": "新增",
+  "columns": {
+    "id": "ID",
+    "alias": "别名",
+    "title": "标题",
+    "description": "描述",
+    "actions": "操作"
+  },
+  "actions": {
+    "edit": "编辑",
+    "delete": "删除"
+  },
+  "search": {
+    "id": "ID",
+    "configName": "配置名称"
+  },
+  "loading": "加载中…",
+  "loadError": "加载失败",
+  "noData": "暂无数据",
+  "createSuccess": "新增成功",
+  "createError": "新增失败",
+  "updateSuccess": "更新成功",
+  "updateError": "更新失败",
+  "deleteSuccess": "删除成功",
+  "deleteError": "删除失败",
+  "confirmDelete": "确认删除",
+  "confirmDeleteDesc": "确定要删除配置「{{title}}」吗？",
+  "form": {
+    "editTitle": "编辑配置",
+    "createTitle": "新增配置",
+    "editDescription": "编辑配置信息，别名与类型不可修改。",
+    "createDescription": "填写配置信息。",
+    "title": "标题",
+    "titlePlaceholder": "标题",
+    "description": "描述",
+    "descriptionPlaceholder": "描述",
+    "project": "项目",
+    "projectPlaceholder": "请选择项目",
+    "alias": "别名",
+    "aliasPlaceholder": "别名",
+    "type": "类型",
+    "typePlaceholder": "类型",
+    "typeRichText": "富文本",
+    "typeJson": "JSON",
+    "content": "内容",
+    "contentLoading": "加载内容…",
+    "contentPlaceholder": "富文本内容",
+    "cancel": "取消",
+    "submit": "确定",
+    "submitting": "提交中…",
+    "saveSuccess": "保存成功",
+    "saveFailed": "保存失败",
+    "validation": {
+      "titleRequired": "请填写标题",
+      "descriptionRequired": "请填写描述",
+      "projectRequired": "请选择项目",
+      "aliasRequired": "请填写别名"
+    }
+  }
+}

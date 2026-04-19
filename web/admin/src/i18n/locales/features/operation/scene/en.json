@@ -1,0 +1,55 @@
+{
+  "title": "Scene Management",
+  "description": "Manage ad placement scenes and ownership scope.",
+  "scenario": {
+    "title": "Scene",
+    "description": "Scene list",
+    "createButton": "New",
+    "search": {
+      "project": "Project",
+      "projectAll": "All Projects"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Scene Name",
+      "description": "Description",
+      "project": "Project",
+      "createdAt": "Created At",
+      "actions": "Actions"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "loading": "Loading…",
+    "loadError": "Failed to load",
+    "noData": "No data"
+  },
+  "form": {
+    "dialogTitle": "New Scene",
+    "editTitle": "Edit Scene",
+    "createDescription": "Fill in ad scene information.",
+    "editDescription": "Update ad scene information.",
+    "title": "Scene Name",
+    "titlePlaceholder": "Enter scene name",
+    "description": "Description",
+    "descriptionPlaceholder": "Enter description",
+    "project": "Project",
+    "projectPlaceholder": "Select project",
+    "submit": "Confirm",
+    "cancel": "Cancel",
+    "validation": {
+      "titleRequired": "Please enter scene name",
+      "descriptionRequired": "Please enter description",
+      "projectRequired": "Please select project"
+    }
+  },
+  "createSuccess": "Created successfully",
+  "createError": "Create failed",
+  "confirmDelete": "Confirm Delete",
+  "confirmDeleteDesc": "Are you sure you want to delete scene \"{{name}}\"?",
+  "deleteSuccess": "Deleted successfully",
+  "deleteError": "Delete failed",
+  "updateSuccess": "Updated successfully",
+  "updateError": "Update failed"
+}

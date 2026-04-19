@@ -1,0 +1,55 @@
+{
+  "title": "场景管理",
+  "description": "统一管理广告投放场景与归属范围。",
+  "scenario": {
+    "title": "场景",
+    "description": "场景列表",
+    "createButton": "新建",
+    "search": {
+      "project": "项目",
+      "projectAll": "全部项目"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "场景名称",
+      "description": "场景描述",
+      "project": "所属项目",
+      "createdAt": "创建时间",
+      "actions": "操作"
+    },
+    "actions": {
+      "edit": "编辑",
+      "delete": "删除"
+    },
+    "loading": "加载中…",
+    "loadError": "加载失败",
+    "noData": "暂无数据"
+  },
+  "form": {
+    "dialogTitle": "新建场景",
+    "editTitle": "编辑场景",
+    "createDescription": "填写广告场景信息。",
+    "editDescription": "修改广告场景信息。",
+    "title": "场景名称",
+    "titlePlaceholder": "请输入场景名称",
+    "description": "场景描述",
+    "descriptionPlaceholder": "请输入场景描述",
+    "project": "所属项目",
+    "projectPlaceholder": "请选择项目",
+    "submit": "确定",
+    "cancel": "取消",
+    "validation": {
+      "titleRequired": "请输入场景名称",
+      "descriptionRequired": "请输入场景描述",
+      "projectRequired": "请选择所属项目"
+    }
+  },
+  "createSuccess": "创建成功",
+  "createError": "创建失败",
+  "confirmDelete": "确认删除",
+  "confirmDeleteDesc": "确定要删除场景「{{name}}」吗？",
+  "deleteSuccess": "删除成功",
+  "deleteError": "删除失败",
+  "updateSuccess": "更新成功",
+  "updateError": "更新失败"
+}

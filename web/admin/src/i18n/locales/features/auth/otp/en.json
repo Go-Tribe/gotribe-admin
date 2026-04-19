@@ -1,0 +1,12 @@
+{
+  "title": "Two-factor Authentication",
+  "description": "Please enter the authentication code. We have sent the authentication code to your email.",
+  "otpLabel": "One-Time Password",
+  "verify": "Verify",
+  "footerText": "Haven't received it?",
+  "resendLink": "Resend a new code.",
+  "validation": {
+    "otpRequired": "Please enter the 6-digit code.",
+    "otpLength": "Please enter the 6-digit code."
+  }
+}

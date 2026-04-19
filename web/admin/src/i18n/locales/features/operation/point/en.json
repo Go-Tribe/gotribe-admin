@@ -1,0 +1,48 @@
+{
+  "title": "Point Management",
+  "description": "Manage point records and balance changes.",
+  "point": {
+    "title": "Point",
+    "description": "Point list",
+    "createButton": "Add Point",
+    "search": {
+      "userIDPlaceholder": "Enter user ID",
+      "nicknamePlaceholder": "Enter nickname",
+      "project": "Project",
+      "projectAll": "All Projects"
+    },
+    "columns": {
+      "id": "ID",
+      "userID": "User ID",
+      "nickname": "Nickname",
+      "point": "Point",
+      "reason": "Reason",
+      "createdAt": "Created At"
+    },
+    "loading": "Loading…",
+    "loadError": "Load error",
+    "noData": "No data"
+  },
+  "form": {
+    "dialogTitle": "Add Point",
+    "createDescription": "Fill in point information.",
+    "user": "User",
+    "selectUser": "Select User",
+    "searchUser": "Search user ID, nickname or username...",
+    "loadingUsers": "Loading...",
+    "noUsers": "No users found",
+    "project": "Project",
+    "projectPlaceholder": "Select project",
+    "point": "Point",
+    "pointPlaceholder": "Enter point",
+    "submit": "Confirm",
+    "cancel": "Cancel",
+    "validation": {
+      "userIDRequired": "Please select user",
+      "projectIDRequired": "Please select project",
+      "pointRequired": "Please enter point"
+    }
+  },
+  "createSuccess": "Created successfully",
+  "createError": "Create failed"
+}

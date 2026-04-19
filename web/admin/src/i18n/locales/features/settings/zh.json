@@ -1,0 +1,40 @@
+{
+  "title": "个人中心",
+  "description": "查看与修改您的个人信息与账号安全设置",
+  "sidebar": {
+    "profile": "个人资料"
+  },
+  "profile": {
+    "title": "个人资料",
+    "desc": "展示您的账号基本信息",
+    "nickname": "昵称",
+    "username": "用户名",
+    "mobile": "手机号",
+    "introduction": "简介",
+    "noData": "暂无个人信息",
+    "loadError": "加载失败，请重试",
+    "changeAvatar": "更换头像",
+    "changeAvatarDesc": "从资源管理中选择或上传头像图片",
+    "avatarUpdateSuccess": "头像已更新",
+    "avatarUpdateError": "头像更新失败"
+  },
+  "changePassword": {
+    "title": "修改密码",
+    "oldPassword": "原密码",
+    "newPassword": "新密码",
+    "confirmPassword": "确认新密码",
+    "oldPasswordPlaceholder": "请输入原密码",
+    "newPasswordPlaceholder": "请输入新密码（6～20 位）",
+    "confirmPasswordPlaceholder": "请再次输入新密码",
+    "submit": "修改密码",
+    "success": "密码修改成功",
+    "error": "修改失败"
+  },
+  "validation": {
+    "oldPasswordRequired": "请输入原密码",
+    "newPasswordMin": "新密码至少 6 位",
+    "newPasswordMax": "新密码最多 20 位",
+    "confirmPasswordRequired": "请确认新密码",
+    "passwordMismatch": "两次输入的新密码不一致"
+  }
+}

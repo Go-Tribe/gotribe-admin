@@ -1,0 +1,12 @@
+{
+  "title": "双因素认证",
+  "description": "请输入验证码。我们已将验证码发送至您的邮箱。",
+  "otpLabel": "一次性密码",
+  "verify": "验证",
+  "footerText": "没有收到？",
+  "resendLink": "重新发送验证码。",
+  "validation": {
+    "otpRequired": "请输入6位验证码。",
+    "otpLength": "请输入6位验证码。"
+  }
+}

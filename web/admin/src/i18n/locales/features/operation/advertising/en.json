@@ -1,0 +1,90 @@
+{
+  "title": "Advertising Management",
+  "description": "Manage ad content and delivery status",
+  "advertising": {
+    "title": "Advertising",
+    "description": "Advertising list",
+    "createButton": "New Ad",
+    "search": {
+      "scene": "Placement Scene",
+      "sceneAll": "All Scenes",
+      "title": "Title",
+      "titlePlaceholder": "Enter ad title",
+      "status": "Delivery Status",
+      "statusAll": "All"
+    },
+    "columns": {
+      "id": "Ad ID",
+      "title": "Ad Title",
+      "description": "Summary",
+      "status": "Delivery Status",
+      "createdAt": "Created At",
+      "actions": "Actions"
+    },
+    "status": {
+      "unpublished": "Offline",
+      "published": "Live"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "loading": "Loading…",
+    "loadError": "Load error",
+    "noData": "No data"
+  },
+  "form": {
+    "dialogTitle": "New Ad",
+    "editTitle": "Edit Ad",
+    "createDescription": "Fill in ad information.",
+    "editDescription": "Update ad information.",
+    "title": "Title",
+    "titlePlaceholder": "Enter title",
+    "description": "Description",
+    "descriptionPlaceholder": "Enter description",
+    "scene": "Scene",
+    "scenePlaceholder": "Select scene",
+    "urlType": {
+      "label": "Type",
+      "link": "Link",
+      "article": "Article"
+    },
+    "article": "Article",
+    "selectArticle": "Select Article",
+    "searchArticle": "Search article title...",
+    "loadingArticles": "Loading...",
+    "noArticles": "No articles found",
+    "image": "Image",
+    "selectImage": "Select Image",
+    "selectImageDialogTitle": "Select Image",
+    "selectImageDialogDesc": "Upload or select existing image",
+    "video": "Video",
+    "selectVideo": "Select Video",
+    "selectVideoDialogTitle": "Select Video",
+    "selectVideoDialogDesc": "Upload or select existing video",
+    "ext": "Extended Content",
+    "extPlaceholder": "Enter extended content",
+    "sort": "Sort",
+    "sortPlaceholder": "Enter sort",
+    "url": "URL",
+    "urlPlaceholder": "Enter URL",
+    "status": "Status",
+    "submit": "Confirm",
+    "cancel": "Cancel",
+    "validation": {
+      "titleRequired": "Please enter title",
+      "descriptionRequired": "Please enter description",
+      "sceneRequired": "Please select scene",
+      "sortRequired": "Please enter sort",
+      "urlOrPostRequired": "Please enter URL or select article"
+    }
+  },
+  "createSuccess": "Created successfully",
+  "createError": "Create failed",
+  "updateSuccess": "Updated successfully",
+  "updateError": "Update failed",
+  "deleteSuccess": "Deleted successfully",
+  "deleteError": "Delete failed",
+  "confirmDelete": "Confirm Delete",
+  "confirmDeleteDesc": "Are you sure you want to delete ad \"{{name}}\"?"
+}

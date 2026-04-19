@@ -1,0 +1,51 @@
+{
+  "title": "Tag Management",
+  "description": "Manage content tags",
+  "createButton": "Create",
+  "columns": {
+    "id": "ID",
+    "title": "Tag Name",
+    "description": "Description",
+    "actions": "Actions"
+  },
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "search": {
+    "title": "Search tag name",
+    "description": "Search tag description"
+  },
+  "loading": "Loading...",
+  "loadError": "Failed to load",
+  "noData": "No data",
+  "createSuccess": "Created successfully",
+  "createError": "Created failed",
+  "updateSuccess": "Updated successfully",
+  "deleteSuccess": "Deleted successfully",
+  "confirmDelete": "Confirm Delete",
+  "confirmDeleteDesc": "Are you sure you want to delete tag \"{{title}}\"? This action cannot be undone.",
+  "form": {
+    "editTitle": "Edit Tag",
+    "createTitle": "Create Tag",
+    "editDescription": "Modify tag information",
+    "createDescription": "Create a new tag",
+    "title": "Tag Name",
+    "titlePlaceholder": "Enter tag name",
+    "slug": "Tag Slug",
+    "slugPlaceholder": "Enter tag slug",
+    "slugDesc": "Unique identifier for URL, e.g.: default-tag",
+    "description": "Description",
+    "descriptionPlaceholder": "Enter description (optional)",
+    "color": "Tag Color",
+    "cancel": "Cancel",
+    "submitting": "Submitting...",
+    "save": "Save",
+    "create": "Create",
+    "validation": {
+      "titleRequired": "Tag name is required",
+      "slugRequired": "Tag slug is required",
+      "slugLength": "Tag slug must be 2-30 characters"
+    }
+  }
+}

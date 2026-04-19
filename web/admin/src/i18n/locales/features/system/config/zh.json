@@ -1,0 +1,30 @@
+{
+  "title": "网站配置",
+  "description": "配置网站的基本信息，包括名称、Logo 和图标",
+  "loading": "加载中",
+  "form": {
+    "title": "网站名称",
+    "titlePlaceholder": "请输入网站名称",
+    "titleDescription": "网站的显示名称，将展示在浏览器标签页和网站顶部",
+    "logo": "网站 Logo",
+    "logoAlt": "网站 Logo",
+    "logoDescription": "网站 Logo，建议尺寸为 200x60 像素。点击图片从资源库选择",
+    "icon": "网站图标",
+    "iconAlt": "网站图标",
+    "iconDescription": "网站图标 (Favicon)，建议尺寸为 32x32 或 64x64 像素。点击图片从资源库选择",
+    "save": "保存配置",
+    "saveSuccess": "配置保存成功",
+    "saveError": "保存失败",
+    "validation": {
+      "titleRequired": "请输入网站名称",
+      "logoRequired": "请选择网站 Logo",
+      "iconRequired": "请选择网站图标"
+    }
+  },
+  "dialog": {
+    "logoTitle": "选择网站 Logo",
+    "logoDescription": "上传或选择已有的 Logo 图片",
+    "iconTitle": "选择网站图标",
+    "iconDescription": "上传或选择已有的图标图片"
+  }
+}

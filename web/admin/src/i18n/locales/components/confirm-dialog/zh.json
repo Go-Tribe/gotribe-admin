@@ -1,0 +1,15 @@
+{
+  "cancel": "取消",
+  "continue": "继续",
+  "processing": "处理中...",
+  "createSuccess": "创建成功",
+  "updateSuccess": "保存成功",
+  "deleteSuccess": "删除成功",
+  "createDescription": "最新内容已经写入，列表会自动刷新到最新状态。",
+  "updateDescription": "变更已经保存，列表会自动刷新到最新状态。",
+  "deleteDescription": "记录已经移除，当前列表已同步更新。",
+  "createLoading": "正在创建...",
+  "updateLoading": "正在保存...",
+  "deleteLoading": "正在删除...",
+  "irreversibleHint": "删除后无法恢复，请确认当前操作对象和影响范围。"
+}

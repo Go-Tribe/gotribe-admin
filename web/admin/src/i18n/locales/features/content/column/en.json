@@ -1,0 +1,66 @@
+{
+  "title": "Column Management",
+  "description": "Manage column information and content ownership.",
+  "createButton": "Create",
+  "columns": {
+    "id": "ID",
+    "title": "Title",
+    "info": "Info",
+    "projectID": "Project",
+    "icon": "Icon",
+    "description": "Description",
+    "createdAt": "Created At",
+    "actions": "Actions"
+  },
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "search": {
+    "title": "Title",
+    "project": "Project",
+    "projectAll": "All"
+  },
+  "loading": "Loading…",
+  "loadError": "Failed to load",
+  "noData": "No data",
+  "createSuccess": "Created successfully",
+  "createError": "Create failed",
+  "updateSuccess": "Updated successfully",
+  "updateError": "Update failed",
+  "deleteSuccess": "Deleted successfully",
+  "deleteError": "Delete failed",
+  "confirmDelete": "Confirm Delete",
+  "confirmDeleteDesc": "Are you sure you want to delete column \"{{title}}\"?",
+  "form": {
+    "editTitle": "Edit Column",
+    "createTitle": "Create Column",
+    "editDescription": "Edit column information.",
+    "createDescription": "Fill in column information.",
+    "title": "Title",
+    "titlePlaceholder": "Title",
+    "info": "Info",
+    "infoPlaceholder": "Info",
+    "description": "Description",
+    "descriptionPlaceholder": "Description",
+    "project": "Project",
+    "projectPlaceholder": "Select project",
+    "icon": "Icon",
+    "iconPlaceholder": "Icon URL",
+    "selectIcon": "Select image",
+    "clearIcon": "Clear",
+    "selectIconDialogTitle": "Select icon",
+    "selectIconDialogDesc": "Select image from resource manager",
+    "infoLoading": "Loading…",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "submitting": "Submitting…",
+    "validation": {
+      "titleRequired": "Title is required",
+      "infoRequired": "Info is required",
+      "descriptionRequired": "Description is required",
+      "projectRequired": "Project is required",
+      "iconRequired": "Icon is required"
+    }
+  }
+}

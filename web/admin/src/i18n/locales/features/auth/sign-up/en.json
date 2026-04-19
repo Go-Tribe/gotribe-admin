@@ -1,0 +1,26 @@
+{
+  "title": "Create an account",
+  "description": "Enter your email and password to create an account. Already have an account?",
+  "signInLink": "Sign In",
+  "email": "Email",
+  "emailPlaceholder": "name@example.com",
+  "password": "Password",
+  "passwordPlaceholder": "********",
+  "confirmPassword": "Confirm Password",
+  "createAccount": "Create Account",
+  "orContinueWith": "Or continue with",
+  "github": "GitHub",
+  "facebook": "Facebook",
+  "footerText": "By creating an account, you agree to our",
+  "termsOfService": "Terms of Service",
+  "privacyPolicy": "Privacy Policy",
+  "and": "and",
+  "validation": {
+    "emailRequired": "Please enter your email",
+    "emailInvalid": "Please enter a valid email address",
+    "passwordRequired": "Please enter your password",
+    "passwordMinLength": "Password must be at least 7 characters long",
+    "confirmPasswordRequired": "Please confirm your password",
+    "passwordsDontMatch": "Passwords don't match."
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "title": "User Management",
+  "description": "Manage user profiles and account status",
+  "createButton": "New",
+  "detail": {
+    "title": "User Details",
+    "userID": "User ID",
+    "username": "Username",
+    "nickname": "Nickname",
+    "email": "Email",
+    "phone": "Phone",
+    "avatarURL": "Avatar URL",
+    "sex": "Gender",
+    "projectID": "Project ID",
+    "status": "Status",
+    "birthday": "Birthday",
+    "point": "Points",
+    "createdAt": "Created At"
+  },
+  "columns": {
+    "avatar": "Avatar",
+    "id": "ID",
+    "createdAt": "Created At",
+    "username": "Username",
+    "nickname": "Nickname",
+    "point": "Points",
+    "birthday": "Birthday",
+    "sex": "Gender",
+    "actions": "Actions"
+  },
+  "sex": {
+    "male": "Male",
+    "female": "Female",
+    "unknown": "Unknown"
+  },
+  "actions": {
+    "view": "View",
+    "edit": "Edit"
+  },
+  "search": {
+    "userID": "Search user ID",
+    "project": "Select Project",
+    "allProjects": "All Projects"
+  },
+  "loading": "Loading...",
+  "loadError": "Failed to load",
+  "noData": "No data",
+  "createSuccess": "Created successfully",
+  "createError": "Failed to create: {{error}}",
+  "updateSuccess": "Updated successfully",
+  "updateError": "Failed to update: {{error}}",
+  "form": {
+    "editTitle": "Edit User",
+    "createTitle": "Create",
+    "editDescription": "Modify user information",
+    "createDescription": "Create a new user",
+    "fields": {
+      "avatarURL": "Avatar URL",
+      "avatarURLPlaceholder": "Please enter avatar URL",
+      "selectAvatarFromResource": "Select from resource library",
+      "selectAvatarDialogTitle": "Select avatar",
+      "selectAvatarDialogDesc": "Select or upload an avatar image from resource management",
+      "username": "Username",
+      "usernamePlaceholder": "Please enter username",
+      "nickname": "Nickname",
+      "nicknamePlaceholder": "Please enter nickname",
+      "point": "Points",
+      "pointPlaceholder": "Please enter points",
+      "birthday": "Birthday",
+      "birthdayPlaceholder": "Please select birthday",
+      "sex": "Gender",
+      "sexPlaceholder": "Please select gender",
+      "project": "Project",
+      "projectPlaceholder": "Please select project",
+      "password": "Password",
+      "passwordPlaceholder": "Please enter password",
+      "passwordEditPlaceholder": "Leave empty if not changing",
+      "phone": "Phone",
+      "phonePlaceholder": "Please enter phone number",
+      "email": "Email",
+      "emailPlaceholder": "Please enter email"
+    },
+    "cancel": "Cancel",
+    "submitting": "Submitting...",
+    "save": "Save",
+    "create": "Create",
+    "validation": {
+      "usernameRequired": "Username is required",
+      "usernameLength": "Username must be 2-20 characters",
+      "usernamePattern": "Username must contain only letters and numbers",
+      "nicknameRequired": "Nickname is required",
+      "nicknameLength": "Nickname must be 2-20 characters",
+      "passwordLength": "Password must be 6-20 characters",
+      "phoneRequired": "Phone number is required",
+      "emailRequired": "Email is required",
+      "projectIDLength": "Project ID must be 2-20 characters",
+      "pointInvalid": "Points cannot be negative",
+      "sexRequired": "Please select gender",
+      "projectRequired": "Please select project"
+    }
+  }
+}

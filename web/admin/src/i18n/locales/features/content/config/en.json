@@ -1,0 +1,63 @@
+{
+  "title": "Data Management",
+  "description": "Manage content configuration items and business parameters.",
+  "createButton": "Create",
+  "columns": {
+    "id": "ID",
+    "alias": "Alias",
+    "title": "Title",
+    "description": "Description",
+    "actions": "Actions"
+  },
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "search": {
+    "id": "ID",
+    "configName": "Config name"
+  },
+  "loading": "Loading…",
+  "loadError": "Failed to load",
+  "noData": "No data",
+  "createSuccess": "Created successfully",
+  "createError": "Create failed",
+  "updateSuccess": "Updated successfully",
+  "updateError": "Update failed",
+  "deleteSuccess": "Deleted successfully",
+  "deleteError": "Delete failed",
+  "confirmDelete": "Confirm Delete",
+  "confirmDeleteDesc": "Are you sure you want to delete config \"{{title}}\"?",
+  "form": {
+    "editTitle": "Edit Config",
+    "createTitle": "Create Config",
+    "editDescription": "Edit config. Alias and type cannot be changed.",
+    "createDescription": "Fill in the configuration details.",
+    "title": "Title",
+    "titlePlaceholder": "Title",
+    "description": "Description",
+    "descriptionPlaceholder": "Description",
+    "project": "Project",
+    "projectPlaceholder": "Select project",
+    "alias": "Alias",
+    "aliasPlaceholder": "Alias",
+    "type": "Type",
+    "typePlaceholder": "Type",
+    "typeRichText": "Rich text",
+    "typeJson": "JSON",
+    "content": "Content",
+    "contentLoading": "Loading content…",
+    "contentPlaceholder": "Rich text content",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "submitting": "Submitting…",
+    "saveSuccess": "Saved successfully",
+    "saveFailed": "Save failed",
+    "validation": {
+      "titleRequired": "Title is required",
+      "descriptionRequired": "Description is required",
+      "projectRequired": "Project is required",
+      "aliasRequired": "Alias is required"
+    }
+  }
+}

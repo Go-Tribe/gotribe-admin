@@ -1,0 +1,39 @@
+{
+  "bulkActions": {
+    "selected": "已选择",
+    "clearSelection": "清除选择",
+    "clearSelectionEscape": "清除选择 (Esc)",
+    "bulkActionsFor": "批量操作",
+    "selectedItems": "项已选择"
+  },
+  "pagination": {
+    "page": "第 {{current}} 页，共 {{total}} 页",
+    "of": "of",
+    "rowsPerPage": "每页显示",
+    "goToFirstPage": "跳转到第一页",
+    "goToPreviousPage": "跳转到上一页",
+    "goToPage": "跳转到第 {{page}} 页",
+    "goToNextPage": "跳转到下一页",
+    "goToLastPage": "跳转到最后一页"
+  },
+  "toolbar": {
+    "filter": "筛选...",
+    "reset": "重置"
+  },
+  "loading": "正在准备最新数据，请稍等片刻。",
+  "loadingTitle": "数据加载中",
+  "error": "当前数据暂时无法加载，可以稍后重试。",
+  "errorTitle": "加载出了点问题",
+  "empty": "当前条件下还没有数据。",
+  "emptyTitle": "暂时没有匹配内容",
+  "emptyHint": "可以调整筛选条件，或先创建一条新记录。",
+  "viewOptions": {
+    "view": "视图",
+    "toggleColumns": "切换列"
+  },
+  "facetedFilter": {
+    "noResultsFound": "未找到结果",
+    "selected": "已选择",
+    "clearFilters": "清除筛选"
+  }
+}

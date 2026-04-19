@@ -1,0 +1,42 @@
+{
+  "title": "评论管理",
+  "description": "统一管理评论审核与处理状态",
+  "comment": {
+    "title": "评论",
+    "description": "评论列表",
+    "search": {
+      "project": "所属项目",
+      "projectAll": "全部项目",
+      "commentIDPlaceholder": "输入评论 ID",
+      "nicknamePlaceholder": "输入评论人昵称",
+      "userIDPlaceholder": "用户ID",
+      "status": "审核状态"
+    },
+    "columns": {
+      "id": "评论 ID",
+      "comment": "评论摘要",
+      "nickname": "评论人",
+      "userID": "用户编号",
+      "objectID": "对象ID",
+      "status": "审核状态",
+      "location": "地区",
+      "createdAt": "提交时间",
+      "actions": "操作"
+    },
+    "status": {
+      "pending": "待审核",
+      "approved": "已通过"
+    },
+    "actions": {
+      "approve": "审核通过",
+      "reject": "设为不通过"
+    },
+    "loading": "加载中…",
+    "loadError": "加载失败",
+    "noData": "暂无数据"
+  },
+  "approveSuccess": "审核通过",
+  "approveError": "审核失败",
+  "rejectSuccess": "已设为不通过",
+  "rejectError": "操作失败"
+}

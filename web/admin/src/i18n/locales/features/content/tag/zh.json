@@ -1,0 +1,51 @@
+{
+  "title": "标签管理",
+  "description": "管理内容标签",
+  "createButton": "新建标签",
+  "columns": {
+    "id": "ID",
+    "title": "标签名称",
+    "description": "标签描述",
+    "actions": "操作"
+  },
+  "actions": {
+    "edit": "编辑",
+    "delete": "删除"
+  },
+  "search": {
+    "title": "搜索标签名称",
+    "description": "搜索标签描述"
+  },
+  "loading": "加载中...",
+  "loadError": "加载失败",
+  "noData": "暂无数据",
+  "createSuccess": "创建成功",
+  "createError": "创建失败",
+  "updateSuccess": "更新成功",
+  "deleteSuccess": "删除成功",
+  "confirmDelete": "确认删除",
+  "confirmDeleteDesc": "确定要删除标签 \"{{title}}\" 吗？此操作不可恢复。",
+  "form": {
+    "editTitle": "编辑标签",
+    "createTitle": "新建标签",
+    "editDescription": "修改标签信息",
+    "createDescription": "创建一个新的标签",
+    "title": "标签名称",
+    "titlePlaceholder": "请输入标签名称",
+    "slug": "标签标识",
+    "slugPlaceholder": "请输入标签标识",
+    "slugDesc": "用于URL的唯一标识，如：default-tag",
+    "description": "标签描述",
+    "descriptionPlaceholder": "请输入标签描述（可选）",
+    "color": "标签颜色",
+    "cancel": "取消",
+    "submitting": "提交中...",
+    "save": "保存",
+    "create": "创建",
+    "validation": {
+      "titleRequired": "标签名称不能为空",
+      "slugRequired": "标签标识不能为空",
+      "slugLength": "标签标识长度需为 2-30 个字符"
+    }
+  }
+}

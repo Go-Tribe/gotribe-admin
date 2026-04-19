@@ -1,0 +1,22 @@
+{
+  "title": "登录",
+  "description": "请输入您的邮箱和密码以登录您的账户",
+  "account": "账户",
+  "accountPlaceholder": "请输入您的账户",
+  "password": "密码",
+  "passwordPlaceholder": "请输入您的密码",
+  "login": "登录",
+  "loggingIn": "登录中...",
+  "redirectHint": "登录后我们会带您回到刚才要访问的页面。",
+  "securityHint": "请确认您正在使用受信任的设备和网络环境。",
+  "welcomeBack": "欢迎回来，{{username}}！",
+  "error": "错误",
+  "footerText": "点击登录，即表示您同意我们的",
+  "termsOfService": "服务条款",
+  "privacyPolicy": "隐私政策",
+  "and": "和",
+  "signIn2": {
+    "title": "登录",
+    "description": "请输入您的邮箱和密码以登录您的账户"
+  }
+}

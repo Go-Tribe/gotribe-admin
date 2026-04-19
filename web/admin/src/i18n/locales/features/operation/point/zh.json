@@ -1,0 +1,48 @@
+{
+  "title": "积分管理",
+  "description": "统一管理积分记录与变动情况。",
+  "point": {
+    "title": "积分",
+    "description": "积分列表",
+    "createButton": "增加积分",
+    "search": {
+      "userIDPlaceholder": "请输入用户ID",
+      "nicknamePlaceholder": "请输入昵称",
+      "project": "项目",
+      "projectAll": "全部项目"
+    },
+    "columns": {
+      "id": "ID",
+      "userID": "用户ID",
+      "nickname": "昵称",
+      "point": "积分",
+      "reason": "原因",
+      "createdAt": "创建时间"
+    },
+    "loading": "加载中…",
+    "loadError": "加载失败",
+    "noData": "暂无数据"
+  },
+  "form": {
+    "dialogTitle": "增加积分",
+    "createDescription": "填写积分信息。",
+    "user": "用户",
+    "selectUser": "选择用户",
+    "searchUser": "搜索用户ID、昵称或用户名...",
+    "loadingUsers": "加载中...",
+    "noUsers": "未找到用户",
+    "project": "项目",
+    "projectPlaceholder": "请选择项目",
+    "point": "积分",
+    "pointPlaceholder": "请输入积分",
+    "submit": "确定",
+    "cancel": "取消",
+    "validation": {
+      "userIDRequired": "请选择用户",
+      "projectIDRequired": "请选择项目",
+      "pointRequired": "请输入积分"
+    }
+  },
+  "createSuccess": "创建成功",
+  "createError": "创建失败"
+}

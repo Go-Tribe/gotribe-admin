@@ -1,0 +1,27 @@
+/* Hide Filter, Search, Undo, Redo, Sort toolbar buttons in vanilla-jsoneditor */
+.json-editor-wrapper [title='Filter'],
+.json-editor-wrapper [title='筛选'],
+.json-editor-wrapper [title='Search'],
+.json-editor-wrapper [title='搜索'],
+.json-editor-wrapper [title='Undo'],
+.json-editor-wrapper [title='撤销'],
+.json-editor-wrapper [title='Redo'],
+.json-editor-wrapper [title='重做'],
+.json-editor-wrapper [title='Sort'],
+.json-editor-wrapper [title='排序'] {
+  display: none !important;
+}
+
+/* Hide parent button when title is on child (e.g. icon) */
+.json-editor-wrapper button:has([title='Filter']),
+.json-editor-wrapper button:has([title='筛选']),
+.json-editor-wrapper button:has([title='Search']),
+.json-editor-wrapper button:has([title='搜索']),
+.json-editor-wrapper button:has([title='Undo']),
+.json-editor-wrapper button:has([title='撤销']),
+.json-editor-wrapper button:has([title='Redo']),
+.json-editor-wrapper button:has([title='重做']),
+.json-editor-wrapper button:has([title='Sort']),
+.json-editor-wrapper button:has([title='排序']) {
+  display: none !important;
+}

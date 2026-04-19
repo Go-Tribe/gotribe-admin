@@ -1,0 +1,15 @@
+{
+  "cancel": "Cancel",
+  "continue": "Continue",
+  "processing": "Processing...",
+  "createSuccess": "Created successfully",
+  "updateSuccess": "Saved successfully",
+  "deleteSuccess": "Deleted successfully",
+  "createDescription": "The latest content has been stored and the list will refresh automatically.",
+  "updateDescription": "Your changes have been saved and the list will refresh automatically.",
+  "deleteDescription": "The record has been removed and the current list is now up to date.",
+  "createLoading": "Creating...",
+  "updateLoading": "Saving...",
+  "deleteLoading": "Deleting...",
+  "irreversibleHint": "This action cannot be undone, so please confirm the target and impact first."
+}

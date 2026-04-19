@@ -1,0 +1,31 @@
+{
+  "operationLog": {
+    "title": "操作日志",
+    "description": "查看和管理系统操作日志。",
+    "username": "请求人",
+    "ip": "IP地址",
+    "path": "请求路径",
+    "status": "请求状态",
+    "startTime": "发起时间",
+    "timeCost": "请求耗时",
+    "desc": "说明",
+    "actions": "操作",
+    "delete": "删除",
+    "searchUsername": "搜索请求人...",
+    "searchIp": "搜索IP地址...",
+    "searchPath": "搜索请求路径...",
+    "loading": "加载中...",
+    "loadError": "加载失败，请稍后重试",
+    "noData": "暂无数据",
+    "deleteSuccess": "删除成功",
+    "deleteError": "删除失败",
+    "confirmDelete": "确认删除",
+    "confirmDeleteMessage": "确定要删除日志 ID {{id}} 吗？此操作不可恢复。",
+    "statusOptions": {
+      "200": "200 (成功)",
+      "300": "300 (重定向)",
+      "400": "400 (客户端错误)",
+      "500": "500 (服务器错误)"
+    }
+  }
+}

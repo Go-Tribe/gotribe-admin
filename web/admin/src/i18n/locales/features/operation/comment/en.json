@@ -1,0 +1,42 @@
+{
+  "title": "Comment Management",
+  "description": "Manage comment review and moderation status",
+  "comment": {
+    "title": "Comment",
+    "description": "Comment list",
+    "search": {
+      "project": "Project",
+      "projectAll": "All Projects",
+      "commentIDPlaceholder": "Enter comment ID",
+      "nicknamePlaceholder": "Enter commenter name",
+      "userIDPlaceholder": "User ID",
+      "status": "Review Status"
+    },
+    "columns": {
+      "id": "Comment ID",
+      "comment": "Comment Summary",
+      "nickname": "Commenter",
+      "userID": "User Number",
+      "objectID": "Object ID",
+      "status": "Review Status",
+      "location": "Location",
+      "createdAt": "Submitted At",
+      "actions": "Actions"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved"
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "loading": "Loading…",
+    "loadError": "Load error",
+    "noData": "No data"
+  },
+  "approveSuccess": "Approved",
+  "approveError": "Approve failed",
+  "rejectSuccess": "Rejected",
+  "rejectError": "Reject failed"
+}

@@ -1,0 +1,71 @@
+{
+  "title": "资源管理",
+  "description": "管理图片、视频、文件等资源",
+  "filter": {
+    "typeLabel": "资源类型",
+    "placeholder": "请选择",
+    "all": "全部",
+    "image": "图片",
+    "video": "视频",
+    "audio": "音频",
+    "archive": "压缩包",
+    "document": "文档",
+    "font": "字体",
+    "app": "应用",
+    "unknown": "未知"
+  },
+  "actions": {
+    "query": "查询",
+    "uploadResource": "上传资源",
+    "uploadVideo": "上传视频",
+    "edit": "编辑",
+    "delete": "删除",
+    "copyUrl": "复制 URL",
+    "copyLink": "复制链接",
+    "copy": "复制",
+    "preview": "预览资源",
+    "close": "关闭"
+  },
+  "loading": "加载中",
+  "loadError": "加载失败，请重试",
+  "loadFailed": "加载失败",
+  "noData": "暂无资源",
+  "pagination": {
+    "total": "共{{count}}条",
+    "perPage": "{{size}}条/页"
+  },
+  "uploadSuccess": "上传成功",
+  "uploadError": "上传失败",
+  "deleteSuccess": "删除成功",
+  "deleteError": "删除失败",
+  "copySuccess": "已复制链接",
+  "copySuccessShort": "已复制",
+  "confirmDelete": "确认删除",
+  "confirmDeleteDesc": "确定要删除该资源吗？此操作不可恢复。",
+  "form": {
+    "editTitle": "修改资源",
+    "preview": "资源预览",
+    "title": "资源名称",
+    "titlePlaceholder": "资源名称",
+    "description": "资源描述",
+    "descriptionPlaceholder": "资源描述",
+    "resourceType": "资源类型",
+    "uploadTime": "上传时间",
+    "resourceSize": "资源大小",
+    "links": "链接",
+    "typeFallback": "类型 {{type}}",
+    "cancel": "取消",
+    "submit": "确定",
+    "submitting": "保存中…",
+    "saveSuccess": "保存成功",
+    "saveFailed": "保存失败",
+    "validation": {
+      "titleRequired": "请填写资源名称",
+      "titleMin": "资源名称至少 2 个字符",
+      "titleMax": "资源名称不能超过 20 个字符",
+      "descriptionRequired": "请填写资源描述",
+      "descriptionMin": "资源描述至少 2 个字符",
+      "descriptionMax": "资源描述不能超过 150 个字符"
+    }
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "title": "用户管理",
+  "description": "统一管理用户资料与账号状态",
+  "createButton": "新建",
+  "detail": {
+    "title": "用户详情",
+    "userID": "用户ID",
+    "username": "用户名",
+    "nickname": "用户昵称",
+    "email": "邮箱",
+    "phone": "手机号",
+    "avatarURL": "头像URL",
+    "sex": "性别",
+    "projectID": "项目ID",
+    "status": "状态",
+    "birthday": "生日",
+    "point": "积分",
+    "createdAt": "创建时间"
+  },
+  "columns": {
+    "avatar": "图像",
+    "id": "ID",
+    "createdAt": "创建时间",
+    "username": "用户名",
+    "nickname": "用户昵称",
+    "point": "积分",
+    "birthday": "生日",
+    "sex": "性别",
+    "actions": "操作"
+  },
+  "sex": {
+    "male": "男",
+    "female": "女",
+    "unknown": "未知"
+  },
+  "actions": {
+    "view": "查看",
+    "edit": "编辑"
+  },
+  "search": {
+    "userID": "搜索用户ID",
+    "project": "选择项目",
+    "allProjects": "全部项目"
+  },
+  "loading": "加载中...",
+  "loadError": "加载失败",
+  "noData": "暂无数据",
+  "createSuccess": "创建成功",
+  "createError": "创建失败: {{error}}",
+  "updateSuccess": "更新成功",
+  "updateError": "更新失败: {{error}}",
+  "form": {
+    "editTitle": "编辑用户",
+    "createTitle": "新建",
+    "editDescription": "修改用户信息",
+    "createDescription": "创建一个新用户",
+    "fields": {
+      "avatarURL": "头像URL",
+      "avatarURLPlaceholder": "请输入头像URL",
+      "selectAvatarFromResource": "从资源库选择",
+      "selectAvatarDialogTitle": "选择头像",
+      "selectAvatarDialogDesc": "从资源管理中选择或上传头像图片",
+      "username": "用户名",
+      "usernamePlaceholder": "请输入用户名",
+      "nickname": "用户昵称",
+      "nicknamePlaceholder": "请输入用户昵称",
+      "point": "积分",
+      "pointPlaceholder": "请输入积分",
+      "birthday": "生日",
+      "birthdayPlaceholder": "请选择生日",
+      "sex": "性别",
+      "sexPlaceholder": "请选择性别",
+      "project": "项目",
+      "projectPlaceholder": "请选择项目",
+      "password": "密码",
+      "passwordPlaceholder": "请输入密码",
+      "passwordEditPlaceholder": "不修改请留空",
+      "phone": "手机号",
+      "phonePlaceholder": "请输入手机号",
+      "email": "邮箱",
+      "emailPlaceholder": "请输入邮箱"
+    },
+    "cancel": "取消",
+    "submitting": "提交中...",
+    "save": "保存",
+    "create": "创建",
+    "validation": {
+      "usernameRequired": "用户名不能为空",
+      "usernameLength": "用户名 2-20 个字符",
+      "usernamePattern": "用户名只能包含字母和数字",
+      "nicknameRequired": "用户昵称不能为空",
+      "nicknameLength": "用户昵称 2-20 个字符",
+      "passwordLength": "密码 6-20 个字符",
+      "phoneRequired": "手机号不能为空",
+      "emailRequired": "邮箱不能为空",
+      "projectIDLength": "项目 ID 2-20 个字符",
+      "pointInvalid": "积分不能为负数",
+      "sexRequired": "请选择性别",
+      "projectRequired": "请选择项目"
+    }
+  }
+}

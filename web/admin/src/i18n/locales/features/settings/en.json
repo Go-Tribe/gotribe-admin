@@ -1,0 +1,40 @@
+{
+  "title": "Personal Center",
+  "description": "View and edit your profile and account security settings",
+  "sidebar": {
+    "profile": "Profile"
+  },
+  "profile": {
+    "title": "Profile",
+    "desc": "Your account information",
+    "nickname": "Nickname",
+    "username": "Username",
+    "mobile": "Mobile",
+    "introduction": "Introduction",
+    "noData": "No profile data",
+    "loadError": "Failed to load. Please try again.",
+    "changeAvatar": "Change avatar",
+    "changeAvatarDesc": "Select or upload an avatar from resource manager",
+    "avatarUpdateSuccess": "Avatar updated",
+    "avatarUpdateError": "Failed to update avatar"
+  },
+  "changePassword": {
+    "title": "Change Password",
+    "oldPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "oldPasswordPlaceholder": "Enter current password",
+    "newPasswordPlaceholder": "Enter new password (6–20 characters)",
+    "confirmPasswordPlaceholder": "Enter new password again",
+    "submit": "Change password",
+    "success": "Password changed successfully",
+    "error": "Failed to change password"
+  },
+  "validation": {
+    "oldPasswordRequired": "Please enter current password",
+    "newPasswordMin": "New password must be at least 6 characters",
+    "newPasswordMax": "New password must be at most 20 characters",
+    "confirmPasswordRequired": "Please confirm new password",
+    "passwordMismatch": "Passwords do not match"
+  }
+}

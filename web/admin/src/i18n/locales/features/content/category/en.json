@@ -1,0 +1,76 @@
+{
+  "title": "Category Management",
+  "description": "Manage content categories and display hierarchy.",
+  "createButton": "Create",
+  "columns": {
+    "id": "ID",
+    "title": "Category Name",
+    "description": "Description",
+    "icon": "Icon",
+    "path": "Link",
+    "sort": "Sort",
+    "hidden": "Hidden",
+    "actions": "Actions"
+  },
+  "hiddenStatus": {
+    "show": "Show",
+    "hidden": "Hidden"
+  },
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "search": {
+    "title": "Search category name"
+  },
+  "filter": {
+    "hidden": "Hidden status"
+  },
+  "loading": "Loading...",
+  "loadError": "Failed to load",
+  "noData": "No data",
+  "createSuccess": "Created successfully",
+  "updateSuccess": "Updated successfully",
+  "deleteSuccess": "Deleted successfully",
+  "confirmDelete": "Confirm Delete",
+  "confirmDeleteMessage": "Are you sure you want to delete category \"{{title}}\"? This action cannot be undone.",
+  "form": {
+    "editTitle": "Edit Category",
+    "createTitle": "Create Category",
+    "editDescription": "Modify category information",
+    "createDescription": "Create a new category",
+    "title": "Category Name",
+    "titlePlaceholder": "Enter category name",
+    "slug": "Slug",
+    "slugPlaceholder": "Enter slug, e.g. news-center",
+    "slugDescription": "Letters, numbers, hyphens, and underscores only, up to 30 characters",
+    "description": "Description",
+    "descriptionPlaceholder": "Enter description",
+    "icon": "Icon",
+    "iconPlaceholder": "Enter icon name or class",
+    "selectIcon": "Select Icon",
+    "clearIcon": "Clear",
+    "selectIconDialogTitle": "Select Icon",
+    "selectIconDialogDesc": "Select or upload an icon from resource management",
+    "path": "Link",
+    "pathPlaceholder": "Enter link",
+    "parent": "Parent Category",
+    "parentPlaceholder": "Select parent category",
+    "rootCategory": "Root",
+    "sort": "Sort",
+    "sortPlaceholder": "Enter sort value",
+    "sortDescription": "Lower number appears first, range 1-99",
+    "hidden": "Hidden",
+    "hiddenPlaceholder": "Select visibility",
+    "cancel": "Cancel",
+    "submitting": "Submitting...",
+    "save": "Save",
+    "create": "Create",
+    "validation": {
+      "titleRequired": "Category name is required",
+      "slugRequired": "Category slug is required",
+      "slugMax": "Category slug must be 30 characters or fewer",
+      "slugPattern": "Category slug can only contain letters, numbers, hyphens, and underscores"
+    }
+  }
+}

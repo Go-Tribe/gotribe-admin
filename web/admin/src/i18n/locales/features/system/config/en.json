@@ -1,0 +1,30 @@
+{
+  "title": "Site Configuration",
+  "description": "Configure basic site information including name, logo and icon",
+  "loading": "Loading",
+  "form": {
+    "title": "Site name",
+    "titlePlaceholder": "Enter site name",
+    "titleDescription": "The display name shown in the browser tab and site header",
+    "logo": "Site Logo",
+    "logoAlt": "Site logo",
+    "logoDescription": "Site logo. Recommended size 200x60px. Click to select from resource library",
+    "icon": "Site icon",
+    "iconAlt": "Site icon",
+    "iconDescription": "Favicon. Recommended size 32x32 or 64x64px. Click to select from resource library",
+    "save": "Save configuration",
+    "saveSuccess": "Configuration saved successfully",
+    "saveError": "Save failed",
+    "validation": {
+      "titleRequired": "Site name is required",
+      "logoRequired": "Please select a logo",
+      "iconRequired": "Please select an icon"
+    }
+  },
+  "dialog": {
+    "logoTitle": "Select site logo",
+    "logoDescription": "Upload or select an existing logo image",
+    "iconTitle": "Select site icon",
+    "iconDescription": "Upload or select an existing icon image"
+  }
+}

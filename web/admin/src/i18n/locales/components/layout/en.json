@@ -1,0 +1,48 @@
+{
+  "menu": {
+    "dashboard": "Dashboard",
+    "content": "Content",
+    "article": "Article",
+    "category": "Category",
+    "tag": "Tag",
+    "column": "Column",
+    "config": "Data",
+    "resource": "Resource",
+    "system": "System",
+    "system_config": "Site Config",
+    "admin": "Admin",
+    "role": "Role",
+    "menu": "Menu",
+    "api": "API",
+    "config_system": "Site Config",
+    "business": "Business",
+    "project": "Project",
+    "user": "User",
+    "order": "Order",
+    "promotion": "Promotion",
+    "scene": "Scene",
+    "advertising": "Ad Content"
+  },
+  "navUser": {
+    "upgradeToPro": "Upgrade to Pro",
+    "personalCenter": "Personal Center",
+    "changeAvatar": "Change avatar",
+    "changeAvatarDesc": "Select or upload an avatar from resource manager",
+    "avatarUpdateSuccess": "Avatar updated",
+    "english": "English",
+    "chinese": "中文",
+    "signOut": "Sign out",
+    "theme": "Theme",
+    "config": "Config"
+  },
+  "appTitle": {
+    "title": "Shadcn-Admin",
+    "subtitle": "Vite + ShadcnUI",
+    "toggleSidebar": "Toggle Sidebar"
+  },
+  "signOutDialog": {
+    "title": "Sign out",
+    "description": "Are you sure you want to sign out? You will need to sign in again to access your account.",
+    "confirmText": "Sign out"
+  }
+}

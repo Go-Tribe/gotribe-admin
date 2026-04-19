@@ -1,0 +1,9 @@
+{
+  "layout": {
+    "appName": "Go-Gribe Admin"
+  },
+  "validation": {
+    "usernameRequired": "Please enter your username",
+    "passwordRequired": "Please enter your password"
+  }
+}

@@ -2,14 +2,32 @@ import { AxiosError } from 'axios'
 import { toast } from 'sonner'
 
 /**
+ * 安全地将错误对象转换为字符串，避免循环引用导致崩溃
+ */
+function safeStringifyError(error: unknown): string {
+  if (error instanceof AxiosError) {
+    return error.message
+  }
+  if (error instanceof Error) {
+    return error.message
+  }
+  try {
+    return JSON.stringify(error)
+  } catch {
+    return String(error)
+  }
+}
+
+/**
  * 处理服务器错误
  * 提供多级错误消息提取，确保始终显示有意义的错误信息
  * @param error 错误对象
  */
 export function handleServerError(error: unknown): void {
   // 使用 console.error 记录错误，便于调试
+  // 使用 safeStringifyError 避免循环引用导致崩溃
   // eslint-disable-next-line no-console
-  console.error('Server error:', error)
+  console.error('Server error:', safeStringifyError(error))
 
   let errMsg = 'Something went wrong!'
 

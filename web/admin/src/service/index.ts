@@ -102,7 +102,7 @@ service.interceptors.response.use(
         handleServerError(new Error(res.message))
       }
 
-      return Promise.reject(new Error(res.message || '请求失败')) as never
+      return Promise.reject(new Error(res.message || '请求失败')) as unknown as AxiosResponse<ApiResponse>
     }
 
     // 直接返回后端 data 字段，Promise<T> 解析为 T；非 JSON 响应（如 blob）保持原 response
@@ -142,8 +142,9 @@ service.interceptors.response.use(
           handleServerError(error)
           break
         case 404:
-          // 资源不存在
-          handleServerError(error)
+          // 资源不存在：静默处理，不显示 toast（常见于后端接口未实现或路径变更）
+          // eslint-disable-next-line no-console
+          if (import.meta.env.DEV) console.warn(`API 404: ${requestUrl}`)
           break
         case 500:
           // 服务器错误

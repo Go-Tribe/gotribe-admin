@@ -65,8 +65,10 @@ export function useDebouncedQuery<TData = unknown>({
   ...options
 }: UseDebouncedQueryOptions<TData>): UseDebouncedQueryReturn<TData> {
   const [debouncedKey, setDebouncedKey] = useState(queryKey)
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const queryClient = useQueryClient()
+  // 使用 ref 存储上一次的 queryKey 引用，避免频繁 JSON.stringify
+  const prevKeyRef = useRef(queryKey)
 
   // 防抖更新 queryKey
   useEffect(() => {
@@ -74,9 +76,13 @@ export function useDebouncedQuery<TData = unknown>({
       // 只在值变化时更新，避免不必要的重新渲染
       // eslint-disable-next-line react-hooks/set-state-in-effect -- 防抖逻辑需要在 effect 中设置 state
       setDebouncedKey((prev) => {
-        if (JSON.stringify(prev) === JSON.stringify(queryKey)) {
-          return prev
-        }
+        // 使用 ref 比较同一引用，若引用不同再用深度比较
+        if (prevKeyRef.current === queryKey) return prev
+        prevKeyRef.current = queryKey
+        // 快速路径：基本类型或同一引用已处理，复杂对象做深度比较
+        const prevStr = JSON.stringify(prev)
+        const nextStr = JSON.stringify(queryKey)
+        if (prevStr === nextStr) return prev
         return queryKey
       })
       return
@@ -89,6 +95,7 @@ export function useDebouncedQuery<TData = unknown>({
 
     // 设置新的定时器
     timeoutRef.current = setTimeout(() => {
+      prevKeyRef.current = queryKey
       setDebouncedKey(queryKey)
     }, debounceMs)
 

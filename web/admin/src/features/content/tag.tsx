@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/tooltip'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { useI18n } from '@/context/i18n-provider'
-import { TagFormDialog } from './component/tag-form-dialog'
+import { TagFormDialog } from './components/tag-form-dialog'
 import type { Tag } from './types/tag'
 import { getTagList, createTag, updateTag, deleteTag } from './service/tag'
 import { useDataTable } from '@/hooks/use-data-table'

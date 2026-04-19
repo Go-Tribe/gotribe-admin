@@ -101,6 +101,12 @@ export const LazyImage = memo(function LazyImage({
   const imgRef = useRef<HTMLImageElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
+  // 使用 ref 存储回调，避免父组件传递内联函数导致 useEffect 重复触发
+  const onLoadRef = useRef(onLoad)
+  const onErrorRef = useRef(onError)
+  onLoadRef.current = onLoad
+  onErrorRef.current = onError
+
   // Intersection Observer 监听
   useEffect(() => {
     if (!lazy || isInView) return
@@ -137,14 +143,14 @@ export const LazyImage = memo(function LazyImage({
 
     img.onload = () => {
       setState('loaded')
-      onLoad?.()
+      onLoadRef.current?.()
     }
 
     img.onerror = () => {
       setState('error')
-      onError?.(new Error(`Failed to load image: ${src}`))
+      onErrorRef.current?.(new Error(`Failed to load image: ${src}`))
     }
-  }, [isInView, src, onLoad, onError])
+  }, [isInView, src])
 
   // 计算圆角类名
   const roundedClass = typeof rounded === 'boolean' 

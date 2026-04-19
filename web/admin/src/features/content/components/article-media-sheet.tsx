@@ -52,7 +52,7 @@ export function ArticleMediaSheet({
         toast.success(t('features.content.article.descriptionExtracted'))
       }
     } catch {
-      // ignore
+      toast.warning(t('features.content.article.descriptionExtractFailed'))
     }
   }
 

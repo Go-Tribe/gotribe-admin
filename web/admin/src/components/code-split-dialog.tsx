@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, useCallback, type ComponentType, type ReactNode } from 'react'
+import { lazy, Suspense, useState, useCallback, useEffect, type ComponentType, type ReactNode } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -106,19 +106,12 @@ export function CodeSplitDialog({
     }
   }, [contentComponent, ContentComponent, open])
 
-  // 打开时加载组件
-  useState(() => {
-    if (open) {
-      loadComponent()
-    }
-  })
-
-  // 使用 effect 确保组件加载
-  useState(() => {
+  // 打开时懒加载组件
+  useEffect(() => {
     if (open && !ContentComponent) {
       loadComponent()
     }
-  })
+  }, [open, ContentComponent, loadComponent])
 
   const defaultFallback = fallback || (
     <div className="space-y-4 py-4">

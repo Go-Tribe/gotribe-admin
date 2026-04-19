@@ -59,34 +59,22 @@ export const queryClient = new QueryClient({
     /**
      * 全局查询错误处理
      * 统一处理认证错误和服务器错误
-     * 注意：axios 拦截器已经清除了 token 并触发了事件，这里只处理路由跳转和提示
+     * 注意：所有 HTTP 状态码错误的 toast 已由 axios 拦截器统一处理（通过 handleServerError）
+     * 这里只处理需要全局响应的特殊逻辑（如页面跳转），避免重复提示
      */
     onError: (error) => {
       if (error instanceof AxiosError) {
         const status = error.response?.status
 
-        // 401 错误：会话过期
-        // token 清除和事件触发已在 axios 拦截器中完成
-        if (status === 401) {
-          toast.error('Session expired!')
-          // 路由跳转由事件监听器处理，这里不需要重复处理
+        // 500 错误：仅在生产环境跳转到错误页面，避免开发时影响 HMR
+        // toast 已由 axios 拦截器处理，这里不再重复显示
+        if (status === 500 && import.meta.env.PROD) {
+          // 使用 window.location 作为 fallback，因为 router 可能还未初始化
+          window.location.href = '/500'
         }
 
-        // 500 错误：服务器内部错误
-        if (status === 500) {
-          toast.error('Internal Server Error!')
-          // 仅在生产环境跳转到错误页面，避免开发时影响 HMR
-          if (import.meta.env.PROD) {
-            // 使用 window.location 作为 fallback，因为 router 可能还未初始化
-            window.location.href = '/500'
-          }
-        }
-
-        // 403 错误：禁止访问
-        // 路由跳转由事件监听器处理
-        if (status === 403) {
-          // 可以在这里添加额外的处理逻辑
-        }
+        // 401/403 错误：token 清除、事件触发和路由跳转已由 axios 拦截器和事件监听器处理
+        // 不需要额外操作
       }
     },
   }),

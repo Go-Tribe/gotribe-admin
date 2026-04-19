@@ -26,7 +26,7 @@ import {
 import { ListPageLayout } from '@/components/layout'
 import { useI18n } from '@/context/i18n-provider'
 import { toast } from 'sonner'
-import { getProjectList } from '@/features/business/service/project'
+import { getProjectList } from '@/shared/api'
 import { getCommentList, approveComment, rejectComment } from './service/comment'
 import { useDataTable } from '@/hooks/use-data-table'
 import type { Comment } from './types/comment'

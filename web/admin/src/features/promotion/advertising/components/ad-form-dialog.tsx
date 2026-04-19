@@ -46,7 +46,7 @@ import { cn } from '@/lib/utils'
 import { ResourceUpload, type ResourceItem, FILE_TYPE } from '@/components/resource-upload'
 import { useI18n } from '@/context/i18n-provider'
 import { useQuery } from '@tanstack/react-query'
-import { getPostList } from '@/features/content/service/post'
+import { getPostList } from '@/shared/api'
 import type { AdCreateParams, AdUpdateParams, Ad } from '../types'
 
 const createAdFormSchema = (t: (key: string) => string) =>

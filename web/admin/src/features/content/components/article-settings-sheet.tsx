@@ -49,8 +49,7 @@ import { toast } from 'sonner'
 import { createTag } from '../service/tag'
 import { useI18n } from '@/context/i18n-provider'
 import type { ArticleFormValues } from '../article-form-page'
-import type { User } from '@/features/business/types/user'
-import type { Project } from '@/features/business/types/project'
+import type { User, Project } from '@/shared/types'
 import type { Tag } from '../types/tag'
 
 function SettingsSection({

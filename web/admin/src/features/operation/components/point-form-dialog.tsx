@@ -44,7 +44,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useI18n } from '@/context/i18n-provider'
 import { useQuery } from '@tanstack/react-query'
-import { getUserList } from '@/features/business/service/user'
+import { getUserList } from '@/shared/api'
 import type { PointCreateParams } from '../types/point'
 
 const createPointFormSchema = (t: (key: string) => string) =>

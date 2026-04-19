@@ -47,6 +47,8 @@ export interface VirtualDataTableProps<TData> {
   onPageChange?: (page: number) => void
   /** 每页条数变化回调 */
   onPageSizeChange?: (pageSize: number) => void
+  /** 获取行唯一标识，用于稳定 key。默认尝试取 row.id / row._id */
+  getRowId?: (row: TData) => string
 }
 
 /**
@@ -78,15 +80,17 @@ export const VirtualDataTable = memo(function VirtualDataTable<TData>({
   errorText,
   emptyText,
   className,
-  enablePagination = true,
+  enablePagination = false,
   pageSize = 10,
   currentPage = 1,
   total,
   onPageChange,
   onPageSizeChange,
+  getRowId,
 }: VirtualDataTableProps<TData>) {
   const { t } = useI18n()
   const containerRef = useRef<HTMLDivElement>(null)
+  const rafRef = useRef<number | null>(null)
   const [scrollTop, setScrollTop] = useState(0)
 
   // 计算可视区域
@@ -97,9 +101,15 @@ export const VirtualDataTable = memo(function VirtualDataTable<TData>({
   const visibleData = data.slice(startIndex, endIndex)
   const offsetY = startIndex * rowHeight
 
-  // 滚动事件处理
+  // 滚动事件处理（使用 requestAnimationFrame 节流，避免 60fps+ 触发 setState）
   const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
-    setScrollTop(e.currentTarget.scrollTop)
+    const newScrollTop = e.currentTarget.scrollTop
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current)
+    }
+    rafRef.current = requestAnimationFrame(() => {
+      setScrollTop(newScrollTop)
+    })
   }, [])
 
   // 默认文本
@@ -155,9 +165,14 @@ export const VirtualDataTable = memo(function VirtualDataTable<TData>({
         <tr style={{ height: offsetY }} />
         {visibleData.map((row, index) => {
           const actualIndex = startIndex + index
+          const rowKey = getRowId
+            ? getRowId(row)
+            : (row as Record<string, unknown>).id?.toString() ??
+              (row as Record<string, unknown>)._id?.toString() ??
+              `row-${actualIndex}`
           return (
             <TableRow
-              key={actualIndex}
+              key={rowKey}
               style={{ height: rowHeight }}
               data-index={actualIndex}
             >

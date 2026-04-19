@@ -1,19 +1,11 @@
-import { useEffect, useMemo, useState, lazy, Suspense, useCallback } from 'react'
+import { useEffect, useMemo, useState, useCallback, useRef } from 'react'
 import { useForm, type Resolver, type FieldErrors } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { useNavigate } from '@tanstack/react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from '@/components/ui/form'
-import { Textarea } from '@/components/ui/textarea'
+import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { EditorErrorBoundary } from '@/components/editor-error-boundary'
 import { useI18n } from '@/context/i18n-provider'
 import { ResourceUpload, type ResourceItem } from '@/components/resource-upload'
 import { ArrowLeft } from 'lucide-react'
@@ -21,16 +13,13 @@ import { format } from 'date-fns'
 import { slateContentToHtml } from '@/lib/slate-markdown'
 import { ArticleSettingsSheet } from './components/article-settings-sheet'
 import { ArticleMediaSheet } from './components/article-media-sheet'
+import { ArticleEditor } from './components/article-editor'
 
-const SlateEditor = lazy(() =>
-  import('@/components/editor').then((m) => ({ default: m.SlateEditor }))
-)
 import type { Post, PostParams } from './types/post'
 import type { Category } from './types/category'
 import { createPost, updatePost, getPostDetail } from './service/post'
 import { getCategoryTree } from './service/category'
-import { getProjectList } from '@/features/business/service/project'
-import { getUserList } from '@/features/business/service/user'
+import { getProjectList, getUserList } from '@/shared/api'
 import { getTagList } from './service/tag'
 import { toast } from 'sonner'
 
@@ -171,6 +160,10 @@ export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
     },
   })
 
+  // 使用 ref 稳定 form 方法引用，避免 useEffect 依赖变化导致无限重渲染
+  const formRef = useRef(form)
+  formRef.current = form
+
   const { data: postDataRes, isLoading: postLoading } = useQuery({
     queryKey: ['post', postID],
     queryFn: () => getPostDetail(postID!),
@@ -180,7 +173,9 @@ export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
   const isLoadingPost = isEdit && !!postID && !initialPost && postLoading
   const loadFinishedNoPost = isEdit && !!postID && !initialPost && !postLoading && !post
 
+  // 同步 post 数据到表单
   useEffect(() => {
+    const currentForm = formRef.current
     if (post) {
       const rawCategoryID =
         (post.categoryID != null ? String(post.categoryID) : '') ||
@@ -213,7 +208,7 @@ export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
         tag: post.tag || '',
         showTime: post.showTime ? new Date(post.showTime) : (post.createdAt ? new Date(post.createdAt) : new Date()),
       }
-      form.reset(values)
+      currentForm.reset(values)
       // 解析 ext 为自定义字段列表（支持嵌套对象，展平为 key 如 meta.title）
       let newExtFields: Array<{ key: string; value: string }> = []
       try {
@@ -230,13 +225,13 @@ export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
       // 下一帧再 setValue 一次，避免 reset 与首帧渲染时序导致 field.value 未更新、分类/项目不回显
       const tid = setTimeout(() => {
         setExtFields(newExtFields)
-        if (categoryID) form.setValue('categoryID', categoryID)
-        if (projectID) form.setValue('projectID', projectID)
-        form.setValue('status', values.status)
+        if (categoryID) currentForm.setValue('categoryID', categoryID)
+        if (projectID) currentForm.setValue('projectID', projectID)
+        currentForm.setValue('status', values.status)
       }, 0)
       return () => clearTimeout(tid)
     } else if (!isEdit) {
-      form.reset({
+      currentForm.reset({
         title: '',
         description: '',
         author: '', // Will be set by useEffect
@@ -258,43 +253,38 @@ export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
       const tid = setTimeout(() => setExtFields([]), 0)
       return () => clearTimeout(tid)
     }
-  // 仅在 post / isEdit 变化时同步表单；form 引用不稳定，不放入 deps
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [post, isEdit])
 
   // Set default author for new posts
   useEffect(() => {
     if (!isEdit && userList.length > 0) {
-      const currentAuthor = form.getValues('author')
+      const currentAuthor = formRef.current.getValues('author')
       if (!currentAuthor) {
-        form.setValue('author', userList[0].nickname || userList[0].username)
-        form.setValue('userID', userList[0].userID)
+        formRef.current.setValue('author', userList[0].nickname || userList[0].username)
+        formRef.current.setValue('userID', userList[0].userID)
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEdit, userList])
 
   // Set default category for new posts（跳过 id 为空的节点，避免校验失败）
   useEffect(() => {
     if (!isEdit && flattenCategories.length > 0) {
-      const currentCategory = form.getValues('categoryID')
+      const currentCategory = formRef.current.getValues('categoryID')
       if (!currentCategory?.trim()) {
         const first = flattenCategories.find((c) => (c.id ?? '').trim() !== '')
-        if (first) form.setValue('categoryID', first.id)
+        if (first) formRef.current.setValue('categoryID', first.id)
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEdit, flattenCategories])
 
   // Set default project for new posts
   useEffect(() => {
     if (!isEdit && projectList.length > 0) {
-      const currentProject = form.getValues('projectID')
+      const currentProject = formRef.current.getValues('projectID')
       if (!currentProject) {
-        form.setValue('projectID', projectList[0].projectID)
+        formRef.current.setValue('projectID', projectList[0].projectID)
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEdit, projectList])
 
   const createMutation = useMutation({
@@ -487,77 +477,7 @@ export function ArticleFormPage({ postID, initialPost }: ArticleFormPageProps) {
 
           {/* 书写区：固定宽度 + 留白，标题与正文分区清晰 */}
           <div className='flex-1 min-h-0 overflow-y-auto'>
-            <div className='mx-auto w-full max-w-[42rem] px-5 sm:px-8 pt-8 pb-24'>
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem className='space-y-0'>
-                    <FormControl>
-                      <Textarea
-                        placeholder={t('features.content.article.form.titlePlaceholder')}
-                        className="text-3xl sm:text-4xl font-bold border-none resize-none shadow-none focus-visible:ring-0 px-0 py-0 min-h-[2.5rem] overflow-hidden leading-snug placeholder:text-muted-foreground/50 tracking-tight"
-                        rows={1}
-                        autoFocus
-                        onInput={(e) => {
-                          const target = e.target as HTMLTextAreaElement
-                          target.style.height = 'auto'
-                          target.style.height = `${target.scrollHeight}px`
-                        }}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* 标题与正文之间的留白 */}
-              <div className='h-2' aria-hidden />
-
-              <FormField
-                control={form.control}
-                name='content'
-                render={({ field }) => (
-                  <FormItem className='flex flex-col min-h-0'>
-                    <FormControl>
-                      <EditorErrorBoundary
-                        fallback={
-                          <div className='rounded-md border border-input bg-background flex flex-col flex-1 items-center justify-center text-muted-foreground min-h-[320px]'>
-                            <p className='text-sm mb-2'>{t('features.content.article.form.editorLoadError')}</p>
-                            <Textarea
-                              className='max-w-2xl w-full min-h-[120px] font-mono text-xs resize-none'
-                              value={field.value ?? ''}
-                              onChange={field.onChange}
-                              placeholder={t('features.content.article.form.contentPlaceholder')}
-                              readOnly={false}
-                            />
-                          </div>
-                        }
-                      >
-                        <Suspense
-                          fallback={
-                            <div className='flex flex-col items-center justify-center text-muted-foreground min-h-[320px]'>
-                              <p className='text-sm'>{t('features.content.article.form.editorLoading')}</p>
-                            </div>
-                          }
-                        >
-                          <SlateEditor
-                            value={field.value ?? ''}
-                            onChange={field.onChange}
-                            minHeight='min-h-[60vh]'
-                            outputMode='json'
-                            autoHeight={true}
-                            className="border-none shadow-none px-0 text-[1.0625rem] leading-[1.75]"
-                          />
-                        </Suspense>
-                      </EditorErrorBoundary>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <ArticleEditor form={form} />
           </div>
         </form>
       </Form>

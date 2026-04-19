@@ -59,14 +59,6 @@ export const Route = createRootRouteWithContext<{
         auth.setUser({
           ...userInfo,
         })
-
-        // 用户信息获取成功后，尝试从系统配置接口获取配置并更新 HTML meta 标签
-        // 使用异步调用，不阻塞路由加载
-        import('@/config/app').then(({ updateAppConfigFromApi }) => {
-          updateAppConfigFromApi().catch(() => {
-            // 静默失败，不影响路由加载
-          })
-        })
       }
     } catch (error: unknown) {
       // 获取用户信息失败

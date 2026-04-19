@@ -21,7 +21,7 @@ import {
   DataTableActions,
 } from '@/components/data-table'
 import { ListPageLayout } from '@/components/layout'
-import { getProjectList } from '@/features/business/service/project'
+import { getProjectList } from '@/shared/api'
 import { useI18n } from '@/context/i18n-provider'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { SceneFormDialog } from './components/scene-form-dialog'

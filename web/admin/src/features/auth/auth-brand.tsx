@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Logo } from '@/assets/logo'
 import { useI18n } from '@/context/i18n-provider'
-import { getConfig } from '@/features/system/service/config'
+import { getConfig } from '@/shared/api'
 
 /** 登录/注册等页卡片顶部品牌区：Logo + 系统名称（从后台配置读取） */
 export function AuthBrand() {

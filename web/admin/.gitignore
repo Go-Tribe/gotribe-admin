@@ -39,7 +39,8 @@ pkg/
 # AI-generated analysis reports
 duplication-analysis-report.md
 
-# ESLint cache
+# Generated files
+src/routeTree.gen.ts
 .eslintcache
 
 # Test coverage

@@ -5,13 +5,13 @@ const USER_INFO_KEY = 'user'
 
 /**
  * 认证用户信息接口
- * 基于 Admin 类型，但允许扩展其他字段
- * 使用 Record 类型提供更好的类型安全性和灵活性
+ * 明确定义所有字段，避免过于宽泛的 Record 类型导致类型安全丢失
  */
-export interface AuthUser extends Record<string, unknown> {
+export interface AuthUser {
   id?: number
   username?: string
   mobile?: string
+  email?: string
   avatar?: string
   nickname?: string
   introduction?: string

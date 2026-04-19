@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DataTableColumnHeader, DataTable } from '@/components/data-table'
 import { ConfirmDialog } from '@/components/confirm-dialog'
-import { ProjectFormDialog } from './component/project-form-dialog'
+import { ProjectFormDialog } from './components/project-form-dialog'
 import type { Project } from './types/project'
 import {
   getProjectList,

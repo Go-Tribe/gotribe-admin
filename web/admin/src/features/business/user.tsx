@@ -17,8 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { UserFormDialog } from './component/user-form-dialog'
-import { UserDetailDialog } from './component/user-detail-dialog'
+import { UserFormDialog } from './components/user-form-dialog'
+import { UserDetailDialog } from './components/user-detail-dialog'
 import type { User } from './types/user'
 import { getUserList, createUser, updateUser } from './service/user'
 import { getProjectList } from './service/project'

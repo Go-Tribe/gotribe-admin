@@ -11,10 +11,14 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Input } from '@/components/ui/input'
 
-// 动态获取所有 lucide-react 图标名称
-// lucide-react 导出两种格式：IconName 和 IconNameIcon（别名）
-// 我们只保留不带 Icon 后缀的版本，避免重复
-const getAllIconNames = (): string[] => {
+/**
+ * 动态获取所有 lucide-react 图标名称
+ * lucide-react 导出两种格式：IconName 和 IconNameIcon（别名）
+ * 我们只保留不带 Icon 后缀的版本，避免重复
+ *
+ * 性能优化：在模块级别执行一次，避免每次组件渲染时遍历整个模块
+ */
+const ALL_ICON_NAMES = (() => {
   const iconNames: string[] = []
   const excludeNames = new Set([
     'createLucideIcon',
@@ -25,18 +29,18 @@ const getAllIconNames = (): string[] => {
     'LucideIcon',
     'default',
   ])
-  
+
   for (const name in Icons) {
     const icon = Icons[name as keyof typeof Icons]
-    
+
     // 检查是否是有效的图标组件
     // lucide-react 的图标是 React 组件（forwardRef），具有 $$typeof 属性
-    const isValidIcon = 
+    const isValidIcon =
       icon !== undefined &&
       icon !== null &&
       typeof icon === 'object' &&
       ('$$typeof' in icon || typeof icon === 'function')
-    
+
     // 排除：1. 排除列表中的名称 2. 以 Icon 结尾的（别名） 3. 不以大写字母开头的 4. 以下划线开头的
     if (
       !excludeNames.has(name) &&
@@ -48,9 +52,12 @@ const getAllIconNames = (): string[] => {
       iconNames.push(name)
     }
   }
-  
+
   return iconNames.sort()
-}
+})()
+
+/** 兼容旧 API：直接返回已缓存的图标列表 */
+export const getAllIconNames = (): string[] => ALL_ICON_NAMES
 
 type IconPickerProps = {
   value?: string
@@ -72,8 +79,8 @@ function IconPicker({
   const [search, setSearch] = React.useState('')
   const [currentPage, setCurrentPage] = React.useState(1)
 
-  // 在组件内部动态获取所有图标名称（使用 useMemo 确保只计算一次）
-  const iconNames = React.useMemo(() => getAllIconNames(), [])
+  // 直接使用模块级缓存的图标列表，避免每次渲染时遍历整个模块
+  const iconNames = ALL_ICON_NAMES
 
   // 获取当前选中的图标组件
   const SelectedIcon = value && value in Icons 

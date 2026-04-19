@@ -1,73 +1,6 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 
-import layoutEnTranslations from './locales/components/layout/en.json'
-import layoutZhTranslations from './locales/components/layout/zh.json'
-import confirmDialogEnTranslations from './locales/components/confirm-dialog/en.json'
-import confirmDialogZhTranslations from './locales/components/confirm-dialog/zh.json'
-import languageSwitcherEnTranslations from './locales/components/language-switcher/en.json'
-import languageSwitcherZhTranslations from './locales/components/language-switcher/zh.json'
-import dataTableEnTranslations from './locales/components/data-table/en.json'
-import dataTableZhTranslations from './locales/components/data-table/zh.json'
-import profileDropdownEnTranslations from './locales/components/profile-dropdown/en.json'
-import profileDropdownZhTranslations from './locales/components/profile-dropdown/zh.json'
-import comingSoonEnTranslations from './locales/components/coming-soon/en.json'
-import comingSoonZhTranslations from './locales/components/coming-soon/zh.json'
-import datePickerEnTranslations from './locales/components/date-picker/en.json'
-import datePickerZhTranslations from './locales/components/date-picker/zh.json'
-import authEnTranslations from './locales/features/auth/en.json'
-import authZhTranslations from './locales/features/auth/zh.json'
-import signInEnTranslations from './locales/features/auth/sign-in/en.json'
-import signInZhTranslations from './locales/features/auth/sign-in/zh.json'
-import signUpEnTranslations from './locales/features/auth/sign-up/en.json'
-import signUpZhTranslations from './locales/features/auth/sign-up/zh.json'
-import otpEnTranslations from './locales/features/auth/otp/en.json'
-import otpZhTranslations from './locales/features/auth/otp/zh.json'
-import systemAdminEnTranslations from './locales/features/system/admin/en.json'
-import systemAdminZhTranslations from './locales/features/system/admin/zh.json'
-import systemRoleEnTranslations from './locales/features/system/role/en.json'
-import systemRoleZhTranslations from './locales/features/system/role/zh.json'
-import systemMenuEnTranslations from './locales/features/system/menu/en.json'
-import systemMenuZhTranslations from './locales/features/system/menu/zh.json'
-import systemApiEnTranslations from './locales/features/system/api/en.json'
-import systemApiZhTranslations from './locales/features/system/api/zh.json'
-import systemConfigEnTranslations from './locales/features/system/config/en.json'
-import systemConfigZhTranslations from './locales/features/system/config/zh.json'
-import logEnTranslations from './locales/features/log/en.json'
-import logZhTranslations from './locales/features/log/zh.json'
-import businessProjectEnTranslations from './locales/features/business/project/en.json'
-import businessProjectZhTranslations from './locales/features/business/project/zh.json'
-import businessUserEnTranslations from './locales/features/business/user/en.json'
-import businessUserZhTranslations from './locales/features/business/user/zh.json'
-import contentTagEnTranslations from './locales/features/content/tag/en.json'
-import contentTagZhTranslations from './locales/features/content/tag/zh.json'
-import contentCategoryEnTranslations from './locales/features/content/category/en.json'
-import contentCategoryZhTranslations from './locales/features/content/category/zh.json'
-import contentArticleEnTranslations from './locales/features/content/article/en.json'
-import contentArticleZhTranslations from './locales/features/content/article/zh.json'
-import contentResourceEnTranslations from './locales/features/content/resource/en.json'
-import contentResourceZhTranslations from './locales/features/content/resource/zh.json'
-import contentConfigEnTranslations from './locales/features/content/config/en.json'
-import contentConfigZhTranslations from './locales/features/content/config/zh.json'
-import contentColumnEnTranslations from './locales/features/content/column/en.json'
-import contentColumnZhTranslations from './locales/features/content/column/zh.json'
-import editorEnTranslations from './locales/components/editor/en.json'
-import editorZhTranslations from './locales/components/editor/zh.json'
-import configDrawerEnTranslations from './locales/components/config-drawer/en.json'
-import configDrawerZhTranslations from './locales/components/config-drawer/zh.json'
-import OperationPointEn from './locales/features/operation/point/en.json'
-import OperationPointZh from './locales/features/operation/point/zh.json'
-import OperationSceneEn from './locales/features/operation/scene/en.json'
-import OperationSceneZh from './locales/features/operation/scene/zh.json'
-import OperationAdvertisingEn from './locales/features/operation/advertising/en.json'
-import OperationAdvertisingZh from './locales/features/operation/advertising/zh.json'
-import OperationCommentEn from './locales/features/operation/comment/en.json'
-import OperationCommentZh from './locales/features/operation/comment/zh.json'
-import settingsEnTranslations from './locales/features/settings/en.json'
-import settingsZhTranslations from './locales/features/settings/zh.json'
-import dashboardEnTranslations from './locales/features/dashboard/en.json'
-import dashboardZhTranslations from './locales/features/dashboard/zh.json'
-
 const LANGUAGE_STORAGE_KEY = 'i18next_lng'
 const DEFAULT_LANGUAGE = 'zh'
 
@@ -90,113 +23,74 @@ function getInitialLanguage(): string {
   return DEFAULT_LANGUAGE
 }
 
+/**
+ * 将 kebab-case 文件名转换为 camelCase 键名
+ * @example 'confirm-dialog' -> 'confirmDialog'
+ */
+function toCamelCase(str: string): string {
+  return str.replace(/-([a-z])/g, (_, char) => char.toUpperCase())
+}
+
+/**
+ * 自动加载所有翻译文件
+ * 使用 import.meta.glob 避免手动导入，新增语言/模块时无需修改此文件
+ */
+const localeModules = import.meta.glob('./locales/**/*.json', { eager: true }) as Record<
+  string,
+  { default: Record<string, unknown> }
+>
+
+/**
+ * 构建 i18n resources 对象
+ * 根据文件路径自动映射到对应的命名空间
+ * 路径格式: ./locales/{category}/{module}/{lang}.json
+ *           ./locales/{category}/{module}/{submodule}/{lang}.json
+ */
+const resources: Record<string, { translation: Record<string, unknown> }> = {}
+
+for (const [path, module] of Object.entries(localeModules)) {
+  // 路径格式: ./locales/components/layout/en.json
+  const match = path.match(/\.\/locales\/(.+)\/(.+)\.json$/)
+  if (!match) continue
+
+  const pathParts = match[1].split('/')
+  const lang = match[2]
+
+  if (!resources[lang]) {
+    resources[lang] = { translation: {} }
+  }
+
+  const data = module.default
+
+  // 构建嵌套对象路径
+  let current: Record<string, unknown> = resources[lang].translation
+
+  for (let i = 0; i < pathParts.length; i++) {
+    const part = toCamelCase(pathParts[i])
+
+    if (i === pathParts.length - 1) {
+      // 最后一级：直接赋值翻译数据
+      // 如果是子模块（如 auth/sign-in），需要将数据合并到父模块
+      const parent = current as Record<string, Record<string, unknown>>
+      if (parent[part] && typeof parent[part] === 'object') {
+        parent[part] = { ...parent[part], ...data }
+      } else {
+        parent[part] = data
+      }
+    } else {
+      // 中间级：创建嵌套对象
+      if (!current[part] || typeof current[part] !== 'object') {
+        current[part] = {}
+      }
+      current = current[part] as Record<string, unknown>
+    }
+  }
+}
+
 i18n
   .use(initReactI18next)
   .init({
-    resources: {
-      en: {
-        translation: {
-          components: {
-            layout: layoutEnTranslations,
-            confirmDialog: confirmDialogEnTranslations,
-            languageSwitcher: languageSwitcherEnTranslations,
-            dataTable: dataTableEnTranslations,
-            profileDropdown: profileDropdownEnTranslations,
-            comingSoon: comingSoonEnTranslations,
-            datePicker: datePickerEnTranslations,
-            editor: editorEnTranslations,
-            configDrawer: configDrawerEnTranslations,
-          },
-          features: {
-            auth: {
-              ...authEnTranslations,
-              signIn: signInEnTranslations,
-              signUp: signUpEnTranslations,
-              otp: otpEnTranslations,
-            },
-            system: {
-              admin: systemAdminEnTranslations,
-              role: systemRoleEnTranslations,
-              menu: systemMenuEnTranslations,
-              api: systemApiEnTranslations,
-              config: systemConfigEnTranslations,
-            },
-            log: logEnTranslations,
-            business: {
-              project: businessProjectEnTranslations,
-              user: businessUserEnTranslations,
-            },
-            content: {
-              tag: contentTagEnTranslations,
-              category: contentCategoryEnTranslations,
-              article: contentArticleEnTranslations,
-              resource: contentResourceEnTranslations,
-              config: contentConfigEnTranslations,
-              column: contentColumnEnTranslations,
-            },
-            operation: {
-              point: OperationPointEn,
-              scene: OperationSceneEn,
-              advertising: OperationAdvertisingEn,
-              comment: OperationCommentEn,
-            },
-            dashboard: dashboardEnTranslations,
-            settings: settingsEnTranslations,
-          },
-        },
-      },
-      zh: {
-        translation: {
-          components: {
-            layout: layoutZhTranslations,
-            confirmDialog: confirmDialogZhTranslations,
-            languageSwitcher: languageSwitcherZhTranslations,
-            dataTable: dataTableZhTranslations,
-            profileDropdown: profileDropdownZhTranslations,
-            comingSoon: comingSoonZhTranslations,
-            datePicker: datePickerZhTranslations,
-            editor: editorZhTranslations,
-            configDrawer: configDrawerZhTranslations,
-          },
-          features: {
-            auth: {
-              ...authZhTranslations,
-              signIn: signInZhTranslations,
-              signUp: signUpZhTranslations,
-              otp: otpZhTranslations,
-            },
-            system: {
-              admin: systemAdminZhTranslations,
-              role: systemRoleZhTranslations,
-              menu: systemMenuZhTranslations,
-              api: systemApiZhTranslations,
-              config: systemConfigZhTranslations,
-            },
-            log: logZhTranslations,
-            business: {
-              project: businessProjectZhTranslations,
-              user: businessUserZhTranslations,
-            },
-            content: {
-              tag: contentTagZhTranslations,
-              category: contentCategoryZhTranslations,
-              article: contentArticleZhTranslations,
-              resource: contentResourceZhTranslations,
-              config: contentConfigZhTranslations,
-              column: contentColumnZhTranslations,
-            },
-            operation: {
-              point: OperationPointZh,
-              scene: OperationSceneZh,
-              advertising: OperationAdvertisingZh,
-              comment: OperationCommentZh,
-            },
-            dashboard: dashboardZhTranslations,
-            settings: settingsZhTranslations,
-          },
-        },
-      },
-    },
+    resources,
     lng: getInitialLanguage(),
     fallbackLng: DEFAULT_LANGUAGE,
     interpolation: {

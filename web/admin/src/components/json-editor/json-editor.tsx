@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react'
 import { createJSONEditor, Mode, type Content, type MenuItem } from 'vanilla-jsoneditor'
 import 'vanilla-jsoneditor/themes/jse-theme-dark.css'
 import './json-editor.css'
@@ -82,24 +82,30 @@ export function JsonEditor({
   const onChangeRef = useRef(onChange)
   const initialContentRef = useRef(initialContent)
   const [containerReady, setContainerReady] = useState(false)
-  
+
   // 使用 useEffect 更新 ref，避免在 render 期间更新
   useEffect(() => {
     onChangeRef.current = onChange
   }, [onChange])
-  
+
   useEffect(() => {
     if (initialContent !== undefined) {
       initialContentRef.current = initialContent
     }
   }, [initialContent])
-  
+
   useLayoutEffect(() => {
     if (containerRef.current && !containerReady) {
       // 使用 requestAnimationFrame 避免同步 setState
       requestAnimationFrame(() => setContainerReady(true))
     }
   }, [containerReady])
+
+  // 将 onRenderMenu 提取为稳定的 useCallback，避免每次 updateProps 触发重建
+  const onRenderMenu = useCallback(
+    (items: MenuItem[]) => filterMenuItems(items) as MenuItem[],
+    []
+  )
 
   useEffect(() => {
     if (!containerReady || !containerRef.current) return
@@ -114,14 +120,14 @@ export function JsonEditor({
           onChangeRef.current(contentToString(updatedContent))
         },
         readOnly,
-        onRenderMenu: (items: MenuItem[]) => filterMenuItems(items) as MenuItem[],
+        onRenderMenu,
       },
     })
     return () => {
       editorRef.current?.destroy()
       editorRef.current = null
     }
-  }, [containerReady, readOnly])
+  }, [containerReady, readOnly, onRenderMenu])
 
   useEffect(() => {
     if (!editorRef.current) return
@@ -129,9 +135,9 @@ export function JsonEditor({
       content: valueToContent(value),
       mode: Mode.text,
       readOnly,
-      onRenderMenu: (items: MenuItem[]) => filterMenuItems(items) as MenuItem[],
+      onRenderMenu,
     })
-  }, [value, readOnly])
+  }, [value, readOnly, onRenderMenu])
 
   return (
     <div

@@ -27,7 +27,7 @@ import {
 } from 'lucide-react'
 import { useI18n } from '@/context/i18n-provider'
 import { useAuthUser } from '@/stores/auth-store'
-import { getProjectList } from '@/features/business/service/project'
+import { getProjectList } from '@/shared/api'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'

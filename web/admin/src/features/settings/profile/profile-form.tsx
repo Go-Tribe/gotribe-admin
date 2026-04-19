@@ -22,8 +22,8 @@ import { PasswordInput } from '@/components/password-input'
 import { ResourceUpload } from '@/components/resource-upload'
 import { Separator } from '@/components/ui/separator'
 import { useAuthUser, useSetAuthUser, useAuthStore } from '@/stores/auth-store'
-import type { Admin } from '@/features/system/types/admin'
-import { getAdminInfo, changePassword, updateAdmin } from '@/features/system/service'
+import type { Admin } from '@/shared/types'
+import { getAdminInfo, changePassword, updateAdmin } from '@/shared/api'
 
 type ChangePasswordValues = {
   old_password: string

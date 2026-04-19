@@ -19,15 +19,28 @@ interface CachedData<T> {
 }
 
 const cache = new Map<string, CachedData<unknown>>()
+/** 最大缓存条目数，防止无限制增长 */
+const MAX_CACHE_SIZE = 50
+
+/** LRU 淘汰：当缓存超过上限时，删除最久未使用的条目 */
+function enforceLRU(): void {
+  if (cache.size <= MAX_CACHE_SIZE) return
+  // Map 按插入顺序维护键，删除最早的条目
+  const firstKey = cache.keys().next().value
+  if (firstKey !== undefined) {
+    cache.delete(firstKey)
+  }
+}
 
 /**
  * 带缓存的数据获取 Hook
- * 
+ *
  * 特性：
  * 1. 内存级缓存，减少重复请求
- * 2. 防抖处理，避免频繁触发
- * 3. 页面可见性变化时智能重新获取
- * 4. 冷却时间控制，防止过度刷新
+ * 2. LRU 淘汰机制，防止内存无限增长
+ * 3. 防抖处理，避免频繁触发
+ * 4. 页面可见性变化时智能重新获取
+ * 5. 冷却时间控制，防止过度刷新
  * 
  * @param key 缓存键
  * @param fetchFn 数据获取函数
@@ -69,6 +82,9 @@ export function useCachedFetch<T>(
       const cached = cache.get(key) as CachedData<T> | undefined
       if (cached && Date.now() - cached.timestamp < cacheTime) {
         setData(cached.data)
+        // 更新缓存顺序以实现 LRU
+        cache.delete(key)
+        cache.set(key, cached)
         return
       }
     }
@@ -89,6 +105,7 @@ export function useCachedFetch<T>(
           setData(result)
           // 更新缓存
           cache.set(key, { data: result, timestamp: Date.now() })
+          enforceLRU()
           lastFetchRef.current = Date.now()
         }
       } catch (err) {
@@ -175,6 +192,7 @@ export function clearAllFetchCache(): void {
 export function prefetchData<T>(key: string, fetchFn: () => Promise<T>): Promise<void> {
   return fetchFn().then((data) => {
     cache.set(key, { data, timestamp: Date.now() })
+    enforceLRU()
   }).catch(() => {
     // 预加载失败静默处理
   })

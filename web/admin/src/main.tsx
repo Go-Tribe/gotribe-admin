@@ -71,8 +71,14 @@ if (typeof window !== 'undefined') {
  * 渲染应用
  * 在渲染前检查 root 元素是否已渲染，避免重复渲染
  */
-const rootElement = document.getElementById('root')!
-if (!rootElement.innerHTML) {
+const rootElement = document.getElementById('root')
+if (!rootElement) {
+  throw new Error('Root element not found')
+}
+
+// 使用 data 属性标记挂载状态，避免 innerHTML 检查不可靠（SSR 可能残留注释/空白）
+if (!rootElement.hasAttribute('data-mounted')) {
+  rootElement.setAttribute('data-mounted', 'true')
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>

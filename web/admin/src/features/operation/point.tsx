@@ -22,7 +22,7 @@ import {
 } from '@/components/data-table'
 import { ListPageLayout } from '@/components'
 import { useI18n } from '@/context/i18n-provider'
-import { getProjectList } from '@/features/business/service/project'
+import { getProjectList } from '@/shared/api'
 import { getPointList, createPoint } from './service/point'
 import { type PointItem, type PointCreateParams } from './types/point'
 import { PointFormDialog } from './components/point-form-dialog'

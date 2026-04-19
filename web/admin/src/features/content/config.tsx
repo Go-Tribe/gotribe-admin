@@ -14,10 +14,10 @@ import {
   DataTable,
 } from '@/components/data-table'
 import { ConfirmDialog } from '@/components/confirm-dialog'
-import { ConfigFormDialog } from './component/config-form-dialog'
+import { ConfigFormDialog } from './components/config-form-dialog'
 import type { Config, ConfigCreateParams, ConfigUpdateParams } from './types/config'
 import { getConfigList, getConfig, createConfig, updateConfig, deleteConfig } from './service/config'
-import { getProjectList } from '@/features/business/service/project'
+import { getProjectList } from '@/shared/api'
 import { ListPageLayout, DataTableActions } from '@/components'
 import { useI18n } from '@/context/i18n-provider'
 import { useDataTable } from '@/hooks/use-data-table'

@@ -78,50 +78,43 @@ function findNodeByValue(
   return undefined
 }
 
-// 过滤树节点
-function filterTree(nodes: TreeNode[], keyword: string): TreeNode[] {
-  const result: TreeNode[] = []
-  const lowerKeyword = keyword.toLowerCase()
-
-  for (const node of nodes) {
-    const matchLabel = node.label.toLowerCase().includes(lowerKeyword)
-    const filteredChildren = node.children?.length
-      ? filterTree(node.children, keyword)
-      : []
-
-    if (matchLabel || filteredChildren.length > 0) {
-      result.push({
-        ...node,
-        children: filteredChildren.length > 0 ? filteredChildren : node.children,
-      })
-    }
-  }
-
-  return result
-}
-
-// 获取过滤后需要展开的节点值
-function getExpandedValuesFromFilter(
+/**
+ * 过滤树节点并同时收集需要展开的节点值
+ * 合并 filterTree 和 getExpandedValuesFromFilter 逻辑，避免重复遍历
+ */
+function filterTreeWithExpanded(
   nodes: TreeNode[],
   keyword: string
-): Set<string> {
+): { filtered: TreeNode[]; expandedValues: Set<string> } {
   const expanded = new Set<string>()
-  if (!keyword) return expanded
+  const lowerKeyword = keyword.toLowerCase()
 
-  const findExpandedPaths = (items: TreeNode[], path: string[] = []) => {
-    for (const item of items) {
-      const currentPath = [...path, item.value]
-      if (item.children?.length) {
-        const hasMatchInChildren = filterTree(item.children, keyword).length > 0
-        if (hasMatchInChildren) {
-          currentPath.forEach((v) => expanded.add(v))
-        }
-        findExpandedPaths(item.children, currentPath)
+  const traverse = (items: TreeNode[], parentPath: string[]): TreeNode[] => {
+    const levelResult: TreeNode[] = []
+    for (const node of items) {
+      const matchLabel = node.label.toLowerCase().includes(lowerKeyword)
+      const currentPath = [...parentPath, node.value]
+      const filteredChildren = node.children?.length
+        ? traverse(node.children, currentPath)
+        : []
+
+      if (matchLabel || filteredChildren.length > 0) {
+        levelResult.push({
+          ...node,
+          children: filteredChildren.length > 0 ? filteredChildren : node.children,
+        })
+      }
+
+      // 如果子节点中有匹配，当前节点需要展开
+      if (filteredChildren.length > 0) {
+        currentPath.forEach((v) => expanded.add(v))
       }
     }
+    return levelResult
   }
-  findExpandedPaths(nodes)
-  return expanded
+
+  const filtered = traverse(nodes, [])
+  return { filtered, expandedValues: expanded }
 }
 
 // 递归渲染树
@@ -255,19 +248,19 @@ function TreeSelect({
     return [value]
   }, [value])
 
-  // 过滤后的树数据
-  const filteredData = React.useMemo(() => {
-    if (!searchKeyword) return data
-    return filterTree(data, searchKeyword)
+  // 过滤后的树数据 + 搜索时自动展开匹配节点的父节点
+  // 合并计算，避免重复遍历
+  const { filteredData, searchExpandedValues } = React.useMemo(() => {
+    if (!searchKeyword) return { filteredData: data, searchExpandedValues: new Set<string>() }
+    const { filtered, expandedValues } = filterTreeWithExpanded(data, searchKeyword)
+    return { filteredData: filtered, searchExpandedValues: expandedValues }
   }, [data, searchKeyword])
 
-  // 搜索时自动展开匹配节点的父节点
   React.useEffect(() => {
-    if (searchKeyword) {
-      const expanded = getExpandedValuesFromFilter(data, searchKeyword)
-      setExpandedValues((prev) => new Set([...prev, ...expanded]))
+    if (searchKeyword && searchExpandedValues.size > 0) {
+      setExpandedValues((prev) => new Set([...prev, ...searchExpandedValues]))
     }
-  }, [searchKeyword, data])
+  }, [searchKeyword, searchExpandedValues])
 
   // 获取显示文本
   const displayText = React.useMemo(() => {

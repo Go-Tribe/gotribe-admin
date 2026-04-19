@@ -19,8 +19,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ListPageLayout } from '@/components/layout'
-import { getSceneList } from '@/features/promotion/scene/service'
-import type { Scene } from '@/features/promotion/scene/types'
+import { getSceneList } from '@/shared/api'
+import type { Scene } from '@/shared/types'
 import { useI18n } from '@/context/i18n-provider'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { AdFormDialog } from './components/ad-form-dialog'

@@ -24,6 +24,7 @@ import {
   withReact,
 } from 'slate-react'
 import katex from 'katex'
+import DOMPurify from 'dompurify'
 import {
   Bold,
   Italic,
@@ -72,6 +73,21 @@ import { useI18n } from '@/context/i18n-provider'
 import { cn } from '@/lib/utils'
 
 const I18N_PREFIX = 'components.editor'
+
+/** 允许的 URL 协议白名单 */
+const ALLOWED_PROTOCOLS = ['http:', 'https:', 'mailto:', 'tel:']
+
+/** 验证 URL 是否安全（防止 javascript: 等协议注入） */
+function isSafeUrl(url: string | undefined): boolean {
+  if (!url) return false
+  try {
+    const parsed = new URL(url)
+    return ALLOWED_PROTOCOLS.includes(parsed.protocol)
+  } catch {
+    // 相对路径允许（不包含协议）
+    return !url.includes(':')
+  }
+}
 
 const MARK_HOTKEYS: Record<string, string> = {
   'mod+b': 'bold',
@@ -165,11 +181,20 @@ export function SlateEditor({
     const safe = Array.isArray(next) && next.length > 0 ? next : initialSlateValue
 
     if (editor) {
-      // eslint-disable-next-line
-      editor.children = safe
+      // 使用 Slate API 而非直接修改 editor.children，避免破坏内部状态
+      editor.withoutNormalizing(() => {
+        // 先选中所有内容
+        Transforms.select(editor, {
+          anchor: Editor.start(editor, []),
+          focus: Editor.end(editor, []),
+        })
+        // 删除所有内容
+        Transforms.delete(editor)
+        // 插入新内容
+        Transforms.insertNodes(editor, safe)
+      })
       // Reset selection to avoid "Cannot get the leaf node" error if path becomes invalid
       editor.selection = null
-      editor.onChange()
     }
     setSlateValue(safe)
   }, [value, editor, parseValue])
@@ -709,7 +734,7 @@ function MathElement({ attributes, children, element }: RenderElementProps) {
         <span
           contentEditable={false}
           className={cn(showSource ? 'hidden' : '')}
-          dangerouslySetInnerHTML={{ __html: html }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html) }}
         />
         <span
           className={cn(
@@ -839,21 +864,24 @@ function Element({ attributes, children, element }: RenderElementProps) {
     case 'image': {
       return <ImageElement attributes={attributes} element={el}>{children}</ImageElement>
     }
-    case 'link':
+    case 'link': {
+      const linkUrl = (el as SlateElement & { url?: string }).url
+      const safeUrl = isSafeUrl(linkUrl) ? linkUrl : '#'
       return (
         <a
           {...attributes}
-          href={(el as SlateElement & { url?: string }).url}
+          href={safeUrl}
           className='text-primary underline underline-offset-4 cursor-pointer'
           onClick={(e) => {
-            if (e.metaKey || e.ctrlKey) {
-              window.open((el as SlateElement & { url?: string }).url, '_blank')
+            if ((e.metaKey || e.ctrlKey) && isSafeUrl(linkUrl)) {
+              window.open(linkUrl, '_blank', 'noopener,noreferrer')
             }
           }}
         >
           {children}
         </a>
       )
+    }
     case 'table':
       return (
         <div {...attributes} className='my-3 overflow-x-auto'>

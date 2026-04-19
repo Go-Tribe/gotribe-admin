@@ -30,7 +30,7 @@ import { ConfirmDialog } from '@/components/confirm-dialog'
 import { useI18n } from '@/context/i18n-provider'
 import type { Post } from './types/post'
 import { getPostList, deletePost } from './service/post'
-import { getProjectList } from '@/features/business/service/project'
+import { getProjectList } from '@/shared/api'
 import { useDataTable } from '@/hooks/use-data-table'
 import { useCrudMutations } from '@/hooks/use-crud-mutations'
 

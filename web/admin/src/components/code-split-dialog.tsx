@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, useCallback, useEffect, type ComponentType, type ReactNode } from 'react'
+import { useState, useEffect, type ComponentType, type ReactNode } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -22,9 +22,9 @@ export interface CodeSplitDialogProps {
   /** 描述 */
   description?: string
   /** 懒加载的组件工厂函数 */
-  contentComponent: () => Promise<{ default: ComponentType<any> }>
+  contentComponent: () => Promise<{ default: ComponentType<Record<string, unknown>> }>
   /** 传递给内容组件的 props */
-  contentProps?: Record<string, any>
+  contentProps?: Record<string, unknown>
   /** 加载占位 */
   fallback?: ReactNode
   /** 是否显示底部按钮 */
@@ -96,22 +96,25 @@ export function CodeSplitDialog({
   className,
 }: CodeSplitDialogProps) {
   const { t } = useI18n()
-  const [ContentComponent, setContentComponent] = useState<ComponentType<any> | null>(null)
+  const [ContentComponent, setContentComponent] = useState<ComponentType<Record<string, unknown>> | null>(null)
 
   // 懒加载内容组件
-  const loadComponent = useCallback(async () => {
-    if (!ContentComponent && open) {
-      const module = await contentComponent()
-      setContentComponent(() => module.default)
-    }
-  }, [contentComponent, ContentComponent, open])
-
-  // 打开时懒加载组件
   useEffect(() => {
-    if (open && !ContentComponent) {
-      loadComponent()
+    if (!open || ContentComponent) {
+      return
     }
-  }, [open, ContentComponent, loadComponent])
+
+    let cancelled = false
+    void contentComponent().then((module) => {
+      if (!cancelled) {
+        setContentComponent(() => module.default)
+      }
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [open, ContentComponent, contentComponent])
 
   const defaultFallback = fallback || (
     <div className="space-y-4 py-4">
@@ -182,8 +185,8 @@ export function CodeSplitDialog({
 export interface LazyDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  component: () => Promise<{ default: ComponentType<any> }>
-  componentProps?: Record<string, any>
+  component: () => Promise<{ default: ComponentType<Record<string, unknown>> }>
+  componentProps?: Record<string, unknown>
   title?: string
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | 'full'
   fallback?: ReactNode
@@ -198,7 +201,24 @@ export function LazyDialog({
   maxWidth = 'lg',
   fallback,
 }: LazyDialogProps) {
-  const LazyComponent = lazy(component)
+  const [ContentComponent, setContentComponent] = useState<ComponentType<Record<string, unknown>> | null>(null)
+
+  useEffect(() => {
+    if (!open || ContentComponent) {
+      return
+    }
+
+    let cancelled = false
+    void component().then((module) => {
+      if (!cancelled) {
+        setContentComponent(() => module.default)
+      }
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [open, ContentComponent, component])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -208,9 +228,11 @@ export function LazyDialog({
             <DialogTitle>{title}</DialogTitle>
           </DialogHeader>
         )}
-        <Suspense fallback={fallback || <DialogFallback />}>
-          <LazyComponent {...componentProps} />
-        </Suspense>
+        {ContentComponent ? (
+          <ContentComponent {...componentProps} />
+        ) : (
+          fallback || <DialogFallback />
+        )}
       </DialogContent>
     </Dialog>
   )

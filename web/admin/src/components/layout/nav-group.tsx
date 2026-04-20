@@ -1,6 +1,5 @@
 import { Link, useLocation } from '@tanstack/react-router'
 import { ChevronRight, type LucideIcon } from 'lucide-react'
-import * as Icons from 'lucide-react'
 import {
   Collapsible,
   CollapsibleContent,
@@ -26,6 +25,7 @@ import {
 } from '../ui/dropdown-menu'
 import { useI18n } from '@/context/i18n-provider'
 import { type MenuItem } from './service'
+import { getMenuIcon } from './icon-registry'
 
 const MENU_I18N_PREFIX = 'components.layout.menu.'
 
@@ -43,20 +43,6 @@ function getMenuLabel(
     if (translated !== key) return translated
   }
   return language === 'en' ? (item.name || item.title) : (item.title || item.name)
-}
-
-/**
- * 根据图标名称获取图标组件
- * 直接根据字段图标名称从 lucide-react 全量数据中匹配
- */
-function getIcon(iconName?: string): LucideIcon | undefined {
-  if (!iconName) return undefined
-  // 直接根据图标名称从 lucide-react 中获取，支持大小写不敏感匹配
-  const icon = (Icons as unknown as Record<string, LucideIcon>)[iconName]
-  if (icon) return icon
-  // 如果直接匹配失败，尝试首字母大写的格式
-  const capitalizedName = iconName.charAt(0).toUpperCase() + iconName.slice(1)
-  return (Icons as unknown as Record<string, LucideIcon>)[capitalizedName]
 }
 
 /**
@@ -98,7 +84,7 @@ export function NavGroup({ items }: NavGroupProps) {
       <SidebarMenu>
         {sortedItems.map((item) => {
           const key = `${item.id}-${item.name}`
-          const IconComponent = getIcon(item.icon)
+          const IconComponent = getMenuIcon(item.icon)
           const filteredChildren = filterVisibleMenus(item.children || [])
           // 对二级菜单按 sort 字段排序
           const sortedChildren = [...filteredChildren].sort((a, b) => a.sort - b.sort)
@@ -216,7 +202,7 @@ function SidebarMenuCollapsible({
           <SidebarMenuSub>
             {visibleChildren.map((child) => {
               const childPath = joinPath(item.path, child.path)
-              const ChildIconComponent = getIcon(child.icon)
+              const ChildIconComponent = getMenuIcon(child.icon)
               const childIsActive = checkIsActive(href, childPath)
               const childLabel = getLabel(child)
 
@@ -279,7 +265,7 @@ function SidebarMenuCollapsedDropdown({
           <DropdownMenuSeparator />
           {visibleChildren.map((child) => {
             const childPath = joinPath(item.path, child.path)
-            const ChildIconComponent = getIcon(child.icon)
+            const ChildIconComponent = getMenuIcon(child.icon)
             const childIsActive = checkIsActive(href, childPath)
             const childLabel = getLabel(child)
 

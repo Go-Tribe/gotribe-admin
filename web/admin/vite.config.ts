@@ -48,35 +48,69 @@ export default defineConfig(({ mode }) => {
     build: {
       // 确保输出到 dist 目录
       outDir: 'dist',
-      // 调整 chunk 大小警告限制为 1500KB
-      chunkSizeWarningLimit: 1500,
+      chunkSizeWarningLimit: 900,
       // 生成 SPA 的 HTML
       rollupOptions: {
         input: {
           main: path.resolve(__dirname, 'index.html'),
         },
         output: {
-          // 手动分割 chunk，优化缓存和加载
-          manualChunks: {
-            // 将 React 相关库打包在一起
-            'react-vendor': ['react', 'react-dom', '@tanstack/react-query'],
-            // 将路由相关打包在一起
-            'router-vendor': ['@tanstack/react-router'],
-            // 将 UI 组件库打包在一起
-            'ui-vendor': [
-              '@radix-ui/react-icons',
-              '@radix-ui/react-avatar',
-              '@radix-ui/react-dialog',
-              '@radix-ui/react-dropdown-menu',
-              '@radix-ui/react-popover',
-              '@radix-ui/react-select',
-              '@radix-ui/react-tooltip',
-              '@radix-ui/react-tabs',
-              '@radix-ui/react-switch',
-              '@radix-ui/react-separator',
-            ],
-            // 编辑器相关（体积较大）
-            'editor': ['slate', 'slate-react', 'slate-history'],
+          manualChunks(id) {
+            const nodeModulesMarker = '/node_modules/'
+            const nodeModulesIndex = id.lastIndexOf(nodeModulesMarker)
+            if (nodeModulesIndex === -1) return undefined
+
+            const nodeModule = id.slice(nodeModulesIndex + nodeModulesMarker.length)
+
+            if (
+              nodeModule.startsWith('react/') ||
+              nodeModule.startsWith('react-dom/') ||
+              nodeModule.startsWith('scheduler/') ||
+              nodeModule.startsWith('@tanstack/react-query/')
+            ) {
+              return 'react-vendor'
+            }
+
+            if (nodeModule.startsWith('@tanstack/react-router/')) {
+              return 'router-vendor'
+            }
+
+            if (
+              nodeModule.startsWith('@radix-ui/') ||
+              nodeModule.startsWith('cmdk/') ||
+              nodeModule.startsWith('sonner/')
+            ) {
+              return 'ui-vendor'
+            }
+
+            if (
+              nodeModule.startsWith('vanilla-jsoneditor/')
+            ) {
+              return 'json-editor-vendor'
+            }
+
+            if (
+              nodeModule.startsWith('@codemirror/') ||
+              nodeModule.startsWith('@lezer/')
+            ) {
+              return 'codemirror-vendor'
+            }
+
+            if (
+              nodeModule.startsWith('ajv/') ||
+              nodeModule.startsWith('json-source-map/')
+            ) {
+              return 'json-editor-vendor'
+            }
+
+            if (
+              nodeModule.startsWith('@tanstack/react-table/') ||
+              nodeModule.startsWith('@tanstack/react-virtual/')
+            ) {
+              return 'table-vendor'
+            }
+
+            return undefined
           },
         },
       },

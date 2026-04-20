@@ -1,4 +1,4 @@
-import { lazy, Suspense, type ComponentType, type ReactNode } from 'react'
+import { lazy, Suspense, type ComponentType, type MouseEvent, type ReactNode } from 'react'
 import { PageSkeleton, TablePageSkeleton, FormPageSkeleton } from './page-skeleton'
 
 type SkeletonType = 'default' | 'table' | 'form'
@@ -41,7 +41,7 @@ export function lazyRoute<T extends ComponentType<Record<string, unknown>>>(
 ) {
   const { skeleton = 'default', fallback, preloadDelay = 200 } = options
   
-  const LazyComponent = lazy(factory)
+  const LazyComponent = lazy(factory) as unknown as ComponentType<Record<string, unknown>>
   const defaultFallback = skeletonMap[skeleton]
 
   // 预加载功能
@@ -54,7 +54,7 @@ export function lazyRoute<T extends ComponentType<Record<string, unknown>>>(
     return preloadPromise
   }
 
-  function LazyRouteWrapper(props: any) {
+  function LazyRouteWrapper(props: Record<string, unknown>) {
     return (
       <Suspense fallback={fallback ?? defaultFallback}>
         <LazyComponent {...props} />
@@ -66,7 +66,7 @@ export function lazyRoute<T extends ComponentType<Record<string, unknown>>>(
   LazyRouteWrapper.preload = () => doPreload()
   
   // 智能预加载：鼠标悬停时预加载
-  LazyRouteWrapper.preloadOnHover = (event: React.MouseEvent) => {
+  LazyRouteWrapper.preloadOnHover = (event: MouseEvent) => {
     const target = event.currentTarget
     const preloadTimeout = setTimeout(() => {
       doPreload()
@@ -130,7 +130,7 @@ export function lazyRouteWithViewport<T extends ComponentType<Record<string, unk
   const { rootMargin: _rootMargin = '100px', ...lazyOptions } = options
   const LazyComponent = lazyRoute(factory, lazyOptions)
 
-  function ViewportPreloadWrapper(props: React.ComponentProps<T>) {
+  function ViewportPreloadWrapper(props: Record<string, unknown>) {
     // 在 useEffect 中设置 Intersection Observer
     // 这里简化处理，实际使用时可以通过 ref 绑定到链接元素
     return <LazyComponent {...props} />

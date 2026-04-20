@@ -104,8 +104,14 @@ export const LazyImage = memo(function LazyImage({
   // 使用 ref 存储回调，避免父组件传递内联函数导致 useEffect 重复触发
   const onLoadRef = useRef(onLoad)
   const onErrorRef = useRef(onError)
-  onLoadRef.current = onLoad
-  onErrorRef.current = onError
+
+  useEffect(() => {
+    onLoadRef.current = onLoad
+  }, [onLoad])
+
+  useEffect(() => {
+    onErrorRef.current = onError
+  }, [onError])
 
   // Intersection Observer 监听
   useEffect(() => {

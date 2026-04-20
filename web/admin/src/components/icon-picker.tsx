@@ -1,6 +1,5 @@
 import * as React from 'react'
-import * as Icons from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Search, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -10,51 +9,7 @@ import {
 } from '@/components/ui/popover'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Input } from '@/components/ui/input'
-
-/**
- * 动态获取所有 lucide-react 图标名称
- * lucide-react 导出两种格式：IconName 和 IconNameIcon（别名）
- * 我们只保留不带 Icon 后缀的版本，避免重复
- *
- * 性能优化：在模块级别执行一次，避免每次组件渲染时遍历整个模块
- */
-const ALL_ICON_NAMES = (() => {
-  const iconNames: string[] = []
-  const excludeNames = new Set([
-    'createLucideIcon',
-    'IconNode',
-    'Icon',
-    'IconProps',
-    'LucideProps',
-    'LucideIcon',
-    'default',
-  ])
-
-  for (const name in Icons) {
-    const icon = Icons[name as keyof typeof Icons]
-
-    // 检查是否是有效的图标组件
-    // lucide-react 的图标是 React 组件（forwardRef），具有 $$typeof 属性
-    const isValidIcon =
-      icon !== undefined &&
-      icon !== null &&
-      typeof icon === 'object' &&
-      ('$$typeof' in icon || typeof icon === 'function')
-
-    // 排除：1. 排除列表中的名称 2. 以 Icon 结尾的（别名） 3. 不以大写字母开头的 4. 以下划线开头的
-    if (
-      !excludeNames.has(name) &&
-      !name.endsWith('Icon') &&
-      name[0] === name[0].toUpperCase() &&
-      !name.startsWith('_') &&
-      isValidIcon
-    ) {
-      iconNames.push(name)
-    }
-  }
-
-  return iconNames.sort()
-})()
+import { getMenuIcon, MENU_ICON_OPTIONS } from '@/components/layout/icon-registry'
 
 type IconPickerProps = {
   value?: string
@@ -76,24 +31,19 @@ function IconPicker({
   const [search, setSearch] = React.useState('')
   const [currentPage, setCurrentPage] = React.useState(1)
 
-  // 直接使用模块级缓存的图标列表，避免每次渲染时遍历整个模块
-  const iconNames = ALL_ICON_NAMES
-
   // 获取当前选中的图标组件
-  const SelectedIcon = value && value in Icons 
-    ? (Icons as unknown as Record<string, LucideIcon>)[value] 
-    : null
+  const SelectedIcon = getMenuIcon(value)
 
   // 过滤图标
   const filteredIcons = React.useMemo(() => {
-    if (!search) return iconNames
+    if (!search) return MENU_ICON_OPTIONS
 
     const searchLower = search.toLowerCase()
-    return iconNames.filter((name) => {
+    return MENU_ICON_OPTIONS.filter(({ name }) => {
       // lucide-react 图标名称直接使用，不需要移除后缀
       return name.toLowerCase().includes(searchLower)
     })
-  }, [search, iconNames])
+  }, [search])
 
   // 当搜索内容改变时，重置到第一页
   React.useEffect(() => {
@@ -122,8 +72,8 @@ function IconPicker({
   }
 
   return (
-      <Popover 
-      open={open} 
+    <Popover
+      open={open}
       onOpenChange={(newOpen) => {
         setOpen(newOpen)
         if (!newOpen) {
@@ -152,8 +102,8 @@ function IconPicker({
           </div>
         </Button>
       </PopoverTrigger>
-      <PopoverContent 
-        className='w-[500px] p-0' 
+      <PopoverContent
+        className='w-[500px] p-0'
         align='start'
         onWheel={(e) => {
           // 允许 PopoverContent 内部的滚动事件正常传播
@@ -163,10 +113,7 @@ function IconPicker({
       >
         <div className='p-3 border-b'>
           <div className='relative'>
-            {React.createElement(
-              (Icons as unknown as Record<string, LucideIcon>).Search,
-              { className: 'absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' }
-            )}
+            <Search className='absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
             <Input
               type='text'
               placeholder='搜索图标...'
@@ -182,10 +129,7 @@ function IconPicker({
                 className='absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground'
                 aria-label='清除搜索'
               >
-                {React.createElement(
-                  (Icons as unknown as Record<string, LucideIcon>).X,
-                  { className: 'h-4 w-4' }
-                )}
+                <X className='h-4 w-4' />
               </button>
             )}
           </div>
@@ -194,24 +138,21 @@ function IconPicker({
           {filteredIcons.length > 0 ? (
             <>
               <div className='grid grid-cols-10 gap-2 p-3'>
-                {currentPageIcons.map((iconName) => {
-                  const IconComponent = (Icons as unknown as Record<string, LucideIcon>)[iconName]
-                  if (!IconComponent) return null
-
-                  const isSelected = value === iconName
+                {currentPageIcons.map(({ name, icon: IconComponent }) => {
+                  const isSelected = value === name
 
                   return (
                     <button
-                      key={iconName}
+                      key={name}
                       type='button'
-                      onClick={() => handleSelect(iconName)}
+                      onClick={() => handleSelect(name)}
                       className={cn(
                         'flex h-10 w-10 items-center justify-center rounded-md border transition-colors cursor-pointer',
                         isSelected
                           ? 'bg-accent border-primary text-primary'
                           : 'border-border hover:bg-accent hover:border-primary/50',
                       )}
-                      title={iconName}
+                      title={name}
                     >
                       {React.createElement(IconComponent, { className: 'h-4 w-4' })}
                     </button>
@@ -231,10 +172,7 @@ function IconPicker({
                       disabled={currentPage === 1}
                       className='h-8 w-8 p-0'
                     >
-                      {React.createElement(
-                        (Icons as unknown as Record<string, LucideIcon>).ChevronLeft,
-                        { className: 'h-4 w-4' }
-                      )}
+                      <ChevronLeft className='h-4 w-4' />
                     </Button>
                     <Button
                       variant='outline'
@@ -243,10 +181,7 @@ function IconPicker({
                       disabled={currentPage === totalPages}
                       className='h-8 w-8 p-0'
                     >
-                      {React.createElement(
-                        (Icons as unknown as Record<string, LucideIcon>).ChevronRight,
-                        { className: 'h-4 w-4' }
-                      )}
+                      <ChevronRight className='h-4 w-4' />
                     </Button>
                   </div>
                 </div>
@@ -262,4 +197,5 @@ function IconPicker({
     </Popover>
   )
 }
-export  {  IconPicker, type IconPickerProps }
+
+export { IconPicker, type IconPickerProps }

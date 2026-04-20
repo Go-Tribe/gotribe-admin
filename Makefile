@@ -100,6 +100,10 @@ clean: # 清理构建产物、临时文件等.
 test: # 运行测试
 	@$(GO) test -v ./...
 
+.PHONY: test-one
+test-one: # 一键测试：后端格式/vet/race/覆盖率 + 前端 lint/build
+	@$(ROOT_DIR)/scripts/test-all.sh
+
 .PHONY: test-all
 test-all: # 运行所有测试用例（包括单元测试和基准测试）
 	@echo "运行所有单元测试..."
@@ -185,6 +189,7 @@ help: # 显示帮助信息
 	@echo "  dev                - 直接运行 Go（不重新编译前端，需确保 dist 已存在）"
 	@echo "  dev-frontend       - 启动前端开发服务器（热重载，需配合 Go 服务使用）"
 	@echo "  test               - 运行测试"
+	@echo "  test-one           - 一键测试：后端格式/vet/race/覆盖率 + 前端 lint/build"
 	@echo "  test-all           - 运行所有测试用例（包括单元测试和基准测试）"
 	@echo "  test-coverage      - 运行测试并生成覆盖率报告"
 	@echo "  lint               - 代码检查"

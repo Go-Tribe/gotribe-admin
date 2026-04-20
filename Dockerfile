@@ -1,4 +1,20 @@
-# 多阶段构建
+# 前端构建阶段
+FROM node:22.15-alpine AS frontend-builder
+
+WORKDIR /web
+
+RUN corepack enable && corepack prepare pnpm@10.28.0 --activate
+
+COPY web/admin/package.json web/admin/pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+
+COPY web/admin ./
+
+ARG VITE_API_BASE_URL=/api
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+RUN pnpm run build
+
+# Go 构建阶段
 FROM golang:1.25-alpine AS builder
 
 # 设置工作目录
@@ -15,6 +31,9 @@ RUN go mod download
 
 # 复制源代码
 COPY . .
+
+# 复制前端构建产物，满足 go:embed all:web/admin/dist
+COPY --from=frontend-builder /web/dist ./web/admin/dist
 
 # 构建应用
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o gotribe-admin .

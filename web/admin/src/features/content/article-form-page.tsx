@@ -1,37 +1,49 @@
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react'
+import * as z from 'zod'
+import { format } from 'date-fns'
 import { useForm, type Resolver, type FieldErrors } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import { useNavigate } from '@tanstack/react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Form } from '@/components/ui/form'
-import { Button } from '@/components/ui/button'
-import { useI18n } from '@/context/i18n-provider'
-import { ResourceUpload, type ResourceItem } from '@/components/resource-upload'
+import { useNavigate } from '@tanstack/react-router'
+import { getProjectList, getUserList } from '@/shared/api'
 import { ArrowLeft } from 'lucide-react'
-import { format } from 'date-fns'
+import { toast } from 'sonner'
 import { slateContentToHtml } from '@/lib/slate-markdown'
 import { generateSlug } from '@/lib/slug'
-import { ArticleSettingsSheet } from './components/article-settings-sheet'
-import { ArticleMediaSheet } from './components/article-media-sheet'
+import { useI18n } from '@/context/i18n-provider'
+import { Button } from '@/components/ui/button'
+import { Form } from '@/components/ui/form'
+import { ResourceUpload, type ResourceItem } from '@/components/resource-upload'
 import { ArticleEditor } from './components/article-editor'
-
-import type { Post, PostParams } from './types/post'
-import type { Category } from './types/category'
-import { createPost, updatePost, getPostDetail } from './service/post'
+import { ArticleMediaSheet } from './components/article-media-sheet'
+import { ArticleSettingsSheet } from './components/article-settings-sheet'
 import { getCategoryTree } from './service/category'
-import { getProjectList, getUserList } from '@/shared/api'
+import { createPost, updatePost, getPostDetail } from './service/post'
 import { getTagList } from './service/tag'
-import { toast } from 'sonner'
+import type { Category } from './types/category'
+import type { Post, PostParams } from './types/post'
 
 /** 根据点号路径写入嵌套对象，如 key="meta.title" value="x" => obj.meta.title = "x" */
-function setExtNested(obj: Record<string, unknown>, path: string, value: string) {
-  const parts = path.trim().split('.').map((p) => p.trim()).filter(Boolean)
+function setExtNested(
+  obj: Record<string, unknown>,
+  path: string,
+  value: string
+) {
+  const parts = path
+    .trim()
+    .split('.')
+    .map((p) => p.trim())
+    .filter(Boolean)
   if (parts.length === 0) return
   let current: Record<string, unknown> = obj
   for (let i = 0; i < parts.length - 1; i++) {
     const key = parts[i]!
-    if (!(key in current) || typeof current[key] !== 'object' || current[key] === null || Array.isArray(current[key])) {
+    if (
+      !(key in current) ||
+      typeof current[key] !== 'object' ||
+      current[key] === null ||
+      Array.isArray(current[key])
+    ) {
       current[key] = {}
     }
     current = current[key] as Record<string, unknown>
@@ -43,11 +55,19 @@ function setExtNested(obj: Record<string, unknown>, path: string, value: string)
  * 将嵌套对象展平为 key-value 列表，如 { meta: { title: "x" } } => [{ key: "meta.title", value: "x" }]。
  * 仅支持嵌套纯对象与字符串值；数组等会转为 String(v)，无法正确回显。
  */
-function flattenExtToKeyValue(obj: Record<string, unknown>, prefix = ''): Array<{ key: string; value: string }> {
+function flattenExtToKeyValue(
+  obj: Record<string, unknown>,
+  prefix = ''
+): Array<{ key: string; value: string }> {
   const result: Array<{ key: string; value: string }> = []
   for (const [k, v] of Object.entries(obj)) {
     const path = prefix ? `${prefix}.${k}` : k
-    if (v !== null && typeof v === 'object' && !Array.isArray(v) && Object.getPrototypeOf(v) === Object.prototype) {
+    if (
+      v !== null &&
+      typeof v === 'object' &&
+      !Array.isArray(v) &&
+      Object.getPrototypeOf(v) === Object.prototype
+    ) {
       result.push(...flattenExtToKeyValue(v as Record<string, unknown>, path))
     } else {
       result.push({ key: path, value: v != null ? String(v) : '' })
@@ -58,19 +78,38 @@ function flattenExtToKeyValue(obj: Record<string, unknown>, prefix = ''): Array<
 
 const createArticleFormSchema = (t: (key: string) => string) =>
   z.object({
-    title: z.string().min(1, t('features.content.article.form.validation.titleRequired')),
+    title: z
+      .string()
+      .min(1, t('features.content.article.form.validation.titleRequired')),
     slug: z.string().optional(),
-    description: z.string().min(1, t('features.content.article.form.validation.descriptionRequired')),
-    author: z.string().min(1, t('features.content.article.form.validation.authorRequired')),
-    userID: z.string().min(1, t('features.content.article.form.validation.authorRequired')),
-    content: z.string().min(1, t('features.content.article.form.validation.contentRequired')),
+    description: z
+      .string()
+      .min(
+        1,
+        t('features.content.article.form.validation.descriptionRequired')
+      ),
+    author: z
+      .string()
+      .min(1, t('features.content.article.form.validation.authorRequired')),
+    userID: z
+      .string()
+      .min(1, t('features.content.article.form.validation.authorRequired')),
+    content: z
+      .string()
+      .min(1, t('features.content.article.form.validation.contentRequired')),
     icon: z.string().optional(),
     video: z.string().optional(),
     images: z.array(z.string()).optional(),
-    type: z.coerce.number().min(1, t('features.content.article.form.validation.typeRequired')),
+    type: z.coerce
+      .number()
+      .min(1, t('features.content.article.form.validation.typeRequired')),
     status: z.coerce.number().default(1),
-    categoryID: z.string().min(1, t('features.content.article.form.validation.categoryRequired')),
-    projectId: z.string().min(1, t('features.content.article.form.validation.projectRequired')),
+    categoryID: z
+      .string()
+      .min(1, t('features.content.article.form.validation.categoryRequired')),
+    projectId: z
+      .string()
+      .min(1, t('features.content.article.form.validation.projectRequired')),
     isTop: z.coerce.number().optional(),
     isPasswd: z.coerce.number().optional(),
     password: z.string().optional(),
@@ -78,7 +117,9 @@ const createArticleFormSchema = (t: (key: string) => string) =>
     showTime: z.date().optional(),
   })
 
-export type ArticleFormValues = z.infer<ReturnType<typeof createArticleFormSchema>>
+export type ArticleFormValues = z.infer<
+  ReturnType<typeof createArticleFormSchema>
+>
 
 type ArticleFormPageProps = {
   id?: number | null
@@ -94,9 +135,13 @@ export function ArticleFormPage({ id, initialPost }: ArticleFormPageProps) {
 
   const [resourceOpen, setResourceOpen] = useState(false)
   const [resourceType, setResourceType] = useState<1 | 2>(1)
-  const [currentUploadField, setCurrentUploadField] = useState<'icon' | 'video' | 'images' | null>(null)
+  const [currentUploadField, setCurrentUploadField] = useState<
+    'icon' | 'video' | 'images' | null
+  >(null)
   /** 自定义字段 key-value 列表，最终序列化为 JSON 存到 ext */
-  const [extFields, setExtFields] = useState<Array<{ key: string; value: string }>>([])
+  const [extFields, setExtFields] = useState<
+    Array<{ key: string; value: string }>
+  >([])
   const [sheetOpen, setSheetOpen] = useState(false)
   const [mediaSheetOpen, setMediaSheetOpen] = useState(false)
 
@@ -109,7 +154,10 @@ export function ArticleFormPage({ id, initialPost }: ArticleFormPageProps) {
     queryKey: ['projectList', { current: 1, pageNum: 1, pageSize: 1000 }],
     queryFn: () => getProjectList({ current: 1, pageNum: 1, pageSize: 1000 }),
   })
-  const projectList = useMemo(() => projectData?.projects ?? [], [projectData?.projects])
+  const projectList = useMemo(
+    () => projectData?.projects ?? [],
+    [projectData?.projects]
+  )
 
   const { data: userData } = useQuery({
     queryKey: ['userList', { current: 1, pageNum: 1, pageSize: 1000 }],
@@ -127,7 +175,11 @@ export function ArticleFormPage({ id, initialPost }: ArticleFormPageProps) {
     const categories: { id: string; title: string; level: number }[] = []
     const traverse = (nodes: Category[], level = 0) => {
       nodes.forEach((node) => {
-        categories.push({ id: String(node.id ?? '').trim(), title: node.title, level })
+        categories.push({
+          id: String(node.id ?? '').trim(),
+          title: node.title,
+          level,
+        })
         if (node.children?.length) {
           traverse(node.children, level + 1)
         }
@@ -174,7 +226,8 @@ export function ArticleFormPage({ id, initialPost }: ArticleFormPageProps) {
   })
   const post = id ? (initialPost ?? postDataRes ?? null) : null
   const isLoadingPost = isEdit && !!id && !initialPost && postLoading
-  const loadFinishedNoPost = isEdit && !!id && !initialPost && !postLoading && !post
+  const loadFinishedNoPost =
+    isEdit && !!id && !initialPost && !postLoading && !post
 
   // 同步 post 数据到表单
   useEffect(() => {
@@ -182,13 +235,17 @@ export function ArticleFormPage({ id, initialPost }: ArticleFormPageProps) {
     if (post) {
       const rawCategoryID =
         (post.categoryID != null ? String(post.categoryID) : '') ||
-        (post.category && typeof post.category === 'object' && 'id' in post.category
+        (post.category &&
+        typeof post.category === 'object' &&
+        'id' in post.category
           ? String((post.category as { id: string | number }).id)
           : '')
       const categoryID = rawCategoryID.trim()
       const rawProjectId =
         (post.projectId != null ? String(post.projectId) : '') ||
-        (post.project && typeof post.project === 'object' && 'id' in post.project
+        (post.project &&
+        typeof post.project === 'object' &&
+        'id' in post.project
           ? String((post.project as { id: number }).id)
           : '')
       const projectId = rawProjectId.trim()
@@ -210,7 +267,11 @@ export function ArticleFormPage({ id, initialPost }: ArticleFormPageProps) {
         isPasswd: post.isPasswd ?? 1,
         password: post.password || '',
         tag: post.tag || '',
-        showTime: post.showTime ? new Date(post.showTime) : (post.createdAt ? new Date(post.createdAt) : new Date()),
+        showTime: post.showTime
+          ? new Date(post.showTime)
+          : post.createdAt
+            ? new Date(post.createdAt)
+            : new Date(),
       }
       currentForm.reset(values)
       // 解析 ext 为自定义字段列表（支持嵌套对象，展平为 key 如 meta.title）
@@ -281,7 +342,10 @@ export function ArticleFormPage({ id, initialPost }: ArticleFormPageProps) {
     if (!isEdit && userList.length > 0) {
       const currentAuthor = formRef.current.getValues('author')
       if (!currentAuthor) {
-        formRef.current.setValue('author', userList[0].nickname || userList[0].username)
+        formRef.current.setValue(
+          'author',
+          userList[0].nickname || userList[0].username
+        )
         formRef.current.setValue('userID', userList[0].userID)
       }
     }
@@ -320,7 +384,8 @@ export function ArticleFormPage({ id, initialPost }: ArticleFormPageProps) {
   })
 
   const updateMutation = useMutation({
-    mutationFn: ({ id: postId, ...params }: PostParams & { id: number }) => updatePost(postId, params),
+    mutationFn: ({ id: postId, ...params }: PostParams & { id: number }) =>
+      updatePost(postId, params),
     onSuccess: () => {
       toast.success(t('features.content.article.updateSuccess'), {
         description: t('features.content.article.form.returnToListAfterUpdate'),
@@ -333,64 +398,96 @@ export function ArticleFormPage({ id, initialPost }: ArticleFormPageProps) {
   const createPostMutate = createMutation.mutate
   const updatePostMutate = updateMutation.mutate
 
-  const onInvalid = useCallback((errors: FieldErrors<ArticleFormValues>) => {
-    const mediaFields = ['description', 'icon', 'video', 'images']
-    const settingsFields = ['type', 'status', 'categoryID', 'projectId', 'tag', 'showTime', 'isTop', 'isPasswd', 'password', 'author', 'userID']
+  const onInvalid = useCallback(
+    (errors: FieldErrors<ArticleFormValues>) => {
+      const mediaFields = ['description', 'icon', 'video', 'images']
+      const settingsFields = [
+        'type',
+        'status',
+        'categoryID',
+        'projectId',
+        'tag',
+        'showTime',
+        'isTop',
+        'isPasswd',
+        'password',
+        'author',
+        'userID',
+      ]
 
-    const hasMediaError = Object.keys(errors).some(key => mediaFields.includes(key))
-    if (hasMediaError) {
-      setMediaSheetOpen(true)
-    }
+      const hasMediaError = Object.keys(errors).some((key) =>
+        mediaFields.includes(key)
+      )
+      if (hasMediaError) {
+        setMediaSheetOpen(true)
+      }
 
-    const hasSettingsError = Object.keys(errors).some(key => settingsFields.includes(key))
-    if (hasSettingsError) {
-      setSheetOpen(true)
-    }
+      const hasSettingsError = Object.keys(errors).some((key) =>
+        settingsFields.includes(key)
+      )
+      if (hasSettingsError) {
+        setSheetOpen(true)
+      }
 
-    if (hasMediaError || hasSettingsError) {
-      toast.error(t('features.content.article.form.validationErrorInSheet'))
-    }
-  }, [t])
+      if (hasMediaError || hasSettingsError) {
+        toast.error(t('features.content.article.form.validationErrorInSheet'))
+      }
+    },
+    [t]
+  )
 
-  const handleSubmit = useCallback(async (values: ArticleFormValues) => {
-    if (createMutation.isPending || updateMutation.isPending) return
-    // content 存 Slate 原数据（JSON），用于回显；htmlContent 存转换后的 HTML
-    const htmlContent = slateContentToHtml(values.content ?? '')
-    const extObj: Record<string, unknown> = {}
-    extFields
-      .filter((e) => e.key.trim() !== '')
-      .forEach((e) => setExtNested(extObj, e.key.trim(), e.value.trim()))
-    const ext = Object.keys(extObj).length > 0 ? JSON.stringify(extObj) : ''
-    // 显式构造 payload，确保 status 等字段正确传递
-    const payload = {
-      title: values.title,
-      slug: values.slug,
-      description: values.description,
-      author: values.author,
-      userID: values.userID ? Number(values.userID) : undefined,
-      content: values.content,
-      htmlContent,
-      ext,
-      icon: values.icon,
-      video: values.video,
-      images: values.images,
-      type: values.type,
-      status: values.status ?? 1,
-      categoryID: values.categoryID ? Number(values.categoryID) : undefined,
-      projectId: values.projectId ? Number(values.projectId) : undefined,
-      isTop: values.isTop,
-      isPasswd: values.isPasswd,
-      password: values.password,
-      tag: values.tag,
-      showTime: values.showTime ? format(values.showTime, 'yyyy-MM-dd HH:mm:ss') : undefined,
-    }
+  const handleSubmit = useCallback(
+    async (values: ArticleFormValues) => {
+      if (createMutation.isPending || updateMutation.isPending) return
+      // content 存 Slate 原数据（JSON），用于回显；htmlContent 存转换后的 HTML
+      const htmlContent = slateContentToHtml(values.content ?? '')
+      const extObj: Record<string, unknown> = {}
+      extFields
+        .filter((e) => e.key.trim() !== '')
+        .forEach((e) => setExtNested(extObj, e.key.trim(), e.value.trim()))
+      const ext = Object.keys(extObj).length > 0 ? JSON.stringify(extObj) : ''
+      // 显式构造 payload，确保 status 等字段正确传递
+      const payload = {
+        title: values.title,
+        slug: values.slug,
+        description: values.description,
+        author: values.author,
+        userID: values.userID ? Number(values.userID) : undefined,
+        content: values.content,
+        htmlContent,
+        ext,
+        icon: values.icon,
+        video: values.video,
+        images: values.images,
+        type: values.type,
+        status: values.status ?? 1,
+        categoryID: values.categoryID ? Number(values.categoryID) : undefined,
+        projectId: values.projectId ? Number(values.projectId) : undefined,
+        isTop: values.isTop,
+        isPasswd: values.isPasswd,
+        password: values.password,
+        tag: values.tag,
+        showTime: values.showTime
+          ? format(values.showTime, 'yyyy-MM-dd HH:mm:ss')
+          : undefined,
+      }
 
-    if (isEdit && id) {
-      updatePostMutate({ ...payload, id })
-    } else {
-      createPostMutate(payload)
-    }
-  }, [extFields, isEdit, id, createPostMutate, updatePostMutate, createMutation.isPending, updateMutation.isPending])
+      if (isEdit && id) {
+        updatePostMutate({ ...payload, id })
+      } else {
+        createPostMutate(payload)
+      }
+    },
+    [
+      extFields,
+      isEdit,
+      id,
+      createPostMutate,
+      updatePostMutate,
+      createMutation.isPending,
+      updateMutation.isPending,
+    ]
+  )
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -424,18 +521,25 @@ export function ArticleFormPage({ id, initialPost }: ArticleFormPageProps) {
 
   if (isLoadingPost) {
     return (
-      <div className='flex items-center justify-center min-h-[200px] px-4'>
-        <p className='text-muted-foreground'>{t('features.content.article.loading')}</p>
+      <div className='flex min-h-[200px] items-center justify-center px-4'>
+        <p className='text-muted-foreground'>
+          {t('features.content.article.loading')}
+        </p>
       </div>
     )
   }
 
   if (loadFinishedNoPost) {
     return (
-      <div className='flex flex-col items-center justify-center min-h-[200px] px-4 gap-4'>
-        <p className='text-muted-foreground'>{t('features.content.article.notFound')}</p>
-        <Button variant='outline' onClick={() => navigate({ to: '/content/article' })}>
-          <ArrowLeft className='h-4 w-4 mr-2' />
+      <div className='flex min-h-[200px] flex-col items-center justify-center gap-4 px-4'>
+        <p className='text-muted-foreground'>
+          {t('features.content.article.notFound')}
+        </p>
+        <Button
+          variant='outline'
+          onClick={() => navigate({ to: '/content/article' })}
+        >
+          <ArrowLeft className='mr-2 h-4 w-4' />
           {t('features.content.article.form.backToList')}
         </Button>
       </div>
@@ -443,32 +547,39 @@ export function ArticleFormPage({ id, initialPost }: ArticleFormPageProps) {
   }
 
   return (
-    <div className='flex flex-col h-[calc(100vh-4rem)] bg-background'>
+    <div className='flex h-[calc(100vh-4rem)] flex-col bg-background'>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit, onInvalid)} className='flex flex-col h-full'>
+        <form
+          onSubmit={form.handleSubmit(handleSubmit, onInvalid)}
+          className='flex h-full flex-col'
+        >
           {/* 顶栏：sticky 方便长文时随时保存，同时保持编辑器页更紧凑的层级 */}
-          <div className='sticky top-0 z-10 border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shrink-0'>
+          <div className='sticky top-0 z-10 shrink-0 border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80'>
             <div className='mx-auto flex w-full max-w-[88rem] items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8'>
               <div className='flex min-w-0 items-center gap-3'>
-              <Button
-                type='button'
-                variant='ghost'
-                size='icon'
-                className='shrink-0'
-                onClick={() => navigate({ to: '/content/article' })}
-                aria-label={t('features.content.article.form.cancel')}
-              >
-                <ArrowLeft className='h-4 w-4' />
-              </Button>
+                <Button
+                  type='button'
+                  variant='ghost'
+                  size='icon'
+                  className='shrink-0'
+                  onClick={() => navigate({ to: '/content/article' })}
+                  aria-label={t('features.content.article.form.cancel')}
+                >
+                  <ArrowLeft className='h-4 w-4' />
+                </Button>
                 <div className='min-w-0'>
-                  <div className='text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground'>
+                  <div className='text-[11px] font-semibold tracking-[0.18em] text-muted-foreground uppercase'>
                     Editor
                   </div>
                   <h1 className='truncate text-xl font-semibold tracking-tight text-foreground sm:text-2xl'>
-                    {isEdit ? t('features.content.article.form.editTitle') : t('features.content.article.form.createTitle')}
+                    {isEdit
+                      ? t('features.content.article.form.editTitle')
+                      : t('features.content.article.form.createTitle')}
                   </h1>
                   <p className='line-clamp-1 text-sm text-muted-foreground'>
-                    {isEdit ? t('features.content.article.form.editDescription') : t('features.content.article.form.createDescription')}
+                    {isEdit
+                      ? t('features.content.article.form.editDescription')
+                      : t('features.content.article.form.createDescription')}
                   </p>
                 </div>
               </div>
@@ -490,16 +601,24 @@ export function ArticleFormPage({ id, initialPost }: ArticleFormPageProps) {
                   extFields={extFields}
                   setExtFields={setExtFields}
                 />
-                <Button type='submit' disabled={isLoading} className='min-w-24 rounded-full px-5'>
-                  {isLoading ? t('features.content.article.form.submitting') : isEdit ? t('features.content.article.form.save') : t('features.content.article.form.create')}
+                <Button
+                  type='submit'
+                  disabled={isLoading}
+                  className='min-w-24 rounded-full px-5'
+                >
+                  {isLoading
+                    ? t('features.content.article.form.submitting')
+                    : isEdit
+                      ? t('features.content.article.form.save')
+                      : t('features.content.article.form.create')}
                 </Button>
               </div>
             </div>
           </div>
 
           {/* 书写区：固定宽度 + 留白，标题与正文分区清晰 */}
-          <div className='flex-1 min-h-0 overflow-y-auto'>
-            <ArticleEditor form={form} />
+          <div className='min-h-0 flex-1 overflow-y-auto'>
+            <ArticleEditor form={form} isEdit={isEdit} />
           </div>
         </form>
       </Form>

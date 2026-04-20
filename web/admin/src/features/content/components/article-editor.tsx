@@ -1,14 +1,14 @@
 import { Suspense, lazy } from 'react'
-import { Textarea } from '@/components/ui/textarea'
+import type { UseFormReturn } from 'react-hook-form'
+import { useI18n } from '@/context/i18n-provider'
 import {
   FormField,
   FormItem,
   FormControl,
   FormMessage,
 } from '@/components/ui/form'
+import { Textarea } from '@/components/ui/textarea'
 import { EditorErrorBoundary } from '@/components/editor-error-boundary'
-import { useI18n } from '@/context/i18n-provider'
-import type { UseFormReturn } from 'react-hook-form'
 import type { ArticleFormValues } from '../article-form-page'
 
 const SlateEditor = lazy(() =>
@@ -17,25 +17,27 @@ const SlateEditor = lazy(() =>
 
 interface ArticleEditorProps {
   form: UseFormReturn<ArticleFormValues>
+  isEdit?: boolean
 }
 
-export function ArticleEditor({ form }: ArticleEditorProps) {
+export function ArticleEditor({ form, isEdit = false }: ArticleEditorProps) {
   const { t } = useI18n()
 
   return (
-    <div className='mx-auto w-full max-w-[42rem] px-5 sm:px-8 pt-8 pb-24'>
+    <div className='mx-auto w-full max-w-[42rem] px-5 pt-8 pb-24 sm:px-8'>
       {/* 标题输入 */}
       <FormField
         control={form.control}
-        name="title"
+        name='title'
         render={({ field }) => (
           <FormItem className='space-y-0'>
             <FormControl>
               <Textarea
-                placeholder={t('features.content.article.form.titlePlaceholder')}
-                className="text-3xl sm:text-4xl font-bold border-none resize-none shadow-none focus-visible:ring-0 px-0 py-0 min-h-[2.5rem] overflow-hidden leading-snug placeholder:text-muted-foreground/50 tracking-tight"
+                placeholder={t(
+                  'features.content.article.form.titlePlaceholder'
+                )}
+                className='min-h-[2.5rem] resize-none overflow-hidden border-none px-0 py-0 text-3xl leading-snug font-bold tracking-tight shadow-none placeholder:text-muted-foreground/50 focus-visible:ring-0 sm:text-4xl'
                 rows={1}
-                autoFocus
                 onInput={(e) => {
                   const target = e.target as HTMLTextAreaElement
                   target.style.height = 'auto'
@@ -57,17 +59,21 @@ export function ArticleEditor({ form }: ArticleEditorProps) {
         control={form.control}
         name='content'
         render={({ field }) => (
-          <FormItem className='flex flex-col min-h-0'>
+          <FormItem className='flex min-h-0 flex-col'>
             <FormControl>
               <EditorErrorBoundary
                 fallback={
-                  <div className='rounded-md border border-input bg-background flex flex-col flex-1 items-center justify-center text-muted-foreground min-h-[320px]'>
-                    <p className='text-sm mb-2'>{t('features.content.article.form.editorLoadError')}</p>
+                  <div className='flex min-h-[320px] flex-1 flex-col items-center justify-center rounded-md border border-input bg-background text-muted-foreground'>
+                    <p className='mb-2 text-sm'>
+                      {t('features.content.article.form.editorLoadError')}
+                    </p>
                     <Textarea
-                      className='max-w-2xl w-full min-h-[120px] font-mono text-xs resize-none'
+                      className='min-h-[120px] w-full max-w-2xl resize-none font-mono text-xs'
                       value={field.value ?? ''}
                       onChange={field.onChange}
-                      placeholder={t('features.content.article.form.contentPlaceholder')}
+                      placeholder={t(
+                        'features.content.article.form.contentPlaceholder'
+                      )}
                       readOnly={false}
                     />
                   </div>
@@ -75,8 +81,10 @@ export function ArticleEditor({ form }: ArticleEditorProps) {
               >
                 <Suspense
                   fallback={
-                    <div className='flex flex-col items-center justify-center text-muted-foreground min-h-[320px]'>
-                      <p className='text-sm'>{t('features.content.article.form.editorLoading')}</p>
+                    <div className='flex min-h-[320px] flex-col items-center justify-center text-muted-foreground'>
+                      <p className='text-sm'>
+                        {t('features.content.article.form.editorLoading')}
+                      </p>
                     </div>
                   }
                 >
@@ -86,7 +94,8 @@ export function ArticleEditor({ form }: ArticleEditorProps) {
                     minHeight='min-h-[60vh]'
                     outputMode='json'
                     autoHeight={true}
-                    className="border-none shadow-none px-0 text-[1.0625rem] leading-[1.75]"
+                    autoFocus={!isEdit}
+                    className='border-none px-0 text-[1.0625rem] leading-[1.75] shadow-none'
                   />
                 </Suspense>
               </EditorErrorBoundary>

@@ -1,30 +1,7 @@
 import { useCallback, useState, useEffect, useRef, useMemo } from 'react'
-import isHotkey from 'is-hotkey'
-import {
-  createEditor,
-  type Descendant,
-  Editor,
-  Element as SlateElement,
-  Transforms,
-  Range as SlateRange,
-  type NodeEntry,
-  type Path,
-  Text,
-} from 'slate'
-import { withHistory } from 'slate-history'
-import {
-  Editable,
-  ReactEditor,
-  type RenderElementProps,
-  type RenderLeafProps,
-  Slate,
-  useSlate,
-  useSelected,
-  useFocused,
-  withReact,
-} from 'slate-react'
-import katex from 'katex'
 import DOMPurify from 'dompurify'
+import isHotkey from 'is-hotkey'
+import katex from 'katex'
 import {
   Bold,
   Italic,
@@ -50,13 +27,33 @@ import {
   Undo,
   Redo,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+  createEditor,
+  type Descendant,
+  Editor,
+  Element as SlateElement,
+  Transforms,
+  Range as SlateRange,
+  type NodeEntry,
+  type Path,
+  Text,
+} from 'slate'
+import { withHistory } from 'slate-history'
+import {
+  Editable,
+  ReactEditor,
+  type RenderElementProps,
+  type RenderLeafProps,
+  Slate,
+  useSlate,
+  useSelected,
+  useFocused,
+  withReact,
+} from 'slate-react'
+import { markdownToSlate, slateToMarkdown } from '@/lib/slate-markdown'
+import { cn } from '@/lib/utils'
+import { useI18n } from '@/context/i18n-provider'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -65,12 +62,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ResourceUpload, FILE_TYPE, type ResourceItem } from '@/components/resource-upload'
-import { markdownToSlate, slateToMarkdown } from '@/lib/slate-markdown'
-import { useI18n } from '@/context/i18n-provider'
-import { cn } from '@/lib/utils'
+import {
+  ResourceUpload,
+  FILE_TYPE,
+  type ResourceItem,
+} from '@/components/resource-upload'
 
 const I18N_PREFIX = 'components.editor'
 
@@ -97,7 +101,14 @@ const MARK_HOTKEYS: Record<string, string> = {
   'mod+`': 'code',
 }
 
-const HEADING_TYPES = ['heading-one', 'heading-two', 'heading-three', 'heading-four', 'heading-five', 'heading-six'] as const
+const HEADING_TYPES = [
+  'heading-one',
+  'heading-two',
+  'heading-three',
+  'heading-four',
+  'heading-five',
+  'heading-six',
+] as const
 const HEADING_HOTKEYS: Record<string, (typeof HEADING_TYPES)[number]> = {
   'mod+alt+1': 'heading-one',
   'mod+alt+2': 'heading-two',
@@ -107,7 +118,9 @@ const HEADING_HOTKEYS: Record<string, (typeof HEADING_TYPES)[number]> = {
   'mod+alt+6': 'heading-six',
 }
 
-const initialSlateValue: Descendant[] = [{ type: 'paragraph', children: [{ text: '' }] }]
+const initialSlateValue: Descendant[] = [
+  { type: 'paragraph', children: [{ text: '' }] },
+]
 
 /** 判断 Slate 节点是否为「空块」（空 paragraph / 空 heading / 仅含空白字符） */
 function isEmptyBlock(node: Descendant): boolean {
@@ -116,7 +129,10 @@ function isEmptyBlock(node: Descendant): boolean {
   }
   const el = node as SlateElement
   // 只清洗 paragraph 与 heading 类型的前导空块；保留 list、quote、image 等结构块
-  if (el.type === 'paragraph' || (typeof el.type === 'string' && el.type.startsWith('heading-'))) {
+  if (
+    el.type === 'paragraph' ||
+    (typeof el.type === 'string' && el.type.startsWith('heading-'))
+  ) {
     if (!Array.isArray(el.children) || el.children.length === 0) return true
     return el.children.every(isEmptyBlock)
   }
@@ -141,6 +157,7 @@ export type SlateEditorProps = {
   minHeight?: string
   outputMode?: 'markdown' | 'json'
   autoHeight?: boolean
+  autoFocus?: boolean
 }
 
 export function SlateEditor({
@@ -151,6 +168,7 @@ export function SlateEditor({
   minHeight = 'min-h-[280px]',
   outputMode = 'markdown',
   autoHeight = false,
+  autoFocus = false,
 }: SlateEditorProps) {
   const { t } = useI18n()
   const editor = useMemo(() => {
@@ -160,12 +178,22 @@ export function SlateEditor({
       return ['link', 'inline-math'].includes(element.type) || isInline(element)
     }
     baseEditor.isVoid = (element) => {
-      return ['image', 'divider', 'thematic-break'].includes(element.type) || isVoid(element)
+      return (
+        ['image', 'divider', 'thematic-break'].includes(element.type) ||
+        isVoid(element)
+      )
     }
-    baseEditor.normalizeNode = (entry: NodeEntry, options?: Parameters<typeof normalizeNode>[1]) => {
+    baseEditor.normalizeNode = (
+      entry: NodeEntry,
+      options?: Parameters<typeof normalizeNode>[1]
+    ) => {
       const [node] = entry
       if (SlateElement.isElement(node) && node.children.length === 0) {
-        Transforms.insertNodes(baseEditor, { text: '' }, { at: [...entry[1], 0] })
+        Transforms.insertNodes(
+          baseEditor,
+          { text: '' },
+          { at: [...entry[1], 0] }
+        )
         return
       }
       normalizeNode(entry, options)
@@ -181,7 +209,10 @@ export function SlateEditor({
       }
       try {
         const parsed = JSON.parse(val)
-        const nodes = Array.isArray(parsed) && parsed.length > 0 ? parsed : initialSlateValue
+        const nodes =
+          Array.isArray(parsed) && parsed.length > 0
+            ? parsed
+            : initialSlateValue
         return trimLeadingEmptyBlocks(nodes)
       } catch {
         return initialSlateValue
@@ -190,43 +221,56 @@ export function SlateEditor({
     [outputMode]
   )
 
-  const [slateValue, setSlateValue] = useState<Descendant[]>(() => {
+  const [initialValue] = useState<Descendant[]>(() => {
     const v = parseValue(value)
     return Array.isArray(v) && v.length > 0 ? v : initialSlateValue
   })
   const isInternalChange = useRef(false)
+  const didAutoFocus = useRef(false)
 
-  // Update slateValue when value prop changes externally
+  const replaceEditorContent = useCallback(
+    (next: Descendant[]) => {
+      editor.withoutNormalizing(() => {
+        Transforms.deselect(editor)
+
+        for (let i = editor.children.length - 1; i >= 0; i -= 1) {
+          Transforms.removeNodes(editor, { at: [i] })
+        }
+
+        Transforms.insertNodes(editor, next, { at: [0] })
+        Transforms.deselect(editor)
+      })
+    },
+    [editor]
+  )
+
+  // Update editor content when value prop changes externally
   useEffect(() => {
     if (isInternalChange.current) {
       isInternalChange.current = false
       return
     }
     const next = parseValue(value)
-    const safe = Array.isArray(next) && next.length > 0 ? next : initialSlateValue
+    const safe =
+      Array.isArray(next) && next.length > 0 ? next : initialSlateValue
 
-    if (editor) {
-      // 使用 Slate API 而非直接修改 editor.children，避免破坏内部状态
-      editor.withoutNormalizing(() => {
-        // 先选中所有内容
-        Transforms.select(editor, {
-          anchor: Editor.start(editor, []),
-          focus: Editor.end(editor, []),
-        })
-        // 删除所有内容
-        Transforms.delete(editor)
-        // 插入新内容
-        Transforms.insertNodes(editor, safe)
-      })
-      // Reset selection to avoid "Cannot get the leaf node" error if path becomes invalid
-      editor.selection = null
-    }
-    setSlateValue(safe)
-  }, [value, editor, parseValue])
+    replaceEditorContent(safe)
+  }, [value, parseValue, replaceEditorContent])
+
+  useEffect(() => {
+    if (!autoFocus || didAutoFocus.current) return
+
+    didAutoFocus.current = true
+    const rafId = window.requestAnimationFrame(() => {
+      Transforms.select(editor, Editor.start(editor, []))
+      ReactEditor.focus(editor)
+    })
+
+    return () => window.cancelAnimationFrame(rafId)
+  }, [autoFocus, editor])
 
   const handleSlateChange = useCallback(
     (next: Descendant[]) => {
-      setSlateValue(next)
       isInternalChange.current = true
 
       try {
@@ -244,8 +288,14 @@ export function SlateEditor({
     [onChange, outputMode]
   )
 
-  const renderElement = useCallback((props: RenderElementProps) => <Element {...props} />, [])
-  const renderLeaf = useCallback((props: RenderLeafProps) => <Leaf {...props} />, [])
+  const renderElement = useCallback(
+    (props: RenderElementProps) => <Element {...props} />,
+    []
+  )
+  const renderLeaf = useCallback(
+    (props: RenderLeafProps) => <Leaf {...props} />,
+    []
+  )
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
@@ -254,7 +304,9 @@ export function SlateEditor({
 
       // 1. Markdown 行首转换：Space 时 # / ## ... -> 标题；- * -> 列表；[] [ ] [x] -> 任务列表
       if (event.key === ' ') {
-        const blockEntry = Editor.above(editor, { match: (n) => SlateElement.isElement(n) })
+        const blockEntry = Editor.above(editor, {
+          match: (n) => SlateElement.isElement(n),
+        })
         if (blockEntry) {
           const [, path] = blockEntry
           const blockText = Editor.string(editor, path)
@@ -262,7 +314,10 @@ export function SlateEditor({
           const checklistMatch = /^\[\s?([xX])?\s?\]$/.exec(blockText)
           if (checklistMatch) {
             event.preventDefault()
-            const range = { anchor: { path, offset: 0 }, focus: { path, offset: blockText.length } }
+            const range = {
+              anchor: { path, offset: 0 },
+              focus: { path, offset: blockText.length },
+            }
             Transforms.delete(editor, { at: range })
             const [node] = Editor.node(editor, path)
             if (SlateElement.isElement(node) && node.children.length === 0) {
@@ -272,7 +327,9 @@ export function SlateEditor({
             setBlockType(editor, 'check-list', path)
             const listItemPath = [...path, 0]
             Transforms.setNodes(editor, { checked }, { at: listItemPath })
-            Transforms.insertText(editor, ' ', { at: Editor.start(editor, path) })
+            Transforms.insertText(editor, ' ', {
+              at: Editor.start(editor, path),
+            })
             return
           }
           if (headingOrList) {
@@ -288,7 +345,11 @@ export function SlateEditor({
 
             if (headingOrList[1]) {
               const depth = headingOrList[1].length
-              Transforms.setNodes(editor, { type: HEADING_TYPES[depth - 1] as string }, { at: path })
+              Transforms.setNodes(
+                editor,
+                { type: HEADING_TYPES[depth - 1] as string },
+                { at: path }
+              )
               // 不需要额外插入空格，因为删除后光标在开头，用户刚按了空格
               // 但通常 Markdown 转换后用户希望光标在后面
               // 不过这里我们的逻辑是把 "# " 变成了标题样式，内容被清空了？
@@ -308,7 +369,10 @@ export function SlateEditor({
       for (const hotkey in HEADING_HOTKEYS) {
         if (isHotkey(hotkey, event.nativeEvent)) {
           event.preventDefault()
-          setBlockType(editor, HEADING_HOTKEYS[hotkey as keyof typeof HEADING_HOTKEYS])
+          setBlockType(
+            editor,
+            HEADING_HOTKEYS[hotkey as keyof typeof HEADING_HOTKEYS]
+          )
           return
         }
       }
@@ -317,7 +381,12 @@ export function SlateEditor({
       for (const hotkey in MARK_HOTKEYS) {
         if (isHotkey(hotkey, event.nativeEvent)) {
           event.preventDefault()
-          const mark = MARK_HOTKEYS[hotkey] as 'bold' | 'italic' | 'underline' | 'strikethrough' | 'code'
+          const mark = MARK_HOTKEYS[hotkey] as
+            | 'bold'
+            | 'italic'
+            | 'underline'
+            | 'strikethrough'
+            | 'code'
           toggleMark(editor, mark)
           return
         }
@@ -328,14 +397,19 @@ export function SlateEditor({
       if (event.key === 'Enter') {
         const { selection } = editor
         if (selection && SlateRange.isCollapsed(selection)) {
-          const blockEntry = Editor.above(editor, { match: (n) => SlateElement.isElement(n) })
+          const blockEntry = Editor.above(editor, {
+            match: (n) => SlateElement.isElement(n),
+          })
           if (blockEntry) {
             const [block, path] = blockEntry
             const isBlockEmpty = Editor.string(editor, path) === ''
             const type = (block as SlateElement).type
 
             // 如果是在列表项中，且内容为空
-            if (['list-item', 'check-list-item'].includes(type) && isBlockEmpty) {
+            if (
+              ['list-item', 'check-list-item'].includes(type) &&
+              isBlockEmpty
+            ) {
               event.preventDefault()
               unwrapLists(editor)
               return
@@ -363,7 +437,9 @@ export function SlateEditor({
       if (event.key === 'Backspace') {
         const { selection } = editor
         if (selection && SlateRange.isCollapsed(selection)) {
-          const blockEntry = Editor.above(editor, { match: (n) => SlateElement.isElement(n) })
+          const blockEntry = Editor.above(editor, {
+            match: (n) => SlateElement.isElement(n),
+          })
           if (blockEntry) {
             const [block, path] = blockEntry
             const isBlockEmpty = Editor.string(editor, path) === ''
@@ -373,9 +449,9 @@ export function SlateEditor({
               // 比如是 heading 或 list-item，按删除键应该变回 paragraph
               event.preventDefault()
               if (['list-item', 'check-list-item'].includes(type)) {
-                 unwrapLists(editor)
+                unwrapLists(editor)
               } else {
-                 setBlockType(editor, 'paragraph')
+                setBlockType(editor, 'paragraph')
               }
               return
             }
@@ -426,7 +502,10 @@ export function SlateEditor({
         // 优化：如果只有一个 paragraph，提取 children 插入以保持行内样式（如果可能）
         if (fragment.length === 1 && fragment[0].type === 'paragraph') {
           // 强制类型断言，因为 fragment[0] 是 Descendant，可能是 Text，但 type==paragraph 意味着是 Element
-          Transforms.insertFragment(editor, (fragment[0] as SlateElement).children)
+          Transforms.insertFragment(
+            editor,
+            (fragment[0] as SlateElement).children
+          )
         } else {
           Transforms.insertFragment(editor, fragment)
         }
@@ -438,15 +517,21 @@ export function SlateEditor({
   return (
     <div
       className={cn(
-        'rounded-md border border-input bg-background flex flex-col',
-        autoHeight ? 'h-auto max-h-none overflow-visible' : 'min-h-[320px] h-[55vh] max-h-[55vh] overflow-hidden',
+        'flex flex-col rounded-md border border-input bg-background',
+        autoHeight
+          ? 'h-auto max-h-none overflow-visible'
+          : 'h-[55vh] max-h-[55vh] min-h-[320px] overflow-hidden',
         minHeight,
         className
       )}
     >
-      <Slate editor={editor} initialValue={slateValue} onChange={handleSlateChange}>
-        <div className='shrink-0 border-b border-input bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 sticky top-0 z-10'>
-          <div className='flex flex-wrap items-center gap-1 pl-0 pr-3 py-2 min-h-[40px]'>
+      <Slate
+        editor={editor}
+        initialValue={initialValue}
+        onChange={handleSlateChange}
+      >
+        <div className='sticky top-0 z-10 shrink-0 border-b border-input bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60'>
+          <div className='flex min-h-[40px] flex-wrap items-center gap-1 py-2 pr-3 pl-0'>
             <ToolbarGroup>
               <ToolbarItem label={t(`${I18N_PREFIX}.undo`)}>
                 <UndoButton />
@@ -461,13 +546,22 @@ export function SlateEditor({
                 <MarkButton format='bold' icon={<Bold className='h-4 w-4' />} />
               </ToolbarItem>
               <ToolbarItem label={t(`${I18N_PREFIX}.italic`)}>
-                <MarkButton format='italic' icon={<Italic className='h-4 w-4' />} />
+                <MarkButton
+                  format='italic'
+                  icon={<Italic className='h-4 w-4' />}
+                />
               </ToolbarItem>
               <ToolbarItem label={t(`${I18N_PREFIX}.underline`)}>
-                <MarkButton format='underline' icon={<Underline className='h-4 w-4' />} />
+                <MarkButton
+                  format='underline'
+                  icon={<Underline className='h-4 w-4' />}
+                />
               </ToolbarItem>
               <ToolbarItem label={t(`${I18N_PREFIX}.strikethrough`)}>
-                <MarkButton format='strikethrough' icon={<Strikethrough className='h-4 w-4' />} />
+                <MarkButton
+                  format='strikethrough'
+                  icon={<Strikethrough className='h-4 w-4' />}
+                />
               </ToolbarItem>
             </ToolbarGroup>
             <ToolbarSeparator />
@@ -480,19 +574,34 @@ export function SlateEditor({
             <ToolbarSeparator />
             <ToolbarGroup>
               <ToolbarItem label={t(`${I18N_PREFIX}.quote`)}>
-                <BlockButton format='block-quote' icon={<Quote className='h-4 w-4' />} />
+                <BlockButton
+                  format='block-quote'
+                  icon={<Quote className='h-4 w-4' />}
+                />
               </ToolbarItem>
               <ToolbarItem label={t(`${I18N_PREFIX}.codeBlock`)}>
-                <BlockButton format='code-block' icon={<SquareCode className='h-4 w-4' />} />
+                <BlockButton
+                  format='code-block'
+                  icon={<SquareCode className='h-4 w-4' />}
+                />
               </ToolbarItem>
               <ToolbarItem label={t(`${I18N_PREFIX}.bulletList`)}>
-                <BlockButton format='bulleted-list' icon={<List className='h-4 w-4' />} />
+                <BlockButton
+                  format='bulleted-list'
+                  icon={<List className='h-4 w-4' />}
+                />
               </ToolbarItem>
               <ToolbarItem label={t(`${I18N_PREFIX}.orderedList`)}>
-                <BlockButton format='numbered-list' icon={<ListOrdered className='h-4 w-4' />} />
+                <BlockButton
+                  format='numbered-list'
+                  icon={<ListOrdered className='h-4 w-4' />}
+                />
               </ToolbarItem>
               <ToolbarItem label={t(`${I18N_PREFIX}.checklist`)}>
-                <BlockButton format='check-list' icon={<CheckSquare className='h-4 w-4' />} />
+                <BlockButton
+                  format='check-list'
+                  icon={<CheckSquare className='h-4 w-4' />}
+                />
               </ToolbarItem>
             </ToolbarGroup>
             <ToolbarSeparator />
@@ -516,7 +625,13 @@ export function SlateEditor({
             </ToolbarGroup>
           </div>
         </div>
-        <div className={cn('flex-1 min-h-0', autoHeight ? 'overflow-visible' : 'overflow-auto')}>
+        <div
+          className={cn(
+            'min-h-0 flex-1',
+            autoHeight ? 'overflow-visible' : 'overflow-auto',
+            minHeight
+          )}
+        >
           <Editable
             renderElement={renderElement}
             renderLeaf={renderLeaf}
@@ -524,8 +639,7 @@ export function SlateEditor({
             onPaste={handlePaste}
             placeholder={placeholder}
             className={cn(
-              'prose prose-sm dark:prose-invert max-w-none w-full pl-0 pr-3 py-3 outline-none empty:before:content-[attr(placeholder)] empty:before:text-muted-foreground block first:[&>*]:mt-0',
-              minHeight
+              'relative prose prose-sm block min-h-full w-full max-w-none py-3 pr-3 pl-0 outline-none empty:before:text-muted-foreground empty:before:content-[attr(placeholder)] dark:prose-invert'
             )}
             spellCheck
           />
@@ -557,20 +671,28 @@ function unwrapLists(editor: Editor) {
   Transforms.unwrapNodes(editor, {
     match: (n) =>
       SlateElement.isElement(n) &&
-      ['numbered-list', 'bulleted-list', 'check-list'].includes((n as SlateElement).type),
+      ['numbered-list', 'bulleted-list', 'check-list'].includes(
+        (n as SlateElement).type
+      ),
     split: true,
   })
 }
 
 function setBlockType(editor: Editor, format: string, at?: Path) {
   unwrapLists(editor)
-  const isList = ['numbered-list', 'bulleted-list', 'check-list'].includes(format)
-  const targetPath = at ?? (Editor.above(editor, { match: (n) => SlateElement.isElement(n) })?.[1])
+  const isList = ['numbered-list', 'bulleted-list', 'check-list'].includes(
+    format
+  )
+  const targetPath =
+    at ?? Editor.above(editor, { match: (n) => SlateElement.isElement(n) })?.[1]
   if (targetPath === undefined) return
   const listItemType = format === 'check-list' ? 'check-list-item' : 'list-item'
   Transforms.setNodes<SlateElement>(
     editor,
-    { type: isList ? listItemType : format, ...(format === 'check-list' ? { checked: false } : {}) },
+    {
+      type: isList ? listItemType : format,
+      ...(format === 'check-list' ? { checked: false } : {}),
+    },
     { at: targetPath }
   )
   if (isList) {
@@ -581,7 +703,9 @@ function setBlockType(editor: Editor, format: string, at?: Path) {
 
 function toggleBlock(editor: Editor, format: string) {
   const isActive = isBlockActive(editor, format)
-  const isList = ['numbered-list', 'bulleted-list', 'check-list'].includes(format)
+  const isList = ['numbered-list', 'bulleted-list', 'check-list'].includes(
+    format
+  )
   const listItemType = format === 'check-list' ? 'check-list-item' : 'list-item'
   unwrapLists(editor)
   const newProperties: Partial<SlateElement> = {
@@ -602,7 +726,8 @@ function isBlockActive(editor: Editor, format: string) {
     const [match] = Array.from(
       Editor.nodes(editor, {
         at: Editor.unhangRange(editor, selection),
-        match: (n) => SlateElement.isElement(n) && (n as SlateElement).type === format,
+        match: (n) =>
+          SlateElement.isElement(n) && (n as SlateElement).type === format,
       })
     )
     return !!match
@@ -611,7 +736,9 @@ function isBlockActive(editor: Editor, format: string) {
   }
 }
 
-function getBlockAlign(editor: Editor): 'left' | 'center' | 'right' | 'justify' | undefined {
+function getBlockAlign(
+  editor: Editor
+): 'left' | 'center' | 'right' | 'justify' | undefined {
   try {
     const { selection } = editor
     if (!selection) return undefined
@@ -627,7 +754,10 @@ function getBlockAlign(editor: Editor): 'left' | 'center' | 'right' | 'justify' 
   }
 }
 
-function setBlockAlign(editor: Editor, align: 'left' | 'center' | 'right' | 'justify') {
+function setBlockAlign(
+  editor: Editor,
+  align: 'left' | 'center' | 'right' | 'justify'
+) {
   const { selection } = editor
   if (!selection) return
   const [match] = Array.from(
@@ -635,7 +765,15 @@ function setBlockAlign(editor: Editor, align: 'left' | 'center' | 'right' | 'jus
       at: selection,
       match: (n) =>
         SlateElement.isElement(n) &&
-        ['paragraph', 'heading-one', 'heading-two', 'heading-three', 'heading-four', 'heading-five', 'heading-six'].includes((n as SlateElement).type),
+        [
+          'paragraph',
+          'heading-one',
+          'heading-two',
+          'heading-three',
+          'heading-four',
+          'heading-five',
+          'heading-six',
+        ].includes((n as SlateElement).type),
     })
   )
   if (match) Transforms.setNodes(editor, { align }, { at: match[1] })
@@ -664,7 +802,9 @@ function insertImage(editor: Editor, url: string) {
 function isLinkActive(editor: Editor) {
   const [link] = Editor.nodes(editor, {
     match: (n) =>
-      !Editor.isEditor(n) && SlateElement.isElement(n) && (n as SlateElement).type === 'link',
+      !Editor.isEditor(n) &&
+      SlateElement.isElement(n) &&
+      (n as SlateElement).type === 'link',
   })
   return !!link
 }
@@ -672,7 +812,9 @@ function isLinkActive(editor: Editor) {
 function unwrapLink(editor: Editor) {
   Transforms.unwrapNodes(editor, {
     match: (n) =>
-      !Editor.isEditor(n) && SlateElement.isElement(n) && (n as SlateElement).type === 'link',
+      !Editor.isEditor(n) &&
+      SlateElement.isElement(n) &&
+      (n as SlateElement).type === 'link',
   })
 }
 
@@ -755,7 +897,10 @@ function MathElement({ attributes, children, element }: RenderElementProps) {
 
   if (isInline) {
     return (
-      <span {...attributes} className={cn(showSource && 'bg-muted rounded px-1')}>
+      <span
+        {...attributes}
+        className={cn(showSource && 'rounded bg-muted px-1')}
+      >
         <span
           contentEditable={false}
           className={cn(showSource ? 'hidden' : '')}
@@ -764,7 +909,9 @@ function MathElement({ attributes, children, element }: RenderElementProps) {
         <span
           className={cn(
             'font-mono text-sm',
-            showSource ? '' : 'absolute opacity-0 pointer-events-none h-0 w-0 overflow-hidden'
+            showSource
+              ? ''
+              : 'pointer-events-none absolute h-0 w-0 overflow-hidden opacity-0'
           )}
         >
           {children}
@@ -774,7 +921,7 @@ function MathElement({ attributes, children, element }: RenderElementProps) {
   }
 
   return (
-    <div {...attributes} className='my-2 relative'>
+    <div {...attributes} className='relative my-2'>
       <div
         contentEditable={false}
         className={cn('select-none', showSource ? 'hidden' : 'block')}
@@ -782,8 +929,10 @@ function MathElement({ attributes, children, element }: RenderElementProps) {
       />
       <div
         className={cn(
-          'font-mono text-sm bg-muted p-2 rounded',
-          showSource ? 'block' : 'absolute opacity-0 pointer-events-none h-0 w-0 overflow-hidden'
+          'rounded bg-muted p-2 font-mono text-sm',
+          showSource
+            ? 'block'
+            : 'pointer-events-none absolute h-0 w-0 overflow-hidden opacity-0'
         )}
       >
         {children}
@@ -793,12 +942,20 @@ function MathElement({ attributes, children, element }: RenderElementProps) {
 }
 
 function Element({ attributes, children, element }: RenderElementProps) {
-  const el = element as SlateElement & { depth?: number; align?: string; width?: number }
+  const el = element as SlateElement & {
+    depth?: number
+    align?: string
+    width?: number
+  }
   if (el.type === 'heading' && typeof el.depth === 'number') {
     const d = Math.min(6, Math.max(1, el.depth))
     const Tag = `h${d}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
     return (
-      <Tag {...attributes} className={HEADING_CLASSES[Tag]} style={blockStyle(el)}>
+      <Tag
+        {...attributes}
+        className={HEADING_CLASSES[Tag]}
+        style={blockStyle(el)}
+      >
         {children}
       </Tag>
     )
@@ -807,43 +964,70 @@ function Element({ attributes, children, element }: RenderElementProps) {
     case 'block-quote':
     case 'blockquote':
       return (
-        <blockquote {...attributes} className='border-l-4 border-primary pl-4 my-2'>
+        <blockquote
+          {...attributes}
+          className='my-2 border-l-4 border-primary pl-4'
+        >
           {children}
         </blockquote>
       )
     case 'heading-one':
       return (
-        <h1 {...attributes} className={HEADING_CLASSES.h1} style={blockStyle(el)}>
+        <h1
+          {...attributes}
+          className={HEADING_CLASSES.h1}
+          style={blockStyle(el)}
+        >
           {children}
         </h1>
       )
     case 'heading-two':
       return (
-        <h2 {...attributes} className={HEADING_CLASSES.h2} style={blockStyle(el)}>
+        <h2
+          {...attributes}
+          className={HEADING_CLASSES.h2}
+          style={blockStyle(el)}
+        >
           {children}
         </h2>
       )
     case 'heading-three':
       return (
-        <h3 {...attributes} className={HEADING_CLASSES.h3} style={blockStyle(el)}>
+        <h3
+          {...attributes}
+          className={HEADING_CLASSES.h3}
+          style={blockStyle(el)}
+        >
           {children}
         </h3>
       )
     case 'heading-four':
       return (
-        <h4 {...attributes} className={HEADING_CLASSES.h4} style={blockStyle(el)}>
+        <h4
+          {...attributes}
+          className={HEADING_CLASSES.h4}
+          style={blockStyle(el)}
+        >
           {children}
         </h4>
       )
     case 'heading-five':
       return (
-        <h5 {...attributes} className={HEADING_CLASSES.h5} style={blockStyle(el)}>
+        <h5
+          {...attributes}
+          className={HEADING_CLASSES.h5}
+          style={blockStyle(el)}
+        >
           {children}
         </h5>
       )
     case 'heading-six':
       return (
-        <h6 {...attributes} className={HEADING_CLASSES.h6} style={blockStyle(el)}>
+        <h6
+          {...attributes}
+          className={HEADING_CLASSES.h6}
+          style={blockStyle(el)}
+        >
           {children}
         </h6>
       )
@@ -867,7 +1051,7 @@ function Element({ attributes, children, element }: RenderElementProps) {
       )
     case 'check-list':
       return (
-        <ul {...attributes} className='list-none my-2 space-y-1 pl-0'>
+        <ul {...attributes} className='my-2 list-none space-y-1 pl-0'>
           {children}
         </ul>
       )
@@ -876,18 +1060,27 @@ function Element({ attributes, children, element }: RenderElementProps) {
       return (
         <li
           {...attributes}
-          className='flex items-start gap-2 list-none my-0.5'
+          className='my-0.5 flex list-none items-start gap-2'
           data-checked={checked}
         >
           <CheckboxElement checked={checked} element={el} />
-          <span className={cn('flex-1', checked && 'line-through text-muted-foreground')}>
+          <span
+            className={cn(
+              'flex-1',
+              checked && 'text-muted-foreground line-through'
+            )}
+          >
             {children}
           </span>
         </li>
       )
     }
     case 'image': {
-      return <ImageElement attributes={attributes} element={el}>{children}</ImageElement>
+      return (
+        <ImageElement attributes={attributes} element={el}>
+          {children}
+        </ImageElement>
+      )
     }
     case 'link': {
       const linkUrl = (el as SlateElement & { url?: string }).url
@@ -896,7 +1089,7 @@ function Element({ attributes, children, element }: RenderElementProps) {
         <a
           {...attributes}
           href={safeUrl}
-          className='text-primary underline underline-offset-4 cursor-pointer'
+          className='cursor-pointer text-primary underline underline-offset-4'
           onClick={(e) => {
             if ((e.metaKey || e.ctrlKey) && isSafeUrl(linkUrl)) {
               window.open(linkUrl, '_blank', 'noopener,noreferrer')
@@ -934,16 +1127,29 @@ function Element({ attributes, children, element }: RenderElementProps) {
     case 'code-block':
     case 'code':
       return (
-        <pre {...attributes} className='my-2 rounded-md bg-secondary p-3 overflow-x-auto border border-border text-secondary-foreground'>
-          <code className='text-sm font-mono'>{children}</code>
+        <pre
+          {...attributes}
+          className='my-2 overflow-x-auto rounded-md border border-border bg-secondary p-3 text-secondary-foreground'
+        >
+          <code className='font-mono text-sm'>{children}</code>
         </pre>
       )
     case 'math':
     case 'inline-math':
-      return <MathElement attributes={attributes} children={children} element={element} />
+      return (
+        <MathElement
+          attributes={attributes}
+          children={children}
+          element={element}
+        />
+      )
     default:
       return (
-        <p {...attributes} className='my-1 min-h-6 cursor-text' style={blockStyle(el)}>
+        <p
+          {...attributes}
+          className='my-1 min-h-6 cursor-text'
+          style={blockStyle(el)}
+        >
           {children}
         </p>
       )
@@ -969,7 +1175,7 @@ function CheckboxElement({
       }}
     >
       {checked ? (
-        <span className='text-primary text-sm leading-none'>✓</span>
+        <span className='text-sm leading-none text-primary'>✓</span>
       ) : null}
     </span>
   )
@@ -982,7 +1188,11 @@ function ImageElement({
 }: {
   attributes: RenderElementProps['attributes']
   children: RenderElementProps['children']
-  element: SlateElement & { url?: string; width?: number; align?: 'left' | 'center' | 'right' | 'justify' }
+  element: SlateElement & {
+    url?: string
+    width?: number
+    align?: 'left' | 'center' | 'right' | 'justify'
+  }
 }) {
   const editor = useSlate()
   const selected = useSelected()
@@ -1001,7 +1211,11 @@ function ImageElement({
 
   const updateWidth = (nextWidth: number) => {
     const path = ReactEditor.findPath(editor, element)
-    Transforms.setNodes(editor, { width: Math.min(100, Math.max(20, nextWidth)) }, { at: path })
+    Transforms.setNodes(
+      editor,
+      { width: Math.min(100, Math.max(20, nextWidth)) },
+      { at: path }
+    )
   }
 
   const updateAlign = (nextAlign: 'left' | 'center' | 'right') => {
@@ -1023,7 +1237,7 @@ function ImageElement({
         <div
           className={cn(
             'overflow-hidden rounded-xl bg-transparent p-2 transition-shadow',
-            selected && 'ring-2 ring-primary/20 shadow-sm border bg-muted/30'
+            selected && 'border bg-muted/30 shadow-sm ring-2 ring-primary/20'
           )}
           style={{ width: `${width}%`, maxWidth: '100%' }}
           onMouseDown={(e) => {
@@ -1035,14 +1249,18 @@ function ImageElement({
           }}
         >
           {url ? (
-            <img src={url} alt='' className='block h-auto max-w-full rounded-md object-contain' />
+            <img
+              src={url}
+              alt=''
+              className='block h-auto max-w-full rounded-md object-contain'
+            />
           ) : (
-            <span className='text-muted-foreground text-sm'>[图片]</span>
+            <span className='text-sm text-muted-foreground'>[图片]</span>
           )}
         </div>
 
         {showControls ? (
-          <div className='absolute right-2 top-2 z-10 flex max-w-[calc(100vw-4rem)] items-center gap-1.5 rounded-full border bg-background/95 px-2 py-1.5 shadow-lg backdrop-blur'>
+          <div className='absolute top-2 right-2 z-10 flex max-w-[calc(100vw-4rem)] items-center gap-1.5 rounded-full border bg-background/95 px-2 py-1.5 shadow-lg backdrop-blur'>
             <span className='text-xs text-muted-foreground'>{width}%</span>
             <input
               type='range'
@@ -1057,9 +1275,18 @@ function ImageElement({
             <span className='mx-1 h-5 w-px bg-border' />
             <div className='flex items-center gap-1'>
               {[
-                { value: 'left' as const, icon: <AlignLeft className='h-4 w-4' /> },
-                { value: 'center' as const, icon: <AlignCenter className='h-4 w-4' /> },
-                { value: 'right' as const, icon: <AlignRight className='h-4 w-4' /> },
+                {
+                  value: 'left' as const,
+                  icon: <AlignLeft className='h-4 w-4' />,
+                },
+                {
+                  value: 'center' as const,
+                  icon: <AlignCenter className='h-4 w-4' />,
+                },
+                {
+                  value: 'right' as const,
+                  icon: <AlignRight className='h-4 w-4' />,
+                },
               ].map((option) => (
                 <Button
                   key={option.value}
@@ -1069,7 +1296,9 @@ function ImageElement({
                   className='h-7 w-7 shadow-none'
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => updateAlign(option.value)}
-                  title={t(`${I18N_PREFIX}.imageAlign${option.value.charAt(0).toUpperCase()}${option.value.slice(1)}`)}
+                  title={t(
+                    `${I18N_PREFIX}.imageAlign${option.value.charAt(0).toUpperCase()}${option.value.slice(1)}`
+                  )}
                 >
                   {option.icon}
                 </Button>
@@ -1088,7 +1317,12 @@ function Leaf({ attributes, children, leaf }: RenderLeafProps) {
   if (leaf.italic) children = <em>{children}</em>
   if (leaf.underline) children = <u>{children}</u>
   if (leaf.strikethrough) children = <s>{children}</s>
-  if (leaf.code) children = <code className='rounded bg-secondary px-1.5 py-0.5 font-mono text-sm border border-border text-secondary-foreground'>{children}</code>
+  if (leaf.code)
+    children = (
+      <code className='rounded border border-border bg-secondary px-1.5 py-0.5 font-mono text-sm text-secondary-foreground'>
+        {children}
+      </code>
+    )
   return <span {...attributes}>{children}</span>
 }
 
@@ -1100,15 +1334,30 @@ function ToolbarSeparator() {
   return <span className='mx-1.5 h-5 w-px bg-border' aria-hidden />
 }
 
-function ToolbarItem({ label, children }: { label: string; children: React.ReactNode }) {
+function ToolbarItem({
+  label,
+  children,
+}: {
+  label: string
+  children: React.ReactNode
+}) {
   return (
-    <span className='inline-flex items-center gap-1 rounded px-1 py-0.5' title={label}>
+    <span
+      className='inline-flex items-center gap-1 rounded px-1 py-0.5'
+      title={label}
+    >
       {children}
     </span>
   )
 }
 
-function MarkButton({ format, icon }: { format: string; icon: React.ReactNode }) {
+function MarkButton({
+  format,
+  icon,
+}: {
+  format: string
+  icon: React.ReactNode
+}) {
   const editor = useSlate()
   const isActive = isMarkActive(editor, format)
   return (
@@ -1125,7 +1374,13 @@ function MarkButton({ format, icon }: { format: string; icon: React.ReactNode })
   )
 }
 
-function BlockButton({ format, icon }: { format: string; icon: React.ReactNode }) {
+function BlockButton({
+  format,
+  icon,
+}: {
+  format: string
+  icon: React.ReactNode
+}) {
   const editor = useSlate()
   const isActive = isBlockActive(editor, format)
   return (
@@ -1182,7 +1437,13 @@ function InsertTableButton() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button type='button' variant='ghost' size='icon' className='h-8 w-8' onMouseDown={(e) => e.preventDefault()}>
+        <Button
+          type='button'
+          variant='ghost'
+          size='icon'
+          className='h-8 w-8'
+          onMouseDown={(e) => e.preventDefault()}
+        >
           <TableIcon className='h-4 w-4' />
         </Button>
       </DropdownMenuTrigger>
@@ -1224,7 +1485,10 @@ function InsertDividerButton() {
   )
 }
 
-const ALIGN_OPTIONS: { value: 'left' | 'center' | 'right' | 'justify'; icon: React.ReactNode }[] = [
+const ALIGN_OPTIONS: {
+  value: 'left' | 'center' | 'right' | 'justify'
+  icon: React.ReactNode
+}[] = [
   { value: 'left', icon: <AlignLeft className='h-4 w-4' /> },
   { value: 'center', icon: <AlignCenter className='h-4 w-4' /> },
   { value: 'right', icon: <AlignRight className='h-4 w-4' /> },
@@ -1235,9 +1499,13 @@ function AlignmentDropdown() {
   const editor = useSlate()
   const { t } = useI18n()
   const currentAlign = getBlockAlign(editor)
-  const labelKey = currentAlign ? `align${currentAlign.charAt(0).toUpperCase()}${currentAlign.slice(1)}` : 'align'
+  const labelKey = currentAlign
+    ? `align${currentAlign.charAt(0).toUpperCase()}${currentAlign.slice(1)}`
+    : 'align'
   const label = t(`${I18N_PREFIX}.${labelKey}`)
-  const Icon = ALIGN_OPTIONS.find((o) => o.value === currentAlign)?.icon ?? <AlignLeft className='h-4 w-4' />
+  const Icon = ALIGN_OPTIONS.find((o) => o.value === currentAlign)?.icon ?? (
+    <AlignLeft className='h-4 w-4' />
+  )
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -1249,7 +1517,7 @@ function AlignmentDropdown() {
           onMouseDown={(e) => e.preventDefault()}
         >
           {Icon}
-          <span className='text-xs hidden sm:inline'>{label}</span>
+          <span className='hidden text-xs sm:inline'>{label}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='start' className='min-w-32'>
@@ -1262,7 +1530,11 @@ function AlignmentDropdown() {
             }}
           >
             {opt.icon}
-            <span className='ml-2'>{t(`${I18N_PREFIX}.align${opt.value.charAt(0).toUpperCase()}${opt.value.slice(1)}`)}</span>
+            <span className='ml-2'>
+              {t(
+                `${I18N_PREFIX}.align${opt.value.charAt(0).toUpperCase()}${opt.value.slice(1)}`
+              )}
+            </span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
@@ -1289,7 +1561,7 @@ function HeadingDropdown() {
           onMouseDown={(e) => e.preventDefault()}
         >
           <Heading1 className='h-4 w-4' />
-          <span className='text-xs max-w-16 truncate'>{label}</span>
+          <span className='max-w-16 truncate text-xs'>{label}</span>
           <ChevronDown className='h-3 w-3 opacity-50' />
         </Button>
       </DropdownMenuTrigger>
@@ -1347,7 +1619,11 @@ function InsertLinkButton() {
             }
           }}
         >
-          {isActive ? <Unlink className='h-4 w-4' /> : <LinkIcon className='h-4 w-4' />}
+          {isActive ? (
+            <Unlink className='h-4 w-4' />
+          ) : (
+            <LinkIcon className='h-4 w-4' />
+          )}
         </Button>
       </DialogTrigger>
       <DialogContent className='sm:max-w-md'>
@@ -1362,18 +1638,27 @@ function InsertLinkButton() {
             onChange={(e) => setUrl(e.target.value)}
             placeholder='https://...'
             onKeyDown={(e) => {
-               if (e.key === 'Enter') {
-                 e.preventDefault()
-                 handleInsert()
-               }
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                handleInsert()
+              }
             }}
           />
         </div>
         <DialogFooter>
-          <Button type='button' variant='outline' onMouseDown={(e) => e.preventDefault()} onClick={() => setOpen(false)}>
+          <Button
+            type='button'
+            variant='outline'
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => setOpen(false)}
+          >
             {t(`${I18N_PREFIX}.cancel`)}
           </Button>
-          <Button type='button' onMouseDown={(e) => e.preventDefault()} onClick={handleInsert}>
+          <Button
+            type='button'
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={handleInsert}
+          >
             {t(`${I18N_PREFIX}.insert`)}
           </Button>
         </DialogFooter>

@@ -1,5 +1,12 @@
 import { useEffect, useMemo, memo, useCallback } from 'react'
-import { useForm } from 'react-hook-form'
+import {
+  useForm,
+  type ControllerRenderProps,
+  type DefaultValues,
+  type FieldPath,
+  type FieldValues,
+  type UseFormReturn,
+} from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type * as z from 'zod'
 import {
@@ -84,7 +91,10 @@ export interface FormFieldConfig {
   /** 选项（用于 select/checkbox-group） */
   options?: FieldOption[]
   /** 自定义渲染 */
-  render?: (props: { field: any; form: any }) => React.ReactNode
+  render?: (props: {
+    field: ControllerRenderProps<FieldValues, string>
+    form: UseFormReturn<FieldValues>
+  }) => React.ReactNode
   /** 输入框类型（用于 text） */
   inputType?: 'text' | 'password' | 'email' | 'tel'
   /** 是否禁用 */
@@ -107,7 +117,7 @@ export interface FormSectionConfig {
   defaultOpen?: boolean
 }
 
-export interface SchemaFormDialogProps {
+export interface SchemaFormDialogProps<TValues extends FieldValues = FieldValues> {
   /** 是否打开 */
   open: boolean
   /** 打开状态变化回调 */
@@ -121,13 +131,13 @@ export interface SchemaFormDialogProps {
   /** 是否编辑模式 */
   isEdit?: boolean
   /** Zod Schema */
-  schema: z.ZodObject<any>
+  schema: z.ZodType<TValues, TValues>
   /** 字段配置 */
   fields: FormFieldConfig[]
   /** 默认值 */
-  defaultValues?: Record<string, any>
+  defaultValues?: Partial<TValues>
   /** 提交回调 */
-  onSubmit: (values: any) => void
+  onSubmit: (values: TValues) => void
   /** 是否加载中 */
   isLoading?: boolean
   /** 对话框最大宽度 */
@@ -174,7 +184,7 @@ const maxWidthMap = {
  * />
  * ```
  */
-export const SchemaFormDialog = memo(function SchemaFormDialog({
+function SchemaFormDialogComponent<TValues extends FieldValues = FieldValues>({
   open,
   onOpenChange,
   title,
@@ -190,10 +200,10 @@ export const SchemaFormDialog = memo(function SchemaFormDialog({
   submitText,
   cancelText,
   sections,
-}: SchemaFormDialogProps) {
+}: SchemaFormDialogProps<TValues>) {
   // 提取默认值
   const initialValues = useMemo(() => {
-    const values: Record<string, any> = {}
+    const values: FieldValues = {}
     fields.forEach((field) => {
       if (field.type === 'checkbox-group') {
         values[field.name] = defaultValues[field.name] || []
@@ -205,10 +215,10 @@ export const SchemaFormDialog = memo(function SchemaFormDialog({
         values[field.name] = defaultValues[field.name] || ''
       }
     })
-    return values
+    return values as DefaultValues<TValues>
   }, [fields, defaultValues])
 
-  const form = useForm({
+  const form = useForm<TValues>({
     resolver: zodResolver(schema),
     defaultValues: initialValues,
   })
@@ -221,7 +231,7 @@ export const SchemaFormDialog = memo(function SchemaFormDialog({
   }, [open, initialValues, form])
 
   const handleSubmit = useCallback(
-    (values: any) => {
+    (values: TValues) => {
       onSubmit(values)
     },
     [onSubmit]
@@ -266,7 +276,7 @@ export const SchemaFormDialog = memo(function SchemaFormDialog({
         <FormField
           key={name}
           control={form.control}
-          name={name}
+          name={name as FieldPath<TValues>}
           render={({ field }) => (
             <FormItem className={cn('space-y-2', className)}>
               <FormLabel className="text-sm font-medium">
@@ -275,7 +285,10 @@ export const SchemaFormDialog = memo(function SchemaFormDialog({
               </FormLabel>
               <FormControl>
                 {render ? (
-                  render({ field, form })
+                  render({
+                    field: field as ControllerRenderProps<FieldValues, string>,
+                    form: form as unknown as UseFormReturn<FieldValues>,
+                  })
                 ) : type === 'password' ? (
                   <PasswordInput
                     placeholder={placeholder}
@@ -339,7 +352,7 @@ export const SchemaFormDialog = memo(function SchemaFormDialog({
                             if (checked) {
                               field.onChange([...current, opt.value])
                             } else {
-                              field.onChange(current.filter((v: any) => v !== opt.value))
+                              field.onChange(current.filter((v: unknown) => v !== opt.value))
                             }
                           }}
                           disabled={disabled}
@@ -441,6 +454,8 @@ export const SchemaFormDialog = memo(function SchemaFormDialog({
       </DialogContent>
     </Dialog>
   )
-})
+}
+
+export const SchemaFormDialog = memo(SchemaFormDialogComponent) as typeof SchemaFormDialogComponent
 
 export default SchemaFormDialog

@@ -29,12 +29,15 @@ import {
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { EditorErrorBoundary } from '@/components/editor-error-boundary'
-import { JsonEditor } from '@/components/json-editor'
 import { useI18n } from '@/context/i18n-provider'
 import type { Config, ConfigCreateParams, ConfigUpdateParams } from '../types/config'
 
 const SlateEditor = lazy(() =>
   import('@/components/editor').then((m) => ({ default: m.SlateEditor }))
+)
+
+const JsonEditor = lazy(() =>
+  import('@/components/json-editor').then((m) => ({ default: m.JsonEditor }))
 )
 
 const createConfigFormSchema = (t: (key: string) => string) =>
@@ -302,13 +305,21 @@ export function ConfigFormDialog({
                           </Suspense>
                         </EditorErrorBoundary>
                       ) : (
-                        <JsonEditor
-                          key={isEdit && editConfig ? `edit-${editConfig.configID.trim()}` : 'create'}
-                          value={field.value ?? ''}
-                          onChange={field.onChange}
-                          minHeight='min-h-[280px]'
-                          initialContent={isEdit && editConfig ? (editConfig.info ?? editConfig.mdContent ?? '') : undefined}
-                        />
+                        <Suspense
+                          fallback={
+                            <div className='min-h-[280px] flex items-center justify-center text-muted-foreground text-sm bg-muted/30'>
+                              {t('features.content.config.form.contentLoading')}
+                            </div>
+                          }
+                        >
+                          <JsonEditor
+                            key={isEdit && editConfig ? `edit-${editConfig.configID.trim()}` : 'create'}
+                            value={field.value ?? ''}
+                            onChange={field.onChange}
+                            minHeight='min-h-[280px]'
+                            initialContent={isEdit && editConfig ? (editConfig.info ?? editConfig.mdContent ?? '') : undefined}
+                          />
+                        </Suspense>
                       )}
                     </div>
                   </FormControl>

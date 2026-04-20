@@ -19,7 +19,7 @@ import {
 import { DataTablePagination } from './pagination'
 import { useI18n } from '@/context/i18n-provider'
 
-export interface DataTableProps<TData = any> {
+export interface DataTableProps<TData = unknown> {
   table: TanStackTable<TData>
   columns: ColumnDef<TData>[]
   isLoading?: boolean

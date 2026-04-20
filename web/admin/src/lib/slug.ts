@@ -8,7 +8,7 @@ export function generateSlug(title: string): string {
   if (!trimmed) return ''
 
   // 纯 ASCII（英文、数字、空格、连字符、下划线）
-  if (/^[\x00-\x7F]+$/.test(trimmed)) {
+  if (Array.from(trimmed).every((char) => char.charCodeAt(0) <= 0x7f)) {
     return trimmed
       .toLowerCase()
       .replace(/[^a-z0-9\s-]/g, '')

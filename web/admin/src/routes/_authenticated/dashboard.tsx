@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { lazy, Suspense } from 'react'
-import { DashboardSkeleton } from '@/features/dashboard/dashboard-page'
+import { PageSkeleton } from '@/components/page-skeleton'
 
 // 懒加载 Dashboard 页面
 const DashboardPage = lazy(() => 
@@ -11,7 +11,7 @@ const DashboardPage = lazy(() =>
 
 export const Route = createFileRoute('/_authenticated/dashboard')({
   component: () => (
-    <Suspense fallback={<DashboardSkeleton />}>
+    <Suspense fallback={<PageSkeleton />}>
       <DashboardPage />
     </Suspense>
   ),

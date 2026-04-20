@@ -1,5 +1,5 @@
 import { memo, useRef, useCallback, useState } from 'react'
-import type { ColumnDef } from '@tanstack/react-table'
+import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import {
   Table,
   TableBody,
@@ -177,10 +177,14 @@ export const VirtualDataTable = memo(function VirtualDataTable<TData>({
               data-index={actualIndex}
             >
               {columns.map((column, colIndex) => {
-                const cellValue = (row as any)[column.id as string]
+                const rowRecord = row as Record<string, unknown>
+                const cellValue = column.id ? rowRecord[column.id] : undefined
                 const cellContent = column.cell
                   ? typeof column.cell === 'function'
-                    ? column.cell({ row: { original: row }, getValue: () => cellValue } as any)
+                    ? column.cell({
+                        row: { original: row },
+                        getValue: () => cellValue,
+                      } as unknown as CellContext<TData, unknown>)
                     : column.cell
                   : cellValue
                 const meta = column.meta as { tdClassName?: string } | undefined

@@ -1203,12 +1203,6 @@ function ImageElement({
   const align = element.align ?? 'left'
   const showControls = selected && controlsOpen
 
-  useEffect(() => {
-    if (!selected) {
-      setControlsOpen(false)
-    }
-  }, [selected])
-
   const updateWidth = (nextWidth: number) => {
     const path = ReactEditor.findPath(editor, element)
     Transforms.setNodes(
